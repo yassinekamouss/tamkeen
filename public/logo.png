@@ -1,0 +1,14 @@
+<svg width="300" height="80" viewBox="0 0 300 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Figure stylisée -->
+  <g>
+    <circle cx="25" cy="25" r="20" fill="#1E40AF"/>
+    <circle cx="25" cy="18" r="3" fill="white"/>
+    <path d="M18 30 C18 28, 20 27, 25 27 C30 27, 32 28, 32 30 L32 35 L18 35 Z" fill="white"/>
+    <path d="M25 35 C30 40, 35 42, 40 40" stroke="#FF6B35" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Texte -->
+  <text x="55" y="30" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#1E40AF">TAMKEEN</text>
+  <text x="170" y="30" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FF6B35">CENTER</text>
+  <text x="55" y="45" font-family="Arial, sans-serif" font-size="8" fill="#6B7280">Accompagnement et conseils aux entrepreneurs</text>
+</svg>

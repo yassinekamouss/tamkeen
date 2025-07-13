@@ -1,69 +1,89 @@
-# React + TypeScript + Vite
+# Tamkeen - Centre d'Empowerment
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ce projet est une application web pour Tamkeen, une organisation dédiée à l'autonomisation des individus grâce à des opportunités de formation et d'emploi. L'application est construite avec React, TypeScript, et Vite, et utilise Tailwind CSS pour le style.
 
-Currently, two official plugins are available:
+## ✨ Fonctionnalités
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Actuelles
+- **Site Web Multi-pages :** Comprend des pages d'accueil, À propos, FAQ, et Politique de confidentialité.
+- **Formulaire d'Éligibilité :** Un formulaire interactif pour que les utilisateurs puissent vérifier leur éligibilité aux programmes.
+- **Chatbot :** Un chatbot pour l'assistance et l'engagement des utilisateurs.
+- **Design Responsive :** Assure une expérience utilisateur transparente sur tous les appareils.
 
-## Expanding the ESLint configuration
+### Prévues
+- **Support Bilingue :** Support complet pour l'anglais et le français.
+- **Système d'Authentification :** Connexion et inscription des utilisateurs pour un contenu personnalisé.
+- **Tableau de Bord Utilisateur :** Une fois connectés, les utilisateurs peuvent suivre la progression de leurs candidatures et de leurs formations.
+- **Listes de Programmes :** Pages détaillées pour chaque programme de formation offert.
+- **Intégration d'un Blog :** Pour partager des actualités, des histoires de réussite et des articles pertinents.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Technologies Utilisées
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Frontend :** React, TypeScript, Vite
+- **Style :** Tailwind CSS
+- **Routing :** React Router
+- **Outils de Développement :** ESLint, Prettier
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 📦 Démarrage
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Pour faire fonctionner ce projet localement, suivez ces étapes :
+
+1. **Clonez le dépôt :**
+   ```bash
+   git clone https://github.com/votre-nom-utilisateur/tamkeen.git
+   ```
+2. **Naviguez vers le répertoire du projet :**
+   ```bash
+   cd tamkeen
+   ```
+3. **Installez les dépendances :**
+   ```bash
+   npm install
+   ```
+4. **Démarrez le serveur de développement :**
+   ```bash
+   npm run dev
+   ```
+5. **Ouvrez votre navigateur** et visitez `http://localhost:5173`.
+
+## 📂 Structure du Projet
+
+```
+tamkeen/
+├── public/
+│   └── logo.png
+├── src/
+│   ├── assets/
+│   │   ├── image_logo.png
+│   │   ├── image1.png
+│   │   ├── image2.png
+│   │   ├── image3.png
+│   │   └── logo.png
+│   ├── components/
+│   │   ├── Chatbot.tsx
+│   │   ├── EligibilityForm.tsx
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   ├── Hero.tsx
+│   │   ├── index.ts
+│   │   └── PrivacyModalNew.tsx
+│   ├── pages/
+│   │   ├── About.tsx
+│   │   ├── FAQ.tsx
+│   │   ├── Home.tsx
+│   │   ├── index.ts
+│   │   └── Privacy.tsx
+│   ├── App.css
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+├── .gitignore
+├── index.html
+├── package.json
+├── README.md
+└── vite.config.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🤝 Contribution
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Les contributions sont les bienvenues ! Veuillez forker le dépôt et créer une pull request avec vos changements. Pour les changements majeurs, veuillez ouvrir une issue au préalable pour discuter de ce que vous aimeriez changer.
