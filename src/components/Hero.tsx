@@ -2,33 +2,32 @@ import React, { useState, useEffect } from "react";
 import image1 from "../assets/image1.png";
 import image2 from "../assets/image2.png";
 import image3 from "../assets/image3.png";
+import { useTranslation } from 'react-i18next';
 
 interface HeroProps {
   onNavigateToForm: () => void;
 }
 
 const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
+  const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
   const images = [image1, image2, image3];
 
   const slideContent = [
     {
-      subtitle: "Simplifiez Votre Accès À La Subvention",
-      title: "Débloquez le potentiel de vos projets d'investissement",
-      description:
-        "Accédez facilement aux subventions et appuis financiers. Votre succès commence ici.",
+      subtitle: t('hero.slides.0.subtitle'),
+      title: t('hero.slides.0.title'),
+      description: t('hero.slides.0.description'),
     },
     {
-      subtitle: "Votre partenaire de confiance",
-      title: "Votre partenaire pour des investissements réussis",
-      description:
-        "Nous vous guidons à chaque étape pour obtenir les financements adaptés à vos ambitions.",
+      subtitle: t('hero.slides.1.subtitle'),
+      title: t('hero.slides.1.title'),
+      description: t('hero.slides.1.description'),
     },
     {
-      subtitle: "Innovez et Prospérez",
-      title: "Transformez vos idées en réalité avec Tamkeen",
-      description:
-        "Optimisez vos chances de subventions et propulsez la croissance de votre entreprise.",
+      subtitle: t('hero.slides.2.subtitle'),
+      title: t('hero.slides.2.title'),
+      description: t('hero.slides.2.description'),
     },
   ];
 
@@ -134,7 +133,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
           <button
             onClick={onNavigateToForm}
             className="bg-white text-blue-700 font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 text-base sm:text-lg">
-            Testez votre éligibilité ici
+            {t('hero.button')}
           </button>
         </div>
       </div>

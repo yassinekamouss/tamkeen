@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import imageLogo from "../assets/image_logo.png";
+import { useTranslation } from 'react-i18next';
 
 interface Message {
   id: number;
@@ -9,11 +10,12 @@ interface Message {
 }
 
 const Chatbot: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Bonjour ! Je suis Tamkeen, votre assistant pour les subventions au Maroc. Comment puis-je vous accompagner dans votre projet ?",
+      text: t('chatbot.initialMessage'),
       isBot: true,
       timestamp: new Date(),
     },
@@ -24,14 +26,14 @@ const Chatbot: React.FC = () => {
 
   // Réponses contextuelles authentiques
   const botResponses = [
-    "📋 Pour vérifier votre éligibilité, je vous invite à remplir notre formulaire. Cela ne prend que quelques minutes !",
-    "💡 Excellent projet ! Les subventions au Maroc couvrent de nombreux secteurs. Quel est votre domaine d'activité principal ?",
-    "🎯 Parfait ! Je vois plusieurs opportunités de financement qui pourraient correspondre à votre profil.",
-    "📊 Basé sur les critères actuels, votre projet semble prometteur. Avez-vous déjà constitué votre dossier ?",
-    "🚀 Les délais d'instruction varient selon le type d'aide, généralement entre 30 et 90 jours ouvrables.",
-    "📁 Les documents essentiels incluent : statuts, bilans, business plan et justificatifs d'identité.",
-    "🤝 Notre équipe d'experts peut vous accompagner personnellement dans vos démarches. Souhaitez-vous être contacté ?",
-    "💰 Le montant des subventions dépend de votre secteur et du type de projet. Parlez-moi de votre investissement prévu.",
+    t('chatbot.botResponses.0'),
+    t('chatbot.botResponses.1'),
+    t('chatbot.botResponses.2'),
+    t('chatbot.botResponses.3'),
+    t('chatbot.botResponses.4'),
+    t('chatbot.botResponses.5'),
+    t('chatbot.botResponses.6'),
+    t('chatbot.botResponses.7'),
   ];
 
   const scrollToBottom = () => {
@@ -80,27 +82,22 @@ const Chatbot: React.FC = () => {
 
   const quickActions = [
     {
-      text: "🔍 Vérifier mon éligibilité",
-      action: "Testez votre éligibilité ici",
+      text: t('chatbot.quickActions.0.text'),
+      action: t('chatbot.quickActions.0.action'),
     },
     {
-      text: "📋 Types de subventions",
-      action: "Quels sont les programmes disponibles ?",
+      text: t('chatbot.quickActions.1.text'),
+      action: t('chatbot.quickActions.1.action'),
     },
     {
-      text: "⏱️ Délais de traitement",
-      action: "Combien de temps pour une réponse ?",
+      text: t('chatbot.quickActions.2.text'),
+      action: t('chatbot.quickActions.2.action'),
     },
     {
-      text: "📞 Contact expert",
-      action: "Je souhaite être rappelé par un expert",
+      text: t('chatbot.quickActions.3.text'),
+      action: t('chatbot.quickActions.3.action'),
     },
   ];
-
-  const handleQuickAction = (action: string) => {
-    setInputValue(action);
-    setTimeout(() => handleSendMessage(), 100);
-  };
 
   return (
     <>
@@ -153,11 +150,10 @@ const Chatbot: React.FC = () => {
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 animate-pulse"></div>
                   <div>
                     <p className="text-gray-800 font-medium text-sm mb-1">
-                      Assistant Tamkeen en ligne
+                      {t('chatbot.assistantOnline')}
                     </p>
                     <p className="text-gray-600 text-xs">
-                      Des questions sur les subventions ? Je suis là pour vous
-                      aider ! 🚀
+                      {t('chatbot.invitationMessage')}
                     </p>
                   </div>
                 </div>
@@ -172,7 +168,7 @@ const Chatbot: React.FC = () => {
 
       {/* Interface du chat - Responsive avec style authentique Tamkeen */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-24 sm:right-6 w-[95vw] max-w-[380px] h-[85vh] sm:h-[520px] bg-white/95 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl z-50 overflow-hidden border border-white/20 animate-in slide-in-from-right-8 duration-500">
+        <div className="fixed bottom-4 right-4 sm:bottom-24 sm:right-6 w-[95vw] max-w-[380px] h-[90vh] sm:h-[600px] bg-white/95 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl z-50 overflow-hidden border border-white/20 animate-in slide-in-from-right-8 duration-500">
           {/* En-tête avec gradient Tamkeen */}
           <div className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 p-4 sm:p-6">
             {/* Motif géométrique de fond */}
@@ -194,11 +190,11 @@ const Chatbot: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base sm:text-lg">
-                    Tamkeen Assistant
+                    {t('chatbot.tamkeenAssistant')}
                   </h3>
                   <p className="text-blue-100 text-xs sm:text-sm flex items-center">
                     <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                    Spécialiste subventions • En ligne
+                    {t('chatbot.specialistOnline')}
                   </p>
                 </div>
               </div>
@@ -223,7 +219,7 @@ const Chatbot: React.FC = () => {
           </div>
 
           {/* Zone des messages avec style Tamkeen */}
-          <div className="flex-1 h-64 sm:h-80 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-gradient-to-b from-gray-50 to-blue-50/30">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-gradient-to-b from-gray-50 to-blue-50/30">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -254,7 +250,7 @@ const Chatbot: React.FC = () => {
                       className={`text-xs mt-2 ${
                         message.isBot ? "text-gray-500" : "text-blue-100"
                       }`}>
-                      {message.timestamp.toLocaleTimeString("fr-MA", {
+                      {message.timestamp.toLocaleTimeString(i18n.language, {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
@@ -294,7 +290,7 @@ const Chatbot: React.FC = () => {
           {messages.length <= 1 && (
             <div className="px-3 py-3 sm:px-6 sm:py-4 border-t border-gray-200 bg-white/80">
               <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 font-medium">
-                Actions rapides :
+                {t('chatbot.quickActionsLabel')}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {quickActions.map((item, index) => (
@@ -317,7 +313,7 @@ const Chatbot: React.FC = () => {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Posez votre question sur les subventions..."
+                  placeholder={t('chatbot.inputPlaceholder')}
                   rows={1}
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm resize-none bg-gray-50 hover:bg-white transition-colors duration-200"
                   style={{ minHeight: "40px", maxHeight: "80px" }}
@@ -342,7 +338,7 @@ const Chatbot: React.FC = () => {
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-2 hidden sm:block">
-              Appuyez sur Entrée pour envoyer
+              {t('chatbot.sendHint')}
             </p>
           </div>
         </div>
@@ -352,3 +348,4 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
+

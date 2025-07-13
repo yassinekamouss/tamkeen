@@ -1,0 +1,271 @@
+
+{
+  "header": {
+    "home": "Accueil",
+    "about": "À propos",
+    "faq": "FAQ",
+    "privacy": "Politique de confidentialité",
+    "language": "Langue"
+  },
+  "hero": {
+    "slides": [
+      {
+        "subtitle": "Simplifiez Votre Accès À La Subvention",
+        "title": "Débloquez le potentiel de vos projets d'investissement",
+        "description": "Accédez facilement aux subventions et appuis financiers. Votre succès commence ici."
+      },
+      {
+        "subtitle": "Votre partenaire de confiance",
+        "title": "Votre partenaire pour des investissements réussis",
+        "description": "Nous vous guidons à chaque étape pour obtenir les financements adaptés à vos ambitions."
+      },
+      {
+        "subtitle": "Innovez et Prospérez",
+        "title": "Transformez vos idées en réalité avec Tamkeen",
+        "description": "Optimisez vos chances de subventions et propulsez la croissance de votre entreprise."
+      }
+    ],
+    "button": "Testez votre éligibilité ici"
+  },
+  "eligibility": {
+    "title": "Test d'Éligibilité",
+    "subtitle": "Vérifiez votre éligibilité aux subventions Tamkeen",
+    "backButton": "Retour à l'accueil",
+    "applicantType": {
+      "label": "Sélectionnez votre type de demandeur",
+      "physique": "Personne Physique",
+      "physiqueSubtitle": "Entrepreneur individuel",
+      "morale": "Personne Morale",
+      "moraleSubtitle": "Entreprise ou Société"
+    },
+    "physique": {
+      "nom": "Nom",
+      "nomPlaceholder": "Votre nom",
+      "prenom": "Prénom",
+      "prenomPlaceholder": "Votre prénom",
+      "telephone": "Téléphone",
+      "telephonePlaceholder": "+212 6 XX XX XX XX",
+      "secteurTravail": "Secteur de travail",
+      "region": "Région"
+    },
+    "morale": {
+      "nomEntreprise": "Nom de l'entreprise",
+      "nomEntreprisePlaceholder": "Nom de votre entreprise",
+      "secteurActivite": "Secteur d'activité",
+      "anneeCreation": "Année de création"
+    },
+    "email": "Email",
+    "emailPlaceholder": "votre.email@example.com",
+    "chiffreAffaire": "Chiffre d'affaire",
+    "montantInvestissement": "Montant prévisionnel de l'investissement",
+    "selectPlaceholder": "Sélectionner une option",
+    "chiffreAffaireOptions": {
+      "option1": "Entre 0 et 1 MDH",
+      "option2": "Supérieur à 1 MDH",
+      "option3": "Sans chiffre d'affaire en 2025"
+    },
+    "montantInvestissementOptions": {
+      "option1": "Moins de 1.000.000 DH",
+      "option2": "Plus de 1.000.000 DH"
+    },
+    "secteursTravail": {
+        "Agriculture": "Agriculture",
+        "Industrie": "Industrie",
+        "Services": "Services",
+        "Commerce": "Commerce",
+        "Technologie": "Technologie",
+        "Santé": "Santé",
+        "Éducation": "Éducation",
+        "Transport": "Transport",
+        "Tourisme": "Tourisme",
+        "Autre": "Autre"
+    },
+    "regions": {
+        "Rabat-Salé-Kénitra": "Rabat-Salé-Kénitra",
+        "Casablanca-Settat": "Casablanca-Settat",
+        "Marrakech-Safi": "Marrakech-Safi",
+        "Fès-Meknès": "Fès-Meknès",
+        "Tanger-Tétouan-Al Hoceïma": "Tanger-Tétouan-Al Hoceïma",
+        "Oriental": "Oriental",
+        "Souss-Massa": "Souss-Massa",
+        "Drâa-Tafilalet": "Drâa-Tafilalet",
+        "Béni Mellal-Khénifra": "Béni Mellal-Khénifra",
+        "Laâyoune-Sakia El Hamra": "Laâyoune-Sakia El Hamra",
+        "Dakhla-Oued Ed-Dahab": "Dakhla-Oued Ed-Dahab",
+        "Guelmim-Oued Noun": "Guelmim-Oued Noun"
+    },
+    "privacyPolicy": {
+      "text1": "J'accepte la",
+      "link": "politique de confidentialité",
+      "text2": "et autorise le traitement de mes données personnelles dans le cadre de l'évaluation de mon éligibilité aux subventions."
+    },
+    "submitButton": "Vérifier mon éligibilité",
+    "success": "Formulaire soumis avec succès!",
+    "errors": {
+      "applicantType": "Veuillez sélectionner le type de demandeur",
+      "emailRequired": "L'email est obligatoire",
+      "emailInvalid": "Format d'email invalide",
+      "nomRequired": "Le nom est obligatoire",
+      "prenomRequired": "Le prénom est obligatoire",
+      "telephoneRequired": "Le téléphone est obligatoire",
+      "secteurTravailRequired": "Le secteur de travail est obligatoire",
+      "regionRequired": "La région est obligatoire",
+      "secteurActiviteRequired": "Le secteur d'activité est obligatoire",
+      "anneeCreationRequired": "L'année de création est obligatoire",
+      "chiffreAffaireRequired": "Le chiffre d'affaire est obligatoire",
+      "montantInvestissementRequired": "Le montant d'investissement est obligatoire",
+      "acceptPrivacyPolicyRequired": "Vous devez accepter la politique de confidentialité"
+    }
+  },
+  "footer": {
+    "brand": "subvention.ma",
+    "description": "Nous aidons les porteurs de projets, les entreprises et les coopératives à savoir rapidement s'ils répondent aux critères d'accès aux aides publiques disponibles au Maroc.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "email": "contact@subvention.ma",
+    "address": "Casablanca, Maroc",
+    "phone": "+212 522 00 00 00",
+    "followUs": "Suivez-nous",
+    "rights": "© 2025 subvention.ma – Tous droits réservés",
+    "privacy": "Confidentialité",
+    "terms": "Conditions"
+  },
+  "about": {
+    "title": "À propos de Tamkeen",
+    "subtitle": "Notre mission et notre vision pour soutenir l'entrepreneuriat au Maroc",
+    "underConstructionTitle": "Page en construction",
+    "underConstructionMessage": "Cette page sera bientôt disponible avec plus d'informations sur notre plateforme et notre mission."
+  },
+  "faq": {
+    "title": "Questions Fréquemment Posées",
+    "subtitle": "Trouvez les réponses aux questions les plus courantes sur Tamkeen",
+    "q1": "Qu'est-ce que Tamkeen ?",
+    "a1": "Tamkeen est une plateforme qui vous aide à identifier et à accéder aux subventions disponibles pour votre projet entrepreneurial au Maroc.",
+    "q2": "Comment fonctionne le test d'éligibilité ?",
+    "a2": "Notre test d'éligibilité analyse vos informations personnelles et les détails de votre projet pour déterminer quelles subventions correspondent le mieux à votre profil.",
+    "q3": "Le service est-il gratuit ?",
+    "a3": "Oui, notre test d'éligibilité est entièrement gratuit. Nous vous aidons à identifier les opportunités de financement sans frais.",
+    "q4": "Combien de temps prend l'évaluation ?",
+    "a4": "L'évaluation initiale est instantanée. Vous recevrez immédiatement une liste des subventions potentiellement adaptées à votre profil.",
+    "q5": "Mes données sont-elles sécurisées ?",
+    "a5": "Absolument. Nous respectons la loi 09-08 relative à la protection des données personnelles et utilisons des mesures de sécurité avancées pour protéger vos informations.",
+    "q6": "Que se passe-t-il après le test d'éligibilité ?",
+    "a6": "Après le test, vous recevrez une liste personnalisée des subventions adaptées à votre profil, avec les informations nécessaires pour postuler.",
+    "moreQuestionsTitle": "Vous avez d'autres questions ?",
+    "moreQuestionsSubtitle": "N'hésitez pas à nous contacter pour plus d'informations",
+    "contactButton": "Nous contacter"
+  },
+  "privacy": {
+    "title": "Politique de Confidentialité",
+    "subtitle": "Consultez notre politique de confidentialité pour comprendre comment nous protégeons vos données.",
+    "p1": "Votre vie privée est importante pour nous. Cette déclaration de confidentialité explique les données personnelles que nous traitons, comment nous les traitons et à quelles fins.",
+    "p2": "Nous nous engageons à protéger vos informations personnelles et votre droit à la vie privée. Si vous avez des questions ou des préoccupations concernant notre politique ou nos pratiques en ce qui concerne vos informations personnelles, veuillez nous contacter.",
+    "button": "Consulter la politique"
+  },
+  "privacy_modal": {
+    "title": "Politique de confidentialité",
+    "intro": "Bienvenue sur masubvention.ma. La protection de vos données personnelles est une priorité absolue pour nous. Cette politique de confidentialité a pour but de vous informer sur la manière dont nous collectons, utilisons, partageons et protégeons les informations que vous nous fournissez lorsque vous utilisez notre service de test d'éligibilité.",
+    "section1": {
+      "title": "Collecte des Données Personnelles",
+      "p1": "Dans le cadre de l'évaluation de votre éligibilité à une subvention, nous sommes amenés à collecter les types d'informations suivants :",
+      "li1": {
+        "strong": "Données d'identification",
+        "text": "Nom, prénom, adresse e-mail, numéro de téléphone, etc."
+      },
+      "li2": {
+        "strong": "Données relatives à votre projet ou entreprise",
+        "text": "Secteur d'activité, date de création, chiffre d'affaires, effectif."
+      },
+      "li3": {
+        "strong": "Données relatives à votre éligibilité",
+        "text": "Informations sur votre projet, données financières, et tout autre renseignement nécessaire pour évaluer votre dossier."
+      }
+    },
+    "section2": {
+      "title": "Utilisation de vos Données",
+      "p1": "Les données que nous collectons sont utilisées exclusivement pour les finalités suivantes :",
+      "li1": {
+        "strong": "Évaluer votre éligibilité",
+        "text": "Analyser les informations fournies pour déterminer si votre profil correspond aux critères des subventions disponibles."
+      },
+      "li2": {
+        "strong": "Communication",
+        "text": "Vous contacter pour vous informer des résultats de votre test d'éligibilité."
+      },
+      "li3": {
+        "strong": "Amélioration de nos services",
+        "text": "Analyser les données d'utilisation de manière anonyme pour optimiser notre site."
+      }
+    },
+    "section3": {
+      "title": "Partage des Données",
+      "p1": "Nous nous engageons à ne jamais vendre vos données personnelles à des tiers. Vos informations ne seront partagées que dans les cas suivants :",
+      "li1": {
+        "strong": "Avec votre consentement explicite",
+        "text": "Si vous décidez de poursuivre une demande de subvention."
+      },
+      "li2": {
+        "strong": "Obligations légales",
+        "text": "Si la loi nous y contraint."
+      }
+    },
+    "section4": {
+      "title": "Vos Droits",
+      "p1": "Conformément à la loi 09-08 relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel, vous disposez des droits suivants :",
+      "li1": {
+        "strong": "Droit d'accès",
+        "text": "Demander une copie des données que nous détenons sur vous."
+      },
+      "li2": {
+        "strong": "Droit de rectification",
+        "text": "Demander la correction de toute information inexacte."
+      },
+      "li3": {
+        "strong": "Droit d'effacement",
+        "text": "Demander la suppression de vos données."
+      }
+    },
+    "contactTitle": "Contact",
+    "contactText": "Pour toute question concernant cette politique de confidentialité :",
+    "emailLabel": "Email",
+    "close_button": "Fermer"
+  },
+  "chatbot": {
+    "initialMessage": "Bonjour ! Je suis Tamkeen, votre assistant pour les subventions au Maroc. Comment puis-je vous accompagner dans votre projet ?",
+    "botResponses": [
+      "📋 Pour vérifier votre éligibilité, je vous invite à remplir notre formulaire. Cela ne prend que quelques minutes !",
+      "💡 Excellent projet ! Les subventions au Maroc couvrent de nombreux secteurs. Quel est votre domaine d'activité principal ?",
+      "🎯 Parfait ! Je vois plusieurs opportunités de financement qui pourraient correspondre à votre profil.",
+      "📊 Basé sur les critères actuels, votre projet semble prometteur. Avez-vous déjà constitué votre dossier ?",
+      "🚀 Les délais d'instruction varient selon le type d'aide, généralement entre 30 et 90 jours ouvrables.",
+      "📁 Les documents essentiels incluent : statuts, bilans, business plan et justificatifs d'identité.",
+      "🤝 Notre équipe d'experts peut vous accompagner personnellement dans vos démarches. Souhaitez-vous être contacté ?",
+      "💰 Le montant des subventions dépend de votre secteur et du type de projet. Parlez-moi de votre investissement prévu."
+    ],
+    "assistantOnline": "Assistant Tamkeen en ligne",
+    "invitationMessage": "Des questions sur les subventions ? Je suis là pour vous aider ! 🚀",
+    "tamkeenAssistant": "Tamkeen Assistant",
+    "specialistOnline": "Spécialiste subventions • En ligne",
+    "quickActionsLabel": "Actions rapides :",
+    "quickActions": [
+      {
+        "text": "🔍 Vérifier mon éligibilité",
+        "action": "Testez votre éligibilité ici"
+      },
+      {
+        "text": "📋 Types de subventions",
+        "action": "Quels sont les programmes disponibles ?"
+      },
+      {
+        "text": "⏱️ Délais de traitement",
+        "action": "Combien de temps pour une réponse ?"
+      },
+      {
+        "text": "📞 Contact expert",
+        "action": "Je souhaite être rappelé par un expert"
+      }
+    ],
+    "inputPlaceholder": "Posez votre question sur les subventions...",
+    "sendHint": "Appuyez sur Entrée pour envoyer"
+  }
+}

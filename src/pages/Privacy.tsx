@@ -1,37 +1,150 @@
-import React, { useState } from "react";
-import { Header, Footer, PrivacyModal } from "../components";
+import React from "react";
+import { Header, Footer } from "../components";
+import { useTranslation } from 'react-i18next';
 
 const Privacy: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(true);
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    // Rediriger vers la page d'accueil
-    window.location.href = "/";
-  };
+  const { t } = useTranslation();
 
   return (
     <div className="w-full">
       <Header />
-      <div className="mt-16 min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Politique de Confidentialité
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Consultez notre politique de confidentialité pour comprendre comment
-            nous protégeons vos données.
-          </p>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-            Consulter la politique
-          </button>
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 mt-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {t('privacy_modal.title')}
+            </h1>
+            <p className="text-xl text-gray-600">
+              {t('privacy_modal.intro')}
+            </p>
+          </div>
+
+          <div className="prose prose-sm sm:prose-lg max-w-none">
+            <section className="mb-6 sm:mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
+                <span className="text-gray-600 mr-2">1.</span>
+                {t('privacy_modal.section1.title')}
+              </h3>
+              <p className="text-gray-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
+                {t('privacy_modal.section1.p1')}
+              </p>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section1.li1.strong')} :</strong>{" "}
+                  {t('privacy_modal.section1.li1.text')}
+                </li>
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>
+                    {t('privacy_modal.section1.li2.strong')}:
+                  </strong>{" "}
+                  {t('privacy_modal.section1.li2.text')}
+                </li>
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section1.li3.strong')} :</strong>{" "}
+                  {t('privacy_modal.section1.li3.text')}
+                </li>
+              </ul>
+            </section>
+
+            <section className="mb-6 sm:mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
+                <span className="text-gray-600 mr-2">2.</span>
+                {t('privacy_modal.section2.title')}
+              </h3>
+              <p className="text-gray-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
+                {t('privacy_modal.section2.p1')}
+              </p>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section2.li1.strong')} :</strong>{" "}
+                  {t('privacy_modal.section2.li1.text')}
+                </li>
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section2.li2.strong')} :</strong>{" "}
+                  {t('privacy_modal.section2.li2.text')}
+                </li>
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section2.li3.strong')} :</strong>{" "}
+                  {t('privacy_modal.section2.li3.text')}
+                </li>
+              </ul>
+            </section>
+
+            <section className="mb-6 sm:mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
+                <span className="text-gray-600 mr-2">3.</span>
+                {t('privacy_modal.section3.title')}
+              </h3>
+              <p className="text-gray-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
+                {t('privacy_modal.section3.p1')}
+              </p>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section3.li1.strong')} :</strong>{" "}
+                  {t('privacy_modal.section3.li1.text')}
+                </li>
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section3.li2.strong')} :</strong>{" "}
+                  {t('privacy_modal.section3.li2.text')}
+                </li>
+              </ul>
+            </section>
+
+            <section className="mb-6 sm:mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
+                <span className="text-gray-600 mr-2">4.</span>
+                {t('privacy_modal.section4.title')}
+              </h3>
+              <p className="text-gray-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
+                {t('privacy_modal.section4.p1')}
+              </p>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section4.li1.strong')} :</strong>{" "}
+                  {t('privacy_modal.section4.li1.text')}
+                </li>
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section4.li2.strong')} :</strong>{" "}
+                  {t('privacy_modal.section4.li2.text')}
+                </li>
+                <li className="flex items-start">
+                  <span className="text-gray-500 mr-2">•</span>
+                  <strong>{t('privacy_modal.section4.li3.strong')} :</strong>{" "}
+                  {t('privacy_modal.section4.li3.text')}
+                </li>
+              </ul>
+            </section>
+
+            <div className="bg-gray-50 border rounded-lg p-3 sm:p-4">
+              <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-2">
+                {t('privacy_modal.contactTitle')}
+              </h4>
+              <p className="text-gray-700 mb-2 text-sm sm:text-base">
+                {t('privacy_modal.contactText')}
+              </p>
+              <p className="text-gray-800 text-sm sm:text-base">
+                <strong>{t('privacy_modal.emailLabel')} :</strong>
+                <a
+                  href="mailto:contact@masubvention.ma"
+                  className="text-blue-600 hover:text-blue-800 ml-1">
+                  contact@masubvention.ma
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
       <Footer />
-
-      <PrivacyModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };

@@ -1,8 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+import { useTranslation } from 'react-i18next';
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -17,14 +20,12 @@ const Footer: React.FC = () => {
                 className="h-8 sm:h-10 w-auto mr-3"
               />
               <span className="text-lg sm:text-xl font-bold">
-                subvention.ma
+                {t('footer.brand')}
               </span>
             </div>
             <div className="mb-3 sm:mb-4">
               <p className="text-gray-300 leading-relaxed text-xs sm:text-sm text-start">
-                Nous aidons les porteurs de projets, les entreprises et les
-                coopératives à savoir rapidement s'ils répondent aux critères
-                d'accès aux aides publiques disponibles au Maroc.
+                {t('footer.description')}
               </p>
             </div>
           </div>
@@ -32,35 +33,35 @@ const Footer: React.FC = () => {
           {/* Colonne 2: Navigation */}
           <div className="lg:col-span-1">
             <h3 className="text-base sm:text-lg font-semibold mb-2 text-blue-400">
-              Navigation
+              {t('footer.navigation')}
             </h3>
             <ul className="space-y-1">
               <li>
                 <Link
                   to="/"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-xs sm:text-sm">
-                  Accueil
+                  {t('header.home')}
                 </Link>
               </li>
               <li>
                 <Link
                   to="/about"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-xs sm:text-sm">
-                  À propos
+                  {t('header.about')}
                 </Link>
               </li>
               <li>
                 <Link
                   to="/faq"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-xs sm:text-sm">
-                  FAQ
+                  {t('header.faq')}
                 </Link>
               </li>
               <li>
                 <Link
                   to="/privacy"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-xs sm:text-sm">
-                  Politique de confidentialité
+                  {t('header.privacy')}
                 </Link>
               </li>
             </ul>
@@ -69,7 +70,7 @@ const Footer: React.FC = () => {
           {/* Colonne 3: Contact et réseaux sociaux */}
           <div className="lg:col-span-1">
             <h3 className="text-base sm:text-lg font-semibold mb-2 text-blue-400 text-start">
-              Contact
+              {t('footer.contact')}
             </h3>
             <div className="space-y-2 mb-3 sm:mb-4">
               <div className="flex items-center">
@@ -83,7 +84,7 @@ const Footer: React.FC = () => {
                 <a
                   href="mailto:contact@subvention.ma"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-xs sm:text-sm">
-                  contact@subvention.ma
+                  {t('footer.email')}
                 </a>
               </div>
               <div className="flex items-center">
@@ -98,7 +99,7 @@ const Footer: React.FC = () => {
                   />
                 </svg>
                 <span className="text-gray-300 text-xs sm:text-sm">
-                  Casablanca, Maroc
+                  {t('footer.address')}
                 </span>
               </div>
               <div className="flex items-center">
@@ -111,7 +112,7 @@ const Footer: React.FC = () => {
                 <a
                   href="tel:+212522000000"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-xs sm:text-sm">
-                  +212 522 00 00 00
+                  {t('footer.phone')}
                 </a>
               </div>
             </div>
@@ -119,7 +120,7 @@ const Footer: React.FC = () => {
             {/* Réseaux sociaux */}
             <div>
               <h4 className="text-xs sm:text-sm font-medium mb-2 text-white text-start">
-                Suivez-nous
+                {t('footer.followUs')}
               </h4>
               <div className="flex space-x-3">
                 <a
@@ -164,18 +165,18 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-700 mt-4 sm:mt-6 pt-4 sm:pt-6">
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <p className="text-gray-400 text-xs sm:text-sm mb-4 sm:mb-0">
-              © 2025 subvention.ma – Tous droits réservés
+              {t('footer.rights')}
             </p>
             <div className="flex items-center space-x-4 text-xs">
               <Link
                 to="/privacy"
                 className="text-gray-400 hover:text-white transition-colors duration-300">
-                Confidentialité
+                {t('footer.privacy')}
               </Link>
               <a
                 href="#"
                 className="text-gray-400 hover:text-white transition-colors duration-300">
-                Conditions
+                {t('footer.terms')}
               </a>
             </div>
           </div>
@@ -186,3 +187,4 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+

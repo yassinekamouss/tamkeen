@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 interface EligibilityFormProps {
   onNavigateBack?: () => void;
@@ -43,6 +44,7 @@ interface FormErrors {
 const EligibilityForm: React.FC<EligibilityFormProps> = ({
   onNavigateBack,
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<FormData>({
     applicantType: "",
     email: "",
@@ -82,14 +84,14 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   ];
 
   const chiffreAffaireOptions = [
-    { value: "0-1MDH", label: "Entre 0 et 1 MDH" },
-    { value: "plus-1MDH", label: "Supérieur à 1 MDH" },
-    { value: "sans-ca", label: "Sans chiffre d'affaire en 2025" },
+    { value: "0-1MDH", label: t('eligibility.chiffreAffaireOptions.option1') },
+    { value: "plus-1MDH", label: t('eligibility.chiffreAffaireOptions.option2') },
+    { value: "sans-ca", label: t('eligibility.chiffreAffaireOptions.option3') },
   ];
 
   const montantInvestissementOptions = [
-    { value: "moins-1M", label: "Moins de 1.000.000 DH" },
-    { value: "plus-1M", label: "Plus de 1.000.000 DH" },
+    { value: "moins-1M", label: t('eligibility.montantInvestissementOptions.option1') },
+    { value: "plus-1M", label: t('eligibility.montantInvestissementOptions.option2') },
   ];
 
   const handleInputChange = (
@@ -130,44 +132,44 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     const newErrors: FormErrors = {};
 
     if (!formData.applicantType) {
-      newErrors.applicantType = "Veuillez sélectionner le type de demandeur";
+      newErrors.applicantType = t('eligibility.errors.applicantType');
     }
 
     if (!formData.email) {
-      newErrors.email = "L'email est obligatoire";
+      newErrors.email = t('eligibility.errors.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Format d'email invalide";
+      newErrors.email = t('eligibility.errors.emailInvalid');
     }
 
     if (formData.applicantType === "physique") {
-      if (!formData.nom) newErrors.nom = "Le nom est obligatoire";
-      if (!formData.prenom) newErrors.prenom = "Le prénom est obligatoire";
+      if (!formData.nom) newErrors.nom = t('eligibility.errors.nomRequired');
+      if (!formData.prenom) newErrors.prenom = t('eligibility.errors.prenomRequired');
       if (!formData.telephone)
-        newErrors.telephone = "Le téléphone est obligatoire";
+        newErrors.telephone = t('eligibility.errors.telephoneRequired');
       if (!formData.secteurTravail)
-        newErrors.secteurTravail = "Le secteur de travail est obligatoire";
-      if (!formData.region) newErrors.region = "La région est obligatoire";
+        newErrors.secteurTravail = t('eligibility.errors.secteurTravailRequired');
+      if (!formData.region) newErrors.region = t('eligibility.errors.regionRequired');
     }
 
     if (formData.applicantType === "morale") {
       if (!formData.secteurActivite)
-        newErrors.secteurActivite = "Le secteur d'activité est obligatoire";
+        newErrors.secteurActivite = t('eligibility.errors.secteurActiviteRequired');
       if (!formData.anneeCreation)
-        newErrors.anneeCreation = "L'année de création est obligatoire";
+        newErrors.anneeCreation = t('eligibility.errors.anneeCreationRequired');
     }
 
     if (!formData.chiffreAffaire) {
-      newErrors.chiffreAffaire = "Le chiffre d'affaire est obligatoire";
+      newErrors.chiffreAffaire = t('eligibility.errors.chiffreAffaireRequired');
     }
 
     if (!formData.montantInvestissement) {
       newErrors.montantInvestissement =
-        "Le montant d'investissement est obligatoire";
+        t('eligibility.errors.montantInvestissementRequired');
     }
 
     if (!formData.acceptPrivacyPolicy) {
       newErrors.acceptPrivacyPolicy =
-        "Vous devez accepter la politique de confidentialité";
+        t('eligibility.errors.acceptPrivacyPolicyRequired');
     }
 
     setErrors(newErrors);
@@ -178,7 +180,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     e.preventDefault();
     if (validateForm()) {
       console.log("Form submitted:", formData);
-      alert("Formulaire soumis avec succès!");
+      alert(t('eligibility.success'));
     }
   };
 
@@ -200,10 +202,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-4xl font-bold text-blue-800 mb-3 sm:mb-4">
-              Test d'Éligibilité
+              {t('eligibility.title')}
             </h1>
             <p className="text-lg sm:text-xl text-gray-600">
-              Vérifiez votre éligibilité aux subventions Tamkeen
+              {t('eligibility.subtitle')}
             </p>
           </div>
 
@@ -225,7 +227,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                     d="M15 19l-7-7 7-7"
                   />
                 </svg>
-                Retour à l'accueil
+                {t('eligibility.backButton')}
               </button>
             )}
 
@@ -233,7 +235,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
               {/* Type de demandeur - Design Professionnel */}
               <div>
                 <label className="block text-base sm:text-lg font-semibold text-gray-800 mb-4 sm:mb-6 text-center">
-                  Sélectionnez votre type de demandeur *
+                  {t('eligibility.applicantType.label')} *
                 </label>
 
                 {/* Option Cards */}
@@ -279,10 +281,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                               ? "text-blue-700"
                               : "text-gray-700"
                           }`}>
-                          Personne Physique
+                          {t('eligibility.applicantType.physique')}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
-                          Entrepreneur individuel
+                          {t('eligibility.applicantType.physiqueSubtitle')}
                         </p>
                       </div>
                     </div>
@@ -349,10 +351,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                               ? "text-blue-700"
                               : "text-gray-700"
                           }`}>
-                          Personne Morale
+                          {t('eligibility.applicantType.morale')}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
-                          Entreprise ou Société
+                          {t('eligibility.applicantType.moraleSubtitle')}
                         </p>
                       </div>
                     </div>
@@ -392,7 +394,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nom *
+                        {t('eligibility.physique.nom')} *
                       </label>
                       <input
                         type="text"
@@ -402,7 +404,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                           errors.nom ? "border-red-500" : "border-gray-300"
                         }`}
-                        placeholder="Votre nom"
+                        placeholder={t('eligibility.physique.nomPlaceholder')}
                       />
                       {errors.nom && (
                         <p className="text-red-500 text-xs mt-1">
@@ -413,7 +415,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Prénom *
+                        {t('eligibility.physique.prenom')} *
                       </label>
                       <input
                         type="text"
@@ -423,7 +425,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                           errors.prenom ? "border-red-500" : "border-gray-300"
                         }`}
-                        placeholder="Votre prénom"
+                        placeholder={t('eligibility.physique.prenomPlaceholder')}
                       />
                       {errors.prenom && (
                         <p className="text-red-500 text-xs mt-1">
@@ -436,7 +438,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email *
+                        {t('eligibility.email')} *
                       </label>
                       <input
                         type="email"
@@ -446,7 +448,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                           errors.email ? "border-red-500" : "border-gray-300"
                         }`}
-                        placeholder="votre.email@example.com"
+                        placeholder={t('eligibility.emailPlaceholder')}
                       />
                       {errors.email && (
                         <p className="text-red-500 text-xs mt-1">
@@ -457,7 +459,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Téléphone *
+                        {t('eligibility.physique.telephone')} *
                       </label>
                       <input
                         type="tel"
@@ -469,7 +471,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                             ? "border-red-500"
                             : "border-gray-300"
                         }`}
-                        placeholder="+212 6 XX XX XX XX"
+                        placeholder={t('eligibility.physique.telephonePlaceholder')}
                       />
                       {errors.telephone && (
                         <p className="text-red-500 text-xs mt-1">
@@ -482,7 +484,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Secteur de travail *
+                        {t('eligibility.physique.secteurTravail')} *
                       </label>
                       <select
                         name="secteurTravail"
@@ -493,10 +495,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                             ? "border-red-500"
                             : "border-gray-300"
                         }`}>
-                        <option value="">Sélectionner un secteur</option>
+                        <option value="">{t('eligibility.selectPlaceholder')}</option>
                         {secteursTravail.map((secteur) => (
                           <option key={secteur} value={secteur}>
-                            {secteur}
+                            {t(`eligibility.secteursTravail.${secteur}`)}
                           </option>
                         ))}
                       </select>
@@ -509,7 +511,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Région *
+                        {t('eligibility.physique.region')} *
                       </label>
                       <select
                         name="region"
@@ -518,10 +520,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                           errors.region ? "border-red-500" : "border-gray-300"
                         }`}>
-                        <option value="">Sélectionner une région</option>
+                        <option value="">{t('eligibility.selectPlaceholder')}</option>
                         {regions.map((region) => (
                           <option key={region} value={region}>
-                            {region}
+                            {t(`eligibility.regions.${region}`)}
                           </option>
                         ))}
                       </select>
@@ -541,7 +543,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nom de l'entreprise
+                        {t('eligibility.morale.nomEntreprise')}
                       </label>
                       <input
                         type="text"
@@ -549,13 +551,13 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         value={formData.nomEntreprise || ""}
                         onChange={handleInputChange}
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                        placeholder="Nom de votre entreprise"
+                        placeholder={t('eligibility.morale.nomEntreprisePlaceholder')}
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email *
+                        {t('eligibility.email')} *
                       </label>
                       <input
                         type="email"
@@ -565,7 +567,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                           errors.email ? "border-red-500" : "border-gray-300"
                         }`}
-                        placeholder="votre.email@example.com"
+                        placeholder={t('eligibility.emailPlaceholder')}
                       />
                       {errors.email && (
                         <p className="text-red-500 text-xs mt-1">
@@ -578,7 +580,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Secteur d'activité *
+                        {t('eligibility.morale.secteurActivite')} *
                       </label>
                       <select
                         name="secteurActivite"
@@ -589,10 +591,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                             ? "border-red-500"
                             : "border-gray-300"
                         }`}>
-                        <option value="">Sélectionner un secteur</option>
+                        <option value="">{t('eligibility.selectPlaceholder')}</option>
                         {secteursTravail.map((secteur) => (
                           <option key={secteur} value={secteur}>
-                            {secteur}
+                            {t(`eligibility.secteursTravail.${secteur}`)}
                           </option>
                         ))}
                       </select>
@@ -605,7 +607,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Année de création *
+                        {t('eligibility.morale.anneeCreation')} *
                       </label>
                       <input
                         type="number"
@@ -637,7 +639,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Chiffre d'affaire *
+                        {t('eligibility.chiffreAffaire')} *
                       </label>
                       <select
                         name="chiffreAffaire"
@@ -648,7 +650,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                             ? "border-red-500"
                             : "border-gray-300"
                         }`}>
-                        <option value="">Sélectionner une option</option>
+                        <option value="">{t('eligibility.selectPlaceholder')}</option>
                         {chiffreAffaireOptions.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -664,7 +666,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Montant prévisionnel de l'investissement *
+                        {t('eligibility.montantInvestissement')} *
                       </label>
                       <select
                         name="montantInvestissement"
@@ -675,7 +677,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                             ? "border-red-500"
                             : "border-gray-300"
                         }`}>
-                        <option value="">Sélectionner une option</option>
+                        <option value="">{t('eligibility.selectPlaceholder')}</option>
                         {montantInvestissementOptions.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -709,15 +711,13 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         <label
                           htmlFor="acceptPrivacyPolicy"
                           className="text-sm text-gray-700 leading-relaxed cursor-pointer">
-                          J'accepte la{" "}
+                          {t('eligibility.privacyPolicy.text1')}{" "}
                           <Link
                             to="/privacy"
                             className="text-blue-600 hover:text-blue-800 underline font-medium transition-colors duration-200">
-                            politique de confidentialité
+                            {t('eligibility.privacyPolicy.link')}
                           </Link>{" "}
-                          et autorise le traitement de mes données personnelles
-                          dans le cadre de l'évaluation de mon éligibilité aux
-                          subventions.
+                          {t('eligibility.privacyPolicy.text2')}
                         </label>
                         {errors.acceptPrivacyPolicy && (
                           <p className="text-red-500 text-xs mt-1">
@@ -733,7 +733,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                     <button
                       type="submit"
                       className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 text-lg">
-                      Vérifier mon éligibilité
+                      {t('eligibility.submitButton')}
                     </button>
                   </div>
                 </div>
@@ -747,3 +747,4 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 };
 
 export default EligibilityForm;
+

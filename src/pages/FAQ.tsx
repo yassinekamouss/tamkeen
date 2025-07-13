@@ -1,37 +1,33 @@
 import React from "react";
 import { Header, Footer } from "../components";
+import { useTranslation } from 'react-i18next';
 
 const FAQ: React.FC = () => {
+  const { t } = useTranslation();
   const faqData = [
     {
-      question: "Qu'est-ce que Tamkeen ?",
-      answer:
-        "Tamkeen est une plateforme qui vous aide à identifier et à accéder aux subventions disponibles pour votre projet entrepreneurial au Maroc.",
+      question: t('faq.q1'),
+      answer: t('faq.a1'),
     },
     {
-      question: "Comment fonctionne le test d'éligibilité ?",
-      answer:
-        "Notre test d'éligibilité analyse vos informations personnelles et les détails de votre projet pour déterminer quelles subventions correspondent le mieux à votre profil.",
+      question: t('faq.q2'),
+      answer: t('faq.a2'),
     },
     {
-      question: "Le service est-il gratuit ?",
-      answer:
-        "Oui, notre test d'éligibilité est entièrement gratuit. Nous vous aidons à identifier les opportunités de financement sans frais.",
+      question: t('faq.q3'),
+      answer: t('faq.a3'),
     },
     {
-      question: "Combien de temps prend l'évaluation ?",
-      answer:
-        "L'évaluation initiale est instantanée. Vous recevrez immédiatement une liste des subventions potentiellement adaptées à votre profil.",
+      question: t('faq.q4'),
+      answer: t('faq.a4'),
     },
     {
-      question: "Mes données sont-elles sécurisées ?",
-      answer:
-        "Absolument. Nous respectons la loi 09-08 relative à la protection des données personnelles et utilisons des mesures de sécurité avancées pour protéger vos informations.",
+      question: t('faq.q5'),
+      answer: t('faq.a5'),
     },
     {
-      question: "Que se passe-t-il après le test d'éligibilité ?",
-      answer:
-        "Après le test, vous recevrez une liste personnalisée des subventions adaptées à votre profil, avec les informations nécessaires pour postuler.",
+      question: t('faq.q6'),
+      answer: t('faq.q6'),
     },
   ];
 
@@ -42,10 +38,10 @@ const FAQ: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Questions Fréquemment Posées
+              {t('faq.title')}
             </h1>
             <p className="text-xl text-gray-600">
-              Trouvez les réponses aux questions les plus courantes sur Tamkeen
+              {t('faq.subtitle')}
             </p>
           </div>
 
@@ -65,15 +61,15 @@ const FAQ: React.FC = () => {
           <div className="mt-12 text-center">
             <div className="bg-blue-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Vous avez d'autres questions ?
+                {t('faq.moreQuestionsTitle')}
               </h3>
               <p className="text-gray-600 mb-4">
-                N'hésitez pas à nous contacter pour plus d'informations
+                {t('faq.moreQuestionsSubtitle')}
               </p>
               <a
                 href="mailto:contact@masubvention.ma"
                 className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                Nous contacter
+                {t('faq.contactButton')}
               </a>
             </div>
           </div>
