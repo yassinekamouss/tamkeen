@@ -23,6 +23,7 @@ interface FormData {
   chiffreAffaire: string;
   montantInvestissement: string;
   acceptPrivacyPolicy: boolean;
+  statutJuridique:string;
 }
 
 interface FormErrors {
@@ -39,6 +40,7 @@ interface FormErrors {
   chiffreAffaire?: string;
   montantInvestissement?: string;
   acceptPrivacyPolicy?: string;
+  statutJuridique?: string;
 }
 
 const EligibilityForm: React.FC<EligibilityFormProps> = ({
@@ -51,6 +53,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     chiffreAffaire: "",
     montantInvestissement: "",
     acceptPrivacyPolicy: false,
+    statutJuridique: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -84,6 +87,25 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     "Dakhla-Oued Ed-Dahab",
     "Guelmim-Oued Noun",
   ];
+
+  const Statutjuridique = {
+    "P.Morale": [
+      "personne physique avec pattente",
+      "SARL",
+      "SARLAU",
+      "Société Anonyme-SAS",
+      "Aucune forme juridique",
+      "En cours de création"
+    ],
+    "P.physique": [
+      "Avec pattente",
+      "Auto",
+      "Entrepreneur",
+      "En cour de création",
+      "Aucune forme juridique"
+    ]
+  };
+
 
   const chiffreAffaireOptions = [
     { value: "0-1MDH", label: t("eligibility.chiffreAffaireOptions.option1") },
@@ -418,19 +440,17 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         applicantType: "physique",
                       }))
                     }
-                    className={`relative cursor-pointer p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 group ${
-                      formData.applicantType === "physique"
-                        ? "border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg"
-                        : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-md"
-                    }`}>
+                    className={`relative cursor-pointer p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 group ${formData.applicantType === "physique"
+                      ? "border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg"
+                      : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-md"
+                      }`}>
                     {/* Icône et titre */}
                     <div className="flex flex-col items-center text-center space-y-3">
                       <div
-                        className={`p-3 rounded-full transition-colors duration-300 ${
-                          formData.applicantType === "physique"
-                            ? "bg-blue-500 text-white"
-                            : "bg-blue-100 text-blue-500 group-hover:bg-blue-200"
-                        }`}>
+                        className={`p-3 rounded-full transition-colors duration-300 ${formData.applicantType === "physique"
+                          ? "bg-blue-500 text-white"
+                          : "bg-blue-100 text-blue-500 group-hover:bg-blue-200"
+                          }`}>
                         <svg
                           className="w-8 h-8"
                           fill="none"
@@ -446,11 +466,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                       </div>
                       <div>
                         <h3
-                          className={`font-semibold text-lg ${
-                            formData.applicantType === "physique"
-                              ? "text-blue-700"
-                              : "text-gray-700"
-                          }`}>
+                          className={`font-semibold text-lg ${formData.applicantType === "physique"
+                            ? "text-blue-700"
+                            : "text-gray-700"
+                            }`}>
                           {t("eligibility.applicantType.physique")}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
@@ -488,19 +507,17 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         applicantType: "morale",
                       }))
                     }
-                    className={`relative cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 group ${
-                      formData.applicantType === "morale"
-                        ? "border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg"
-                        : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-md"
-                    }`}>
+                    className={`relative cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 group ${formData.applicantType === "morale"
+                      ? "border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg"
+                      : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-md"
+                      }`}>
                     {/* Icône et titre */}
                     <div className="flex flex-col items-center text-center space-y-3">
                       <div
-                        className={`p-3 rounded-full transition-colors duration-300 ${
-                          formData.applicantType === "morale"
-                            ? "bg-blue-500 text-white"
-                            : "bg-blue-100 text-blue-500 group-hover:bg-blue-200"
-                        }`}>
+                        className={`p-3 rounded-full transition-colors duration-300 ${formData.applicantType === "morale"
+                          ? "bg-blue-500 text-white"
+                          : "bg-blue-100 text-blue-500 group-hover:bg-blue-200"
+                          }`}>
                         <svg
                           className="w-8 h-8"
                           fill="none"
@@ -516,11 +533,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                       </div>
                       <div>
                         <h3
-                          className={`font-semibold text-lg ${
-                            formData.applicantType === "morale"
-                              ? "text-blue-700"
-                              : "text-gray-700"
-                          }`}>
+                          className={`font-semibold text-lg ${formData.applicantType === "morale"
+                            ? "text-blue-700"
+                            : "text-gray-700"
+                            }`}>
                           {t("eligibility.applicantType.morale")}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
@@ -571,9 +587,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="nom"
                         value={formData.nom || ""}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.nom ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.nom ? "border-red-500" : "border-gray-300"
+                          }`}
                         placeholder={t("eligibility.physique.nomPlaceholder")}
                       />
                       {errors.nom && (
@@ -592,9 +607,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="prenom"
                         value={formData.prenom || ""}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.prenom ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.prenom ? "border-red-500" : "border-gray-300"
+                          }`}
                         placeholder={t(
                           "eligibility.physique.prenomPlaceholder"
                         )}
@@ -617,9 +631,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.email ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.email ? "border-red-500" : "border-gray-300"
+                          }`}
                         placeholder={t("eligibility.emailPlaceholder")}
                       />
                       {errors.email && (
@@ -638,11 +651,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="telephone"
                         value={formData.telephone || ""}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.telephone
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.telephone
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}
                         placeholder={t(
                           "eligibility.physique.telephonePlaceholder"
                         )}
@@ -664,11 +676,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="secteurTravail"
                         value={formData.secteurTravail || ""}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.secteurTravail
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}>
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.secteurTravail
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}>
                         <option value="">
                           {t("eligibility.selectPlaceholder")}
                         </option>
@@ -693,9 +704,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="region"
                         value={formData.region || ""}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.region ? "border-red-500" : "border-gray-300"
-                        }`}>
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.region ? "border-red-500" : "border-gray-300"
+                          }`}>
                         <option value="">
                           {t("eligibility.selectPlaceholder")}
                         </option>
@@ -744,9 +754,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.email ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.email ? "border-red-500" : "border-gray-300"
+                          }`}
                         placeholder={t("eligibility.emailPlaceholder")}
                       />
                       {errors.email && (
@@ -766,11 +775,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="secteurActivite"
                         value={formData.secteurActivite || ""}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.secteurActivite
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}>
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.secteurActivite
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}>
                         <option value="">
                           {t("eligibility.selectPlaceholder")}
                         </option>
@@ -798,11 +806,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         onChange={handleInputChange}
                         min="1900"
                         max="2025"
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.anneeCreation
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.anneeCreation
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}
                         placeholder="2020"
                       />
                       {errors.anneeCreation && (
@@ -811,6 +818,28 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         </p>
                       )}
                     </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Statut juridique *
+                      </label>
+                      <select
+                        name="statutJuridique"
+                        value={formData.statutJuridique || ""}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.statutJuridique ? "border-red-500" : "border-gray-300"}`}
+                      >
+                        <option value="">-- Choisir --</option>
+                        {(Statutjuridique["P.Morale"] || []).map((statut) => (
+                          <option key={statut} value={statut}>
+                            {statut}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.statutJuridique && (
+                        <p className="text-red-500 text-xs mt-1">{errors.statutJuridique}</p>
+                      )}
+                    </div>
+
                   </div>
                 </div>
               )}
@@ -827,11 +856,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="chiffreAffaire"
                         value={formData.chiffreAffaire}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.chiffreAffaire
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}>
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.chiffreAffaire
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}>
                         <option value="">
                           {t("eligibility.selectPlaceholder")}
                         </option>
@@ -856,11 +884,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="montantInvestissement"
                         value={formData.montantInvestissement}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.montantInvestissement
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}>
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.montantInvestissement
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}>
                         <option value="">
                           {t("eligibility.selectPlaceholder")}
                         </option>
@@ -887,11 +914,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         name="acceptPrivacyPolicy"
                         checked={formData.acceptPrivacyPolicy}
                         onChange={handleCheckboxChange}
-                        className={`mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border rounded ${
-                          errors.acceptPrivacyPolicy
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        className={`mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border rounded ${errors.acceptPrivacyPolicy
+                          ? "border-red-500"
+                          : "border-gray-300"
+                          }`}
                       />
                       <div className="flex-1">
                         <label
