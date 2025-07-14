@@ -45,16 +45,30 @@ const FAQ: React.FC = () => {
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {faqData.map((faq, index) => (
-              <div
+              <details
                 key={index}
-                className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                className="group border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                <summary className="flex justify-between items-center font-semibold text-gray-900">
                   {faq.question}
-                </h3>
-                <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
-              </div>
+                  <svg
+                    className="w-5 h-5 transform transition-transform duration-300 group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </summary>
+                <p className="text-gray-700 mt-3 leading-relaxed">
+                  {faq.answer}
+                </p>
+              </details>
             ))}
           </div>
 
