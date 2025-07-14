@@ -1,35 +1,18 @@
 import React from "react";
 import { Header, Footer } from "../components";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const FAQ: React.FC = () => {
   const { t } = useTranslation();
   const faqData = [
-    {
-      question: t('faq.q1'),
-      answer: t('faq.a1'),
-    },
-    {
-      question: t('faq.q2'),
-      answer: t('faq.a2'),
-    },
-    {
-      question: t('faq.q3'),
-      answer: t('faq.a3'),
-    },
-    {
-      question: t('faq.q4'),
-      answer: t('faq.a4'),
-    },
-    {
-      question: t('faq.q5'),
-      answer: t('faq.a5'),
-    },
-    {
-      question: t('faq.q6'),
-      answer: t('faq.q6'),
-    },
+    { question: t("faq.q1"), answer: t("faq.a1") },
+    { question: t("faq.q2"), answer: t("faq.a2") },
+    { question: t("faq.q3"), answer: t("faq.a3") },
+    { question: t("faq.q4"), answer: t("faq.a4") },
+    { question: t("faq.q5"), answer: t("faq.a5") },
+    { question: t("faq.q6"), answer: t("faq.a6") },
   ];
+
 
   return (
     <div className="w-full">
@@ -38,11 +21,9 @@ const FAQ: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {t('faq.title')}
+              {t("faq.title")}
             </h1>
-            <p className="text-xl text-gray-600">
-              {t('faq.subtitle')}
-            </p>
+            <p className="text-xl text-gray-600">{t("faq.subtitle")}</p>
           </div>
 
           <div className="space-y-4">
@@ -72,18 +53,19 @@ const FAQ: React.FC = () => {
             ))}
           </div>
 
-          <div className="mt-12 text-center">
-            <div className="bg-blue-50 rounded-lg p-6">
+          <div className="mt-16 text-center">
+            <div className="bg-blue-50 rounded-xl p-6 shadow-md">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {t('faq.moreQuestionsTitle')}
+                {t("faq.moreQuestionsTitle")}
               </h3>
               <p className="text-gray-600 mb-4">
-                {t('faq.moreQuestionsSubtitle')}
+                {t("faq.moreQuestionsSubtitle")}
               </p>
               <a
                 href="mailto:contact@masubvention.ma"
-                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                {t('faq.contactButton')}
+                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                {t("faq.contactButton")}
               </a>
             </div>
           </div>
