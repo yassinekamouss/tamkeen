@@ -157,8 +157,27 @@
     "terms": "Conditions"
   },
   "about": {
-    "title": "À propos de Tamkeen",
-    "subtitle": "Notre mission et notre vision pour soutenir l'entrepreneuriat au Maroc",
+    "title": "Qui Sommes-Nous ?",
+    "subtitle": "votre outil de pré-éligibilité",
+    "description": "Nous aidons les porteurs de projets, les entreprises et les coopératives à savoir rapidement s'ils répondent aux critères d'accès aux aides publiques disponibles au Maroc.",
+    "howItWorks": {
+      "title": "Comment Ça Marche ?",
+      "subtitle": "Indiquez votre statut, votre activité, votre région et les informations clés sur votre structure.",
+      "steps": [
+        {
+          "title": "Remplissez le formulaire",
+          "description": "Indiquez votre statut, votre activité, votre région et les informations clés sur votre structure."
+        },
+        {
+          "title": "Analyse immédiate",
+          "description": "Notre système évalue vos données selon des critères validés avec les partenaires du programme."
+        },
+        {
+          "title": "Obtenez votre résultat",
+          "description": "Vous saurez instantanément si vous êtes potentiellement éligible ou non à une subvention."
+        }
+      ]
+    },
     "underConstructionTitle": "Page en construction",
     "underConstructionMessage": "Cette page sera bientôt disponible avec plus d'informations sur notre plateforme et notre mission."
   },
