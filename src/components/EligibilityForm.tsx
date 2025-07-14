@@ -368,7 +368,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
       <section
         id="eligibility-form"
-        className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-8 sm:py-12 px-2 sm:px-4">
+        className="min-h-screen py-8 sm:py-12 px-2 sm:px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-4xl font-bold text-blue-800 mb-3 sm:mb-4">
@@ -379,7 +379,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-xl p-4 sm:p-8 max-w-5xl mx-auto">
+          <div className="p-4 sm:p-8 max-w-5xl mx-auto">
             {/* Bouton de retour */}
             {onNavigateBack && (
               <button
