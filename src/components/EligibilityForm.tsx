@@ -15,10 +15,12 @@ interface FormData {
   telephone?: string;
   secteurTravail?: string;
   region?: string;
+  statutJuridiquePhysique?: string;
+  anneeCreation?: string;
   // Personne morale
   nomEntreprise?: string;
   secteurActivite?: string;
-  anneeCreation?: string;
+  statutJuridiqueMorale?: string;
   // Commun
   chiffreAffaire: string;
   montantInvestissement: string;
@@ -33,8 +35,10 @@ interface FormErrors {
   telephone?: string;
   secteurTravail?: string;
   region?: string;
+  statutJuridiquePhysique?: string;
   nomEntreprise?: string;
   secteurActivite?: string;
+  statutJuridiqueMorale?: string;
   anneeCreation?: string;
   chiffreAffaire?: string;
   montantInvestissement?: string;
@@ -58,16 +62,23 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const [isEligible, setIsEligible] = useState(false);
 
   const secteursTravail = [
-    "Agriculture",
+    "EconomieRurale",
     "Industrie",
-    "Services",
-    "Commerce",
-    "Technologie",
-    "Santé",
-    "Éducation",
-    "Transport",
-    "Tourisme",
-    "Autre",
+    "CommerceTraditionnelEcommerce",
+    "RechercheInnovation",
+    "LogistiqueTransport",
+    "SolutionsDigitalesNTIC",
+    "ArtisanatActivitesAssimilees",
+    "ActivitesEconomiquesArtCulture",
+    "IndustriesCreaticesCulturelles",
+    "ActivitesEconomiquesSport",
+    "ActiviteTouristique",
+    "ServicesPersonnes",
+    "ServicesEntreprises",
+    "EfficaciteEnergetique",
+    "PromotionImmobiliere",
+    "PecheMaritime",
+    "PecheForiere",
   ];
 
   const regions = [
@@ -102,6 +113,63 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     {
       value: "plus-1M",
       label: t("eligibility.montantInvestissementOptions.option2"),
+    },
+  ];
+
+  const statutJuridiquePersonnePhysiqueOptions = [
+    {
+      value: "personne-physique-patente",
+      label: t(
+        "eligibility.statutJuridiquePersonnePhysique.personnePhysiquePatente"
+      ),
+    },
+    {
+      value: "auto-entrepreneur",
+      label: t("eligibility.statutJuridiquePersonnePhysique.autoEntrepreneur"),
+    },
+    {
+      value: "en-cours-creation",
+      label: t("eligibility.statutJuridiquePersonnePhysique.enCoursCreation"),
+    },
+    {
+      value: "aucune-forme",
+      label: t("eligibility.statutJuridiquePersonnePhysique.aucuneForme"),
+    },
+  ];
+
+  const statutJuridiquePersonneMoraleOptions = [
+    {
+      value: "sarl",
+      label: t("eligibility.statutJuridiquePersonneMorale.sarl"),
+    },
+    {
+      value: "sarlu",
+      label: t("eligibility.statutJuridiquePersonneMorale.sarlu"),
+    },
+    {
+      value: "societe-sas",
+      label: t("eligibility.statutJuridiquePersonneMorale.societeSas"),
+    },
+    {
+      value: "aucune-forme-juridique",
+      label: t(
+        "eligibility.statutJuridiquePersonneMorale.aucuneFormeJuridique"
+      ),
+    },
+    {
+      value: "en-cours-creation",
+      label: t("eligibility.statutJuridiquePersonneMorale.enCoursCreation"),
+    },
+  ];
+
+  const anneeCreationOptions = [
+    { value: "2025", label: "2025" },
+    { value: "2024", label: "2024" },
+    { value: "2023", label: "2023" },
+    { value: "2022", label: "2022" },
+    {
+      value: "avant-2022",
+      label: t("eligibility.anneeCreationOptions.avant2022"),
     },
   ];
 
@@ -173,12 +241,22 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         );
       if (!formData.region)
         newErrors.region = t("eligibility.errors.regionRequired");
+      if (!formData.statutJuridiquePhysique)
+        newErrors.statutJuridiquePhysique = t(
+          "eligibility.errors.statutJuridiqueRequired"
+        );
+      if (!formData.anneeCreation)
+        newErrors.anneeCreation = t("eligibility.errors.anneeCreationRequired");
     }
 
     if (formData.applicantType === "morale") {
       if (!formData.secteurActivite)
         newErrors.secteurActivite = t(
           "eligibility.errors.secteurActiviteRequired"
+        );
+      if (!formData.statutJuridiqueMorale)
+        newErrors.statutJuridiqueMorale = t(
+          "eligibility.errors.statutJuridiqueRequired"
         );
       if (!formData.anneeCreation)
         newErrors.anneeCreation = t("eligibility.errors.anneeCreationRequired");
@@ -712,6 +790,68 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                       )}
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {t("eligibility.physique.statutJuridique")} *
+                      </label>
+                      <select
+                        name="statutJuridiquePhysique"
+                        value={formData.statutJuridiquePhysique || ""}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                          errors.statutJuridiquePhysique
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}>
+                        <option value="">
+                          {t("eligibility.selectPlaceholder")}
+                        </option>
+                        {statutJuridiquePersonnePhysiqueOptions.map(
+                          (option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          )
+                        )}
+                      </select>
+                      {errors.statutJuridiquePhysique && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.statutJuridiquePhysique}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {t("eligibility.anneeCreation")} *
+                      </label>
+                      <select
+                        name="anneeCreation"
+                        value={formData.anneeCreation || ""}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                          errors.anneeCreation
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}>
+                        <option value="">
+                          {t("eligibility.selectPlaceholder")}
+                        </option>
+                        {anneeCreationOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.anneeCreation && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.anneeCreation}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -789,25 +929,60 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("eligibility.morale.anneeCreation")} *
+                        {t("eligibility.anneeCreation")} *
                       </label>
-                      <input
-                        type="number"
+                      <select
                         name="anneeCreation"
                         value={formData.anneeCreation || ""}
                         onChange={handleInputChange}
-                        min="1900"
-                        max="2025"
                         className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                           errors.anneeCreation
                             ? "border-red-500"
                             : "border-gray-300"
-                        }`}
-                        placeholder="2020"
-                      />
+                        }`}>
+                        <option value="">
+                          {t("eligibility.selectPlaceholder")}
+                        </option>
+                        {anneeCreationOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
                       {errors.anneeCreation && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.anneeCreation}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {t("eligibility.morale.statutJuridique")} *
+                      </label>
+                      <select
+                        name="statutJuridiqueMorale"
+                        value={formData.statutJuridiqueMorale || ""}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                          errors.statutJuridiqueMorale
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}>
+                        <option value="">
+                          {t("eligibility.selectPlaceholder")}
+                        </option>
+                        {statutJuridiquePersonneMoraleOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.statutJuridiqueMorale && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.statutJuridiqueMorale}
                         </p>
                       )}
                     </div>
