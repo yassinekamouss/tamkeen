@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import imageLogo from "../assets/image_logo.png";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 interface Message {
   id: number;
@@ -15,7 +15,7 @@ const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: t('chatbot.initialMessage'),
+      text: t("chatbot.initialMessage"),
       isBot: true,
       timestamp: new Date(),
     },
@@ -26,14 +26,14 @@ const Chatbot: React.FC = () => {
 
   // Réponses contextuelles authentiques
   const botResponses = [
-    t('chatbot.botResponses.0'),
-    t('chatbot.botResponses.1'),
-    t('chatbot.botResponses.2'),
-    t('chatbot.botResponses.3'),
-    t('chatbot.botResponses.4'),
-    t('chatbot.botResponses.5'),
-    t('chatbot.botResponses.6'),
-    t('chatbot.botResponses.7'),
+    t("chatbot.botResponses.0"),
+    t("chatbot.botResponses.1"),
+    t("chatbot.botResponses.2"),
+    t("chatbot.botResponses.3"),
+    t("chatbot.botResponses.4"),
+    t("chatbot.botResponses.5"),
+    t("chatbot.botResponses.6"),
+    t("chatbot.botResponses.7"),
   ];
 
   const scrollToBottom = () => {
@@ -80,22 +80,48 @@ const Chatbot: React.FC = () => {
     }
   };
 
+  const handleQuickAction = (action: string) => {
+    const userMessage: Message = {
+      id: Date.now(),
+      text: action,
+      isBot: false,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setIsTyping(true);
+
+    // Simulation de la réponse du bot avec délai réaliste
+    setTimeout(() => {
+      const randomResponse =
+        botResponses[Math.floor(Math.random() * botResponses.length)];
+      const botMessage: Message = {
+        id: Date.now() + 1,
+        text: randomResponse,
+        isBot: true,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botMessage]);
+      setIsTyping(false);
+    }, 2000);
+  };
+
   const quickActions = [
     {
-      text: t('chatbot.quickActions.0.text'),
-      action: t('chatbot.quickActions.0.action'),
+      text: t("chatbot.quickActions.0.text"),
+      action: t("chatbot.quickActions.0.action"),
     },
     {
-      text: t('chatbot.quickActions.1.text'),
-      action: t('chatbot.quickActions.1.action'),
+      text: t("chatbot.quickActions.1.text"),
+      action: t("chatbot.quickActions.1.action"),
     },
     {
-      text: t('chatbot.quickActions.2.text'),
-      action: t('chatbot.quickActions.2.action'),
+      text: t("chatbot.quickActions.2.text"),
+      action: t("chatbot.quickActions.2.action"),
     },
     {
-      text: t('chatbot.quickActions.3.text'),
-      action: t('chatbot.quickActions.3.action'),
+      text: t("chatbot.quickActions.3.text"),
+      action: t("chatbot.quickActions.3.action"),
     },
   ];
 
@@ -150,10 +176,10 @@ const Chatbot: React.FC = () => {
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2 animate-pulse"></div>
                   <div>
                     <p className="text-gray-800 font-medium text-sm mb-1">
-                      {t('chatbot.assistantOnline')}
+                      {t("chatbot.assistantOnline")}
                     </p>
                     <p className="text-gray-600 text-xs">
-                      {t('chatbot.invitationMessage')}
+                      {t("chatbot.invitationMessage")}
                     </p>
                   </div>
                 </div>
@@ -190,11 +216,11 @@ const Chatbot: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base sm:text-lg">
-                    {t('chatbot.tamkeenAssistant')}
+                    {t("chatbot.tamkeenAssistant")}
                   </h3>
                   <p className="text-blue-100 text-xs sm:text-sm flex items-center">
                     <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                    {t('chatbot.specialistOnline')}
+                    {t("chatbot.specialistOnline")}
                   </p>
                 </div>
               </div>
@@ -290,7 +316,7 @@ const Chatbot: React.FC = () => {
           {messages.length <= 1 && (
             <div className="px-3 py-3 sm:px-6 sm:py-4 border-t border-gray-200 bg-white/80">
               <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 font-medium">
-                {t('chatbot.quickActionsLabel')}
+                {t("chatbot.quickActionsLabel")}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {quickActions.map((item, index) => (
@@ -313,7 +339,7 @@ const Chatbot: React.FC = () => {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={t('chatbot.inputPlaceholder')}
+                  placeholder={t("chatbot.inputPlaceholder")}
                   rows={1}
                   className="w-full px-3 py-2 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm resize-none bg-gray-50 hover:bg-white transition-colors duration-200"
                   style={{ minHeight: "40px", maxHeight: "80px" }}
@@ -338,7 +364,7 @@ const Chatbot: React.FC = () => {
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-2 hidden sm:block">
-              {t('chatbot.sendHint')}
+              {t("chatbot.sendHint")}
             </p>
           </div>
         </div>
@@ -348,4 +374,3 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
-
