@@ -1,4 +1,3 @@
-
 {
   "header": {
     "home": "Accueil",
@@ -11,18 +10,18 @@
     "slides": [
       {
         "subtitle": "Simplifiez Votre Accès À La Subvention",
-        "title": "Débloquez le potentiel de vos projets d'investissement",
-        "description": "Accédez facilement aux subventions et appuis financiers. Votre succès commence ici."
+        "title": "Vous avez un projet d'investissement",
+        "description": "et vous vous demandez si vous pouvez bénéficier d'un appui ou d'une subvention ?"
       },
       {
         "subtitle": "Votre partenaire de confiance",
-        "title": "Votre partenaire pour des investissements réussis",
-        "description": "Nous vous guidons à chaque étape pour obtenir les financements adaptés à vos ambitions."
+        "title": "Tamkeen vous accompagne dans vos démarches",
+        "description": "et vous aide à identifier les meilleures opportunités de financement."
       },
       {
         "subtitle": "Innovez et Prospérez",
-        "title": "Transformez vos idées en réalité avec Tamkeen",
-        "description": "Optimisez vos chances de subventions et propulsez la croissance de votre entreprise."
+        "title": "Transformez vos idées en succès concret",
+        "description": "grâce à notre expertise en subventions et accompagnement personnalisé."
       }
     ],
     "button": "Testez votre éligibilité ici"
@@ -46,16 +45,19 @@
       "telephone": "Téléphone",
       "telephonePlaceholder": "+212 6 XX XX XX XX",
       "secteurTravail": "Secteur de travail",
-      "region": "Région"
+      "region": "Région",
+      "statutJuridique": "Statut juridique"
     },
     "morale": {
-      "nomEntreprise": "Nom de l'entreprise",
+      "nomEntreprise": "Dénomination",
       "nomEntreprisePlaceholder": "Nom de votre entreprise",
       "secteurActivite": "Secteur d'activité",
-      "anneeCreation": "Année de création"
+      "anneeCreation": "Année de création",
+      "statutJuridique": "Forme juridique"
     },
     "email": "Email",
     "emailPlaceholder": "votre.email@example.com",
+    "anneeCreation": "Année de création",
     "chiffreAffaire": "Chiffre d'affaire",
     "montantInvestissement": "Montant prévisionnel de l'investissement",
     "selectPlaceholder": "Sélectionner une option",
@@ -68,31 +70,54 @@
       "option1": "Moins de 1.000.000 DH",
       "option2": "Plus de 1.000.000 DH"
     },
+    "anneeCreationOptions": {
+      "avant2022": "Avant 2022"
+    },
+    "statutJuridiquePersonnePhysique": {
+      "personnePhysiquePatente": "Personne physique avec patente",
+      "autoEntrepreneur": "Auto-entrepreneur",
+      "enCoursCreation": "En cours de création",
+      "aucuneForme": "Aucune forme"
+    },
+    "statutJuridiquePersonneMorale": {
+      "sarl": "SARL",
+      "sarlu": "SARLU",
+      "societeSas": "Société anonyme (SAS)",
+      "aucuneFormeJuridique": "Aucune forme juridique",
+      "enCoursCreation": "En cours de création"
+    },
     "secteursTravail": {
-        "Agriculture": "Agriculture",
-        "Industrie": "Industrie",
-        "Services": "Services",
-        "Commerce": "Commerce",
-        "Technologie": "Technologie",
-        "Santé": "Santé",
-        "Éducation": "Éducation",
-        "Transport": "Transport",
-        "Tourisme": "Tourisme",
-        "Autre": "Autre"
+      "EconomieRurale": "Economie rurale (agriculture, élevage, valorisation de produits de la ferme...)",
+      "Industrie": "Industrie - activités de transformation",
+      "CommerceTraditionnelEcommerce": "Commerce traditionnel - Ecommerce",
+      "RechercheInnovation": "Recherche & Développement - Innovation en industrie",
+      "LogistiqueTransport": "Logistique- transport",
+      "SolutionsDigitalesNTIC": "Développement de solutions digitales - NTIC",
+      "ArtisanatActivitesAssimilees": "Artisanat et activités assimilées",
+      "ActivitesEconomiquesArtCulture": "Activités économiques liées à l'art et la culture",
+      "IndustriesCreaticesCulturelles": "Industries créatrices et culturelles",
+      "ActivitesEconomiquesSport": "Activités économiques liées au sport",
+      "ActiviteTouristique": "Activité touristique (Animation touristique, Restauration, Agent de voyages de type Organisateur-Distributeur de voyages, activités annexes)",
+      "ServicesPersonnes": "Services aux personnes",
+      "ServicesEntreprises": "Services aux entreprises (prestataires de services, installateurs, réparation...)",
+      "EfficaciteEnergetique": "Efficacité énergétique",
+      "PromotionImmobiliere": "Promotion immobilière",
+      "PecheMaritime": "Pêche maritime",
+      "PecheForiere": "Pêche côtière"
     },
     "regions": {
-        "Rabat-Salé-Kénitra": "Rabat-Salé-Kénitra",
-        "Casablanca-Settat": "Casablanca-Settat",
-        "Marrakech-Safi": "Marrakech-Safi",
-        "Fès-Meknès": "Fès-Meknès",
-        "Tanger-Tétouan-Al Hoceïma": "Tanger-Tétouan-Al Hoceïma",
-        "Oriental": "Oriental",
-        "Souss-Massa": "Souss-Massa",
-        "Drâa-Tafilalet": "Drâa-Tafilalet",
-        "Béni Mellal-Khénifra": "Béni Mellal-Khénifra",
-        "Laâyoune-Sakia El Hamra": "Laâyoune-Sakia El Hamra",
-        "Dakhla-Oued Ed-Dahab": "Dakhla-Oued Ed-Dahab",
-        "Guelmim-Oued Noun": "Guelmim-Oued Noun"
+      "Rabat-Salé-Kénitra": "Rabat-Salé-Kénitra",
+      "Casablanca-Settat": "Casablanca-Settat",
+      "Marrakech-Safi": "Marrakech-Safi",
+      "Fès-Meknès": "Fès-Meknès",
+      "Tanger-Tétouan-Al Hoceïma": "Tanger-Tétouan-Al Hoceïma",
+      "Oriental": "Oriental",
+      "Souss-Massa": "Souss-Massa",
+      "Drâa-Tafilalet": "Drâa-Tafilalet",
+      "Béni Mellal-Khénifra": "Béni Mellal-Khénifra",
+      "Laâyoune-Sakia El Hamra": "Laâyoune-Sakia El Hamra",
+      "Dakhla-Oued Ed-Dahab": "Dakhla-Oued Ed-Dahab",
+      "Guelmim-Oued Noun": "Guelmim-Oued Noun"
     },
     "privacyPolicy": {
       "text1": "J'accepte la",
@@ -114,7 +139,8 @@
       "anneeCreationRequired": "L'année de création est obligatoire",
       "chiffreAffaireRequired": "Le chiffre d'affaire est obligatoire",
       "montantInvestissementRequired": "Le montant d'investissement est obligatoire",
-      "acceptPrivacyPolicyRequired": "Vous devez accepter la politique de confidentialité"
+      "acceptPrivacyPolicyRequired": "Vous devez accepter la politique de confidentialité",
+      "statutJuridiqueRequired": "Le statut juridique est obligatoire"
     }
   },
   "footer": {
@@ -126,7 +152,7 @@
     "address": "Casablanca, Maroc",
     "phone": "+212 522 00 00 00",
     "followUs": "Suivez-nous",
-    "rights": "© 2025 subvention.ma – Tous droits réservés",
+    "rights": "© 2024 subvention.ma – Tous droits réservés",
     "privacy": "Confidentialité",
     "terms": "Conditions"
   },

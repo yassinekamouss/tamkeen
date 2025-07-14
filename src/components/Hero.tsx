@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import image1 from "../assets/image1.png";
-import image2 from "../assets/image2.png";
-import image3 from "../assets/image3.png";
+import image2 from "../assets/carousel1.jpg";
+import image3 from "../assets/carousel2.jpg";
 import { useTranslation } from 'react-i18next';
 
 interface HeroProps {
@@ -72,7 +72,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
           </div>
         ))}
 
-        {/* Overlay gradient for better text readability */}
+        {/* Overlay gdivient for divter text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/50 via-blue-800/30 to-blue-700/50"></div>
       </div>
 

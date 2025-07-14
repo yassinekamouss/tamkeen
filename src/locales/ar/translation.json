@@ -1,4 +1,3 @@
-
 {
   "header": {
     "home": "الرئيسية",
@@ -11,18 +10,18 @@
     "slides": [
       {
         "subtitle": "بسط وصولك إلى الدعم المالي",
-        "title": "أطلق العنان لإمكانيات مشاريعك الاستثمارية",
-        "description": "احصل بسهولة على المنح والدعم المالي. نجاحك يبدأ هنا."
+        "title": "لديك مشروع استثماري",
+        "description": "وتتساءل عما إذا كنت تستطيع الاستفادة من دعم أو منحة؟"
       },
       {
         "subtitle": "شريكك الموثوق",
-        "title": "شريكك لاستثمارات ناجحة",
-        "description": "نوجهك في كل خطوة للحصول على التمويل المناسب لطموحاتك."
+        "title": "تمكين يرافقك في إجراءاتك",
+        "description": "ويساعدك في تحديد أفضل فرص التمويل."
       },
       {
         "subtitle": "ابتكر وازدهر",
-        "title": "حول أفكارك إلى واقع مع تمكين",
-        "description": "عزز فرصك في الحصول على المنح وادفع بنمو شركتك."
+        "title": "حول أفكارك إلى نجاح ملموس",
+        "description": "بفضل خبرتنا في المنح والمرافقة الشخصية."
       }
     ],
     "button": "اختبر أهليتك هنا"
@@ -46,16 +45,19 @@
       "telephone": "الهاتف",
       "telephonePlaceholder": "+212 6 XX XX XX XX",
       "secteurTravail": "قطاع العمل",
-      "region": "الجهة"
+      "region": "الجهة",
+      "statutJuridique": "الوضع القانوني"
     },
     "morale": {
       "nomEntreprise": "اسم الشركة",
       "nomEntreprisePlaceholder": "اسم شركتك",
       "secteurActivite": "قطاع النشاط",
-      "anneeCreation": "سنة التأسيس"
+      "anneeCreation": "سنة التأسيس",
+      "statutJuridique": "الشكل القانوني"
     },
     "email": "البريد الإلكتروني",
     "emailPlaceholder": "your.email@example.com",
+    "anneeCreation": "سنة التأسيس",
     "chiffreAffaire": "رقم المعاملات",
     "montantInvestissement": "المبلغ التقديري للاستثمار",
     "selectPlaceholder": "اختر خيارًا",
@@ -68,31 +70,54 @@
       "option1": "أقل من 1,000,000 درهم",
       "option2": "أكثر من 1,000,000 درهم"
     },
+    "anneeCreationOptions": {
+      "avant2022": "قبل 2022"
+    },
+    "statutJuridiquePersonnePhysique": {
+      "personnePhysiquePatente": "شخص طبيعي مع رخصة تجارية",
+      "autoEntrepreneur": "مقاول ذاتي",
+      "enCoursCreation": "في طور الإنشاء",
+      "aucuneForme": "بدون شكل قانوني"
+    },
+    "statutJuridiquePersonneMorale": {
+      "sarl": "شركة ذات مسؤولية محدودة",
+      "sarlu": "شركة ذات مسؤولية محدودة بشريك واحد",
+      "societeSas": "شركة مساهمة مبسطة",
+      "aucuneFormeJuridique": "بدون شكل قانوني",
+      "enCoursCreation": "في طور الإنشاء"
+    },
     "secteursTravail": {
-        "Agriculture": "الزراعة",
-        "Industrie": "الصناعة",
-        "Services": "الخدمات",
-        "Commerce": "التجارة",
-        "Technologie": "التكنولوجيا",
-        "Santé": "الصحة",
-        "Éducation": "التعليم",
-        "Transport": "النقل",
-        "Tourisme": "السياحة",
-        "Autre": "آخر"
+      "EconomieRurale": "الاقتصاد الريفي (الزراعة، تربية الماشية، تثمين منتجات المزرعة...)",
+      "Industrie": "الصناعة - أنشطة التحويل",
+      "CommerceTraditionnelEcommerce": "التجارة التقليدية - التجارة الإلكترونية",
+      "RechercheInnovation": "البحث والتطوير - الابتكار في الصناعة",
+      "LogistiqueTransport": "اللوجستيك - النقل",
+      "SolutionsDigitalesNTIC": "تطوير الحلول الرقمية - تكنولوجيات الإعلام والاتصال",
+      "ArtisanatActivitesAssimilees": "الحرف التقليدية والأنشطة المماثلة",
+      "ActivitesEconomiquesArtCulture": "الأنشطة الاقتصادية المرتبطة بالفن والثقافة",
+      "IndustriesCreaticesCulturelles": "الصناعات الإبداعية والثقافية",
+      "ActivitesEconomiquesSport": "الأنشطة الاقتصادية المرتبطة بالرياضة",
+      "ActiviteTouristique": "النشاط السياحي (التنشيط السياحي، المطاعم، وكيل السفر من نوع منظم-موزع الرحلات، الأنشطة الملحقة)",
+      "ServicesPersonnes": "خدمات الأشخاص",
+      "ServicesEntreprises": "خدمات الشركات (مقدمو الخدمات، المثبتون، الإصلاح...)",
+      "EfficaciteEnergetique": "الكفاءة الطاقوية",
+      "PromotionImmobiliere": "الترويج العقاري",
+      "PecheMaritime": "الصيد البحري",
+      "PecheForiere": "الصيد الساحلي"
     },
     "regions": {
-        "Rabat-Salé-Kénitra": "الرباط-سلا-القنيطرة",
-        "Casablanca-Settat": "الدار البيضاء-سطات",
-        "Marrakech-Safi": "مراكش-آسفي",
-        "Fès-Meknès": "فاس-مكناس",
-        "Tanger-Tétouan-Al Hoceïma": "طنجة-تطوان-الحسيمة",
-        "Oriental": "الشرق",
-        "Souss-Massa": "سوس-ماسة",
-        "Drâa-Tafilalet": "درعة-تافيلالت",
-        "Béni Mellal-Khénifra": "بني ملال-خنيفرة",
-        "Laâyoune-Sakia El Hamra": "العيون-الساقية الحمراء",
-        "Dakhla-Oued Ed-Dahab": "الداخلة-وادي الذهب",
-        "Guelmim-Oued Noun": "كلميم-واد نون"
+      "Rabat-Salé-Kénitra": "الرباط-سلا-القنيطرة",
+      "Casablanca-Settat": "الدار البيضاء-سطات",
+      "Marrakech-Safi": "مراكش-آسفي",
+      "Fès-Meknès": "فاس-مكناس",
+      "Tanger-Tétouan-Al Hoceïma": "طنجة-تطوان-الحسيمة",
+      "Oriental": "الشرق",
+      "Souss-Massa": "سوس-ماسة",
+      "Drâa-Tafilalet": "درعة-تافيلالت",
+      "Béni Mellal-Khénifra": "بني ملال-خنيفرة",
+      "Laâyoune-Sakia El Hamra": "العيون-الساقية الحمراء",
+      "Dakhla-Oued Ed-Dahab": "الداخلة-وادي الذهب",
+      "Guelmim-Oued Noun": "كلميم-واد نون"
     },
     "privacyPolicy": {
       "text1": "أوافق على",
@@ -114,7 +139,8 @@
       "anneeCreationRequired": "سنة التأسيس مطلوبة",
       "chiffreAffaireRequired": "رقم المعاملات مطلوب",
       "montantInvestissementRequired": "مبلغ الاستثمار مطلوب",
-      "acceptPrivacyPolicyRequired": "يجب عليك قبول سياسة الخصوصية"
+      "acceptPrivacyPolicyRequired": "يجب عليك قبول سياسة الخصوصية",
+      "statutJuridiqueRequired": "الوضع القانوني مطلوب"
     }
   },
   "footer": {
@@ -126,7 +152,7 @@
     "address": "الدار البيضاء، المغرب",
     "phone": "+212 522 00 00 00",
     "followUs": "تابعنا",
-    "rights": "© 2025 subvention.ma – جميع الحقوق محفوظة",
+    "rights": "© 2024 subvention.ma – جميع الحقوق محفوظة",
     "privacy": "الخصوصية",
     "terms": "الشروط"
   },
