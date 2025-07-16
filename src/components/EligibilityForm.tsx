@@ -20,7 +20,6 @@ interface FormData {
   // Personne morale
   nomEntreprise?: string;
   secteurActivite?: string;
-  statutJuridiqueMorale?: string;
   // Commun
   chiffreAffaire: string;
   montantInvestissement: string;
@@ -39,7 +38,6 @@ interface FormErrors {
   statutJuridiquePhysique?: string;
   nomEntreprise?: string;
   secteurActivite?: string;
-  statutJuridiqueMorale?: string;
   anneeCreation?: string;
   chiffreAffaire?: string;
   montantInvestissement?: string;
@@ -158,31 +156,6 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     },
   ];
 
-  const statutJuridiquePersonneMoraleOptions = [
-    {
-      value: "sarl",
-      label: t("eligibility.statutJuridiquePersonneMorale.sarl"),
-    },
-    {
-      value: "sarlu",
-      label: t("eligibility.statutJuridiquePersonneMorale.sarlu"),
-    },
-    {
-      value: "societe-sas",
-      label: t("eligibility.statutJuridiquePersonneMorale.societeSas"),
-    },
-    {
-      value: "aucune-forme-juridique",
-      label: t(
-        "eligibility.statutJuridiquePersonneMorale.aucuneFormeJuridique"
-      ),
-    },
-    {
-      value: "en-cours-creation",
-      label: t("eligibility.statutJuridiquePersonneMorale.enCoursCreation"),
-    },
-  ];
-
   const anneeCreationOptions = [
     { value: "2025", label: "2025" },
     { value: "2024", label: "2024" },
@@ -275,8 +248,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         newErrors.secteurActivite = t(
           "eligibility.errors.secteurActiviteRequired"
         );
-      if (!formData.statutJuridiqueMorale)
-        newErrors.statutJuridiqueMorale = t(
+      if (!formData.statutJuridique)
+        newErrors.statutJuridique = t(
           "eligibility.errors.statutJuridiqueRequired"
         );
       if (!formData.anneeCreation)
@@ -976,9 +949,12 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         </p>
                       )}
                     </div>
-                    <div className="md:col-span-2">
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Statut juridique *
+                        {t("eligibility.morale.statutJuridique")} *
                       </label>
                       <select
                         name="statutJuridique"
@@ -989,7 +965,9 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                             ? "border-red-500"
                             : "border-gray-300"
                         }`}>
-                        <option value="">-- Choisir --</option>
+                        <option value="">
+                          {t("eligibility.selectPlaceholder")}
+                        </option>
                         {(Statutjuridique["P.Morale"] || []).map((statut) => (
                           <option key={statut} value={statut}>
                             {statut}
@@ -999,37 +977,6 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                       {errors.statutJuridique && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.statutJuridique}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("eligibility.morale.statutJuridique")} *
-                      </label>
-                      <select
-                        name="statutJuridiqueMorale"
-                        value={formData.statutJuridiqueMorale || ""}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.statutJuridiqueMorale
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}>
-                        <option value="">
-                          {t("eligibility.selectPlaceholder")}
-                        </option>
-                        {statutJuridiquePersonneMoraleOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.statutJuridiqueMorale && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.statutJuridiqueMorale}
                         </p>
                       )}
                     </div>
