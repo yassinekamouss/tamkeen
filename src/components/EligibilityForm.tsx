@@ -116,7 +116,9 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     },
     {
       value: "aucune-forme-juridique",
-      label: t("eligibility.statutJuridiquePersonneMorale.aucuneFormeJuridique"),
+      label: t(
+        "eligibility.statutJuridiquePersonneMorale.aucuneFormeJuridique"
+      ),
     },
     {
       value: "en-cours-creation",
@@ -125,21 +127,21 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   ];
 
   const montantInvestissementOptions = [
-    { 
-      value: "moins-1M", 
-      label: t("eligibility.montantInvestissementOptions.moins1M") 
+    {
+      value: "moins-1M",
+      label: t("eligibility.montantInvestissementOptions.moins1M"),
     },
-    { 
-      value: "1M-50M", 
-      label: t("eligibility.montantInvestissementOptions.entre1M50M") 
+    {
+      value: "1M-50M",
+      label: t("eligibility.montantInvestissementOptions.entre1M50M"),
     },
-    { 
-      value: "plus-50M", 
-      label: t("eligibility.montantInvestissementOptions.plus50M") 
+    {
+      value: "plus-50M",
+      label: t("eligibility.montantInvestissementOptions.plus50M"),
     },
-    { 
-      value: "aucun-minimum", 
-      label: t("eligibility.montantInvestissementOptions.aucunMinimum") 
+    {
+      value: "aucun-minimum",
+      label: t("eligibility.montantInvestissementOptions.aucunMinimum"),
     },
   ];
 
@@ -212,10 +214,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   // Fonction pour déterminer les années de CA à demander selon l'année de création
   const getYearsForCA = (): number[] => {
     if (!formData.anneeCreation) return [];
-    
+
     const currentYear = 2025;
     const years = [];
-    
+
     // Si l'entreprise est créée avant 2022
     if (formData.anneeCreation === "avant-2022") {
       // Demander les 3 dernières années complètes
@@ -223,33 +225,39 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     } else {
       const creationYear = parseInt(formData.anneeCreation);
       // Calculer les années disponibles depuis la création (max 3 années précédentes)
-      for (let year = currentYear - 1; year >= Math.max(creationYear, currentYear - 3); year--) {
+      for (
+        let year = currentYear - 1;
+        year >= Math.max(creationYear, currentYear - 3);
+        year--
+      ) {
         years.push(year);
       }
     }
-    
+
     return years.sort((a, b) => b - a); // Tri décroissant (2024, 2023, 2022)
   };
 
-  const checkEligibility = (data: FormData): { isEligible: boolean; program?: string } => {
+  const checkEligibility = (
+    data: FormData
+  ): { isEligible: boolean; program?: string } => {
     // Critères d'éligibilité pour différents programmes
-    
+
     // 1. Go Siyaha - Vérifier en premier car plus spécialisé
     const secteursTourisme = [
       "ActiviteTouristique",
-      "ActivitesEconomiquesArtCulture", 
-      "IndustriesCreaticesCulturelles"
+      "ActivitesEconomiquesArtCulture",
+      "IndustriesCreaticesCulturelles",
     ];
-    
-    const isGoSiyahaEligible = 
+
+    const isGoSiyahaEligible =
       // Secteur d'activité: Tourisme (animation touristique, hébergement innovant, tourisme culturel ou nature)
       (data.secteurTravail && secteursTourisme.includes(data.secteurTravail)) ||
       (data.secteurActivite && secteursTourisme.includes(data.secteurActivite));
-    
+
     if (isGoSiyahaEligible && data.montantInvestissement) {
       return { isEligible: true, program: "Go Siyaha" };
     }
-    
+
     // 2. La Charte TPME - Critères plus stricts
     // Forme juridique : Personne morale de droit privé marocaine
     const formeJuridiqueValide = data.applicantType === "morale";
@@ -257,7 +265,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     // Chiffre d'affaires : Entre 1.000.000 MAD et 200.000.000 MAD HT sur une des 3 dernières années
     const years = getYearsForCA();
     let chiffreAffaireValide = false;
-    
+
     // Si l'entreprise est très récente (pas d'années de CA à vérifier), elle peut être éligible
     if (years.length === 0) {
       chiffreAffaireValide = true;
@@ -265,7 +273,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
       // Vérifier si au moins une année a un CA entre 1M et 200M MAD
       for (const year of years) {
         const caField = `chiffreAffaire${year}` as keyof FormData;
-        const caValue = parseFloat(data[caField] as string || "0");
+        const caValue = parseFloat((data[caField] as string) || "0");
         if (caValue >= 1000000 && caValue <= 200000000) {
           chiffreAffaireValide = true;
           break;
@@ -276,8 +284,11 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     // Montant du projet d'investissement : Entre 1.000.000 MAD et 50.000.000 MAD
     const montantInvestissementValide = data.montantInvestissement === "1M-50M";
 
-    const isCharteTPMEEligible = formeJuridiqueValide && chiffreAffaireValide && montantInvestissementValide;
-    
+    const isCharteTPMEEligible =
+      formeJuridiqueValide &&
+      chiffreAffaireValide &&
+      montantInvestissementValide;
+
     if (isCharteTPMEEligible) {
       return { isEligible: true, program: "La Charte TPME" };
     }
@@ -348,7 +359,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         }
       }
       if (!hasValidCA && formData.applicantType === "morale") {
-        newErrors.chiffreAffaire2024 = "Veuillez renseigner au moins un chiffre d'affaires valide";
+        newErrors.chiffreAffaire2024 =
+          "Veuillez renseigner au moins un chiffre d'affaires valide";
       }
     }
 
@@ -478,7 +490,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
             {/* Message principal - Plus contrasté */}
             <p className="text-gray-700 text-base leading-relaxed mb-6 font-medium">
               D'après vos réponses, vous ne remplissez pas les critères
-              d'éligibilité actuels. Cependant, notre équipe peut vous orienter 
+              d'éligibilité actuels. Cependant, notre équipe peut vous orienter
               vers d'autres solutions de financement adaptées à votre situation.
             </p>
 
@@ -1127,7 +1139,11 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                               <input
                                 type="number"
                                 name={`chiffreAffaire${year}`}
-                                value={formData[`chiffreAffaire${year}` as keyof FormData] as string || ""}
+                                value={
+                                  (formData[
+                                    `chiffreAffaire${year}` as keyof FormData
+                                  ] as string) || ""
+                                }
                                 onChange={handleInputChange}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder="Ex: 1500000"
@@ -1139,10 +1155,18 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                       ) : (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                           <p className="text-blue-700 text-sm">
-                            <svg className="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            <svg
+                              className="w-4 h-4 inline mr-2"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                fillRule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                clipRule="evenodd"
+                              />
                             </svg>
-                            Entreprise récente : Aucun chiffre d'affaires historique requis
+                            Entreprise récente : Aucun chiffre d'affaires
+                            historique requis
                           </p>
                         </div>
                       )}
