@@ -1,8 +1,8 @@
 import React from "react";
 import { Header, Footer } from "../components";
 import { useTranslation } from "react-i18next";
-import logo from "../assets/logo.png";
-import backgroundImage from "../assets/image2.png";
+import logo from "../assets/logo.webp";
+import backgroundImage from "../assets/image2.webp";
 
 const About: React.FC = () => {
   const { t } = useTranslation();

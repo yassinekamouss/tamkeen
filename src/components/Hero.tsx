@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import image1 from "../assets/image1.png";
-import image2 from "../assets/carousel1.jpg";
-import image3 from "../assets/carousel2.jpg";
+import image1 from "../assets/image1.webp";
+import image2 from "../assets/carousel1.webp";
+import image3 from "../assets/carousel2.webp";
 import { useTranslation } from 'react-i18next';
 
 interface HeroProps {

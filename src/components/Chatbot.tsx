@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import imageLogo from "../assets/image_logo.png";
+import imageLogo from "../assets/image_logo.webp";
 import { useTranslation } from "react-i18next";
 
 interface Message {

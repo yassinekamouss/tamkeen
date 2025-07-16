@@ -67,8 +67,10 @@
       "option3": "Sans chiffre d'affaire en 2025"
     },
     "montantInvestissementOptions": {
-      "option1": "Moins de 1.000.000 DH",
-      "option2": "Plus de 1.000.000 DH"
+      "moins1M": "Moins de 1.000.000 MAD",
+      "entre1M50M": "Entre 1.000.000 MAD et 50.000.000 MAD",
+      "plus50M": "Plus de 50.000.000 MAD",
+      "aucunMinimum": "Aucun minimum requis"
     },
     "anneeCreationOptions": {
       "avant2022": "Avant 2022"

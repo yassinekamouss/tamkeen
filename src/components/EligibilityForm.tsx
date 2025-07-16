@@ -21,7 +21,9 @@ interface FormData {
   secteurActivite?: string;
   // Commun
   region?: string;
-  chiffreAffaire: string;
+  chiffreAffaire2024?: string;
+  chiffreAffaire2023?: string;
+  chiffreAffaire2022?: string;
   montantInvestissement: string;
   acceptPrivacyPolicy: boolean;
   statutJuridique: string;
@@ -39,7 +41,9 @@ interface FormErrors {
   nomEntreprise?: string;
   secteurActivite?: string;
   anneeCreation?: string;
-  chiffreAffaire?: string;
+  chiffreAffaire2024?: string;
+  chiffreAffaire2023?: string;
+  chiffreAffaire2022?: string;
   montantInvestissement?: string;
   acceptPrivacyPolicy?: string;
   statutJuridique?: string;
@@ -52,7 +56,6 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const [formData, setFormData] = useState<FormData>({
     applicantType: "",
     email: "",
-    chiffreAffaire: "",
     montantInvestissement: "",
     acceptPrivacyPolicy: false,
     statutJuridique: "",
@@ -61,6 +64,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [showResult, setShowResult] = useState(false);
   const [isEligible, setIsEligible] = useState(false);
+  const [eligibleProgram, setEligibleProgram] = useState<string>("");
 
   const secteursTravail = [
     "EconomieRurale",
@@ -97,41 +101,45 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     "Guelmim-Oued Noun",
   ];
 
-  const Statutjuridique = {
-    "P.Morale": [
-      "personne physique avec pattente",
-      "SARL",
-      "SARLAU",
-      "Société Anonyme-SAS",
-      "Aucune forme juridique",
-      "En cours de création",
-    ],
-    "P.physique": [
-      "Avec pattente",
-      "Auto",
-      "Entrepreneur",
-      "En cour de création",
-      "Aucune forme juridique",
-    ],
-  };
-
-  const chiffreAffaireOptions = [
-    { value: "0-1MDH", label: t("eligibility.chiffreAffaireOptions.option1") },
+  const statutJuridiquePersonneMoraleOptions = [
     {
-      value: "plus-1MDH",
-      label: t("eligibility.chiffreAffaireOptions.option2"),
+      value: "sarl",
+      label: t("eligibility.statutJuridiquePersonneMorale.sarl"),
     },
-    { value: "sans-ca", label: t("eligibility.chiffreAffaireOptions.option3") },
+    {
+      value: "sarlu",
+      label: t("eligibility.statutJuridiquePersonneMorale.sarlu"),
+    },
+    {
+      value: "societe-sas",
+      label: t("eligibility.statutJuridiquePersonneMorale.societeSas"),
+    },
+    {
+      value: "aucune-forme-juridique",
+      label: t("eligibility.statutJuridiquePersonneMorale.aucuneFormeJuridique"),
+    },
+    {
+      value: "en-cours-creation",
+      label: t("eligibility.statutJuridiquePersonneMorale.enCoursCreation"),
+    },
   ];
 
   const montantInvestissementOptions = [
-    {
-      value: "moins-1M",
-      label: t("eligibility.montantInvestissementOptions.option1"),
+    { 
+      value: "moins-1M", 
+      label: t("eligibility.montantInvestissementOptions.moins1M") 
     },
-    {
-      value: "plus-1M",
-      label: t("eligibility.montantInvestissementOptions.option2"),
+    { 
+      value: "1M-50M", 
+      label: t("eligibility.montantInvestissementOptions.entre1M50M") 
+    },
+    { 
+      value: "plus-50M", 
+      label: t("eligibility.montantInvestissementOptions.plus50M") 
+    },
+    { 
+      value: "aucun-minimum", 
+      label: t("eligibility.montantInvestissementOptions.aucunMinimum") 
     },
   ];
 
@@ -201,13 +209,80 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     }
   };
 
-  const checkEligibility = (data: FormData): boolean => {
-    // Critères d'éligibilité (vous pouvez ajuster selon vos besoins)
-    // Par exemple : chiffre d'affaires inférieur à 1MDH ET investissement supérieur à 1M
-    return (
-      data.chiffreAffaire === "0-1MDH" &&
-      data.montantInvestissement === "plus-1M"
-    );
+  // Fonction pour déterminer les années de CA à demander selon l'année de création
+  const getYearsForCA = (): number[] => {
+    if (!formData.anneeCreation) return [];
+    
+    const currentYear = 2025;
+    const years = [];
+    
+    // Si l'entreprise est créée avant 2022
+    if (formData.anneeCreation === "avant-2022") {
+      // Demander les 3 dernières années complètes
+      years.push(2024, 2023, 2022);
+    } else {
+      const creationYear = parseInt(formData.anneeCreation);
+      // Calculer les années disponibles depuis la création (max 3 années précédentes)
+      for (let year = currentYear - 1; year >= Math.max(creationYear, currentYear - 3); year--) {
+        years.push(year);
+      }
+    }
+    
+    return years.sort((a, b) => b - a); // Tri décroissant (2024, 2023, 2022)
+  };
+
+  const checkEligibility = (data: FormData): { isEligible: boolean; program?: string } => {
+    // Critères d'éligibilité pour différents programmes
+    
+    // 1. Go Siyaha - Vérifier en premier car plus spécialisé
+    const secteursTourisme = [
+      "ActiviteTouristique",
+      "ActivitesEconomiquesArtCulture", 
+      "IndustriesCreaticesCulturelles"
+    ];
+    
+    const isGoSiyahaEligible = 
+      // Secteur d'activité: Tourisme (animation touristique, hébergement innovant, tourisme culturel ou nature)
+      (data.secteurTravail && secteursTourisme.includes(data.secteurTravail)) ||
+      (data.secteurActivite && secteursTourisme.includes(data.secteurActivite));
+    
+    if (isGoSiyahaEligible && data.montantInvestissement) {
+      return { isEligible: true, program: "Go Siyaha" };
+    }
+    
+    // 2. La Charte TPME - Critères plus stricts
+    // Forme juridique : Personne morale de droit privé marocaine
+    const formeJuridiqueValide = data.applicantType === "morale";
+
+    // Chiffre d'affaires : Entre 1.000.000 MAD et 200.000.000 MAD HT sur une des 3 dernières années
+    const years = getYearsForCA();
+    let chiffreAffaireValide = false;
+    
+    // Si l'entreprise est très récente (pas d'années de CA à vérifier), elle peut être éligible
+    if (years.length === 0) {
+      chiffreAffaireValide = true;
+    } else {
+      // Vérifier si au moins une année a un CA entre 1M et 200M MAD
+      for (const year of years) {
+        const caField = `chiffreAffaire${year}` as keyof FormData;
+        const caValue = parseFloat(data[caField] as string || "0");
+        if (caValue >= 1000000 && caValue <= 200000000) {
+          chiffreAffaireValide = true;
+          break;
+        }
+      }
+    }
+
+    // Montant du projet d'investissement : Entre 1.000.000 MAD et 50.000.000 MAD
+    const montantInvestissementValide = data.montantInvestissement === "1M-50M";
+
+    const isCharteTPMEEligible = formeJuridiqueValide && chiffreAffaireValide && montantInvestissementValide;
+    
+    if (isCharteTPMEEligible) {
+      return { isEligible: true, program: "La Charte TPME" };
+    }
+
+    return { isEligible: false };
   };
 
   const validateForm = (): boolean => {
@@ -258,8 +333,23 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         newErrors.anneeCreation = t("eligibility.errors.anneeCreationRequired");
     }
 
-    if (!formData.chiffreAffaire) {
-      newErrors.chiffreAffaire = t("eligibility.errors.chiffreAffaireRequired");
+    // Validation des chiffres d'affaires selon les années disponibles
+    const years = getYearsForCA();
+    if (years.length > 0) {
+      let hasValidCA = false;
+      for (const year of years) {
+        const caField = `chiffreAffaire${year}` as keyof FormData;
+        const caValue = formData[caField] as string;
+        if (caValue && caValue.trim() !== "") {
+          const numericValue = parseFloat(caValue);
+          if (!isNaN(numericValue) && numericValue >= 0) {
+            hasValidCA = true;
+          }
+        }
+      }
+      if (!hasValidCA && formData.applicantType === "morale") {
+        newErrors.chiffreAffaire2024 = "Veuillez renseigner au moins un chiffre d'affaires valide";
+      }
     }
 
     if (!formData.montantInvestissement) {
@@ -281,10 +371,12 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      const eligible = checkEligibility(formData);
-      setIsEligible(eligible);
+      const eligibilityResult = checkEligibility(formData);
+      setIsEligible(eligibilityResult.isEligible);
+      setEligibleProgram(eligibilityResult.program || "");
       setShowResult(true);
       console.log("Form submitted:", formData);
+      console.log("Eligibility result:", eligibilityResult);
     }
   };
 
@@ -318,8 +410,12 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
             {/* Message principal */}
             <p className="text-gray-600 text-base leading-relaxed mb-6">
               Félicitations ! Votre profil correspond aux critères d'éligibilité
-              pour les subventions. Notre équipe d'experts vous contactera sous
-              48h pour finaliser votre dossier.
+              pour le programme{" "}
+              <span className="font-semibold text-blue-600">
+                {eligibleProgram}
+              </span>
+              . Notre équipe d'experts vous contactera sous 48h pour finaliser
+              votre dossier.
             </p>
 
             {/* Informations de contact */}
@@ -382,9 +478,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
             {/* Message principal - Plus contrasté */}
             <p className="text-gray-700 text-base leading-relaxed mb-6 font-medium">
               D'après vos réponses, vous ne remplissez pas les critères
-              d'éligibilité actuels pour les subventions. Cependant, notre
-              équipe peut vous orienter vers d'autres solutions de financement
-              adaptées à votre situation.
+              d'éligibilité actuels. Cependant, notre équipe peut vous orienter 
+              vers d'autres solutions de financement adaptées à votre situation.
             </p>
 
             {/* Informations de contact - Style orange */}
@@ -956,7 +1051,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Région *
+                        {t("eligibility.physique.region")} *
                       </label>
                       <select
                         name="region"
@@ -997,9 +1092,9 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         <option value="">
                           {t("eligibility.selectPlaceholder")}
                         </option>
-                        {(Statutjuridique["P.Morale"] || []).map((statut) => (
-                          <option key={statut} value={statut}>
-                            {statut}
+                        {statutJuridiquePersonneMoraleOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
                           </option>
                         ))}
                       </select>
@@ -1016,32 +1111,44 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
               {/* Champs communs */}
               {formData.applicantType && (
                 <div className="animate-fadeIn space-y-4 border-t pt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* Chiffres d'affaires dynamiques */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("eligibility.chiffreAffaire")} *
+                      <label className="block text-sm font-medium text-gray-700 mb-4">
+                        {t("eligibility.chiffreAffaire")} (en MAD HT) *
                       </label>
-                      <select
-                        name="chiffreAffaire"
-                        value={formData.chiffreAffaire}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                          errors.chiffreAffaire
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}>
-                        <option value="">
-                          {t("eligibility.selectPlaceholder")}
-                        </option>
-                        {chiffreAffaireOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.chiffreAffaire && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.chiffreAffaire}
+                      {getYearsForCA().length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {getYearsForCA().map((year) => (
+                            <div key={year}>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">
+                                Année {year}
+                              </label>
+                              <input
+                                type="number"
+                                name={`chiffreAffaire${year}`}
+                                value={formData[`chiffreAffaire${year}` as keyof FormData] as string || ""}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Ex: 1500000"
+                                min="0"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <p className="text-blue-700 text-sm">
+                            <svg className="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            Entreprise récente : Aucun chiffre d'affaires historique requis
+                          </p>
+                        </div>
+                      )}
+                      {errors.chiffreAffaire2024 && (
+                        <p className="text-red-500 text-xs mt-2">
+                          {errors.chiffreAffaire2024}
                         </p>
                       )}
                     </div>
