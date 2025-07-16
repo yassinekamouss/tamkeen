@@ -14,13 +14,13 @@ interface FormData {
   email: string;
   telephone?: string;
   secteurTravail?: string;
-  region?: string;
   statutJuridiquePhysique?: string;
   anneeCreation?: string;
   // Personne morale
   nomEntreprise?: string;
   secteurActivite?: string;
   // Commun
+  region?: string;
   chiffreAffaire: string;
   montantInvestissement: string;
   acceptPrivacyPolicy: boolean;
@@ -248,6 +248,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         newErrors.secteurActivite = t(
           "eligibility.errors.secteurActiviteRequired"
         );
+      if (!formData.region)
+        newErrors.region = t("eligibility.errors.regionRequired");
       if (!formData.statutJuridique)
         newErrors.statutJuridique = t(
           "eligibility.errors.statutJuridiqueRequired"
@@ -951,7 +953,34 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Région *
+                      </label>
+                      <select
+                        name="region"
+                        value={formData.region || ""}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                          errors.region ? "border-red-500" : "border-gray-300"
+                        }`}>
+                        <option value="">
+                          {t("eligibility.selectPlaceholder")}
+                        </option>
+                        {regions.map((region) => (
+                          <option key={region} value={region}>
+                            {t(`eligibility.regions.${region}`)}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.region && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.region}
+                        </p>
+                      )}
+                    </div>
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         {t("eligibility.morale.statutJuridique")} *
