@@ -66,7 +66,7 @@ export const checkEligibility = (data: FormData): EligibilityResult => {
     return { isEligible: true, program: "Go Siyaha" };
   }
 
-  // 2. La Charte TPME - Critères plus stricts
+  // 2. La Charte Grandes Entreprises - Vérifier avant TPME car montant plus élevé
   // Forme juridique : Personne morale de droit privé marocaine
   const formeJuridiqueValide = data.applicantType === "morale";
 
@@ -89,11 +89,25 @@ export const checkEligibility = (data: FormData): EligibilityResult => {
     }
   }
 
+  // Montant du projet d'investissement : Supérieur ou égal à 50.000.000 MAD
+  const montantInvestissementGrandesEntreprises =
+    data.montantInvestissement === "plus-50M";
+
+  const isCharteGrandesEntreprisesEligible =
+    formeJuridiqueValide &&
+    chiffreAffaireValide &&
+    montantInvestissementGrandesEntreprises;
+
+  if (isCharteGrandesEntreprisesEligible) {
+    return { isEligible: true, program: "Charte Grandes Entreprises" };
+  }
+
+  // 3. La Charte TPME - Critères plus stricts
   // Montant du projet d'investissement : Entre 1.000.000 MAD et 50.000.000 MAD
-  const montantInvestissementValide = data.montantInvestissement === "1M-50M";
+  const montantInvestissementTPME = data.montantInvestissement === "1M-50M";
 
   const isCharteTPMEEligible =
-    formeJuridiqueValide && chiffreAffaireValide && montantInvestissementValide;
+    formeJuridiqueValide && chiffreAffaireValide && montantInvestissementTPME;
 
   if (isCharteTPMEEligible) {
     return { isEligible: true, program: "La Charte TPME" };
