@@ -1,10 +1,17 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { Search, Users, Building, User } from 'lucide-react';
+import { FaArrowRight } from "react-icons/fa"; // Icône flèche
+import { useNavigate } from "react-router-dom";
 
 const axios = import("axios");
 
+
 const UsersComponent: React.FC = () => {
+
+  const navigate = useNavigate();
+
+
   interface Personne {
     _id: string;
     type: "physique" | "morale";
@@ -148,20 +155,26 @@ const UsersComponent: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gradient-to-r from-gray-800 to-gray-700">
                 <tr>
+
                   {['Type', 'Nom', 'Prénom', 'Dénomination', 'Email', 'Téléphone'].map((header) => (
-                    <th key={header} className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                    <th
+                      key={header}
+                      className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider"
+                    >
                       {header}
                     </th>
                   ))}
+                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Détails</th> {/* Colonne flèche */}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentItems.map((personne, index) => (
                   <tr
                     key={personne._id}
-                    className={`transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                      }`}
+                    className={`transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                   >
+
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={getTypeBadge(personne.type)}>
                         {getTypeIcon(personne.type)}
@@ -196,6 +209,17 @@ const UsersComponent: React.FC = () => {
                         {personne.telephone || "—"}
                       </span>
                     </td>
+
+                    <td className="px-4 py-4">
+                      <button
+                        onClick={() => navigate(`/admin/user/details/${personne._id}`)}
+                        className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
+                        title="Voir détails"
+                      >
+                        <FaArrowRight />
+                      </button>
+                    </td>
+
                   </tr>
                 ))}
               </tbody>
