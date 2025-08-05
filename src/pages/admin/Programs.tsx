@@ -4,10 +4,10 @@ import axios from "../../api/axios";
 import {
   SECTEURS_TRAVAIL,
   REGIONS,
-  STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS,
-  STATUT_JURIDIQUE_PERSONNE_PHYSIQUE_OPTIONS,
+  STATUT_JURIDIQUE_OPTIONS,
   MONTANT_INVESTISSEMENT_OPTIONS,
-} from "../../components/eligibility/constants";
+  ANNEE_CREATION,
+} from "../../components/eligibility/constants_for_adding_programs";
 
 interface Program {
   _id: string;
@@ -664,36 +664,105 @@ const Programs: React.FC = () => {
                       <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3">
                         {MONTANT_INVESTISSEMENT_OPTIONS.map((option) => (
                           <label
-                            key={option.value}
+                            key={option}
                             className="flex items-center">
                             <input
                               type="checkbox"
                               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                               checked={formData.criteres.montantInvestissement.includes(
-                                option.value
+                                option
                               )}
                               onChange={(e) =>
                                 handleMultiSelectChange(
                                   "montantInvestissement",
-                                  option.value,
+                                  option,
                                   e.target.checked
                                 )
                               }
                             />
                             <span className="ml-2 text-sm text-gray-700">
-                              {option.value}
+                              {option}
                             </span>
                           </label>
                         ))}
                       </div>
                     </div>
 
-                    {/* Chiffre d'affaires */}
+               
+
+                    {/* Secteurs d'activité */}
+                    <div className="col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Secteurs d'activité
+                      </label>
+                      <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
+                        {SECTEURS_TRAVAIL.map((secteur) => (
+                          <label key={secteur} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              checked={formData.criteres.secteurActivite.includes(
+                                secteur
+                              )}
+                              onChange={(e) =>
+                                handleMultiSelectChange(
+                                  "secteurActivite",
+                                  secteur,
+                                  e.target.checked
+                                )
+                              }
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              {secteur}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Statuts juridiques */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Statuts juridiques
+                      </label>
+                      <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
+                        {[
+                          ...STATUT_JURIDIQUE_OPTIONS
+                        ].map((option) => (
+                          <label
+                            key={option}
+                            className="flex items-center">
+                            <input
+                              type="checkbox"
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              checked={formData.criteres.statutJuridique.includes(
+                                option
+                              )}
+                              onChange={(e) =>
+                                handleMultiSelectChange(
+                                  "statutJuridique",
+                                  option,
+                                  e.target.checked
+                                )
+                              }
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              {option}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Régions */}
+
+
+                         {/* Chiffre d'affaires */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         Chiffre d'affaires (MAD)
                       </label>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="">
                         <div>
                           <label className="block text-xs text-gray-500 mb-1">
                             Minimum
@@ -738,73 +807,7 @@ const Programs: React.FC = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* Secteurs d'activité */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Secteurs d'activité
-                      </label>
-                      <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
-                        {SECTEURS_TRAVAIL.map((secteur) => (
-                          <label key={secteur} className="flex items-center">
-                            <input
-                              type="checkbox"
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                              checked={formData.criteres.secteurActivite.includes(
-                                secteur
-                              )}
-                              onChange={(e) =>
-                                handleMultiSelectChange(
-                                  "secteurActivite",
-                                  secteur,
-                                  e.target.checked
-                                )
-                              }
-                            />
-                            <span className="ml-2 text-sm text-gray-700">
-                              {secteur}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Statuts juridiques */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Statuts juridiques
-                      </label>
-                      <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
-                        {[
-                          ...STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS,
-                          ...STATUT_JURIDIQUE_PERSONNE_PHYSIQUE_OPTIONS,
-                        ].map((option) => (
-                          <label
-                            key={option.value}
-                            className="flex items-center">
-                            <input
-                              type="checkbox"
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                              checked={formData.criteres.statutJuridique.includes(
-                                option.value
-                              )}
-                              onChange={(e) =>
-                                handleMultiSelectChange(
-                                  "statutJuridique",
-                                  option.value,
-                                  e.target.checked
-                                )
-                              }
-                            />
-                            <span className="ml-2 text-sm text-gray-700">
-                              {option.value}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Régions */}
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         Régions
@@ -833,6 +836,32 @@ const Programs: React.FC = () => {
                         ))}
                       </div>
                     </div>
+                    {/* Année de création */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Année de création
+                  </label>
+                  <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
+                    {ANNEE_CREATION.map((annee) => (
+                      <label key={annee} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          checked={formData.criteres.anneeCreation.includes(annee)}
+                          onChange={(e) =>
+                            handleMultiSelectChange(
+                              "anneeCreation",
+                              annee,
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <span className="ml-2 text-sm text-gray-700">{annee}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
                   </div>
                 </div>
               </div>
