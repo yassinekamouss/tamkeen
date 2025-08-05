@@ -48,9 +48,9 @@ const UserDetails = () => {
     const personne = tests[0]?.personne;
 
     return (
-        <div className="flex flex-col md:flex-row gap-6 p-6 bg-gray-50 min-h-screen">
-            {/* ✅ Colonne gauche - Infos personne */}
-            <div className="w-full md:w-1/3 bg-white shadow rounded-2xl p-6 border border-gray-200">
+        <div className="flex p-6 bg-gray-50">
+            {/* ✅ Colonne gauche - fixe en haut, largeur fixe */}
+            <div className="flex-shrink-0 w-[340px] bg-white shadow rounded-2xl p-6 border border-gray-200 sticky top-6 self-start h-fit">
                 <div className="flex items-center gap-3 mb-5">
                     {personne?.type === "morale" ? (
                         <Building2 className="w-6 h-6 text-gray-600" />
@@ -78,22 +78,33 @@ const UserDetails = () => {
                 )}
             </div>
 
-            {/* ✅ Colonne droite - Tests */}
-            <div className="w-full md:w-2/3">
+            {/* ✅ Colonne droite - normale, défile avec la page */}
+            <div className="flex-1 ml-6 pr-2">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Tests effectués</h3>
 
                 {tests.length === 0 ? (
                     <p className="text-gray-500 italic">Aucun test trouvé pour cette personne.</p>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-20">
                         {tests.map((test) => (
                             <div
                                 key={test._id}
                                 className="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
                             >
-                                <h4 className="text-md font-semibold text-gray-700 mb-3">
-                                    Test #{test._id.slice(-5)}
-                                </h4>
+                                <div className="flex justify-between items-center mb-3">
+                                    <h4 className="text-md font-semibold text-gray-700">
+                                        Test #{test._id.slice(-5)}
+                                    </h4>
+                                    {test.programmesEligibles.length > 0 ? (
+                                        <span className="text-green-600 text-xs bg-green-100 px-2 py-0.5 rounded-full font-medium">
+                                            Éligible
+                                        </span>
+                                    ) : (
+                                        <span className="text-red-600 text-xs bg-red-100 px-2 py-0.5 rounded-full font-medium">
+                                            Non éligible
+                                        </span>
+                                    )}
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
                                     <p><span className="font-medium">Secteur d’activité :</span> {test.secteurActivite}</p>
                                     <p><span className="font-medium">Région :</span> {test.region}</p>
@@ -114,6 +125,7 @@ const UserDetails = () => {
                 )}
             </div>
         </div>
+
 
     );
 };

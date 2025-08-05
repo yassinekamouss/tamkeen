@@ -19,6 +19,9 @@ const Users: React.FC = () => {
 
   const navigate = useNavigate();
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,6 +91,31 @@ const Users: React.FC = () => {
       </div>
     );
   }
+
+  const updateUser = async (updatedUser: User) => {
+    try {
+      const response = await axios.put(`users/${updatedUser._id}`, updatedUser);
+      console.log("Utilisateur mis à jour :", response.data);
+      // Tu peux ici recharger les utilisateurs si besoin
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour :", error);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!window.confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) return;
+
+    try {
+      await axios.delete(`/api/users/${userId}`);
+      console.log("Utilisateur supprimé !");
+      // ➤ Recharge ou filtre localement :
+      setUsers((prev) => prev.filter((u) => u._id !== userId));
+    } catch (error) {
+      console.error("Erreur lors de la suppression :", error);
+    }
+  };
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -336,27 +364,29 @@ const Users: React.FC = () => {
                         </svg>
                       </button>
 
-                      <button className="text-gray-600 hover:text-gray-900 mr-3">
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20">
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setIsEditModalOpen(true);
+                        }}
+                        className="text-gray-600 hover:text-gray-900 mr-3"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                         </svg>
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => handleDeleteUser(user._id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <svg
                           className="w-4 h-4"
                           fill="currentColor"
-                          viewBox="0 0 20 20">
+                          viewBox="0 0 20 20"
+                        >
                           <path
                             fillRule="evenodd"
-                            d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
-                            clipRule="evenodd"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414L9 11.414l3.293-3.293a1 1 0 000-1.414z"
+                            d="M6 2a1 1 0 00-1 1v1H3a1 1 0 100 2h14a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm2 5a1 1 0 00-2 0v8a1 1 0 002 0V7zm4 0a1 1 0 00-2 0v8a1 1 0 002 0V7z"
                             clipRule="evenodd"
                           />
                         </svg>
@@ -366,11 +396,115 @@ const Users: React.FC = () => {
                 ))}
               </tbody>
             </table>
+            {isEditModalOpen && selectedUser && (
+              <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-8 border border-gray-200">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-6">Modifier les informations</h2>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (selectedUser) {
+                        updateUser(selectedUser);
+                      }
+                    }}
+                  >
+                    <div className="mb-5">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                      <input
+                        type="email"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                        value={selectedUser.email}
+                        onChange={(e) =>
+                          setSelectedUser({ ...selectedUser, email: e.target.value })
+                        }
+                        placeholder="exemple@domaine.com"
+                      />
+                    </div>
+
+                    <div className="mb-5">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                      <input
+                        type="text"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                        value={selectedUser.telephone}
+                        onChange={(e) =>
+                          setSelectedUser({ ...selectedUser, telephone: e.target.value })
+                        }
+                        placeholder="+212 6XXXXXXXX"
+                      />
+                    </div>
+
+                    {selectedUser.type === "physique" ? (
+                      <>
+                        <div className="mb-5">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                          <input
+                            type="text"
+                            className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                            value={selectedUser.prenom}
+                            onChange={(e) =>
+                              setSelectedUser({ ...selectedUser, prenom: e.target.value })
+                            }
+                            placeholder="Prénom"
+                          />
+                        </div>
+                        <div className="mb-5">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                          <input
+                            type="text"
+                            className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                            value={selectedUser.nom}
+                            onChange={(e) =>
+                              setSelectedUser({ ...selectedUser, nom: e.target.value })
+                            }
+                            placeholder="Nom"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="mb-5">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Dénomination</label>
+                        <input
+                          type="text"
+                          className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                          value={selectedUser.denomination}
+                          onChange={(e) =>
+                            setSelectedUser({ ...selectedUser, denomination: e.target.value })
+                          }
+                          placeholder="Dénomination"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex justify-end gap-3 mt-6">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditModalOpen(false)}
+                        className="px-5 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition"
+                      >
+                        Annuler
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-5 py-2 text-sm font-medium bg-gray-800 text-white rounded-md hover:bg-gray-900 transition"
+                      >
+                        Enregistrer
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+
           </div>
         )}
       </div>
     </div>
   );
+
+
 };
 
 export default Users;
