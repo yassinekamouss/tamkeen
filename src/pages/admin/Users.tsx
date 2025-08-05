@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   _id: string;
@@ -12,7 +13,12 @@ interface User {
   createdAt?: string;
 }
 
+
+
 const Users: React.FC = () => {
+
+  const navigate = useNavigate();
+
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -272,15 +278,14 @@ const Users: React.FC = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           <div
-                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${
-                              user.type === "physique"
-                                ? "bg-gray-500"
-                                : "bg-gray-400"
-                            }`}>
+                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${user.type === "physique"
+                              ? "bg-gray-500"
+                              : "bg-gray-400"
+                              }`}>
                             {user.type === "physique"
                               ? `${(user.prenom || "").charAt(0)}${(
-                                  user.nom || ""
-                                ).charAt(0)}`
+                                user.nom || ""
+                              ).charAt(0)}`
                               : (user.denomination || "").charAt(0)}
                           </div>
                         </div>
@@ -298,11 +303,10 @@ const Users: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.type === "physique"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-gray-200 text-gray-800"
-                        }`}>
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.type === "physique"
+                          ? "bg-gray-100 text-gray-800"
+                          : "bg-gray-200 text-gray-800"
+                          }`}>
                         {user.type === "physique"
                           ? "Personne physique"
                           : "Personne morale"}
@@ -314,11 +318,15 @@ const Users: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-gray-600 hover:text-gray-900 mr-3">
+                      <button
+                        onClick={() => navigate(`/admin/user/details/${user._id}`)}
+                        className="text-gray-600 hover:text-gray-900 mr-3 transition-colors duration-200"
+                      >
                         <svg
                           className="w-4 h-4"
                           fill="currentColor"
-                          viewBox="0 0 20 20">
+                          viewBox="0 0 20 20"
+                        >
                           <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                           <path
                             fillRule="evenodd"
@@ -327,6 +335,7 @@ const Users: React.FC = () => {
                           />
                         </svg>
                       </button>
+
                       <button className="text-gray-600 hover:text-gray-900 mr-3">
                         <svg
                           className="w-4 h-4"
