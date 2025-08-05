@@ -7,7 +7,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Dashboard from "./pages/admin/Dashboard";
 import Users from "./pages/admin/Users";
 import Programs from "./pages/admin/Programs";
-
+import UserDetails from "./pages/admin/UserDetails";
 import "./App.css";
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
             <Route element={<LayoutAdmin />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="users" element={<Users />} />
-              <Route path="programs" element={<Programs />} />
+              <Route path="user/details/:id" element={<UserDetails />} />              <Route path="programs" element={<Programs />} />
             </Route>
           </Route>
         </Routes>

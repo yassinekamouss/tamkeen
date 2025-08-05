@@ -6,12 +6,10 @@ import logoTamkeen from "../../assets/logo.webp";
 
 const LayoutAdmin = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
   return (
-    <div className="flex">
-      {/* Sidebar visible si sidebarOpen est true */}
+    <div className="flex bg-gray-50">
+      {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} />
-
       <div
         className={`transition-all duration-300 ${
           sidebarOpen ? "ml-64" : "ml-0"

@@ -1,4 +1,4 @@
-// src/components/Sidebar.tsx
+// src/components/admin/Sidebar.tsx
 import { NavLink, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
