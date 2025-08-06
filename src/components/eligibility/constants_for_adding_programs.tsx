@@ -1,22 +1,110 @@
 export const SECTEURS_TRAVAIL = [
-  "Economie rurale (agriculture, élevage, valorisation de produits de la ferme...)",
-  "Industrie - activités de transformation",
-  "Commerce traditionnel - Ecommerce",
-  "Recherche & Développement - Innovation en industrie",
-  "Logistique- transport",
-  "Développement de solutions digitales - NTIC",
-  "Artisanat et activités assimilées",
-  "Activités économiques liées à l'art et la culture",
-  "Industries créatrices et culturelles",
-  "Activités économiques liées au sport",
-  "Activité touristique (Animation touristique, Restauration, Agent de voyages de type Organisateur-Distributeur de voyages, activités annexes)",
-  "Services aux personnes",
-  "Services aux entreprises (prestataires de services, installateurs, réparation...)",
-  "Efficacité énergétique",
-  "Promotion immobilière",
-  "Pêche maritime",
-  "Pêche côtière",
+  {
+    key: "Economie rurale (agriculture, élevage, valorisation de produits de la ferme...)",
+    value: "EconomieRurale"
+  },
+  {
+    key: "Industrie - activités de transformation",
+    value: "Industrie"
+  },
+  {
+    key: "Commerce traditionnel - Ecommerce",
+    value: "CommerceTraditionnelEcommerce"
+  },
+  {
+    key: "Recherche & Développement - Innovation en industrie",
+    value: "RechercheInnovation"
+  },
+  {
+    key: "Logistique- transport",
+    value: "LogistiqueTransport"
+  },
+  {
+    key: "Développement de solutions digitales - NTIC",
+    value: "SolutionsDigitalesNTIC"
+  },
+  {
+    key: "Artisanat et activités assimilées",
+    value: "ArtisanatActivitesAssimilees"
+  },
+  {
+    key: "Activités économiques liées à l'art et la culture",
+    value: "ActivitesEconomiquesArtCulture"
+  },
+  {
+    key: "Industries créatrices et culturelles",
+    value: "IndustriesCreaticesCulturelles"
+  },
+  {
+    key: "Activités économiques liées au sport",
+    value: "ActivitesEconomiquesSport"
+  },
+  {
+    key: "Activité touristique (Animation touristique, Restauration, Agent de voyages de type Organisateur-Distributeur de voyages, activités annexes)",
+    value: "ActiviteTouristique"
+  },
+  {
+    key: "Services aux personnes",
+    value: "ServicesPersonnes"
+  },
+  {
+    key: "Services aux entreprises (prestataires de services, installateurs, réparation...)",
+    value: "ServicesEntreprises"
+  },
+  {
+    key: "Efficacité énergétique",
+    value: "EfficaciteEnergetique"
+  },
+  {
+    key: "Promotion immobilière",
+    value: "PromotionImmobiliere"
+  },
+  {
+    key: "Pêche maritime",
+    value: "PecheMaritime"
+  },
+  {
+    key: "Pêche côtière",
+    value: "PecheForiere"
+  }
 ];
+
+
+export const STATUT_JURIDIQUE_OPTIONS = [
+  {
+    key: "SARL",
+    value: "sarl"
+  },
+  {
+    key: "SARLU",
+    value: "sarlu"
+  },
+  {
+    key: "Société anonyme (SAS)",
+    value: "societe-sas"
+  },
+  {
+    key: "Aucune forme juridique",
+    value: "aucune-forme-juridique"
+  },
+  {
+    key: "En cours de création",
+    value: "en-cours-creation"
+  },
+  {
+    key: "Personne physique avec patente",
+    value: "personne-physique-patente"
+  },
+  {
+    key: "Auto-entrepreneur",
+    value: "auto-entrepreneur"
+  },
+  {
+    key: "Aucune forme",
+    value: "aucune-forme"
+  }
+];
+
 
 export const REGIONS = [
   "Rabat-Salé-Kénitra",
@@ -33,24 +121,24 @@ export const REGIONS = [
   "Guelmim-Oued Noun",
 ];
 
-export const STATUT_JURIDIQUE_OPTIONS = [
-  "SARL",
-  "SARLU",
-  "Société anonyme (SAS)",
-  "Aucune forme juridique",
-  "En cours de création",
-   "Personne physique avec patente",
-  "Auto-entrepreneur",
+export const MONTANT_INVESTISSEMENT_OPTIONS = [
+  {
+    key: "Moins de 1.000.000 MAD",
+    value: "moins-1M"
+  },
+  {
+    key: "Entre 1.000.000 MAD et 50.000.000 MAD",
+    value: "1M-50M"
+  },
+  {
+    key: "Plus de 50.000.000 MAD",
+    value: "plus-50M"
+  },
+  {
+    key: "Aucun minimum requis",
+    value: "aucun-minimum"
+  }
 ];
-
-
-export const   MONTANT_INVESTISSEMENT_OPTIONS = [
-  "Moins de 1.000.000 MAD",
-  "Entre 1.000.000 MAD et 50.000.000 MAD",
-  "Plus de 50.000.000 MAD",
-  "Aucun minimum requis",
-];
-
 
 export const ANNEE_CREATION = [
   "2025",

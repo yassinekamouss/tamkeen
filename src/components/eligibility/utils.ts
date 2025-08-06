@@ -1,5 +1,6 @@
 import type { FormData, EligibilityResult } from "./types";
 
+import api from "../../api/axios";
 /**
  * Fonction pour déterminer les années de CA à demander selon l'année de création
  */
@@ -28,90 +29,19 @@ export const getYearsForCA = (anneeCreation?: string): number[] => {
   return years.sort((a, b) => b - a); // Tri décroissant (2024, 2023, 2022)
 };
 
-/**
- * Vérification d'éligibilité pour tous les programmes
- */
-export const checkEligibility = (data: FormData): EligibilityResult => {
-  // Critères d'éligibilité pour différents programmes
+export const checkEligibility = async (data: FormData): Promise<EligibilityResult> => {
+  try {
+   
+    const response = await api.post("/test/eligibilite", data);
 
-  // 1. Go Siyaha - Vérifier en premier car plus spécialisé
-  const secteursTourisme = "ActiviteTouristique";
-  const statusJuridiqueGoSiyaha = [
-    "sarl",
-    "sarlu",
-    "societe-sas",
-    "aucune-forme",
-    "en-cours-creation",
-    "personne-physique-patente",
-    "societe-sa",
-  ];
-
-  // Vérifier le secteur touristique
-  const isSecteurTourismeValide =
-    (data.secteurTravail && secteursTourisme === data.secteurTravail) ||
-    (data.secteurActivite && secteursTourisme === data.secteurActivite);
-
-  // Vérifier le statut juridique éligible pour Go Siyaha
-  const isStatutJuridiqueGoSiyahaValide =
-    statusJuridiqueGoSiyaha.includes(data.statutJuridique) ||
-    statusJuridiqueGoSiyaha.includes(data.statutJuridiquePhysique || "");
-
-  // Éligibilité Go Siyaha : secteur tourisme ET statut juridique valide
-  const isGoSiyahaEligible =
-    isSecteurTourismeValide &&
-    isStatutJuridiqueGoSiyahaValide &&
-    data.montantInvestissement;
-
-  if (isGoSiyahaEligible) {
-    return { isEligible: true, program: "Go Siyaha" };
-  }
-
-  // 2. La Charte Grandes Entreprises - Vérifier avant TPME car montant plus élevé
-  // Forme juridique : Personne morale de droit privé marocaine
-  const formeJuridiqueValide = data.applicantType === "morale";
-
-  // Chiffre d'affaires : Entre 1.000.000 MAD et 200.000.000 MAD HT sur une des 3 dernières années
-  const years = getYearsForCA(data.anneeCreation);
-  let chiffreAffaireValide = false;
-
-  // Si l'entreprise est très récente (pas d'années de CA à vérifier), elle peut être éligible
-  if (years.length === 0) {
-    chiffreAffaireValide = true;
-  } else {
-    // Vérifier si au moins une année a un CA entre 1M et 200M MAD
-    for (const year of years) {
-      const caField = `chiffreAffaire${year}` as keyof FormData;
-      const caValue = parseFloat((data[caField] as string) || "0");
-      if (caValue >= 1000000 && caValue <= 200000000) {
-        chiffreAffaireValide = true;
-        break;
-      }
+    if(response.data.programs.length > 0){
+      return { isEligible : true , programs : response.data.programs };
+    } else {
+      return { isEligible: false };
     }
+  } catch (error) {
+    console.error("Erreur lors de la vérification d'éligibilité :", error);
+    return { isEligible: false };
   }
-
-  // Montant du projet d'investissement : Supérieur ou égal à 50.000.000 MAD
-  const montantInvestissementGrandesEntreprises =
-    data.montantInvestissement === "plus-50M";
-
-  const isCharteGrandesEntreprisesEligible =
-    formeJuridiqueValide &&
-    chiffreAffaireValide &&
-    montantInvestissementGrandesEntreprises;
-
-  if (isCharteGrandesEntreprisesEligible) {
-    return { isEligible: true, program: "Charte Grandes Entreprises" };
-  }
-
-  // 3. La Charte TPME - Critères plus stricts
-  // Montant du projet d'investissement : Entre 1.000.000 MAD et 50.000.000 MAD
-  const montantInvestissementTPME = data.montantInvestissement === "1M-50M";
-
-  const isCharteTPMEEligible =
-    formeJuridiqueValide && chiffreAffaireValide && montantInvestissementTPME;
-
-  if (isCharteTPMEEligible) {
-    return { isEligible: true, program: "La Charte TPME" };
-  }
-
-  return { isEligible: false };
 };
+

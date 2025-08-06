@@ -3,7 +3,7 @@ import type { FormData } from "./types";
 
 interface EligibilityResultProps {
   isEligible: boolean;
-  eligibleProgram: string;
+  eligibleProgram: string[];
   formData: FormData;
   onNewTest: () => void;
 }

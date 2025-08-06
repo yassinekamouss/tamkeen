@@ -664,24 +664,24 @@ const Programs: React.FC = () => {
                       <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3">
                         {MONTANT_INVESTISSEMENT_OPTIONS.map((option) => (
                           <label
-                            key={option}
+                            key={option.value}
                             className="flex items-center">
                             <input
                               type="checkbox"
                               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                               checked={formData.criteres.montantInvestissement.includes(
-                                option
+                                option.value
                               )}
                               onChange={(e) =>
                                 handleMultiSelectChange(
                                   "montantInvestissement",
-                                  option,
+                                  option.value,
                                   e.target.checked
                                 )
                               }
                             />
                             <span className="ml-2 text-sm text-gray-700">
-                              {option}
+                              {option.key}
                             </span>
                           </label>
                         ))}
@@ -697,23 +697,23 @@ const Programs: React.FC = () => {
                       </label>
                       <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
                         {SECTEURS_TRAVAIL.map((secteur) => (
-                          <label key={secteur} className="flex items-center">
+                          <label key={secteur.value} className="flex items-center">
                             <input
                               type="checkbox"
                               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                               checked={formData.criteres.secteurActivite.includes(
-                                secteur
+                                secteur.value
                               )}
                               onChange={(e) =>
                                 handleMultiSelectChange(
                                   "secteurActivite",
-                                  secteur,
+                                  secteur.value,
                                   e.target.checked
                                 )
                               }
                             />
                             <span className="ml-2 text-sm text-gray-700">
-                              {secteur}
+                              {secteur.key}
                             </span>
                           </label>
                         ))}
@@ -730,31 +730,31 @@ const Programs: React.FC = () => {
                           ...STATUT_JURIDIQUE_OPTIONS
                         ].map((option) => (
                           <label
-                            key={option}
+                            key={option.value}
                             className="flex items-center">
                             <input
                               type="checkbox"
                               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                               checked={formData.criteres.statutJuridique.includes(
-                                option
+                                option.value
                               )}
                               onChange={(e) =>
                                 handleMultiSelectChange(
                                   "statutJuridique",
-                                  option,
+                                  option.value,
                                   e.target.checked
                                 )
                               }
                             />
                             <span className="ml-2 text-sm text-gray-700">
-                              {option}
+                              {option.key}
                             </span>
                           </label>
                         ))}
                       </div>
                     </div>
 
-                    {/* Régions */}
+             
 
 
                          {/* Chiffre d'affaires */}
@@ -808,6 +808,7 @@ const Programs: React.FC = () => {
                       </div>
                     </div>
                     
+                           {/* Régions */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         Régions
