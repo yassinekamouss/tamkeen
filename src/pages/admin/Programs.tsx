@@ -441,7 +441,7 @@ const Programs: React.FC = () => {
                   </svg>
                   <span className="text-gray-600">
                     Secteurs:{" "}
-                    {program.criteres.secteurActivite.length > 0
+                    {program.criteres?.secteurActivite?.length > 0
                       ? `${program.criteres.secteurActivite.length} sélectionnés`
                       : "Tous"}
                   </span>
@@ -701,7 +701,7 @@ const Programs: React.FC = () => {
                             <input
                               type="checkbox"
                               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                              checked={formData.criteres.secteurActivite.includes(
+                              checked={formData.criteres?.secteurActivite?.includes(
                                 secteur.value
                               )}
                               onChange={(e) =>
@@ -726,9 +726,7 @@ const Programs: React.FC = () => {
                         Statuts juridiques
                       </label>
                       <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
-                        {[
-                          ...STATUT_JURIDIQUE_OPTIONS
-                        ].map((option) => (
+                        {STATUT_JURIDIQUE_OPTIONS.map((option) => (
                           <label
                             key={option.value}
                             className="flex items-center">
@@ -753,9 +751,6 @@ const Programs: React.FC = () => {
                         ))}
                       </div>
                     </div>
-
-             
-
 
                          {/* Chiffre d'affaires */}
                     <div>
