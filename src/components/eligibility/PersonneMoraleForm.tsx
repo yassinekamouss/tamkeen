@@ -66,11 +66,11 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             {t("eligibility.morale.secteurActivite")} *
           </label>
           <select
-            name="secteurActivite"
-            value={formData.secteurActivite || ""}
+            name="secteurTravail"
+            value={formData.secteurTravail || ""}
             onChange={onInputChange}
             className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.secteurActivite ? "border-red-500" : "border-gray-300"
+              errors.secteurTravail ? "border-red-500" : "border-gray-300"
             }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {SECTEURS_TRAVAIL.map((secteur) => (
@@ -79,9 +79,9 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
               </option>
             ))}
           </select>
-          {errors.secteurActivite && (
+          {errors.secteurTravail && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.secteurActivite}
+              {errors.secteurTravail}
             </p>
           )}
         </div>

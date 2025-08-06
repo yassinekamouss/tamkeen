@@ -6,11 +6,10 @@ export interface FormData {
   email: string;
   telephone?: string;
   secteurTravail?: string;
-  statutJuridiquePhysique?: string;
   anneeCreation?: string;
   // Personne morale
   nomEntreprise?: string;
-  secteurActivite?: string;
+
   // Commun
   region?: string;
   chiffreAffaire2024?: string;
@@ -29,9 +28,7 @@ export interface FormErrors {
   telephone?: string;
   secteurTravail?: string;
   region?: string;
-  statutJuridiquePhysique?: string;
   nomEntreprise?: string;
-  secteurActivite?: string;
   anneeCreation?: string;
   chiffreAffaire2024?: string;
   chiffreAffaire2023?: string;
@@ -43,7 +40,7 @@ export interface FormErrors {
 
 export interface EligibilityResult {
   isEligible: boolean;
-  program?: string;
+  programs?: string[];
 }
 
 export interface EligibilityFormProps {

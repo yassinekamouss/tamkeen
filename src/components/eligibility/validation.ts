@@ -33,37 +33,24 @@ export const validateEligibilityForm = (
     if (!formData.telephone) {
       newErrors.telephone = t("eligibility.errors.telephoneRequired");
     }
-    if (!formData.secteurTravail) {
-      newErrors.secteurTravail = t("eligibility.errors.secteurTravailRequired");
-    }
-    if (!formData.region) {
-      newErrors.region = t("eligibility.errors.regionRequired");
-    }
-    if (!formData.statutJuridiquePhysique) {
-      newErrors.statutJuridiquePhysique = t(
-        "eligibility.errors.statutJuridiqueRequired"
-      );
-    }
-    if (!formData.anneeCreation) {
-      newErrors.anneeCreation = t("eligibility.errors.anneeCreationRequired");
-    }
   }
 
-  // Validation spécifique pour personne morale
-  if (formData.applicantType === "morale") {
-    if (!formData.secteurActivite) {
-      newErrors.secteurActivite = t(
-        "eligibility.errors.secteurActiviteRequired"
-      );
+  // Validations communes pour les deux types (secteur, région, statut, année)
+  if (formData.applicantType) {
+    if (!formData.secteurTravail) {
+      newErrors.secteurTravail = formData.applicantType === "physique" 
+        ? t("eligibility.errors.secteurTravailRequired")
+        : t("eligibility.errors.secteurActiviteRequired");
     }
+    
     if (!formData.region) {
       newErrors.region = t("eligibility.errors.regionRequired");
     }
+    
     if (!formData.statutJuridique) {
-      newErrors.statutJuridique = t(
-        "eligibility.errors.statutJuridiqueRequired"
-      );
+      newErrors.statutJuridique = t("eligibility.errors.statutJuridiqueRequired");
     }
+    
     if (!formData.anneeCreation) {
       newErrors.anneeCreation = t("eligibility.errors.anneeCreationRequired");
     }

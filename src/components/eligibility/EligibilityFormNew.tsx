@@ -28,7 +28,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [showResult, setShowResult] = useState(false);
   const [isEligible, setIsEligible] = useState(false);
-  const [eligibleProgram, setEligibleProgram] = useState<string>("");
+  const [eligibleProgram, setEligibleProgram] = useState<string[]>([]);
 
   // Gestionnaires d'événements
   const handleInputChange = (
@@ -65,21 +65,29 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const validationErrors = validateEligibilityForm(formData, t);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (Object.keys(validationErrors).length === 0) {
-      const eligibilityResult = checkEligibility(formData);
+  const validationErrors = validateEligibilityForm(formData, t);
+
+  if (Object.keys(validationErrors).length === 0) {
+    try {
+      const eligibilityResult = await checkEligibility(formData); 
+
       setIsEligible(eligibilityResult.isEligible);
-      setEligibleProgram(eligibilityResult.program || "");
+      setEligibleProgram(eligibilityResult.programs || []);
       setShowResult(true);
+
       console.log("Form submitted:", formData);
       console.log("Eligibility result:", eligibilityResult);
-    } else {
-      setErrors(validationErrors);
+    } catch (error) {
+      console.error("Erreur lors de la soumission :", error);
     }
-  };
+  } else {
+    setErrors(validationErrors);
+  }
+};
+
 
   const handleNewTest = () => {
     setShowResult(false);

@@ -159,11 +159,11 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             {t("eligibility.physique.statutJuridique")} *
           </label>
           <select
-            name="statutJuridiquePhysique"
-            value={formData.statutJuridiquePhysique || ""}
+            name="statutJuridique"
+            value={formData.statutJuridique || ""}
             onChange={onInputChange}
             className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.statutJuridiquePhysique
+              errors.statutJuridique
                 ? "border-red-500"
                 : "border-gray-300"
             }`}>
@@ -174,9 +174,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
               </option>
             ))}
           </select>
-          {errors.statutJuridiquePhysique && (
+          {errors.statutJuridique && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.statutJuridiquePhysique}
+              {errors.statutJuridique}
             </p>
           )}
         </div>
