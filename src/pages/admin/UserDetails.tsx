@@ -10,14 +10,14 @@ interface Test {
     statutJuridique?: string;
     anneeCreation: number;
     chiffreAffaire?: number;
-    montantPrevisionnelInvestissement: number;
+    montantInvestissement: string;
     programmesEligibles: string[];
     personne: {
         _id: string;
-        type: "physique" | "morale";
+        applicantType: "physique" | "morale";
         nom?: string;
         prenom?: string;
-        denomination?: string;
+        nomEntreprise?: string;
         email: string;
         telephone: string;
     };
@@ -52,28 +52,29 @@ const UserDetails = () => {
             {/* ✅ Colonne gauche - fixe en haut, largeur fixe */}
             <div className="flex-shrink-0 w-[340px] bg-white shadow rounded-2xl p-6 border border-gray-200 sticky top-6 self-start h-fit">
                 <div className="flex items-center gap-3 mb-5">
-                    {personne?.type === "morale" ? (
+                    {personne?.applicantType === "morale" ? (
                         <Building2 className="w-6 h-6 text-gray-600" />
                     ) : (
                         <User2 className="w-6 h-6 text-gray-600" />
                     )}
                     <h2 className="text-lg font-semibold text-gray-800 capitalize">
-                        {personne?.type === "morale" ? "Personne morale" : "Personne physique"}
+                        {personne?.applicantType === "morale" ? "Personne morale" : "Personne physique"}
                     </h2>
                 </div>
 
                 {personne && (
                     <div className="space-y-2 text-sm text-gray-700">
-                        {personne.type === "morale" ? (
-                            <p><span className="font-medium">Dénomination :</span> {personne.denomination}</p>
+                        {personne.applicantType === "morale" ? (
+                            <p><span className="font-medium">Dénomination :</span> {personne.nomEntreprise}</p>
                         ) : (
                             <>
                                 <p><span className="font-medium">Nom :</span> {personne.nom}</p>
                                 <p><span className="font-medium">Prénom :</span> {personne.prenom}</p>
+                                <p><span className="font-medium">Téléphone :</span> {personne.telephone}</p>
                             </>
                         )}
                         <p><span className="font-medium">Email :</span> {personne.email}</p>
-                        <p><span className="font-medium">Téléphone :</span> {personne.telephone}</p>
+                       
                     </div>
                 )}
             </div>
@@ -111,7 +112,7 @@ const UserDetails = () => {
                                     <p><span className="font-medium">Statut juridique :</span> {test.statutJuridique || "-"}</p>
                                     <p><span className="font-medium">Année de création :</span> {test.anneeCreation}</p>
                                     <p><span className="font-medium">Chiffre d'affaires :</span> {test.chiffreAffaire ?? "-"}</p>
-                                    <p><span className="font-medium">Montant prévisionnel :</span> {test.montantPrevisionnelInvestissement}</p>
+                                    <p><span className="font-medium">Montant prévisionnel :</span> {test.montantInvestissement}</p>
                                     <p className="col-span-2">
                                         <span className="font-medium">Programmes éligibles :</span>{" "}
                                         {test.programmesEligibles.length > 0

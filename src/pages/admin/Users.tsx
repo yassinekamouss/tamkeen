@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 
 interface User {
   _id: string;
-  type: "physique" | "morale";
+  applicantType: "physique" | "morale";
   nom?: string;
   prenom?: string;
-  denomination?: string;
+  nomEntreprise?: string;
   email: string;
   telephone: string;
   createdAt?: string;
@@ -51,10 +51,10 @@ const Users: React.FC = () => {
       (user.nom && user.nom.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (user.prenom &&
         user.prenom.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (user.denomination &&
-        user.denomination.toLowerCase().includes(searchTerm.toLowerCase()));
+      (user.nomEntreprise &&
+        user.nomEntreprise.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesType = filterType === "all" || user.type === filterType;
+    const matchesType = filterType === "all" || user.applicantType === filterType;
 
     return matchesSearch && matchesType;
   });
@@ -218,7 +218,7 @@ const Users: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-2xl font-bold text-gray-900">
-                {users.filter((u) => u.type === "physique").length}
+                {users.filter((u) => u.applicantType === "physique").length}
               </p>
               <p className="text-gray-600">Personnes physiques</p>
             </div>
@@ -241,7 +241,7 @@ const Users: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-2xl font-bold text-gray-900">
-                {users.filter((u) => u.type === "morale").length}
+                {users.filter((u) => u.applicantType === "morale").length}
               </p>
               <p className="text-gray-600">Personnes morales</p>
             </div>
@@ -306,22 +306,22 @@ const Users: React.FC = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           <div
-                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${user.type === "physique"
+                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${user.applicantType === "physique"
                               ? "bg-gray-500"
                               : "bg-gray-400"
                               }`}>
-                            {user.type === "physique"
+                            {user.applicantType === "physique"
                               ? `${(user.prenom || "").charAt(0)}${(
                                 user.nom || ""
                               ).charAt(0)}`
-                              : (user.denomination || "").charAt(0)}
+                              : (user.nomEntreprise || "").charAt(0)}
                           </div>
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
-                            {user.type === "physique"
+                            {user.applicantType === "physique"
                               ? `${user.prenom} ${user.nom}`
-                              : user.denomination}
+                              : user.nomEntreprise}
                           </div>
                           <div className="text-sm text-gray-500">
                             {user.email}
@@ -331,11 +331,11 @@ const Users: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.type === "physique"
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.applicantType === "physique"
                           ? "bg-gray-100 text-gray-800"
                           : "bg-gray-200 text-gray-800"
                           }`}>
-                        {user.type === "physique"
+                        {user.applicantType === "physique"
                           ? "Personne physique"
                           : "Personne morale"}
                       </span>
@@ -435,7 +435,7 @@ const Users: React.FC = () => {
                       />
                     </div>
 
-                    {selectedUser.type === "physique" ? (
+                    {selectedUser.applicantType === "physique" ? (
                       <>
                         <div className="mb-5">
                           <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
@@ -468,9 +468,9 @@ const Users: React.FC = () => {
                         <input
                           type="text"
                           className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
-                          value={selectedUser.denomination}
+                          value={selectedUser.nomEntreprise}
                           onChange={(e) =>
-                            setSelectedUser({ ...selectedUser, denomination: e.target.value })
+                            setSelectedUser({ ...selectedUser, nomEntreprise: e.target.value })
                           }
                           placeholder="Dénomination"
                         />
