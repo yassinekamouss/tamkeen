@@ -12,6 +12,29 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Styles personnalisés pour la scrollbar du chatbot */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-blue-300::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thumb-blue-300::-webkit-scrollbar-track {
+  background: #dbeafe;
+  border-radius: 10px;
+}
+
+.scrollbar-thumb-blue-300::-webkit-scrollbar-thumb {
+  background: #93c5fd;
+  border-radius: 10px;
+}
+
+.scrollbar-thumb-blue-300::-webkit-scrollbar-thumb:hover {
+  background: #60a5fa;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
