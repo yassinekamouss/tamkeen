@@ -44,4 +44,3 @@ export const checkEligibility = async (data: FormData): Promise<EligibilityResul
     return { isEligible: false };
   }
 };
-
