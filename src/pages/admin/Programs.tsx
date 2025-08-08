@@ -19,8 +19,10 @@ interface Program {
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
-    chiffreAffaireMin?: number | null;
-    chiffreAffaireMax?: number | null;
+ chiffreAffaire: {
+      chiffreAffaireMin: number | null;
+      chiffreAffaireMax: number | null;
+    };
     anneeCreation: (string | number)[];
     region: string[];
   };
@@ -35,8 +37,10 @@ interface ProgramFormData {
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
-    chiffreAffaireMin: number | null;
-    chiffreAffaireMax: number | null;
+    chiffreAffaire: {
+      chiffreAffaireMin: number | null;
+      chiffreAffaireMax: number | null;
+    };
     anneeCreation: (string | number)[];
     region: string[];
   };
@@ -59,8 +63,10 @@ const Programs: React.FC = () => {
       statutJuridique: [],
       applicantType: [],
       montantInvestissement: [],
-      chiffreAffaireMin: null,
-      chiffreAffaireMax: null,
+       chiffreAffaire: {
+      chiffreAffaireMin:  null,
+      chiffreAffaireMax:  null,
+    },
       anneeCreation: [],
       region: [],
     },
@@ -109,15 +115,18 @@ const Programs: React.FC = () => {
 
   const handleEdit = (program: Program) => {
     setEditingProgram(program);
+   
     setFormData({
       name: program.name,
       description: program.description,
       isActive: program.isActive,
       criteres: {
         ...program.criteres,
-        chiffreAffaireMin: program.criteres.chiffreAffaireMin ?? null,
-        chiffreAffaireMax: program.criteres.chiffreAffaireMax ?? null,
+        chiffreAffaire : {
+        chiffreAffaireMin: program.criteres.chiffreAffaire.chiffreAffaireMin ?? null,
+        chiffreAffaireMax: program.criteres.chiffreAffaire.chiffreAffaireMax ?? null,
       },
+    },
     });
     setShowModal(true);
   };
@@ -163,8 +172,10 @@ const Programs: React.FC = () => {
         statutJuridique: [],
         applicantType: [],
         montantInvestissement: [],
+        chiffreAffaire:{
         chiffreAffaireMin: null,
         chiffreAffaireMax: null,
+        },
         anneeCreation: [],
         region: [],
       },
@@ -765,18 +776,20 @@ const Programs: React.FC = () => {
                           <input
                             type="number"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={formData.criteres.chiffreAffaireMin || ""}
+                            value={formData.criteres.chiffreAffaire.chiffreAffaireMin || ""}
                             onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                criteres: {
-                                  ...formData.criteres,
-                                  chiffreAffaireMin: e.target.value
-                                    ? Number(e.target.value)
-                                    : null,
-                                },
-                              })
-                            }
+                                setFormData({
+                                  ...formData,
+                                  criteres: {
+                                    ...formData.criteres,
+                                    chiffreAffaire: {
+                                      ...formData.criteres.chiffreAffaire,
+                                      chiffreAffaireMin: e.target.value ? Number(e.target.value) : null,
+                                    },
+                                  },
+                                })
+                              }
+
                           />
                         </div>
                         <div>
@@ -786,16 +799,19 @@ const Programs: React.FC = () => {
                           <input
                             type="number"
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={formData.criteres.chiffreAffaireMax || ""}
+                            value={formData.criteres.chiffreAffaire.chiffreAffaireMax || ""}
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
                                 criteres: {
                                   ...formData.criteres,
+                                  chiffreAffaire:{
+                                  ...formData.criteres.chiffreAffaire,
                                   chiffreAffaireMax: e.target.value
                                     ? Number(e.target.value)
                                     : null,
-                                },
+                                  },
+                                  },
                               })
                             }
                           />
