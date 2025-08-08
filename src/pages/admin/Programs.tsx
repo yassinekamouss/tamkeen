@@ -14,12 +14,14 @@ interface Program {
   name: string;
   description: string;
   isActive: boolean;
+  DateDebut: string ;
+  DateFin: string ;
   criteres: {
     secteurActivite: string[];
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
- chiffreAffaire: {
+    chiffreAffaire: {
       chiffreAffaireMin: number | null;
       chiffreAffaireMax: number | null;
     };
@@ -32,6 +34,8 @@ interface ProgramFormData {
   name: string;
   description: string;
   isActive: boolean;
+  DateDebut: string ;
+  DateFin: string;
   criteres: {
     secteurActivite: string[];
     statutJuridique: string[];
@@ -58,15 +62,17 @@ const Programs: React.FC = () => {
     name: "",
     description: "",
     isActive: true,
+    DateDebut: "",
+    DateFin: "",
     criteres: {
       secteurActivite: [],
       statutJuridique: [],
       applicantType: [],
       montantInvestissement: [],
-       chiffreAffaire: {
-      chiffreAffaireMin:  null,
-      chiffreAffaireMax:  null,
-    },
+      chiffreAffaire: {
+        chiffreAffaireMin: null,
+        chiffreAffaireMax: null,
+      },
       anneeCreation: [],
       region: [],
     },
@@ -95,12 +101,19 @@ const Programs: React.FC = () => {
     try {
       const token = localStorage.getItem("adminToken");
 
+      // Conversion en Date si valeur présente, sinon null
+      const payload = {
+        ...formData,
+        DateDebut: formData.DateDebut ? new Date(formData.DateDebut) : null,
+        DateFin: formData.DateFin ? new Date(formData.DateFin) : null,
+      };
+
       if (editingProgram) {
-        await axios.put(`/programs/${editingProgram._id}`, formData, {
+        await axios.put(`/programs/${editingProgram._id}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post("/programs", formData, {
+        await axios.post("/programs", payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -115,18 +128,20 @@ const Programs: React.FC = () => {
 
   const handleEdit = (program: Program) => {
     setEditingProgram(program);
-   
+
     setFormData({
       name: program.name,
       description: program.description,
       isActive: program.isActive,
+      DateDebut: program.DateDebut ? program.DateDebut.toString() : "",
+      DateFin: program.DateFin ? program.DateFin.toString() : "",
       criteres: {
         ...program.criteres,
-        chiffreAffaire : {
-        chiffreAffaireMin: program.criteres.chiffreAffaire.chiffreAffaireMin ?? null,
-        chiffreAffaireMax: program.criteres.chiffreAffaire.chiffreAffaireMax ?? null,
+        chiffreAffaire: {
+          chiffreAffaireMin: program.criteres.chiffreAffaire.chiffreAffaireMin ?? null,
+          chiffreAffaireMax: program.criteres.chiffreAffaire.chiffreAffaireMax ?? null,
+        },
       },
-    },
     });
     setShowModal(true);
   };
@@ -167,14 +182,16 @@ const Programs: React.FC = () => {
       name: "",
       description: "",
       isActive: true,
+      DateDebut: "",
+      DateFin: "",
       criteres: {
         secteurActivite: [],
         statutJuridique: [],
         applicantType: [],
         montantInvestissement: [],
-        chiffreAffaire:{
-        chiffreAffaireMin: null,
-        chiffreAffaireMax: null,
+        chiffreAffaire: {
+          chiffreAffaireMin: null,
+          chiffreAffaireMax: null,
         },
         anneeCreation: [],
         region: [],
@@ -193,14 +210,14 @@ const Programs: React.FC = () => {
         ...prev.criteres,
         [field]: checked
           ? [
-              ...(prev.criteres[
-                field as keyof typeof prev.criteres
-              ] as string[]),
-              value,
-            ]
+            ...(prev.criteres[
+              field as keyof typeof prev.criteres
+            ] as string[]),
+            value,
+          ]
           : (
-              prev.criteres[field as keyof typeof prev.criteres] as string[]
-            ).filter((item) => item !== value),
+            prev.criteres[field as keyof typeof prev.criteres] as string[]
+          ).filter((item) => item !== value),
       },
     }));
   };
@@ -376,22 +393,20 @@ const Programs: React.FC = () => {
                     {program.name}
                   </h3>
                   <span
-                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                      program.isActive
-                        ? "bg-gray-200 bg-opacity-80 text-gray-700 border border-gray-300"
-                        : "bg-gray-300 bg-opacity-80 text-gray-600 border border-gray-400"
-                    }`}>
+                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${program.isActive
+                      ? "bg-gray-200 bg-opacity-80 text-gray-700 border border-gray-300"
+                      : "bg-gray-300 bg-opacity-80 text-gray-600 border border-gray-400"
+                      }`}>
                     {program.isActive ? "Actif" : "Inactif"}
                   </span>
                 </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => toggleActive(program._id, program.isActive)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      program.isActive
-                        ? "bg-gray-500 hover:bg-gray-600"
-                        : "bg-gray-400 hover:bg-gray-500"
-                    }`}
+                    className={`p-2 rounded-lg transition-colors ${program.isActive
+                      ? "bg-gray-500 hover:bg-gray-600"
+                      : "bg-gray-400 hover:bg-gray-500"
+                      }`}
                     title={program.isActive ? "Désactiver" : "Activer"}>
                     <svg
                       className="w-4 h-4 text-white"
@@ -605,6 +620,41 @@ const Programs: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date de début
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={formData.DateDebut ? formData.DateDebut.split("T")[0] : ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        DateDebut: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date fin
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={formData.DateFin ? formData.DateFin.split("T")[0] : ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        DateFin: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description *
                   </label>
                   <textarea
@@ -699,7 +749,7 @@ const Programs: React.FC = () => {
                       </div>
                     </div>
 
-               
+
 
                     {/* Secteurs d'activité */}
                     <div className="col-span-2">
@@ -763,7 +813,7 @@ const Programs: React.FC = () => {
                       </div>
                     </div>
 
-                         {/* Chiffre d'affaires */}
+                    {/* Chiffre d'affaires */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         Chiffre d'affaires (MAD)
@@ -778,17 +828,17 @@ const Programs: React.FC = () => {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             value={formData.criteres.chiffreAffaire.chiffreAffaireMin || ""}
                             onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  criteres: {
-                                    ...formData.criteres,
-                                    chiffreAffaire: {
-                                      ...formData.criteres.chiffreAffaire,
-                                      chiffreAffaireMin: e.target.value ? Number(e.target.value) : null,
-                                    },
+                              setFormData({
+                                ...formData,
+                                criteres: {
+                                  ...formData.criteres,
+                                  chiffreAffaire: {
+                                    ...formData.criteres.chiffreAffaire,
+                                    chiffreAffaireMin: e.target.value ? Number(e.target.value) : null,
                                   },
-                                })
-                              }
+                                },
+                              })
+                            }
 
                           />
                         </div>
@@ -805,21 +855,21 @@ const Programs: React.FC = () => {
                                 ...formData,
                                 criteres: {
                                   ...formData.criteres,
-                                  chiffreAffaire:{
-                                  ...formData.criteres.chiffreAffaire,
-                                  chiffreAffaireMax: e.target.value
-                                    ? Number(e.target.value)
-                                    : null,
+                                  chiffreAffaire: {
+                                    ...formData.criteres.chiffreAffaire,
+                                    chiffreAffaireMax: e.target.value
+                                      ? Number(e.target.value)
+                                      : null,
                                   },
-                                  },
+                                },
                               })
                             }
                           />
                         </div>
                       </div>
                     </div>
-                    
-                           {/* Régions */}
+
+                    {/* Régions */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         Régions
@@ -849,30 +899,30 @@ const Programs: React.FC = () => {
                       </div>
                     </div>
                     {/* Année de création */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Année de création
-                  </label>
-                  <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
-                    {ANNEE_CREATION.map((annee) => (
-                      <label key={annee} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          checked={formData.criteres.anneeCreation.includes(annee)}
-                          onChange={(e) =>
-                            handleMultiSelectChange(
-                              "anneeCreation",
-                              annee,
-                              e.target.checked
-                            )
-                          }
-                        />
-                        <span className="ml-2 text-sm text-gray-700">{annee}</span>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Année de création
                       </label>
-                    ))}
-                  </div>
-                </div>
+                      <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
+                        {ANNEE_CREATION.map((annee) => (
+                          <label key={annee} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              checked={formData.criteres.anneeCreation.includes(annee)}
+                              onChange={(e) =>
+                                handleMultiSelectChange(
+                                  "anneeCreation",
+                                  annee,
+                                  e.target.checked
+                                )
+                              }
+                            />
+                            <span className="ml-2 text-sm text-gray-700">{annee}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
 
                   </div>
                 </div>
