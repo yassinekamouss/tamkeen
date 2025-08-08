@@ -6,6 +6,7 @@ import {
   REGIONS,
   STATUT_JURIDIQUE_PERSONNE_PHYSIQUE_OPTIONS,
   ANNEE_CREATION_OPTIONS,
+  Sexe,
 } from "./constants";
 
 interface PersonnePhysiqueFormProps {
@@ -35,9 +36,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="nom"
             value={formData.nom || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.nom ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.nom ? "border-red-500" : "border-gray-300"
+              }`}
             placeholder={t("eligibility.physique.nomPlaceholder")}
           />
           {errors.nom && (
@@ -54,13 +54,55 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="prenom"
             value={formData.prenom || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.prenom ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.prenom ? "border-red-500" : "border-gray-300"
+              }`}
             placeholder={t("eligibility.physique.prenomPlaceholder")}
           />
           {errors.prenom && (
             <p className="text-red-500 text-xs mt-1">{errors.prenom}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Âge & Sexe */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t("eligibility.physique.age")} *
+          </label>
+          <input
+            type="number"
+            name="age"
+            value={formData.age || ""}
+            onChange={onInputChange}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.age ? "border-red-500" : "border-gray-300"
+              }`}
+            placeholder={t("eligibility.physique.agePlaceholder")}
+          />
+          {errors.age && (
+            <p className="text-red-500 text-xs mt-1">{errors.age}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t("eligibility.physique.sexe")} *
+          </label>
+          <select
+            name="Sexe"
+            value={formData.Sexe || ""}
+            onChange={onInputChange}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.Sexe ? "border-red-500" : "border-gray-300"
+              }`}>
+            <option value="">{t("eligibility.selectPlaceholder")}</option>
+            {Sexe.map((option) => (
+              <option key={option} value={option}>
+                {t(`eligibility.sexe.${option}`)}
+              </option>
+            ))}
+          </select>
+          {errors.Sexe && (
+            <p className="text-red-500 text-xs mt-1">{errors.Sexe}</p>
           )}
         </div>
       </div>
@@ -75,9 +117,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="email"
             value={formData.email}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.email ? "border-red-500" : "border-gray-300"
+              }`}
             placeholder={t("eligibility.emailPlaceholder")}
           />
           {errors.email && (
@@ -94,9 +135,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="telephone"
             value={formData.telephone || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.telephone ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.telephone ? "border-red-500" : "border-gray-300"
+              }`}
             placeholder={t("eligibility.physique.telephonePlaceholder")}
           />
           {errors.telephone && (
@@ -114,9 +154,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="secteurTravail"
             value={formData.secteurTravail || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.secteurTravail ? "border-red-500" : "border-gray-300"
-            }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.secteurTravail ? "border-red-500" : "border-gray-300"
+              }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {SECTEURS_TRAVAIL.map((secteur) => (
               <option key={secteur} value={secteur}>
@@ -137,9 +176,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="region"
             value={formData.region || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.region ? "border-red-500" : "border-gray-300"
-            }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.region ? "border-red-500" : "border-gray-300"
+              }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {REGIONS.map((region) => (
               <option key={region} value={region}>
@@ -162,11 +200,10 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="statutJuridique"
             value={formData.statutJuridique || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.statutJuridique
-                ? "border-red-500"
-                : "border-gray-300"
-            }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.statutJuridique
+              ? "border-red-500"
+              : "border-gray-300"
+              }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {STATUT_JURIDIQUE_PERSONNE_PHYSIQUE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -189,9 +226,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="anneeCreation"
             value={formData.anneeCreation || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.anneeCreation ? "border-red-500" : "border-gray-300"
-            }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.anneeCreation ? "border-red-500" : "border-gray-300"
+              }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {ANNEE_CREATION_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
