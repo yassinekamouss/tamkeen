@@ -26,7 +26,7 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
   return (
     <div className="animate-fadeIn space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {t("eligibility.morale.nomEntreprise")}
           </label>
@@ -39,7 +39,23 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             placeholder={t("eligibility.morale.nomEntreprisePlaceholder")}
           />
         </div>
-
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t("eligibility.physique.telephone")} *
+          </label>
+          <input
+            type="tel"
+            name="telephone"
+            value={formData.telephone || ""}
+            onChange={onInputChange}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.telephone ? "border-red-500" : "border-gray-300"
+              }`}
+            placeholder={t("eligibility.physique.telephonePlaceholder")}
+          />
+          {errors.telephone && (
+            <p className="text-red-500 text-xs mt-1">{errors.telephone}</p>
+          )}
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {t("eligibility.email")} *
@@ -49,16 +65,18 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="email"
             value={formData.email}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.email ? "border-red-500" : "border-gray-300"
+              }`}
             placeholder={t("eligibility.emailPlaceholder")}
           />
           {errors.email && (
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
           )}
         </div>
+
       </div>
+
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -69,9 +87,8 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="secteurTravail"
             value={formData.secteurTravail || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.secteurTravail ? "border-red-500" : "border-gray-300"
-            }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.secteurTravail ? "border-red-500" : "border-gray-300"
+              }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {SECTEURS_TRAVAIL.map((secteur) => (
               <option key={secteur} value={secteur}>
@@ -94,9 +111,8 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="anneeCreation"
             value={formData.anneeCreation || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.anneeCreation ? "border-red-500" : "border-gray-300"
-            }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.anneeCreation ? "border-red-500" : "border-gray-300"
+              }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {ANNEE_CREATION_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -119,9 +135,8 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="region"
             value={formData.region || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.region ? "border-red-500" : "border-gray-300"
-            }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.region ? "border-red-500" : "border-gray-300"
+              }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {REGIONS.map((region) => (
               <option key={region} value={region}>
@@ -142,9 +157,8 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="statutJuridique"
             value={formData.statutJuridique || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.statutJuridique ? "border-red-500" : "border-gray-300"
-            }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.statutJuridique ? "border-red-500" : "border-gray-300"
+              }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
