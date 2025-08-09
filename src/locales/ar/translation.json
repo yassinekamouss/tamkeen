@@ -46,7 +46,10 @@
       "telephonePlaceholder": "+212 6 XX XX XX XX",
       "secteurTravail": "قطاع العمل",
       "region": "الجهة",
-      "statutJuridique": "الوضع القانوني"
+      "statutJuridique": "الوضع القانوني",
+      "age": "العمر",
+      "agePlaceholder": "عمرك",
+      "sexe": "الجنس"
     },
     "morale": {
       "nomEntreprise": "اسم الشركة",
@@ -65,6 +68,10 @@
       "option1": "بين 0 و 1 مليون درهم",
       "option2": "أكثر من 1 مليون درهم",
       "option3": "بدون رقم معاملات في 2025"
+    },
+    "sexe":{
+      "homme": "ذكر",
+      "femme": "أنثى"
     },
     "montantInvestissementOptions": {
       "moins1M": "أقل من 1.000.000 درهم",
