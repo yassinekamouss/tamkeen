@@ -46,7 +46,10 @@
       "telephonePlaceholder": "+212 6 XX XX XX XX",
       "secteurTravail": "Secteur de travail",
       "region": "Région",
-      "statutJuridique": "Statut juridique"
+      "statutJuridique": "Statut juridique",
+      "age": "Âge",
+      "sexe": "Sexe",
+      "agePlaceholder" : "Votre Âge"
     },
     "morale": {
       "nomEntreprise": "Dénomination",
@@ -61,6 +64,10 @@
     "chiffreAffaire": "Chiffre d'affaire",
     "montantInvestissement": "Montant prévisionnel de l'investissement",
     "selectPlaceholder": "Sélectionner une option",
+    "sexe":{
+      "homme": "Homme",
+      "femme": "Femme"
+    },
     "chiffreAffaireOptions": {
       "option1": "Entre 0 et 1 MDH",
       "option2": "Supérieur à 1 MDH",

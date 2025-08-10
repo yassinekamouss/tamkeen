@@ -9,7 +9,11 @@ interface Test {
   region: string;
   statutJuridique?: string;
   anneeCreation: number;
-  chiffreAffaire?: number;
+   chiffreAffaires: {
+      chiffreAffaire2022: number | null;
+      chiffreAffaire2023: number | null;
+      chiffreAffaire2024: number | null;
+    };
   montantInvestissement: string;
   programmesEligibles: string[];
   personne: {
@@ -233,41 +237,62 @@ const UserDetails = () => {
                           </div>
                         </div>
 
-                        <div className="space-y-4">
-                          <h4 className="text-sm font-medium text-slate-900 border-b border-slate-100 pb-2">
-                            Données financières
-                          </h4>
-                          <div className="space-y-3">
-                            <div>
-                              <dt className="text-xs font-medium text-slate-500 mb-1">
-                                Année de création
-                              </dt>
-                              <dd className="text-sm text-slate-900">
-                                {test.anneeCreation}
-                              </dd>
-                            </div>
-                            <div>
-                              <dt className="text-xs font-medium text-slate-500 mb-1">
-                                Chiffre d'affaires
-                              </dt>
-                              <dd className="text-sm text-slate-900">
-                                {test.chiffreAffaire
-                                  ? `${test.chiffreAffaire.toLocaleString()} MAD`
-                                  : "Non spécifié"}
-                              </dd>
-                            </div>
-                            <div>
-                              <dt className="text-xs font-medium text-slate-500 mb-1">
-                                Montant d'investissement
-                              </dt>
-                              <dd className="text-sm text-slate-900">
-                                {test.montantInvestissement
-                                  ? `${test.montantInvestissement.toLocaleString()} MAD`
-                                  : "Non spécifié"}
-                              </dd>
-                            </div>
-                          </div>
-                        </div>
+           <div className="space-y-4">
+  <h4 className="text-sm font-medium text-slate-900 border-b border-slate-100 pb-2">
+    Données financières
+  </h4>
+  <div className="space-y-3">
+    <div>
+      <dt className="text-xs font-medium text-slate-500 mb-1">
+        Année de création
+      </dt>
+      <dd className="text-sm text-slate-900">
+        {test.anneeCreation}
+      </dd>
+    </div>
+
+    <div>
+      <dt className="text-xs font-medium text-slate-500 mb-1">
+        Chiffre d'affaires
+      </dt>
+      <dd className="text-sm text-slate-900 space-y-1">
+        {test.chiffreAffaires ? (
+          <>
+            {test.chiffreAffaires.chiffreAffaire2022 != null && (
+              <div>2022 : {test.chiffreAffaires.chiffreAffaire2022} MAD</div>
+            )}
+            {test.chiffreAffaires.chiffreAffaire2023 != null && (
+              <div>2023 : {test.chiffreAffaires.chiffreAffaire2023} MAD</div>
+            )}
+            {test.chiffreAffaires.chiffreAffaire2024 != null && (
+              <div>2024 : {test.chiffreAffaires.chiffreAffaire2024} MAD</div>
+            )}
+            {test.chiffreAffaires.chiffreAffaire2022 == null &&
+              test.chiffreAffaires.chiffreAffaire2023 == null &&
+              test.chiffreAffaires.chiffreAffaire2024 == null && (
+                <div>Non spécifié</div>
+            )}
+          </>
+        ) : (
+          <div>Non spécifié</div>
+        )}
+      </dd>
+    </div>
+
+    <div>
+      <dt className="text-xs font-medium text-slate-500 mb-1">
+        Montant d'investissement
+      </dt>
+      <dd className="text-sm text-slate-900">
+        {test.montantInvestissement != null
+          ? `${test.montantInvestissement.toLocaleString()} MAD`
+          : "Non spécifié"}
+      </dd>
+    </div>
+  </div>
+</div>
+
+
 
                         <div className="space-y-4">
                           <h4 className="text-sm font-medium text-slate-900 border-b border-slate-100 pb-2">

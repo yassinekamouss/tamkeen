@@ -3,6 +3,8 @@ export interface FormData {
   // Personne physique
   nom?: string;
   prenom?: string;
+  age?: number;
+  Sexe?: string;
   email: string;
   telephone?: string;
   secteurTravail?: string;
@@ -24,6 +26,8 @@ export interface FormErrors {
   applicantType?: string;
   nom?: string;
   prenom?: string;
+  age?: string;
+  Sexe?: string;
   email?: string;
   telephone?: string;
   secteurTravail?: string;
@@ -41,6 +45,7 @@ export interface FormErrors {
 export interface EligibilityResult {
   isEligible: boolean;
   programs?: string[];
+  errorMessage?: string;
 }
 
 export interface EligibilityFormProps {

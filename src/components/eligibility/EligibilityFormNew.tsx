@@ -29,25 +29,39 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const [showResult, setShowResult] = useState(false);
   const [isEligible, setIsEligible] = useState(false);
   const [eligibleProgram, setEligibleProgram] = useState<string[]>([]);
+  const [serverError, setServerError] = useState<string | null>(null);
+
 
   // Gestionnaires d'événements
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+  const { name, value } = e.target;
 
-    // Effacer l'erreur lorsque l'utilisateur commence à taper
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }));
+  setFormData((prev) => {
+    let updated = { ...prev, [name]: value };
+
+    // Si on change l'année de création, on nettoie les champs CA
+    if (name === "anneeCreation") {
+      updated = {
+        ...updated,
+        chiffreAffaire2022: undefined,
+        chiffreAffaire2023: undefined,
+        chiffreAffaire2024: undefined,
+      };
     }
-  };
+
+    return updated;
+  });
+
+  // Effacer l'erreur si l'utilisateur tape
+  if (errors[name as keyof FormErrors]) {
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }));
+  }
+};
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
@@ -69,24 +83,32 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   const validationErrors = validateEligibilityForm(formData, t);
-
-  if (Object.keys(validationErrors).length === 0) {
-    try {
-      const eligibilityResult = await checkEligibility(formData); 
-
-      setIsEligible(eligibilityResult.isEligible);
-      setEligibleProgram(eligibilityResult.programs || []);
-      setShowResult(true);
-
-      console.log("Form submitted:", formData);
-      console.log("Eligibility result:", eligibilityResult);
-    } catch (error) {
-      console.error("Erreur lors de la soumission :", error);
-    }
-  } else {
+  if (Object.keys(validationErrors).length > 0) {
     setErrors(validationErrors);
+    return;
+  }
+
+  try {
+    const eligibilityResult = await checkEligibility(formData);
+
+    if (eligibilityResult.errorMessage) {
+      setServerError(eligibilityResult.errorMessage);
+      setShowResult(false);
+      return;
+    }
+
+    setServerError(null);
+    setIsEligible(eligibilityResult.isEligible);
+    setEligibleProgram(eligibilityResult.programs || []);
+    setShowResult(true);
+
+    console.log("Form submitted:", formData);
+    console.log("Eligibility result:", eligibilityResult);
+  } catch (error) {
+    console.error("Erreur lors de la soumission :", error);
   }
 };
+
 
 
   const handleNewTest = () => {
@@ -196,6 +218,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                 />
               )}
             </form>
+            {serverError && (
+  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    {serverError}
+  </div>
+)}
+
           </div>
         </div>
       </section>

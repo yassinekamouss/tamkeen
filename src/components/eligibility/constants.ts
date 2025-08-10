@@ -32,6 +32,8 @@ export const REGIONS = [
   "Dakhla-Oued Ed-Dahab",
   "Guelmim-Oued Noun",
 ];
+export const Sexe = ["homme", "femme"];
+ 
 
 export const STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS = [
   {

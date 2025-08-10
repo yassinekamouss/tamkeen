@@ -39,8 +39,12 @@ export const checkEligibility = async (data: FormData): Promise<EligibilityResul
     } else {
       return { isEligible: false };
     }
-  } catch (error) {
-    console.error("Erreur lors de la vérification d'éligibilité :", error);
-    return { isEligible: false };
+  } catch (error:any) {
+   const message =error.response?.data?.message ||
+      "Erreur lors de la vérification d'éligibilité";
+
+    // Retourner une erreur spécifique
+    return { isEligible: false, errorMessage: message };
   }
+  
 };
