@@ -52,7 +52,7 @@ const UserDetails = () => {
   const personne = tests[0]?.personne;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-full">
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex gap-8">
           {/* Panneau d'informations utilisateur */}
@@ -99,13 +99,13 @@ const UserDetails = () => {
                           </dd>
                         </div>
                         <div className="space-y-1">
-                      <dt className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                        Téléphone
-                      </dt>
-                      <dd className="text-sm text-slate-700">
-                        {personne.telephone}
-                      </dd>
-                    </div>
+                          <dt className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                            Téléphone
+                          </dt>
+                          <dd className="text-sm text-slate-700">
+                            {personne.telephone}
+                          </dd>
+                        </div>
                       </>
                     )}
                     <div className="space-y-1">
@@ -116,7 +116,6 @@ const UserDetails = () => {
                         {personne.email}
                       </dd>
                     </div>
-                    
                   </div>
                 )}
               </div>
