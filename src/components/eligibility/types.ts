@@ -45,6 +45,7 @@ export interface FormErrors {
 export interface EligibilityResult {
   isEligible: boolean;
   programs?: string[];
+  errorMessage?: string;
 }
 
 export interface EligibilityFormProps {
