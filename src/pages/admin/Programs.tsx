@@ -14,8 +14,8 @@ interface Program {
   name: string;
   description: string;
   isActive: boolean;
-  DateDebut: string ;
-  DateFin: string ;
+  DateDebut: string;
+  DateFin: string;
   criteres: {
     secteurActivite: string[];
     statutJuridique: string[];
@@ -34,7 +34,7 @@ interface ProgramFormData {
   name: string;
   description: string;
   isActive: boolean;
-  DateDebut: string ;
+  DateDebut: string;
   DateFin: string;
   criteres: {
     secteurActivite: string[];
@@ -96,6 +96,7 @@ const Programs: React.FC = () => {
     }
   };
 
+  //Ajouter programme
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -199,6 +200,11 @@ const Programs: React.FC = () => {
     });
   };
 
+
+
+
+
+
   const handleMultiSelectChange = (
     field: string,
     value: string,
@@ -222,11 +228,30 @@ const Programs: React.FC = () => {
     }));
   };
 
-  const filteredPrograms = programs.filter(
-    (program) =>
+  const [remainingDays, setRemainingDays] = useState<number | null>(null);
+
+  const filteredPrograms = programs.filter((program) => {
+    // Filtre recherche
+    const matchesSearch =
       program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      program.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      program.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Filtre par durée totale du programme (si renseigné)
+    let matchesDuration = true;
+    if (remainingDays !== null) {
+      const startDate = new Date(program.DateDebut);
+      const endDate = new Date(program.DateFin);
+      const diffTime = endDate.getTime() - startDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      matchesDuration = diffDays <= remainingDays && diffDays >= 0;
+    }
+
+    return matchesSearch && matchesDuration;
+  });
+  const filteredCount = filteredPrograms.length;
+
+
 
   if (loading) {
     return (
@@ -281,10 +306,10 @@ const Programs: React.FC = () => {
         </div>
       </div>
 
-      {/* Search and Statistics */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+      {/* Search & Filter */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Search */}
-        <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Rechercher un programme
           </label>
@@ -309,53 +334,76 @@ const Programs: React.FC = () => {
           </div>
         </div>
 
-        {/* Statistics */}
+        {/* Filter */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="bg-gray-100 rounded-lg p-3">
-              <svg
-                className="w-6 h-6 text-gray-600"
-                fill="currentColor"
-                viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-2xl font-bold text-gray-900">
-                {programs.length}
-              </p>
-              <p className="text-gray-600 text-sm">Total programmes</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <div className="bg-gray-100 rounded-lg p-3">
-              <svg
-                className="w-6 h-6 text-gray-600"
-                fill="currentColor"
-                viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-2xl font-bold text-gray-900">
-                {programs.filter((p) => p.isActive).length}
-              </p>
-              <p className="text-gray-600 text-sm">Programmes actifs</p>
-            </div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filtrer par durée totale (jours)
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              placeholder="Ex: 4"
+              className="w-32 pl-3 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={remainingDays ?? ""}
+              onChange={(e) =>
+                setRemainingDays(e.target.value ? parseInt(e.target.value) : null)
+              }
+            />
+            <button
+              onClick={() => setRemainingDays(remainingDays)}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
+            >
+              Filtrer
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Statistics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Total programmes */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 flex items-center">
+          <div className="bg-gray-100 rounded-lg p-3">
+            <svg className="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-4">
+            <p className="text-2xl font-bold text-gray-900">{programs.length}</p>
+            <p className="text-gray-600 text-sm">Total programmes</p>
+          </div>
+        </div>
+
+        {/* Actifs */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 flex items-center">
+          <div className="bg-gray-100 rounded-lg p-3">
+            <svg className="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-4">
+            <p className="text-2xl font-bold text-gray-900">
+              {programs.filter((p) => p.isActive).length}
+            </p>
+            <p className="text-gray-600 text-sm">Programmes actifs</p>
+          </div>
+        </div>
+
+        {/* Filtrés */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 flex items-center">
+          <div className="bg-gray-100 rounded-lg p-3">
+            <svg className="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M2 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm10-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm-8 8h2a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm10 0h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-4">
+            <p className="text-2xl font-bold text-gray-900">{filteredCount}</p>
+            <p className="text-gray-600 text-sm">Programmes filtrés</p>
+          </div>
+        </div>
+      </div>
+<br />
+
 
       {/* Error Message */}
       {error && (
@@ -487,6 +535,47 @@ const Programs: React.FC = () => {
                       : "Tous montants"}
                   </span>
                 </div>
+
+                <div className="flex items-center text-sm">
+                  <svg
+                    className="w-4 h-4 text-gray-500 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M6 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H8V3a1 1 0 00-2 0zm10 5H4v9a1 1 0 001 1h10a1 1 0 001-1V7z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-gray-600">
+                    Début:{" "}
+                    {program.DateDebut
+                      ? new Date(program.DateDebut).toLocaleDateString()
+                      : "N/A"}
+                  </span>
+                </div>
+                <div className="flex items-center text-sm">
+
+                  <svg
+                    className="w-4 h-4 text-gray-500 mx-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M6 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H8V3a1 1 0 00-2 0zm10 5H4v9a1 1 0 001 1h10a1 1 0 001-1V7z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-gray-600">
+                    Fin:{" "}
+                    {program.DateFin
+                      ? new Date(program.DateFin).toLocaleDateString()
+                      : "N/A"}
+                  </span>
+                </div>
+
               </div>
 
               {/* Actions */}
