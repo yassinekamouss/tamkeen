@@ -4,7 +4,7 @@ export interface FormData {
   nom?: string;
   prenom?: string;
   age?: number;
-  Sexe?: string;
+  sexe?: string;
   email: string;
   telephone?: string;
   secteurTravail?: string;
@@ -27,7 +27,7 @@ export interface FormErrors {
   nom?: string;
   prenom?: string;
   age?: string;
-  Sexe?: string;
+  sexe?: string;
   email?: string;
   telephone?: string;
   secteurTravail?: string;
@@ -42,11 +42,17 @@ export interface FormErrors {
   statutJuridique?: string;
 }
 
+export interface programsNamesAndLinks {
+  name: string;
+  link: string;
+}
 export interface EligibilityResult {
   isEligible: boolean;
-  programs?: string[];
+  programs?: programsNamesAndLinks[];
   errorMessage?: string;
 }
+
+
 
 export interface EligibilityFormProps {
   onNavigateBack?: () => void;

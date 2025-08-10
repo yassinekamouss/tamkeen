@@ -1,9 +1,11 @@
 import React from "react";
-import type { FormData } from "./types";
+import type { FormData, programsNamesAndLinks } from "./types";
+import { useTranslation } from "react-i18next";
+
 
 interface EligibilityResultProps {
   isEligible: boolean;
-  eligibleProgram: string[];
+  eligibleProgram: programsNamesAndLinks[];
   formData: FormData;
   onNewTest: () => void;
 }
@@ -11,9 +13,10 @@ interface EligibilityResultProps {
 const EligibilityResult: React.FC<EligibilityResultProps> = ({
   isEligible,
   eligibleProgram,
-  formData,
   onNewTest,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 flex items-center justify-center">
       <div className="max-w-lg mx-auto">
@@ -37,19 +40,37 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
 
             {/* Titre */}
             <h2 className="text-2xl font-semibold text-green-700 mb-3">
-              Éligible
+             {t("eligibilityResult.eligible")} 
             </h2>
 
             {/* Message principal */}
-            <p className="text-gray-600 text-base leading-relaxed mb-6">
-              Félicitations ! Votre profil correspond aux critères d'éligibilité
-              pour le(s) programme(s) suivants  :{" "}
-              <span className="font-semibold text-blue-600">
-                {eligibleProgram.join(", ")}
-              </span>
-              . Notre équipe d'experts vous contactera sous 48h pour finaliser
-              votre dossier.
-            </p>
+            <div className="text-gray-600 text-base leading-relaxed mb-6">
+                <p>{t("eligibilityResult.message.eligible")}</p>
+
+                <div className="center font-semibold text-blue-600">
+                  <div className="flex flex-col items-center space-y-2">
+                    {eligibleProgram.map((program, index) => {
+                      const link = program.link.startsWith("http")
+                        ? program.link
+                        : `https://${program.link}`;
+                      return (
+                        <a
+                          key={index}
+                          href={link}
+                          target="_blank"
+                          rel="noopener"
+                          className="text-blue-600 hover:underline font-semibold"
+                        >
+                          {program.name}
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <p>{t("eligibilityResult.message.eligibleEnd")}</p>
+              </div>
+
 
             {/* Informations de contact */}
             <div className="bg-gray-50 rounded-xl p-4 mb-8">
@@ -67,7 +88,7 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
                   />
                 </svg>
                 Contact :{" "}
-                <span className="font-medium ml-1">{formData.email}</span>
+                <span className="font-medium ml-1">contact@tamkeen.ma</span>
               </div>
             </div>
 
@@ -76,11 +97,9 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
               <button
                 onClick={onNewTest}
                 className="w-full bg-gray-900 text-white font-medium py-3 px-6 rounded-xl hover:bg-gray-800 transition-colors duration-200">
-                Nouveau test
+                {t("eligibilityResult.newTestButton")}
               </button>
-              <p className="text-xs text-gray-500">
-                Test d'éligibilité - #{Date.now().toString().slice(-6)}
-              </p>
+             
             </div>
           </div>
         ) : (
@@ -105,14 +124,14 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
 
             {/* Titre */}
             <h2 className="text-2xl font-semibold text-orange-700 mb-3">
-              Non éligible
+               {t("eligibilityResult.notEligible")}
             </h2>
 
             {/* Message principal */}
             <p className="text-gray-700 text-base leading-relaxed mb-6 font-medium">
-              D'après vos réponses, vous ne remplissez pas les critères
-              d'éligibilité actuels. Cependant, notre équipe peut vous orienter
-              vers d'autres solutions de financement adaptées à votre situation.
+             
+              {t("eligibilityResult.message.notEligible")}
+
             </p>
 
             {/* Informations de contact */}
@@ -130,8 +149,8 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
                     d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                   />
                 </svg>
-                Pour plus d'informations :{" "}
-                <span className="font-semibold ml-1">contact@tamkeen.ma</span>
+             {t("eligibilityResult.contactInfo")}
+              
               </div>
             </div>
 
@@ -140,11 +159,9 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
               <button
                 onClick={onNewTest}
                 className="w-full bg-orange-600 text-white font-medium py-3 px-6 rounded-xl hover:bg-orange-700 transition-colors duration-200">
-                Tester à nouveau
+               {t("eligibilityResult.newTestButton")}
               </button>
-              <p className="text-xs text-gray-500">
-                Test d'éligibilité - #{Date.now().toString().slice(-6)}
-              </p>
+            
             </div>
           </div>
         )}
