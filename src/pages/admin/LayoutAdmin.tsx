@@ -7,15 +7,15 @@ import logoTamkeen from "../../assets/logo.webp";
 const LayoutAdmin = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   return (
-    <div className="flex bg-gray-50">
+    <div className="flex bg-gray-50 min-h-screen">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} />
       <div
-        className={`transition-all duration-300 ${
+        className={`flex flex-col transition-all duration-300 ${
           sidebarOpen ? "ml-64" : "ml-0"
         } w-full`}>
-        {/* Header professionnel avec logo */}
-        <header className="bg-white shadow-sm border-b border-gray-200">
+        {/* Header professionnel avec logo - FIXE */}
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center space-x-4">
               {/* Icône toggle sidebar */}
@@ -62,10 +62,10 @@ const LayoutAdmin = () => {
           </div>
         </header>
 
-        {/* Contenu principal */}
-        <div className="p-6 bg-gray-50 min-h-screen">
+        {/* Contenu principal - avec flex-1 pour prendre toute la hauteur restante */}
+        <main className="flex-1 bg-gray-50 overflow-auto">
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );
