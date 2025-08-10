@@ -73,6 +73,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           <input
             type="number"
             name="age"
+            min={18}
+            max={100}
             value={formData.age || ""}
             onChange={onInputChange}
             className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.age ? "border-red-500" : "border-gray-300"
