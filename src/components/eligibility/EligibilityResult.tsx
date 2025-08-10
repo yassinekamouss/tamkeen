@@ -43,9 +43,9 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
             {/* Message principal */}
             <p className="text-gray-600 text-base leading-relaxed mb-6">
               Félicitations ! Votre profil correspond aux critères d'éligibilité
-              pour le programme{" "}
+              pour le(s) programme(s) suivants  :{" "}
               <span className="font-semibold text-blue-600">
-                {eligibleProgram}
+                {eligibleProgram.join(", ")}
               </span>
               . Notre équipe d'experts vous contactera sous 48h pour finaliser
               votre dossier.
