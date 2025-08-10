@@ -538,7 +538,7 @@ const Programs: React.FC = () => {
                 </h2>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="text-white hover:text-gray-200">
+                  className="bg-blue-600 text-white hover:text-gray-200">
                   <svg
                     className="w-6 h-6"
                     fill="currentColor"
