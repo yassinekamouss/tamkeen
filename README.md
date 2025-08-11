@@ -1,3 +1,12 @@
+# React + TypeScript + Vite
+
+## Chatbot integration
+
+Le chatbot utilise désormais l'API backend sécurisée au lieu d'appeler OpenAI depuis le front.
+
+- Endpoint: http://localhost:5000/api/chat
+- Aucune clé OpenAI ne doit être présente dans les variables Vite (`VITE_OPENAI_API_KEY` à supprimer de vos fichiers .env et de l'hébergement).
+
 # Tamkeen - Centre d'Empowerment
 
 > **Application web moderne pour l'autonomisation des individus grâce à des opportunités de formation et d'emploi.**
