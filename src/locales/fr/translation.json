@@ -321,5 +321,16 @@
     ],
     "inputPlaceholder": "Posez votre question sur les subventions...",
     "sendHint": "Appuyez sur Entrée pour envoyer"
+  },
+  "eligibilityResult":{
+    "eligible": "Éligible",
+    "notEligible": "Non éligible",
+    "message": {
+      "eligible": "Félicitations ! Votre profil correspond aux critères d'éligibilité pour le(s) programme(s) suivant(s) :",
+      "notEligible": "D'après vos réponses, vous ne remplissez pas les critères d'éligibilité actuels. Cependant, notre équipe peut vous orienter vers d'autres solutions de financement adaptées à votre situation.",
+      "eligibleEnd": "Notre équipe d'experts vous contactera sous 48h pour finaliser votre dossier."
+    },
+    "contactInfo":"Pour plus d'informations : ",
+    "newTestButton": "Faire un nouveau test"
   }
 }

@@ -6,7 +6,7 @@ import {
   REGIONS,
   STATUT_JURIDIQUE_PERSONNE_PHYSIQUE_OPTIONS,
   ANNEE_CREATION_OPTIONS,
-  Sexe,
+  sexe,
 } from "./constants";
 
 interface PersonnePhysiqueFormProps {
@@ -92,19 +92,19 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           </label>
           <select
             name="sexe"
-            value={formData.Sexe || ""}
+            value={formData.sexe || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.Sexe ? "border-red-500" : "border-gray-300"
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.sexe ? "border-red-500" : "border-gray-300"
               }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
-            {Sexe.map((option) => (
+            {sexe.map((option) => (
               <option key={option} value={option}>
                 {t(`eligibility.sexe.${option}`)}
               </option>
             ))}
           </select>
-          {errors.Sexe && (
-            <p className="text-red-500 text-xs mt-1">{errors.Sexe}</p>
+          {errors.sexe && (
+            <p className="text-red-500 text-xs mt-1">{errors.sexe}</p>
           )}
         </div>
       </div>
