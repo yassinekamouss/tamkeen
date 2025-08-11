@@ -123,6 +123,22 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
           </svg>
           Rapports
         </NavLink>
+
+        {/* News */}
+        <NavLink
+          to="/admin/news"
+          className={({ isActive }) =>
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            }`
+          }>
+          <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 3a1 1 0 00-1 1v12a1 1 0 001 1h10a3 3 0 003-3V6a3 3 0 00-3-3H4zm3 4h6a1 1 0 010 2H7a1 1 0 010-2zm0 4h6a1 1 0 010 2H7a1 1 0 010-2z" />
+          </svg>
+          Actualités
+        </NavLink>
       </nav>
 
       {/* Footer Section */}

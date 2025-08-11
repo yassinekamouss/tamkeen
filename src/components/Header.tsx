@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo.webp";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -62,7 +62,7 @@ const Header: React.FC = () => {
                   ? "text-blue-600 border-b-2 border-blue-600"
                   : "text-gray-700 hover:text-blue-600"
               }`}>
-              {t('header.home')}
+              {t("header.home")}
             </Link>
             <Link
               to="/about"
@@ -71,7 +71,16 @@ const Header: React.FC = () => {
                   ? "text-blue-600 border-b-2 border-blue-600"
                   : "text-gray-700 hover:text-blue-600"
               }`}>
-              {t('header.about')}
+              {t("header.about")}
+            </Link>
+            <Link
+              to="/news"
+              className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+                isActiveLink("/news")
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-700 hover:text-blue-600"
+              }`}>
+              {t("header.news")}
             </Link>
             <Link
               to="/faq"
@@ -80,13 +89,13 @@ const Header: React.FC = () => {
                   ? "text-blue-600 border-b-2 border-blue-600"
                   : "text-gray-700 hover:text-blue-600"
               }`}>
-              {t('header.faq')}
+              {t("header.faq")}
             </Link>
             <div ref={dropdownRef} className="relative">
               <button
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
                 className="px-3 py-2 text-sm font-medium transition duration-300 flex items-center text-gray-700 hover:text-blue-600">
-                {t('header.language')}
+                {t("header.language")}
                 <svg
                   className={`ml-1 h-4 w-4 transition-transform duration-200 ${
                     isLanguageOpen ? "rotate-180" : ""
@@ -106,11 +115,15 @@ const Header: React.FC = () => {
               {isLanguageOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
                   <div className="py-1">
-                    <button onClick={() => changeLanguage('ar')} className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                    <button
+                      onClick={() => changeLanguage("ar")}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
                       <span className="mr-3 text-lg">🇲🇦</span>
                       العربية
                     </button>
-                    <button onClick={() => changeLanguage('fr')} className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 bg-blue-50 text-blue-600">
+                    <button
+                      onClick={() => changeLanguage("fr")}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 bg-blue-50 text-blue-600">
                       <span className="mr-3 text-lg">🇫🇷</span>
                       Français
                     </button>
@@ -153,7 +166,7 @@ const Header: React.FC = () => {
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 }`}>
-                {t('header.home')}
+                {t("header.home")}
               </Link>
               <Link
                 to="/about"
@@ -163,7 +176,17 @@ const Header: React.FC = () => {
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 }`}>
-                {t('header.about')}
+                {t("header.about")}
+              </Link>
+              <Link
+                to="/news"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block px-3 py-2 text-sm font-medium rounded-md transition duration-300 ${
+                  isActiveLink("/news")
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                }`}>
+                {t("header.news")}
               </Link>
               <Link
                 to="/faq"
@@ -173,18 +196,28 @@ const Header: React.FC = () => {
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 }`}>
-                {t('header.faq')}
+                {t("header.faq")}
               </Link>
               <div className="px-3 py-2">
                 <span className="text-sm font-medium text-gray-700 mb-2 block">
-                  {t('header.language')}
+                  {t("header.language")}
                 </span>
                 <div className="space-y-1">
-                  <button onClick={() => {changeLanguage('ar'); setIsMobileMenuOpen(false);}} className="flex items-center w-full px-2 py-1 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">
+                  <button
+                    onClick={() => {
+                      changeLanguage("ar");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-2 py-1 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">
                     <span className="mr-2 text-base">🇲🇦</span>
                     العربية
                   </button>
-                  <button onClick={() => {changeLanguage('fr'); setIsMobileMenuOpen(false);}} className="flex items-center w-full px-2 py-1 text-sm text-blue-600 bg-blue-50 rounded">
+                  <button
+                    onClick={() => {
+                      changeLanguage("fr");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-2 py-1 text-sm text-blue-600 bg-blue-50 rounded">
                     <span className="mr-2 text-base">🇫🇷</span>
                     Français
                   </button>

@@ -2,6 +2,7 @@
   "header": {
     "home": "Accueil",
     "about": "À propos",
+    "news": "Actualités",
     "faq": "FAQ",
     "privacy": "Politique de confidentialité",
     "language": "Langue"
@@ -49,7 +50,7 @@
       "statutJuridique": "Statut juridique",
       "age": "Âge",
       "sexe": "Sexe",
-      "agePlaceholder" : "Votre Âge"
+      "agePlaceholder": "Votre Âge"
     },
     "morale": {
       "nomEntreprise": "Dénomination",
@@ -64,7 +65,7 @@
     "chiffreAffaire": "Chiffre d'affaire",
     "montantInvestissement": "Montant prévisionnel de l'investissement",
     "selectPlaceholder": "Sélectionner une option",
-    "sexe":{
+    "sexe": {
       "homme": "Homme",
       "femme": "Femme"
     },
@@ -322,7 +323,7 @@
     "inputPlaceholder": "Posez votre question sur les subventions...",
     "sendHint": "Appuyez sur Entrée pour envoyer"
   },
-  "eligibilityResult":{
+  "eligibilityResult": {
     "eligible": "Éligible",
     "notEligible": "Non éligible",
     "message": {
@@ -330,7 +331,7 @@
       "notEligible": "D'après vos réponses, vous ne remplissez pas les critères d'éligibilité actuels. Cependant, notre équipe peut vous orienter vers d'autres solutions de financement adaptées à votre situation.",
       "eligibleEnd": "Notre équipe d'experts vous contactera sous 48h pour finaliser votre dossier."
     },
-    "contactInfo":"Pour plus d'informations : ",
+    "contactInfo": "Pour plus d'informations : ",
     "newTestButton": "Faire un nouveau test"
   }
 }

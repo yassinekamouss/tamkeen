@@ -7,6 +7,7 @@ const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const News = lazy(() => import("./pages/News.tsx"));
 // Admin auth & layout
 const Login = lazy(() => import("./pages/admin/Login"));
 const PrivateRoute = lazy(() => import("./components/PrivateRoute"));
@@ -18,6 +19,7 @@ const Programs = lazy(() => import("./pages/admin/Programs"));
 const UserDetails = lazy(() => import("./pages/admin/UserDetails"));
 const Tests = lazy(() => import("./pages/admin/Tests"));
 const Reports = lazy(() => import("./pages/admin/Reports"));
+const AdminNews = lazy(() => import("./pages/admin/News.tsx"));
 import Loader from "./components/Spinner.tsx";
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
             {/* Public routes */}
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/news" element={<News />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/admin/login" element={<Login />} />
@@ -42,6 +45,7 @@ function App() {
                 <Route path="programs" element={<Programs />} />
                 <Route path="tests" element={<Tests />} />
                 <Route path="reports" element={<Reports />} />
+                <Route path="news" element={<AdminNews />} />
               </Route>
             </Route>
           </Routes>
