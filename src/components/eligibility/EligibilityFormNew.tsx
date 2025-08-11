@@ -11,6 +11,7 @@ import PersonneMoraleForm from "./PersonneMoraleForm";
 import CommonFields from "./CommonFields";
 import EligibilityResult from "./EligibilityResult";
 
+import type { programsNamesAndLinks } from "./types";
 const EligibilityForm: React.FC<EligibilityFormProps> = ({
   onNavigateBack,
 }) => {
@@ -28,7 +29,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [showResult, setShowResult] = useState(false);
   const [isEligible, setIsEligible] = useState(false);
-  const [eligibleProgram, setEligibleProgram] = useState<string[]>([]);
+  const [eligibleProgram, setEligibleProgram] = useState<programsNamesAndLinks[]>([]);
   const [serverError, setServerError] = useState<string | null>(null);
 
 
