@@ -12,6 +12,7 @@ import PersonneMoraleForm from "./PersonneMoraleForm";
 import CommonFields from "./CommonFields";
 import EligibilityResult from "./EligibilityResult";
 
+import type { programsNamesAndLinks } from "./types";
 const EligibilityForm: React.FC<EligibilityFormProps> = ({
   onNavigateBack,
 }) => {
