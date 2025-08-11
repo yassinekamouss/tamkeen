@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../../api/axios";
 import { Building2, User2 } from "lucide-react"; // icônes Lucide
+import TestCard from "../../components/admin/TestCard";
 
 interface Test {
   _id: string;
@@ -9,11 +10,11 @@ interface Test {
   region: string;
   statutJuridique?: string;
   anneeCreation: number;
-   chiffreAffaires: {
-      chiffreAffaire2022: number | null;
-      chiffreAffaire2023: number | null;
-      chiffreAffaire2024: number | null;
-    };
+  chiffreAffaires: {
+    chiffreAffaire2022: number | null;
+    chiffreAffaire2023: number | null;
+    chiffreAffaire2024: number | null;
+  };
   montantInvestissement: string;
   programmesEligibles: string[];
   personne: {
@@ -173,157 +174,12 @@ const UserDetails = () => {
             ) : (
               <div className="space-y-4">
                 {tests.map((test, index) => (
-                  <div
+                  <TestCard
                     key={test._id}
-                    className="bg-white border border-slate-200 rounded-lg hover:shadow-sm transition-all duration-200">
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-sm font-medium text-slate-600">
-                            {index + 1}
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-slate-900">
-                              Test #{test._id.slice(-6)}
-                            </h3>
-                            <p className="text-sm text-slate-500">
-                              ID: {test._id}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {test.programmesEligibles.length > 0 ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                              ✓ Éligible
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                              ✕ Non éligible
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="space-y-4">
-                          <h4 className="text-sm font-medium text-slate-900 border-b border-slate-100 pb-2">
-                            Informations générales
-                          </h4>
-                          <div className="space-y-3">
-                            <div>
-                              <dt className="text-xs font-medium text-slate-500 mb-1">
-                                Secteur d'activité
-                              </dt>
-                              <dd className="text-sm text-slate-900">
-                                {test.secteurTravail}
-                              </dd>
-                            </div>
-                            <div>
-                              <dt className="text-xs font-medium text-slate-500 mb-1">
-                                Région
-                              </dt>
-                              <dd className="text-sm text-slate-900">
-                                {test.region}
-                              </dd>
-                            </div>
-                            <div>
-                              <dt className="text-xs font-medium text-slate-500 mb-1">
-                                Statut juridique
-                              </dt>
-                              <dd className="text-sm text-slate-900">
-                                {test.statutJuridique || "Non spécifié"}
-                              </dd>
-                            </div>
-                          </div>
-                        </div>
-
-           <div className="space-y-4">
-  <h4 className="text-sm font-medium text-slate-900 border-b border-slate-100 pb-2">
-    Données financières
-  </h4>
-  <div className="space-y-3">
-    <div>
-      <dt className="text-xs font-medium text-slate-500 mb-1">
-        Année de création
-      </dt>
-      <dd className="text-sm text-slate-900">
-        {test.anneeCreation}
-      </dd>
-    </div>
-
-    <div>
-      <dt className="text-xs font-medium text-slate-500 mb-1">
-        Chiffre d'affaires
-      </dt>
-      <dd className="text-sm text-slate-900 space-y-1">
-        {test.chiffreAffaires ? (
-          <>
-            {test.chiffreAffaires.chiffreAffaire2022 != null && (
-              <div>2022 : {test.chiffreAffaires.chiffreAffaire2022} MAD</div>
-            )}
-            {test.chiffreAffaires.chiffreAffaire2023 != null && (
-              <div>2023 : {test.chiffreAffaires.chiffreAffaire2023} MAD</div>
-            )}
-            {test.chiffreAffaires.chiffreAffaire2024 != null && (
-              <div>2024 : {test.chiffreAffaires.chiffreAffaire2024} MAD</div>
-            )}
-            {test.chiffreAffaires.chiffreAffaire2022 == null &&
-              test.chiffreAffaires.chiffreAffaire2023 == null &&
-              test.chiffreAffaires.chiffreAffaire2024 == null && (
-                <div>Non spécifié</div>
-            )}
-          </>
-        ) : (
-          <div>Non spécifié</div>
-        )}
-      </dd>
-    </div>
-
-    <div>
-      <dt className="text-xs font-medium text-slate-500 mb-1">
-        Montant d'investissement
-      </dt>
-      <dd className="text-sm text-slate-900">
-        {test.montantInvestissement != null
-          ? `${test.montantInvestissement.toLocaleString()} MAD`
-          : "Non spécifié"}
-      </dd>
-    </div>
-  </div>
-</div>
-
-
-
-                        <div className="space-y-4">
-                          <h4 className="text-sm font-medium text-slate-900 border-b border-slate-100 pb-2">
-                            Résultats
-                          </h4>
-                          <div>
-                            <dt className="text-xs font-medium text-slate-500 mb-2">
-                              Programmes éligibles
-                            </dt>
-                            {test.programmesEligibles.length > 0 ? (
-                              <div className="space-y-1">
-                                {test.programmesEligibles.map(
-                                  (programme, idx) => (
-                                    <dd
-                                      key={idx}
-                                      className="text-sm text-slate-900 bg-slate-50 px-2 py-1 rounded">
-                                      {programme}
-                                    </dd>
-                                  )
-                                )}
-                              </div>
-                            ) : (
-                              <dd className="text-sm text-slate-500 italic">
-                                Aucun programme éligible
-                              </dd>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    test={test}
+                    index={index}
+                    hidePerson
+                  />
                 ))}
               </div>
             )}
