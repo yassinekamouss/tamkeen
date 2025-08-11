@@ -16,11 +16,17 @@ interface Program {
   isActive: boolean;
   DateDebut: string;
   DateFin: string;
+  link: string;
   criteres: {
     secteurActivite: string[];
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
+    age?: {
+      minAge: number | null;
+      maxAge: number | null;
+    };
+    sexe?:string[];
     chiffreAffaire: {
       chiffreAffaireMin: number | null;
       chiffreAffaireMax: number | null;
@@ -36,11 +42,17 @@ interface ProgramFormData {
   isActive: boolean;
   DateDebut: string;
   DateFin: string;
+  link?: string;
   criteres: {
     secteurActivite: string[];
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
+    age:{
+      minAge: number | null;
+      maxAge: number | null;
+    },
+    sexe:string[];
     chiffreAffaire: {
       chiffreAffaireMin: number | null;
       chiffreAffaireMax: number | null;
@@ -64,11 +76,17 @@ const Programs: React.FC = () => {
     isActive: true,
     DateDebut: "",
     DateFin: "",
+    link: "",
     criteres: {
       secteurActivite: [],
       statutJuridique: [],
       applicantType: [],
       montantInvestissement: [],
+       age: {  
+      minAge : null,
+      maxAge : null,
+     },
+      sexe:[],
       chiffreAffaire: {
         chiffreAffaireMin: null,
         chiffreAffaireMax: null,
@@ -136,8 +154,14 @@ const Programs: React.FC = () => {
       isActive: program.isActive,
       DateDebut: program.DateDebut ? program.DateDebut.toString() : "",
       DateFin: program.DateFin ? program.DateFin.toString() : "",
+      link: program.link,
       criteres: {
         ...program.criteres,
+          age: {
+      minAge: program.criteres.age?.minAge ?? null,
+      maxAge: program.criteres.age?.maxAge ?? null,
+       },
+    sexe: program.criteres.sexe ?? [],
         chiffreAffaire: {
           chiffreAffaireMin: program.criteres.chiffreAffaire.chiffreAffaireMin ?? null,
           chiffreAffaireMax: program.criteres.chiffreAffaire.chiffreAffaireMax ?? null,
@@ -185,10 +209,16 @@ const Programs: React.FC = () => {
       isActive: true,
       DateDebut: "",
       DateFin: "",
+      link: "",
       criteres: {
         secteurActivite: [],
         statutJuridique: [],
         applicantType: [],
+        age: {
+          minAge: null,
+          maxAge: null,
+        },
+        sexe:[],
         montantInvestissement: [],
         chiffreAffaire: {
           chiffreAffaireMin: null,
@@ -674,74 +704,95 @@ const Programs: React.FC = () => {
                 {/* Basic Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom du programme *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                  />
+                </div>
+
+                {/* Site web */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Site web
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://example.com"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={formData.link}
+                    onChange={(e) =>
+                      setFormData({ ...formData, link: e.target.value })
+                    }
+                  />
+                </div>
+
+                {/* Statut */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Statut
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={formData.isActive.toString()}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        isActive: e.target.value === "true",
+                      })
+                    }
+                  >
+                    <option value="true">Actif</option>
+                    <option value="false">Inactif</option>
+                  </select>
+                </div>
+
+                {/* Dates côte à côte */}
+                <div className="flex space-x-4">
+                  <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nom du programme *
+                      Date de début
                     </label>
                     <input
-                      type="text"
-                      required
+                      type="date"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      value={formData.name}
+                      value={formData.DateDebut ? formData.DateDebut.split("T")[0] : ""}
                       onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
+                        setFormData({
+                          ...formData,
+                          DateDebut: e.target.value,
+                        })
                       }
                     />
                   </div>
 
-                  <div>
+                  <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Statut
+                      Date fin
                     </label>
-                    <select
+                    <input
+                      type="date"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      value={formData.isActive.toString()}
+                      value={formData.DateFin ? formData.DateFin.split("T")[0] : ""}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          isActive: e.target.value === "true",
+                          DateFin: e.target.value,
                         })
-                      }>
-                      <option value="true">Actif</option>
-                      <option value="false">Inactif</option>
-                    </select>
+                      }
+                    />
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date de début
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    value={formData.DateDebut ? formData.DateDebut.split("T")[0] : ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        DateDebut: e.target.value,
-                      })
-                    }
-                  />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date fin
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    value={formData.DateFin ? formData.DateFin.split("T")[0] : ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        DateFin: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-
+                {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description *
@@ -756,6 +807,8 @@ const Programs: React.FC = () => {
                     }
                   />
                 </div>
+                
+          
 
                 {/* Criteria Section */}
                 <div className="border-t pt-6">
@@ -806,41 +859,138 @@ const Programs: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Montant d'investissement */}
+                      {/*sexe */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Montant d'investissement
+                        Sexe
                       </label>
-                      <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3">
-                        {MONTANT_INVESTISSEMENT_OPTIONS.map((option) => (
-                          <label
-                            key={option.value}
-                            className="flex items-center">
+                      <div className="space-y-2">
+                        {["homme", "femme"].map((gender) => (
+                          <label key={gender} className="flex items-center">
                             <input
                               type="checkbox"
                               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                              checked={formData.criteres.montantInvestissement.includes(
-                                option.value
+                              checked={formData.criteres?.sexe?.includes(
+                                gender
                               )}
                               onChange={(e) =>
                                 handleMultiSelectChange(
-                                  "montantInvestissement",
-                                  option.value,
+                                  "sexe",
+                                  gender,
                                   e.target.checked
                                 )
                               }
                             />
-                            <span className="ml-2 text-sm text-gray-700">
-                              {option.key}
-                            </span>
+                                 <span className="ml-2 text-sm text-gray-700">
+                                  {gender === "homme" ? "Homme" : "Femme"}
+                                </span>
                           </label>
                         ))}
                       </div>
                     </div>
+                {/* Age */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Âge</label>
+                  <div className="flex space-x-4">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Âge minimum</label>
+                      <input
+                        type="number"
+                        min={18}
+                        max={100}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={formData.criteres.age.minAge || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            criteres: {
+                              ...formData.criteres,
+                              age: {
+                                ...formData.criteres.age,
+                                minAge: e.target.value ? Number(e.target.value) : null,
+                                maxAge: formData.criteres.age?.maxAge ?? null,
+                              },
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Âge maximum</label>
+                      <input
+                        type="number"
+                        min={18}
+                        max={100}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={formData.criteres.age.maxAge || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            criteres: {
+                              ...formData.criteres,
+                              age: {
+                                ...formData.criteres.age,
+                                maxAge: e.target.value ? Number(e.target.value) : null,
+                                minAge: formData.criteres.age?.minAge ?? null,
+                              },
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
 
+                {/* Chiffre d'affaires */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Chiffre d'affaires (MAD)</label>
+                  <div className="flex space-x-4">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Minimum</label>
+                      <input
+                        type="number"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={formData.criteres.chiffreAffaire.chiffreAffaireMin || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            criteres: {
+                              ...formData.criteres,
+                              chiffreAffaire: {
+                                ...formData.criteres.chiffreAffaire,
+                                chiffreAffaireMin: e.target.value ? Number(e.target.value) : null,
+                                chiffreAffaireMax: formData.criteres.chiffreAffaire.chiffreAffaireMax,
+                              },
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Maximum</label>
+                      <input
+                        type="number"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={formData.criteres.chiffreAffaire.chiffreAffaireMax || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            criteres: {
+                              ...formData.criteres,
+                              chiffreAffaire: {
+                                ...formData.criteres.chiffreAffaire,
+                                chiffreAffaireMax: e.target.value ? Number(e.target.value) : null,
+                                chiffreAffaireMin: formData.criteres.chiffreAffaire.chiffreAffaireMin,
+                              },
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
 
-
-                    {/* Secteurs d'activité */}
+                  {/* Secteurs d'activité */}
                     <div className="col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         Secteurs d'activité
@@ -902,61 +1052,41 @@ const Programs: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Chiffre d'affaires */}
+           
+
+                      {/* Montant d'investissement */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Chiffre d'affaires (MAD)
+                        Montant d'investissement
                       </label>
-                      <div className="">
-                        <div>
-                          <label className="block text-xs text-gray-500 mb-1">
-                            Minimum
+                      <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                        {MONTANT_INVESTISSEMENT_OPTIONS.map((option) => (
+                          <label
+                            key={option.value}
+                            className="flex items-center">
+                            <input
+                              type="checkbox"
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              checked={formData.criteres.montantInvestissement.includes(
+                                option.value
+                              )}
+                              onChange={(e) =>
+                                handleMultiSelectChange(
+                                  "montantInvestissement",
+                                  option.value,
+                                  e.target.checked
+                                )
+                              }
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              {option.key}
+                            </span>
                           </label>
-                          <input
-                            type="number"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={formData.criteres.chiffreAffaire.chiffreAffaireMin || ""}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                criteres: {
-                                  ...formData.criteres,
-                                  chiffreAffaire: {
-                                    ...formData.criteres.chiffreAffaire,
-                                    chiffreAffaireMin: e.target.value ? Number(e.target.value) : null,
-                                  },
-                                },
-                              })
-                            }
-
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs text-gray-500 mb-1">
-                            Maximum
-                          </label>
-                          <input
-                            type="number"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={formData.criteres.chiffreAffaire.chiffreAffaireMax || ""}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                criteres: {
-                                  ...formData.criteres,
-                                  chiffreAffaire: {
-                                    ...formData.criteres.chiffreAffaire,
-                                    chiffreAffaireMax: e.target.value
-                                      ? Number(e.target.value)
-                                      : null,
-                                  },
-                                },
-                              })
-                            }
-                          />
-                        </div>
+                        ))}
                       </div>
                     </div>
+
+
 
                     {/* Régions */}
                     <div>
