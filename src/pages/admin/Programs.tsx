@@ -399,6 +399,7 @@ const Programs: React.FC = () => {
   // handleMultiSelectChange replaced by MultiSelectGroup onChange handlers
 
   const [remainingDays, setRemainingDays] = useState<number | null>(null);
+  const [filterDate, setFilterDate] = useState<string>("");
 
   const filteredPrograms = programs.filter((program) => {
     // Filtre recherche
@@ -406,18 +407,46 @@ const Programs: React.FC = () => {
       program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       program.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Filtre par durée totale du programme (si renseigné)
-    let matchesDuration = true;
-    if (remainingDays !== null) {
-      const startDate = new Date(program.DateDebut);
-      const endDate = new Date(program.DateFin);
-      const diffTime = endDate.getTime() - startDate.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // Nouvelle logique:
+    // - Date sélectionnée: actifs entre aujourd'hui et la date choisie (chevauchement de période)
+    // - Jours restants: <= N jours restants à partir d'aujourd'hui (DateFin - aujourd'hui)
+    const hasDate = Boolean(filterDate);
+    const hasMaxDays = remainingDays !== null;
 
-      matchesDuration = diffDays <= remainingDays && diffDays >= 0;
+    const startDate = program.DateDebut ? new Date(program.DateDebut) : null;
+    const endDate = program.DateFin ? new Date(program.DateFin) : null;
+    const toStartOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const dayMs = 1000 * 60 * 60 * 24;
+    const today = toStartOfDay(new Date());
+
+    let matchesFilters = true;
+    // 1) Filtre par plage [aujourd'hui, date sélectionnée]
+    if (hasDate) {
+      if (!endDate || Number.isNaN(endDate.getTime())) {
+        matchesFilters = false;
+      } else {
+        const programStart = startDate && !Number.isNaN(startDate.getTime()) ? toStartOfDay(startDate) : null;
+        const programEnd = toStartOfDay(endDate);
+        const selected = toStartOfDay(new Date(filterDate));
+        const rangeEnd = selected < today ? today : selected; // si date passée, on considère aujourd'hui
+        const overlap = programEnd >= today && (programStart ? programStart <= rangeEnd : true);
+        if (!overlap) matchesFilters = false;
+      }
     }
 
-    return matchesSearch && matchesDuration;
+    // 2) Filtre par nombre de jours restants (depuis aujourd'hui)
+    if (matchesFilters && hasMaxDays) {
+      if (!endDate || Number.isNaN(endDate.getTime())) {
+        matchesFilters = false;
+      } else {
+        const diffDays = Math.ceil((toStartOfDay(endDate).getTime() - today.getTime()) / dayMs);
+        if (!(diffDays >= 0 && diffDays <= (remainingDays as number))) {
+          matchesFilters = false;
+        }
+      }
+    }
+
+    return matchesSearch && matchesFilters;
   });
   const filteredCount = filteredPrograms.length;
 
@@ -460,9 +489,18 @@ const Programs: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Search */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Rechercher un programme
-          </label>
+          <div className="flex items-center justify-between mb-3">
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <Search className="w-4 h-4 mr-2 text-gray-500" />
+              Rechercher un programme
+            </label>
+            <button
+              onClick={() => setSearchTerm("")}
+              className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm transition-colors"
+              title="Réinitialiser la recherche">
+              Effacer
+            </button>
+          </div>
           <div className="relative">
             <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
             <input
@@ -473,38 +511,64 @@ const Programs: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          {searchTerm && (
+            <p className="text-xs text-gray-500 mt-1">Appuyez sur "Effacer" pour réinitialiser la recherche</p>
+          )}
         </div>
 
         {/* Filter by Duration */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Filtrer par durée maximale
-          </label>
-          <div className="flex items-center gap-3">
-            <div className="flex-1">
-              <input
-                type="number"
-                placeholder="Nombre de jours"
-                min="1"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={remainingDays ?? ""}
-                onChange={(e) =>
-                  setRemainingDays(
-                    e.target.value ? parseInt(e.target.value) : null
-                  )
-                }
-              />
-            </div>
+          <div className="flex items-center justify-between mb-3">
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+              Filtrer par durée maximale (jours restants)
+            </label>
             <button
-              onClick={() => setRemainingDays(null)}
-              className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+              onClick={() => {
+                setRemainingDays(null);
+                setFilterDate("");
+              }}
+              className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm transition-colors"
               title="Réinitialiser le filtre">
               Effacer
             </button>
           </div>
-          {remainingDays && (
-            <p className="text-sm text-gray-500 mt-2">
-              Affichage des programmes d'une durée ≤ {remainingDays} jours
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 select-none">≤</span>
+                <input
+                  type="number"
+                  placeholder="Nombre de jours"
+                  min={1}
+                  className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={remainingDays ?? ""}
+                  onChange={(e) =>
+                    setRemainingDays(e.target.value ? parseInt(e.target.value) : null)
+                  }
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Nombre maximum de jours restants</p>
+            </div>
+            <div>
+              <input
+                type="date"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+              />
+              <p className="text-xs text-gray-500 mt-1">Date de référence (aujourd'hui si vide)</p>
+            </div>
+          </div>
+          {(remainingDays !== null || filterDate) && (
+            <p className="text-sm text-gray-600 mt-3">
+              {filterDate && remainingDays !== null ? (
+                <>Actifs entre aujourd'hui et le <span className="font-semibold">{new Date(filterDate).toLocaleDateString()}</span> et avec ≤ <span className="font-semibold">{remainingDays}</span> jours restants</>
+              ) : filterDate ? (
+                <>Actifs entre aujourd'hui et le <span className="font-semibold">{new Date(filterDate).toLocaleDateString()}</span></>
+              ) : (
+                <>Avec ≤ <span className="font-semibold">{remainingDays}</span> jours restants (depuis aujourd'hui)</>
+              )}
             </p>
           )}
         </div>
@@ -711,11 +775,11 @@ const Programs: React.FC = () => {
             Aucun programme trouvé
           </h3>
           <p className="text-gray-500 mb-6">
-            {searchTerm || remainingDays
+            {searchTerm || remainingDays !== null || filterDate
               ? "Aucun programme ne correspond à vos critères de recherche."
               : "Commencez par créer votre premier programme."}
           </p>
-          {!searchTerm && !remainingDays && (
+          {!searchTerm && remainingDays === null && !filterDate && (
             <button
               onClick={() => {
                 resetForm();
