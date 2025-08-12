@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import { useNavigate } from "react-router-dom";
+import {
+  Users as UsersIcon,
+  Search,
+  UserCheck,
+  Building,
+  Edit,
+  Trash2,
+  Eye,
+  AlertCircle,
+  FileX,
+} from "lucide-react";
 
 interface User {
   _id: string;
@@ -13,10 +24,7 @@ interface User {
   createdAt?: string;
 }
 
-
-
 const Users: React.FC = () => {
-
   const navigate = useNavigate();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -54,7 +62,8 @@ const Users: React.FC = () => {
       (user.nomEntreprise &&
         user.nomEntreprise.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesType = filterType === "all" || user.applicantType === filterType;
+    const matchesType =
+      filterType === "all" || user.applicantType === filterType;
 
     return matchesSearch && matchesType;
   });
@@ -72,16 +81,7 @@ const Users: React.FC = () => {
       <div className="p-6">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex">
-            <svg
-              className="w-5 h-5 text-red-400 mr-2"
-              fill="currentColor"
-              viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
             <div>
               <h3 className="text-sm font-medium text-red-800">Erreur</h3>
               <div className="mt-1 text-sm text-red-700">{error}</div>
@@ -95,8 +95,8 @@ const Users: React.FC = () => {
   const updateUser = async (updatedUser: User) => {
     try {
       const response = await axios.put(`users/${updatedUser._id}`, updatedUser);
-      console.log("Utilisateur mis à jour :", response.data);
-      // Tu peux ici recharger les utilisateurs si besoin
+      console.log("Candidat mis à jour :", response.data);
+      // Tu peux ici recharger les candidats si besoin
       setIsEditModalOpen(false);
     } catch (error) {
       console.error("Erreur lors de la mise à jour :", error);
@@ -104,11 +104,11 @@ const Users: React.FC = () => {
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) return;
+    if (!window.confirm("Voulez-vous vraiment supprimer ce candidat ?")) return;
 
     try {
       await axios.delete(`/api/users/${userId}`);
-      console.log("Utilisateur supprimé !");
+      console.log("Candidat supprimé !");
       // ➤ Recharge ou filtre localement :
       setUsers((prev) => prev.filter((u) => u._id !== userId));
     } catch (error) {
@@ -116,22 +116,16 @@ const Users: React.FC = () => {
     }
   };
 
-
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center">
-          <svg
-            className="inline-block w-8 h-8 mr-3 text-gray-600"
-            fill="currentColor"
-            viewBox="0 0 20 20">
-            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-          </svg>
-          Gestion des utilisateurs
+          <UsersIcon className="inline-block w-8 h-8 mr-3 text-gray-600" />
+          Gestion des candidats
         </h1>
         <p className="text-gray-600">
-          Gérez les utilisateurs inscrits sur la plateforme Tamkeen
+          Gérez les candidats inscrits sur la plateforme Tamkeen
         </p>
       </div>
 
@@ -144,16 +138,7 @@ const Users: React.FC = () => {
               Rechercher
             </label>
             <div className="relative">
-              <svg
-                className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Rechercher par nom, email..."
@@ -188,12 +173,7 @@ const Users: React.FC = () => {
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
           <div className="flex items-center">
             <div className="bg-gray-100 rounded-lg p-3">
-              <svg
-                className="w-6 h-6 text-gray-600"
-                fill="currentColor"
-                viewBox="0 0 20 20">
-                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
-              </svg>
+              <UsersIcon className="w-6 h-6 text-gray-600" />
             </div>
             <div className="ml-4">
               <p className="text-2xl font-bold text-gray-900">{users.length}</p>
@@ -205,16 +185,7 @@ const Users: React.FC = () => {
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
           <div className="flex items-center">
             <div className="bg-gray-100 rounded-lg p-3">
-              <svg
-                className="w-6 h-6 text-gray-600"
-                fill="currentColor"
-                viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <UserCheck className="w-6 h-6 text-gray-600" />
             </div>
             <div className="ml-4">
               <p className="text-2xl font-bold text-gray-900">
@@ -228,16 +199,7 @@ const Users: React.FC = () => {
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
           <div className="flex items-center">
             <div className="bg-gray-100 rounded-lg p-3">
-              <svg
-                className="w-6 h-6 text-gray-600"
-                fill="currentColor"
-                viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-6a1 1 0 00-1-1H9a1 1 0 00-1 1v6a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <Building className="w-6 h-6 text-gray-600" />
             </div>
             <div className="ml-4">
               <p className="text-2xl font-bold text-gray-900">
@@ -253,26 +215,15 @@ const Users: React.FC = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-800">
-            Liste des utilisateurs ({filteredUsers.length})
+            Liste des candidats ({filteredUsers.length})
           </h3>
         </div>
 
         {filteredUsers.length === 0 ? (
           <div className="text-center py-12">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m6-6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
+            <FileX className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">
-              Aucun utilisateur trouvé
+              Aucun candidat trouvé
             </h3>
             <p className="mt-1 text-sm text-gray-500">
               Essayez de modifier vos critères de recherche.
@@ -284,7 +235,7 @@ const Users: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Utilisateur
+                    Candidat
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Type
@@ -306,14 +257,15 @@ const Users: React.FC = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           <div
-                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${user.applicantType === "physique"
-                              ? "bg-gray-500"
-                              : "bg-gray-400"
-                              }`}>
+                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${
+                              user.applicantType === "physique"
+                                ? "bg-gray-500"
+                                : "bg-gray-400"
+                            }`}>
                             {user.applicantType === "physique"
                               ? `${(user.prenom || "").charAt(0)}${(
-                                user.nom || ""
-                              ).charAt(0)}`
+                                  user.nom || ""
+                                ).charAt(0)}`
                               : (user.nomEntreprise || "").charAt(0)}
                           </div>
                         </div>
@@ -331,10 +283,11 @@ const Users: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.applicantType === "physique"
-                          ? "bg-gray-100 text-gray-800"
-                          : "bg-gray-200 text-gray-800"
-                          }`}>
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          user.applicantType === "physique"
+                            ? "bg-gray-100 text-gray-800"
+                            : "bg-gray-200 text-gray-800"
+                        }`}>
                         {user.applicantType === "physique"
                           ? "Personne physique"
                           : "Personne morale"}
@@ -347,21 +300,11 @@ const Users: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
-                        onClick={() => navigate(`/admin/user/details/${user._id}`)}
-                        className="text-gray-600 hover:text-gray-900 mr-3 transition-colors duration-200"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                          <path
-                            fillRule="evenodd"
-                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        onClick={() =>
+                          navigate(`/admin/user/details/${user._id}`)
+                        }
+                        className="text-gray-600 hover:text-gray-900 mr-3 transition-colors duration-200">
+                        <Eye className="w-4 h-4" />
                       </button>
 
                       <button
@@ -369,27 +312,13 @@ const Users: React.FC = () => {
                           setSelectedUser(user);
                           setIsEditModalOpen(true);
                         }}
-                        className="text-gray-600 hover:text-gray-900 mr-3"
-                      >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                        </svg>
+                        className="text-gray-600 hover:text-gray-900 mr-3">
+                        <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteUser(user._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M6 2a1 1 0 00-1 1v1H3a1 1 0 100 2h14a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm2 5a1 1 0 00-2 0v8a1 1 0 002 0V7zm4 0a1 1 0 00-2 0v8a1 1 0 002 0V7z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        className="text-red-600 hover:text-red-900">
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
@@ -399,7 +328,9 @@ const Users: React.FC = () => {
             {isEditModalOpen && selectedUser && (
               <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
                 <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-8 border border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-6">Modifier les informations</h2>
+                  <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                    Modifier les informations
+                  </h2>
 
                   <form
                     onSubmit={(e) => {
@@ -407,29 +338,38 @@ const Users: React.FC = () => {
                       if (selectedUser) {
                         updateUser(selectedUser);
                       }
-                    }}
-                  >
+                    }}>
                     <div className="mb-5">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                      </label>
                       <input
                         type="email"
                         className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
                         value={selectedUser.email}
                         onChange={(e) =>
-                          setSelectedUser({ ...selectedUser, email: e.target.value })
+                          setSelectedUser({
+                            ...selectedUser,
+                            email: e.target.value,
+                          })
                         }
                         placeholder="exemple@domaine.com"
                       />
                     </div>
 
                     <div className="mb-5">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Téléphone
+                      </label>
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
                         value={selectedUser.telephone}
                         onChange={(e) =>
-                          setSelectedUser({ ...selectedUser, telephone: e.target.value })
+                          setSelectedUser({
+                            ...selectedUser,
+                            telephone: e.target.value,
+                          })
                         }
                         placeholder="+212 6XXXXXXXX"
                       />
@@ -438,25 +378,35 @@ const Users: React.FC = () => {
                     {selectedUser.applicantType === "physique" ? (
                       <>
                         <div className="mb-5">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Prénom
+                          </label>
                           <input
                             type="text"
                             className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
                             value={selectedUser.prenom}
                             onChange={(e) =>
-                              setSelectedUser({ ...selectedUser, prenom: e.target.value })
+                              setSelectedUser({
+                                ...selectedUser,
+                                prenom: e.target.value,
+                              })
                             }
                             placeholder="Prénom"
                           />
                         </div>
                         <div className="mb-5">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Nom
+                          </label>
                           <input
                             type="text"
                             className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
                             value={selectedUser.nom}
                             onChange={(e) =>
-                              setSelectedUser({ ...selectedUser, nom: e.target.value })
+                              setSelectedUser({
+                                ...selectedUser,
+                                nom: e.target.value,
+                              })
                             }
                             placeholder="Nom"
                           />
@@ -464,13 +414,18 @@ const Users: React.FC = () => {
                       </>
                     ) : (
                       <div className="mb-5">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Dénomination</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Dénomination
+                        </label>
                         <input
                           type="text"
                           className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
                           value={selectedUser.nomEntreprise}
                           onChange={(e) =>
-                            setSelectedUser({ ...selectedUser, nomEntreprise: e.target.value })
+                            setSelectedUser({
+                              ...selectedUser,
+                              nomEntreprise: e.target.value,
+                            })
                           }
                           placeholder="Dénomination"
                         />
@@ -481,14 +436,12 @@ const Users: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setIsEditModalOpen(false)}
-                        className="px-5 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition"
-                      >
+                        className="px-5 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition">
                         Annuler
                       </button>
                       <button
                         type="submit"
-                        className="px-5 py-2 text-sm font-medium bg-gray-800 text-white rounded-md hover:bg-gray-900 transition"
-                      >
+                        className="px-5 py-2 text-sm font-medium bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
                         Enregistrer
                       </button>
                     </div>
@@ -496,15 +449,11 @@ const Users: React.FC = () => {
                 </div>
               </div>
             )}
-
-
           </div>
         )}
       </div>
     </div>
   );
-
-
 };
 
 export default Users;
