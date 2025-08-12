@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+
+import Modal from "./Modals/Modal";
+import LoadingModal from "./Modals/LoadingModal";
+
 import type { FormData, FormErrors, EligibilityFormProps } from "./types";
 import type { programsNamesAndLinks } from "./types";
 import { checkEligibility } from "./utils";
@@ -33,6 +37,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     programsNamesAndLinks[]
   >([]);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [showServerErrorModal, setShowServerErrorModal] = useState(false);
+
 
   // Gestionnaires d'événements
   const handleInputChange = (
@@ -89,13 +97,16 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
       setErrors(validationErrors);
       return;
     }
+     setShowLoadingModal(true);
 
     try {
       const eligibilityResult = await checkEligibility(formData);
+       setShowLoadingModal(false); 
 
       if (eligibilityResult.errorMessage) {
         setServerError(eligibilityResult.errorMessage);
         setShowResult(false);
+        setShowServerErrorModal(true);
         return;
       }
 
@@ -146,6 +157,25 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
           animation: fadeIn 0.5s ease-out;
         }
       `}</style>
+
+      return (
+  <>
+    {/* ... ton style et ton formulaire ... */}
+
+    {/* Modal pour afficher les erreurs serveur */}
+    <Modal
+      isOpen={showServerErrorModal}
+      onClose={() => setShowServerErrorModal(false)}
+      title="Erreur"
+    >
+      <p>{serverError}</p>
+    </Modal>
+
+    {/* Modal avec spinner pendant le traitement */}
+    <LoadingModal isOpen={showLoadingModal} title="Vérification en cours..." />
+  </>
+);
+
 
       <section
         id="eligibility-form"
@@ -218,11 +248,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                 />
               )}
             </form>
-            {serverError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                {serverError}
-              </div>
-            )}
+           
           </div>
         </div>
       </section>
