@@ -4,16 +4,24 @@ import { useState } from "react";
 import { LayoutDashboard } from "lucide-react";
 import logoTamkeen from "../../assets/logo.webp";
 
+
 const LayoutAdmin = () => {
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const adminProfileString = localStorage.getItem("adminProfile");
+  const adminProfile = adminProfileString ? JSON.parse(adminProfileString) : null;
+
+  const [showInfo, setShowInfo] = useState(false);
+
+
   return (
     <div className="flex bg-gray-50 min-h-screen">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} />
       <div
-        className={`flex flex-col transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-0"
-        } w-full`}>
+        className={`flex flex-col transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-0"
+          } w-full`}>
         {/* Header professionnel avec logo - FIXE */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
           <div className="flex items-center justify-between px-6 py-4">
@@ -25,9 +33,8 @@ const LayoutAdmin = () => {
                 title="Afficher/Masquer le menu">
                 <LayoutDashboard
                   size={20}
-                  className={`text-gray-600 hover:text-gray-800 transition-transform duration-300 ${
-                    sidebarOpen ? "rotate-0" : "rotate-180"
-                  }`}
+                  className={`text-gray-600 hover:text-gray-800 transition-transform duration-300 ${sidebarOpen ? "rotate-0" : "rotate-180"
+                    }`}
                 />
               </div>
 
@@ -48,16 +55,37 @@ const LayoutAdmin = () => {
             </div>
 
             {/* Zone utilisateur */}
-            <div className="flex items-center space-x-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-700">
-                  Administrateur
-                </p>
-                <p className="text-xs text-gray-500">Tamkeen Center</p>
+
+            <div className="relative">
+
+              <div className="flex items-center space-x-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-700">
+                    {adminProfile ? adminProfile.username : "Administrateur"}
+                  </p>
+                  <p className="text-xs text-gray-500">{adminProfile ? adminProfile.role : "Rôle"}</p>
+                </div>
+                {/* Avatar cliquable */}
+                <div
+                  className="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer"
+                  onClick={() => setShowInfo((prev) => !prev)}
+                >
+                  <span className="text-sm font-medium text-gray-600">
+                    {adminProfile.username.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+
+
               </div>
-              <div className="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">A</span>
-              </div>
+
+              {/* Div infos */}
+              {showInfo && (
+                <div className="absolute top-10 right-0 bg-white shadow-md rounded-lg p-4 w-48 border">
+                  <p className="text-sm font-semibold">{adminProfile.username}</p>
+                  <p className="text-xs text-gray-500">{adminProfile.email}</p>
+                  <p className="text-xs text-gray-400 mt-1">Rôle: {adminProfile.role}</p>
+                </div>
+              )}
             </div>
           </div>
         </header>

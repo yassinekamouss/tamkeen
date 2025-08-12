@@ -322,12 +322,12 @@ const handlePublishSubmit = async (heroData: any) => {
       program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       program.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Filtre par durée totale du programme (si renseigné)
+    // Filtre par nombre de jours restants jusqu'à la date de fin
     let matchesDuration = true;
     if (remainingDays !== null) {
-      const startDate = new Date(program.DateDebut);
+      const today = new Date();
       const endDate = new Date(program.DateFin);
-      const diffTime = endDate.getTime() - startDate.getTime();
+      const diffTime = endDate.getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       matchesDuration = diffDays <= remainingDays && diffDays >= 0;
