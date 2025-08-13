@@ -148,33 +148,22 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
   return (
     <>
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-      `}</style>
+      <>
+        {/* ... ton style et ton formulaire ... */}
 
-      return (
-  <>
-    {/* ... ton style et ton formulaire ... */}
+        {/* Modal pour afficher les erreurs serveur */}
+        <Modal
+          isOpen={showServerErrorModal}
+          onClose={() => setShowServerErrorModal(false)}
+          title="Erreur"
+        >
+          <p>{serverError}</p>
+        </Modal>
 
-    {/* Modal pour afficher les erreurs serveur */}
-    <Modal
-      isOpen={showServerErrorModal}
-      onClose={() => setShowServerErrorModal(false)}
-      title="Erreur"
-    >
-      <p>{serverError}</p>
-    </Modal>
+        {/* Modal avec spinner pendant le traitement */}
+        <LoadingModal isOpen={showLoadingModal} title="Vérification en cours..." />
+      </>
 
-    {/* Modal avec spinner pendant le traitement */}
-    <LoadingModal isOpen={showLoadingModal} title="Vérification en cours..." />
-  </>
-);
 
 
       <section

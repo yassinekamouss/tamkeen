@@ -81,7 +81,7 @@ const LayoutAdmin = () => {
               </div>
 
               {showInfo && (
-                <div className="absolute top-14 right-0 bg-white shadow-lg rounded-lg p-5 w-80 border border-gray-200 z-50">
+                <div className="absolute top-14 right-0 bg-white shadow-lg rounded-lg p-5 w-80 border border-gray-200 z-50 transition ease-in duration-200">
                   {/* Titre */}
                   <div className="mb-4 pb-3 border-b border-gray-200">
                     <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
