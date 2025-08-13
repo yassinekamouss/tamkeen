@@ -16,6 +16,8 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken"); // Supprime le token
+    localStorage.removeItem("adminProfile"); // Supprime le profil
+
     navigate("/admin/login"); // Redirige vers la page de login
   };
 

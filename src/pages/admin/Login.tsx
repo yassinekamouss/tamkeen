@@ -24,9 +24,12 @@ const Login: React.FC = () => {
     try {
       const res = await axios.post("/admin/login", loginData);
       const token = res.data.token;
+      const admin = res.data.admin;
 
       // Stocker le token
       localStorage.setItem("adminToken", token);
+
+      localStorage.setItem("adminProfile", JSON.stringify(admin));
 
       // Rediriger
       navigate("/admin/dashboard");
