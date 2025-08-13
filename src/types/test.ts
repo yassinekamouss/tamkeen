@@ -24,3 +24,19 @@ export interface TestItem {
   personne: PersonneLite;
   createdAt?: string;
 }
+
+// Socket event type sent by backend when a new form/test is created
+export interface FormSubmittedEventDTO {
+  id: string;
+  createdAt: string;
+  applicant: {
+    id: string;
+    type: "physique" | "morale";
+    name?: string;
+    email?: string;
+  };
+  formType: string; // 'eligibility'
+  region?: string;
+  eligible?: boolean;
+  summary?: string;
+}

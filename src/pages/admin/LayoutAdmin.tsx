@@ -1,31 +1,52 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LayoutDashboard } from "lucide-react";
 import logoTamkeen from "../../assets/logo.webp";
 import axios from "../../api/axios";
-
+import { useAdminSocket } from "../../hooks/admin/useAdminSocket";
 
 const LayoutAdmin = () => {
-
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { unread, resetUnread } = useAdminSocket();
+  const location = useLocation();
+
+  // Reset the unread badge when the Tests page is active
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin/tests")) {
+      resetUnread();
+    }
+  }, [location.pathname, resetUnread]);
+
+  // Load initial total count
+  useEffect(() => {
+    axios
+      .get("/test/eligibilite?page=1&limit=1")
+      .then((res) => console.log(res.data?.total || 0)) // Logging for debugging
+      .catch(() => {});
+  }, []);
 
   const adminProfileString = localStorage.getItem("adminProfile");
-  const adminProfile = adminProfileString ? JSON.parse(adminProfileString) : null;
+  const adminProfile = adminProfileString
+    ? JSON.parse(adminProfileString)
+    : null;
 
   const [showInfo, setShowInfo] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
   const [tempProfile, setTempProfile] = useState(adminProfile);
 
-
   return (
     <div className="flex bg-gray-50 min-h-screen">
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        testsUnread={unread}
+        onResetTestsUnread={resetUnread}
+      />
       <div
-        className={`flex flex-col transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-0"
-          } w-full`}>
+        className={`flex flex-col transition-all duration-300 ${
+          sidebarOpen ? "ml-64" : "ml-0"
+        } w-full`}>
         {/* Header professionnel avec logo - FIXE */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
           <div className="flex items-center justify-between px-6 py-4">
@@ -72,128 +93,221 @@ const LayoutAdmin = () => {
                 {/* Avatar cliquable */}
                 <div
                   className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer shadow-sm hover:bg-gray-200 transition-colors duration-150 border border-gray-300"
-                  onClick={() => setShowInfo((prev) => !prev)}
-                >
+                  onClick={() => setShowInfo((prev) => !prev)}>
                   <span className="text-sm font-medium text-gray-700">
                     {adminProfile?.username?.charAt(0).toUpperCase() || "A"}
                   </span>
                 </div>
               </div>
 
-              {showInfo && (
-                <div className="absolute top-14 right-0 bg-white shadow-lg rounded-lg p-5 w-80 border border-gray-200 z-50 transition ease-in duration-200">
-                  {/* Titre */}
-                  <div className="mb-4 pb-3 border-b border-gray-200">
-                    <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
-                      <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              {/* Modal avec animation fluide */}
+              <div
+                className={`absolute top-14 right-0 bg-white shadow-lg rounded-lg p-5 w-80 border border-gray-200 z-50
+                  transform transition-all duration-300 ease-out origin-top-right
+                  ${
+                    showInfo
+                      ? "opacity-100 scale-100 translate-y-0"
+                      : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                  }`}>
+                {/* Titre */}
+                <div className="mb-4 pb-3 border-b border-gray-200">
+                  <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                    <svg
+                      className="w-5 h-5 text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                    Profil administrateur
+                  </h3>
+                </div>
+
+                {/* Champs */}
+                <div className="space-y-4">
+                  {/* Nom */}
+                  <div
+                    className={`transform transition-all duration-300 delay-75 ${
+                      showInfo
+                        ? "translate-x-0 opacity-100"
+                        : "translate-x-2 opacity-0"
+                    }`}>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Nom d'utilisateur
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={
+                          editMode
+                            ? tempProfile.username
+                            : adminProfile.username
+                        }
+                        onChange={(e) =>
+                          editMode &&
+                          setTempProfile({
+                            ...tempProfile,
+                            username: e.target.value,
+                          })
+                        }
+                        disabled={!editMode}
+                        className={`w-full p-2.5 border rounded-md text-sm pl-9 transition-all duration-200 ${
+                          editMode
+                            ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            : "border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed"
+                        }`}
+                      />
+                      <svg
+                        className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
                       </svg>
-                      Profil administrateur
-                    </h3>
+                    </div>
                   </div>
 
-                  {/* Champs */}
-                  <div className="space-y-4">
-                    {/* Nom */}
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Nom d'utilisateur</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={editMode ? tempProfile.username : adminProfile.username}
-                          onChange={(e) => editMode && setTempProfile({ ...tempProfile, username: e.target.value })}
-                          disabled={!editMode}
-                          className={`w-full p-2.5 border rounded-md text-sm pl-9 ${editMode
-                            ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                            : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'}`}
+                  {/* Email */}
+                  <div
+                    className={`transform transition-all duration-300 delay-100 ${
+                      showInfo
+                        ? "translate-x-0 opacity-100"
+                        : "translate-x-2 opacity-0"
+                    }`}>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Email
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={
+                          editMode ? tempProfile.email : adminProfile.email
+                        }
+                        onChange={(e) =>
+                          editMode &&
+                          setTempProfile({
+                            ...tempProfile,
+                            email: e.target.value,
+                          })
+                        }
+                        disabled={!editMode}
+                        className={`w-full p-2.5 border rounded-md text-sm pl-9 transition-all duration-200 ${
+                          editMode
+                            ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            : "border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed"
+                        }`}
+                      />
+                      <svg
+                        className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
                         />
-                        <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      </div>
+                      </svg>
                     </div>
+                  </div>
 
-                    {/* Email */}
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          value={editMode ? tempProfile.email : adminProfile.email}
-                          onChange={(e) => editMode && setTempProfile({ ...tempProfile, email: e.target.value })}
-                          disabled={!editMode}
-                          className={`w-full p-2.5 border rounded-md text-sm pl-9 ${editMode
-                            ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                            : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'}`}
+                  {/* Rôle */}
+                  <div
+                    className={`transform transition-all duration-300 delay-150 ${
+                      showInfo
+                        ? "translate-x-0 opacity-100"
+                        : "translate-x-2 opacity-0"
+                    }`}>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Rôle
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={editMode ? tempProfile.role : adminProfile.role}
+                        disabled
+                        className="w-full p-2.5 border border-gray-200 rounded-md text-sm bg-gray-50 text-gray-500 cursor-not-allowed pl-9"
+                      />
+                      <svg
+                        className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
-                        <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                        </svg>
-                      </div>
+                      </svg>
                     </div>
+                  </div>
 
-                    {/* Rôle */}
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Rôle</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={editMode ? tempProfile.role : adminProfile.role}
-                          disabled
-                          className="w-full p-2.5 border border-gray-200 rounded-md text-sm bg-gray-50 text-gray-500 cursor-not-allowed pl-9"
-                        />
-                        <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                    </div>
-
-                    {/* Boutons */}
+                  {/* Boutons */}
+                  <div
+                    className={`transform transition-all duration-300 delay-200 ${
+                      showInfo
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-2 opacity-0"
+                    }`}>
                     {editMode ? (
                       <div className="flex gap-3 pt-2">
                         <button
-                          className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm border border-gray-300"
+                          className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm border border-gray-300 transition-colors duration-200"
                           onClick={() => {
                             setEditMode(false);
                             setTempProfile(adminProfile);
-                          }}
-                        >
+                          }}>
                           Annuler
                         </button>
                         <button
-                          className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md text-sm"
+                          className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md text-sm transition-colors duration-200"
                           onClick={() => {
-
-                            localStorage.setItem("adminProfile", JSON.stringify(tempProfile));
-                            axios.put(`/admin/${adminProfile._id}`, tempProfile)
-                              .then(response => console.log("Profil mis à jour :", response.data))
-                              .catch(error => console.error("Erreur :", error));
+                            localStorage.setItem(
+                              "adminProfile",
+                              JSON.stringify(tempProfile)
+                            );
+                            axios
+                              .put(`/admin/${adminProfile._id}`, tempProfile)
+                              .then((response) =>
+                                console.log(
+                                  "Profil mis à jour :",
+                                  response.data
+                                )
+                              )
+                              .catch((error) =>
+                                console.error("Erreur :", error)
+                              );
                             setEditMode(false);
-                          }}
-                        >
+                          }}>
                           Enregistrer
                         </button>
                       </div>
                     ) : (
                       <button
-                        className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md text-sm border border-gray-300 mt-3"
+                        className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md text-sm border border-gray-300 mt-3 transition-colors duration-200"
                         onClick={() => {
                           setEditMode(true);
                           setTempProfile(adminProfile);
-                        }}
-                      >
+                        }}>
                         Modifier
                       </button>
                     )}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-
           </div>
         </header>
 

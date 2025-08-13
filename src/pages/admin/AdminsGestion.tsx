@@ -131,10 +131,10 @@ const AdminsGestion: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center">
             <Shield className="inline-block w-8 h-8 mr-3 text-gray-600" />
-            Gestion des administrateurs
+            Gestion des Utilisateurs
           </h1>
           <p className="text-gray-600">
-            Gérez les administrateurs de la plateforme Tamkeen
+            Gérez les utilisateurs de la plateforme Tamkeen
           </p>
         </div>
         <button

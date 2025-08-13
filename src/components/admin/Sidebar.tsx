@@ -11,7 +11,15 @@ import {
   UserCircle,
 } from "lucide-react";
 
-const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
+const Sidebar = ({
+  isOpen,
+  testsUnread = 0,
+  onResetTestsUnread,
+}: {
+  isOpen: boolean;
+  testsUnread?: number;
+  onResetTestsUnread?: () => void;
+}) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -50,18 +58,6 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
           <LayoutDashboard className="w-5 h-5 mr-3" />
           Tableau de bord
         </NavLink>
-        <NavLink
-        to="/admin/app-users"
-        className={({ isActive }) =>
-          `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
-            isActive
-              ? "bg-gray-100 text-gray-900 font-medium"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-          }`
-        }>
-        <UserCircle className="w-5 h-5 mr-3" />
-        Utilisateurs
-      </NavLink>
 
         <NavLink
           to="/admin/users"
@@ -92,6 +88,7 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
         {/* Tests */}
         <NavLink
           to="/admin/tests"
+          onClick={() => onResetTestsUnread?.()}
           className={({ isActive }) =>
             `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
               isActive
@@ -99,7 +96,14 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
-          <ClipboardCheck className="w-5 h-5 mr-3" />
+          <div className="relative mr-3">
+            <ClipboardCheck className="w-5 h-5" />
+            {testsUnread > 0 && (
+              <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center">
+                {testsUnread > 99 ? "99+" : testsUnread}
+              </span>
+            )}
+          </div>
           Tests
         </NavLink>
 
@@ -134,7 +138,20 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
 
       {/* Footer Section */}
       <div className="absolute bottom-5 left-5 right-5">
-        <div className="border-t border-gray-200 pt-4">
+        <NavLink
+          to="/admin/app-users"
+          className={({ isActive }) =>
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            }`
+          }>
+          <UserCircle className="w-5 h-5 mr-3" />
+          Utilisateurs
+        </NavLink>
+
+        <div className="border-t border-gray-200 pt-4 mt-4">
           <button
             onClick={handleLogout}
             className="flex items-center w-full px-3 py-2.5 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
