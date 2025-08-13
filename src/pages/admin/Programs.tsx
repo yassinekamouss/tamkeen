@@ -407,13 +407,13 @@ const Programs: React.FC = () => {
       program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       program.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-
     const hasDate = Boolean(filterDate);
     const hasMaxDays = remainingDays !== null;
 
     const startDate = program.DateDebut ? new Date(program.DateDebut) : null;
     const endDate = program.DateFin ? new Date(program.DateFin) : null;
-    const toStartOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const toStartOfDay = (d: Date) =>
+      new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const dayMs = 1000 * 60 * 60 * 24;
     const today = toStartOfDay(new Date());
 
@@ -423,11 +423,16 @@ const Programs: React.FC = () => {
       if (!endDate || Number.isNaN(endDate.getTime())) {
         matchesFilters = false;
       } else {
-        const programStart = startDate && !Number.isNaN(startDate.getTime()) ? toStartOfDay(startDate) : null;
+        const programStart =
+          startDate && !Number.isNaN(startDate.getTime())
+            ? toStartOfDay(startDate)
+            : null;
         const programEnd = toStartOfDay(endDate);
         const selected = toStartOfDay(new Date(filterDate));
         const rangeEnd = selected < today ? today : selected; // si date passée, on considère aujourd'hui
-        const overlap = programEnd >= today && (programStart ? programStart <= rangeEnd : true);
+        const overlap =
+          programEnd >= today &&
+          (programStart ? programStart <= rangeEnd : true);
         if (!overlap) matchesFilters = false;
       }
     }
@@ -437,7 +442,9 @@ const Programs: React.FC = () => {
       if (!endDate || Number.isNaN(endDate.getTime())) {
         matchesFilters = false;
       } else {
-        const diffDays = Math.ceil((toStartOfDay(endDate).getTime() - today.getTime()) / dayMs);
+        const diffDays = Math.ceil(
+          (toStartOfDay(endDate).getTime() - today.getTime()) / dayMs
+        );
         if (!(diffDays >= 0 && diffDays <= (remainingDays as number))) {
           matchesFilters = false;
         }
@@ -510,7 +517,9 @@ const Programs: React.FC = () => {
             />
           </div>
           {searchTerm && (
-            <p className="text-xs text-gray-500 mt-1">Appuyez sur "Effacer" pour réinitialiser la recherche</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Appuyez sur "Effacer" pour réinitialiser la recherche
+            </p>
           )}
         </div>
 
@@ -534,7 +543,9 @@ const Programs: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 select-none">≤</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 select-none">
+                  ≤
+                </span>
                 <input
                   type="number"
                   placeholder="Nombre de jours"
@@ -542,11 +553,15 @@ const Programs: React.FC = () => {
                   className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   value={remainingDays ?? ""}
                   onChange={(e) =>
-                    setRemainingDays(e.target.value ? parseInt(e.target.value) : null)
+                    setRemainingDays(
+                      e.target.value ? parseInt(e.target.value) : null
+                    )
                   }
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Nombre maximum de jours restants</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Nombre maximum de jours restants
+              </p>
             </div>
             <div>
               <input
@@ -555,17 +570,35 @@ const Programs: React.FC = () => {
                 value={filterDate}
                 onChange={(e) => setFilterDate(e.target.value)}
               />
-              <p className="text-xs text-gray-500 mt-1">Date de référence (aujourd'hui si vide)</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Date de référence (aujourd'hui si vide)
+              </p>
             </div>
           </div>
           {(remainingDays !== null || filterDate) && (
             <p className="text-sm text-gray-600 mt-3">
               {filterDate && remainingDays !== null ? (
-                <>Actifs entre aujourd'hui et le <span className="font-semibold">{new Date(filterDate).toLocaleDateString()}</span> et avec ≤ <span className="font-semibold">{remainingDays}</span> jours restants</>
+                <>
+                  Actifs entre aujourd'hui et le{" "}
+                  <span className="font-semibold">
+                    {new Date(filterDate).toLocaleDateString()}
+                  </span>{" "}
+                  et avec ≤{" "}
+                  <span className="font-semibold">{remainingDays}</span> jours
+                  restants
+                </>
               ) : filterDate ? (
-                <>Actifs entre aujourd'hui et le <span className="font-semibold">{new Date(filterDate).toLocaleDateString()}</span></>
+                <>
+                  Actifs entre aujourd'hui et le{" "}
+                  <span className="font-semibold">
+                    {new Date(filterDate).toLocaleDateString()}
+                  </span>
+                </>
               ) : (
-                <>Avec ≤ <span className="font-semibold">{remainingDays}</span> jours restants (depuis aujourd'hui)</>
+                <>
+                  Avec ≤ <span className="font-semibold">{remainingDays}</span>{" "}
+                  jours restants (depuis aujourd'hui)
+                </>
               )}
             </p>
           )}
@@ -641,10 +674,11 @@ const Programs: React.FC = () => {
                   </h3>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${program.isActive
+                      className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                        program.isActive
                           ? "bg-green-100 text-green-700 border border-green-200"
                           : "bg-red-100 text-red-700 border border-red-200"
-                        }`}>
+                      }`}>
                       {program.isActive ? "Actif" : "Inactif"}
                     </span>
                     {program.hero?.isHero && (
@@ -657,10 +691,11 @@ const Programs: React.FC = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => toggleActive(program._id, program.isActive)}
-                    className={`p-2 rounded-lg transition-colors ${program.isActive
+                    className={`p-2 rounded-lg transition-colors ${
+                      program.isActive
                         ? "bg-slate-500 hover:bg-slate-600"
                         : "bg-slate-400 hover:bg-slate-500"
-                      }`}
+                    }`}
                     title={program.isActive ? "Désactiver" : "Activer"}>
                     {program.isActive ? (
                       <EyeOff className="w-4 h-4 text-white" />
@@ -741,10 +776,11 @@ const Programs: React.FC = () => {
                 </button>
                 <button
                   onClick={() => handlePublish(program)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${program.hero?.isHero
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
+                    program.hero?.isHero
                       ? "bg-yellow-50 hover:bg-yellow-100 text-yellow-700"
                       : "bg-blue-50 hover:bg-blue-100 text-blue-700"
-                    }`}
+                  }`}
                   title={
                     program.hero?.isHero
                       ? "Modifier la publication"
@@ -966,8 +1002,8 @@ const Programs: React.FC = () => {
                                       applicantType: e.target.checked
                                         ? [...prev.criteres.applicantType, type]
                                         : prev.criteres.applicantType.filter(
-                                          (t) => t !== type
-                                        ),
+                                            (t) => t !== type
+                                          ),
                                     },
                                   }))
                                 }
@@ -1004,8 +1040,8 @@ const Programs: React.FC = () => {
                                       sexe: e.target.checked
                                         ? [...prev.criteres.sexe, gender]
                                         : prev.criteres.sexe.filter(
-                                          (g) => g !== gender
-                                        ),
+                                            (g) => g !== gender
+                                          ),
                                     },
                                   }))
                                 }
