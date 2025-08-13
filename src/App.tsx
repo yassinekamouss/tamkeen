@@ -21,6 +21,7 @@ const Tests = lazy(() => import("./pages/admin/Tests"));
 const Reports = lazy(() => import("./pages/admin/Reports"));
 const AdminNews = lazy(() => import("./pages/admin/News.tsx"));
 import Loader from "./components/Spinner.tsx";
+import Admin from "./pages/admin/Admins.tsx";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
                 <Route path="tests" element={<Tests />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="news" element={<AdminNews />} />
+                <Route path="app-users" element={<Admin />} />
               </Route>
             </Route>
           </Routes>
