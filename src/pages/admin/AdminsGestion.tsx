@@ -74,14 +74,14 @@ const AdminsGestion: React.FC = () => {
     }
   };
    
-  const updateAdmin = async (updatedAdmin: Admin, id: string) => { 
-    try{
-    const { _id, ...adminData } = updatedAdmin;
-    const response = await axios.put(`/admin/${id}`, adminData); 
-    setAdmins(prev => prev.map(admin => 
-      admin._id === id ? response.data.admin : admin
-    ));
-    setIsEditModalOpen(false);
+  const updateAdmin = async (updatedAdmin: Admin, id: string) => {
+    try {
+      const { ...adminData } = updatedAdmin;
+      const response = await axios.put(`/admin/${id}`, adminData);
+      setAdmins((prev) =>
+        prev.map((admin) => (admin._id === id ? response.data.admin : admin))
+      );
+      setIsEditModalOpen(false);
     setSelectedAdmin(null);
     setEditingAdminId(null);
   } catch (error) {
