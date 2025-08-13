@@ -58,30 +58,36 @@ const LayoutAdmin = () => {
               </div>
             </div>
 
-            {/* Zone utilisateur */}
-            <div className="relative">
-              <div className="flex items-center space-x-3 px-4 py-2 bg-white">
-                <div className="text-right flex-1">
-                  <p className="text-sm font-semibold text-gray-800">
-                    {adminProfile ? adminProfile.username : "Administrateur"}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {adminProfile ? adminProfile.role : "Rôle"}
-                  </p>
+              {/* Zone utilisateur */}
+              <div className="relative">
+                <div className="flex items-center space-x-3 px-4 py-2 bg-white">
+                  <div className="text-right flex-1">
+                    <p className="text-sm font-semibold text-gray-800">
+                      {adminProfile ? adminProfile.username : "Administrateur"}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {adminProfile ? adminProfile.role : "Rôle"}
+                    </p>
+                  </div>
+                  {/* Avatar cliquable */}
+                  <div
+                    className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer shadow-sm hover:bg-gray-200 transition-colors duration-150 border border-gray-300"
+                    onClick={() => setShowInfo((prev) => !prev)}
+                  >
+                    <span className="text-sm font-medium text-gray-700">
+                      {adminProfile?.username?.charAt(0).toUpperCase() || "A"}
+                    </span>
+                  </div>
                 </div>
-                {/* Avatar cliquable */}
-                <div
-                  className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer shadow-sm hover:bg-gray-200 transition-colors duration-150 border border-gray-300"
-                  onClick={() => setShowInfo((prev) => !prev)}
-                >
-                  <span className="text-sm font-medium text-gray-700">
-                    {adminProfile?.username?.charAt(0).toUpperCase() || "A"}
-                  </span>
-                </div>
-              </div>
 
-              {showInfo && (
-                <div className="absolute top-14 right-0 bg-white shadow-lg rounded-lg p-5 w-80 border border-gray-200 z-50 transition ease-in duration-200">
+                {/* Modal avec animation fluide */}
+                <div 
+                  className={`absolute top-14 right-0 bg-white shadow-lg rounded-lg p-5 w-80 border border-gray-200 z-50
+                  transform transition-all duration-300 ease-out origin-top-right
+                  ${showInfo 
+                    ? "opacity-100 scale-100 translate-y-0" 
+                    : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}`}
+                >
                   {/* Titre */}
                   <div className="mb-4 pb-3 border-b border-gray-200">
                     <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
@@ -96,7 +102,7 @@ const LayoutAdmin = () => {
                   {/* Champs */}
                   <div className="space-y-4">
                     {/* Nom */}
-                    <div>
+                    <div className={`transform transition-all duration-300 delay-75 ${showInfo ? 'translate-x-0 opacity-100' : 'translate-x-2 opacity-0'}`}>
                       <label className="block text-xs font-medium text-gray-600 mb-1">Nom d'utilisateur</label>
                       <div className="relative">
                         <input
@@ -104,7 +110,7 @@ const LayoutAdmin = () => {
                           value={editMode ? tempProfile.username : adminProfile.username}
                           onChange={(e) => editMode && setTempProfile({ ...tempProfile, username: e.target.value })}
                           disabled={!editMode}
-                          className={`w-full p-2.5 border rounded-md text-sm pl-9 ${editMode
+                          className={`w-full p-2.5 border rounded-md text-sm pl-9 transition-all duration-200 ${editMode
                             ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
                             : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'}`}
                         />
@@ -116,7 +122,7 @@ const LayoutAdmin = () => {
                     </div>
 
                     {/* Email */}
-                    <div>
+                    <div className={`transform transition-all duration-300 delay-100 ${showInfo ? 'translate-x-0 opacity-100' : 'translate-x-2 opacity-0'}`}>
                       <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
                       <div className="relative">
                         <input
@@ -124,7 +130,7 @@ const LayoutAdmin = () => {
                           value={editMode ? tempProfile.email : adminProfile.email}
                           onChange={(e) => editMode && setTempProfile({ ...tempProfile, email: e.target.value })}
                           disabled={!editMode}
-                          className={`w-full p-2.5 border rounded-md text-sm pl-9 ${editMode
+                          className={`w-full p-2.5 border rounded-md text-sm pl-9 transition-all duration-200 ${editMode
                             ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
                             : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'}`}
                         />
@@ -136,7 +142,7 @@ const LayoutAdmin = () => {
                     </div>
 
                     {/* Rôle */}
-                    <div>
+                    <div className={`transform transition-all duration-300 delay-150 ${showInfo ? 'translate-x-0 opacity-100' : 'translate-x-2 opacity-0'}`}>
                       <label className="block text-xs font-medium text-gray-600 mb-1">Rôle</label>
                       <div className="relative">
                         <input
@@ -153,46 +159,46 @@ const LayoutAdmin = () => {
                     </div>
 
                     {/* Boutons */}
-                    {editMode ? (
-                      <div className="flex gap-3 pt-2">
+                    <div className={`transform transition-all duration-300 delay-200 ${showInfo ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`}>
+                      {editMode ? (
+                        <div className="flex gap-3 pt-2">
+                          <button
+                            className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm border border-gray-300 transition-colors duration-200"
+                            onClick={() => {
+                              setEditMode(false);
+                              setTempProfile(adminProfile);
+                            }}
+                          >
+                            Annuler
+                          </button>
+                          <button
+                            className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md text-sm transition-colors duration-200"
+                            onClick={() => {
+                              localStorage.setItem("adminProfile", JSON.stringify(tempProfile));
+                              axios.put(`/admin/${adminProfile._id}`, tempProfile)
+                                .then(response => console.log("Profil mis à jour :", response.data))
+                                .catch(error => console.error("Erreur :", error));
+                              setEditMode(false);
+                            }}
+                          >
+                            Enregistrer
+                          </button>
+                        </div>
+                      ) : (
                         <button
-                          className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm border border-gray-300"
+                          className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md text-sm border border-gray-300 mt-3 transition-colors duration-200"
                           onClick={() => {
-                            setEditMode(false);
+                            setEditMode(true);
                             setTempProfile(adminProfile);
                           }}
                         >
-                          Annuler
+                          Modifier
                         </button>
-                        <button
-                          className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md text-sm"
-                          onClick={() => {
-                            localStorage.setItem("adminProfile", JSON.stringify(tempProfile));
-                            axios.put(`/admin/${adminProfile.id}`, tempProfile)
-                              .then(response => console.log("Profil mis à jour :", response.data))
-                              .catch(error => console.error("Erreur :", error));
-                            setEditMode(false);
-                          }}
-                        >
-                          Enregistrer
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md text-sm border border-gray-300 mt-3"
-                        onClick={() => {
-                          setEditMode(true);
-                          setTempProfile(adminProfile);
-                        }}
-                      >
-                        Modifier
-                      </button>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
-
+              </div>
           </div>
         </header>
 
