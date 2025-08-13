@@ -169,7 +169,7 @@ const LayoutAdmin = () => {
                           onClick={() => {
 
                             localStorage.setItem("adminProfile", JSON.stringify(tempProfile));
-                            axios.put(`/admin/${adminProfile.id}`, tempProfile)
+                            axios.put(`/admin/${adminProfile._id}`, tempProfile)
                               .then(response => console.log("Profil mis à jour :", response.data))
                               .catch(error => console.error("Erreur :", error));
                             setEditMode(false);

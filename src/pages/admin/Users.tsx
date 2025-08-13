@@ -18,15 +18,20 @@ interface User {
   applicantType: "physique" | "morale";
   nom?: string;
   prenom?: string;
+  etat?: string;
   nomEntreprise?: string;
   email: string;
   telephone: string;
   createdAt?: string;
+  consultantAssocie?: {
+    _id: string;
+    username: string;
+  };
 }
 
 const Users: React.FC = () => {
   const navigate = useNavigate();
-
+  const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "{}");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -244,6 +249,12 @@ const Users: React.FC = () => {
                     Contact
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    État
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Consultant associé
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -257,15 +268,14 @@ const Users: React.FC = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           <div
-                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${
-                              user.applicantType === "physique"
-                                ? "bg-gray-500"
-                                : "bg-gray-400"
-                            }`}>
+                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${user.applicantType === "physique"
+                              ? "bg-gray-500"
+                              : "bg-gray-400"
+                              }`}>
                             {user.applicantType === "physique"
                               ? `${(user.prenom || "").charAt(0)}${(
-                                  user.nom || ""
-                                ).charAt(0)}`
+                                user.nom || ""
+                              ).charAt(0)}`
                               : (user.nomEntreprise || "").charAt(0)}
                           </div>
                         </div>
@@ -283,11 +293,10 @@ const Users: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.applicantType === "physique"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-gray-200 text-gray-800"
-                        }`}>
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.applicantType === "physique"
+                          ? "bg-gray-100 text-gray-800"
+                          : "bg-gray-200 text-gray-800"
+                          }`}>
                         {user.applicantType === "physique"
                           ? "Personne physique"
                           : "Personne morale"}
@@ -296,6 +305,52 @@ const Users: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         {user.telephone}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="text-sm text-gray-900">
+                        <select
+                          disabled={Boolean(user.consultantAssocie?._id && user.consultantAssocie._id !== adminProfile._id)}
+                          title={user.consultantAssocie?._id && user.consultantAssocie._id !== adminProfile._id ? "Un consultant est déjà associé à ce client" : ""}
+                          className={`border border-gray-300 rounded px-2 py-1 text-sm ${Boolean(user.consultantAssocie?._id && user.consultantAssocie._id !== adminProfile._id) ? "cursor-not-allowed bg-gray-100" : ""}`}
+                          value={user.etat || ""}
+                          onChange={async (e) => {
+                            const newEtat = e.target.value;
+                            // if (user.assistant) {
+                            //   user.assistant._id = adminProfile._id; // Set the assistant to the admin's ID
+                            // } else {
+                            user.consultantAssocie = {
+                              _id: adminProfile._id,
+                              username: adminProfile.username,
+                            };
+                            // }
+                            try {
+                              await axios.put(`/users/${user._id}`, { ...user, etat: newEtat });
+                              setUsers((prev) =>
+                                prev.map((u) =>
+                                  u._id === user._id ? { ...u, etat: newEtat } : u
+                                )
+                              );
+                            } catch (err) {
+                              alert("Erreur lors de la mise à jour de l'état.");
+                            }
+                          }}
+                        >
+
+                          <option value="" >Sélectionner</option>
+                          <option value="En traitement">En traitement</option>
+                          <option value="En attente">En attente</option>
+                          <option value="Terminé">Terminé</option>
+                        </select>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="text-sm text-gray-900">
+                        {user.consultantAssocie ? (
+                          user.consultantAssocie.username
+                        ) : (
+                          <span className="text-gray-400 italic">Non attribué</span>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
