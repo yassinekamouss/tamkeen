@@ -17,7 +17,6 @@ const LayoutAdmin = () => {
 
   const [editMode, setEditMode] = useState(false);
   const [tempProfile, setTempProfile] = useState(adminProfile);
-  const [adminProfileState, setAdminProfile] = useState(adminProfile);
 
 
   return (
@@ -172,11 +171,11 @@ const LayoutAdmin = () => {
                         <button
                           className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-400 hover:bg-green-500 text-white rounded-lg transition-colors duration-200 text-sm font-medium shadow-sm"
                           onClick={() => {
-                            setAdminProfile(tempProfile);
+                            // setAdminProfile(tempProfile);
                             localStorage.setItem("adminProfile", JSON.stringify(tempProfile));
                             //stock ça dans la base de données 
 
-                            axios.put(`/admin/${adminProfile.id}`, tempProfile)
+                            axios.put(`/admin/${adminProfile._id}`, tempProfile)
                               .then(response => {
                                 console.log("Profil mis à jour avec succès :", response.data);
                               })
