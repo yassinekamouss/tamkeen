@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import "./App.css";
+import Loader from "./components/Spinner.tsx";
 
 // Public pages (route-level code splitting)
 const Home = lazy(() => import("./pages/Home"));
@@ -20,7 +21,8 @@ const UserDetails = lazy(() => import("./pages/admin/UserDetails"));
 const Tests = lazy(() => import("./pages/admin/Tests"));
 const Reports = lazy(() => import("./pages/admin/Reports"));
 const AdminNews = lazy(() => import("./pages/admin/News.tsx"));
-import Loader from "./components/Spinner.tsx";
+
+const AdminsGestion = lazy(() => import("./pages/admin/AdminsGestion.tsx"));
 
 function App() {
   return (
@@ -46,6 +48,7 @@ function App() {
                 <Route path="tests" element={<Tests />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="news" element={<AdminNews />} />
+                <Route path="app-users" element={<AdminsGestion />} />
               </Route>
             </Route>
           </Routes>

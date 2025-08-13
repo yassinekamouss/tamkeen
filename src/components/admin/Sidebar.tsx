@@ -7,7 +7,8 @@ import {
   ClipboardCheck,
   FileText,
   Newspaper,
-  LogOut
+  LogOut,
+  UserCircle,
 } from "lucide-react";
 
 const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
@@ -49,6 +50,18 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
           <LayoutDashboard className="w-5 h-5 mr-3" />
           Tableau de bord
         </NavLink>
+        <NavLink
+        to="/admin/app-users"
+        className={({ isActive }) =>
+          `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+            isActive
+              ? "bg-gray-100 text-gray-900 font-medium"
+              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+          }`
+        }>
+        <UserCircle className="w-5 h-5 mr-3" />
+        Utilisateurs
+      </NavLink>
 
         <NavLink
           to="/admin/users"
