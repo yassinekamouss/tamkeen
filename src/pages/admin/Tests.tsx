@@ -56,9 +56,10 @@ const Tests: React.FC = () => {
   // Realtime: listen for new test submissions and prepend
   useEffect(() => {
     const s = getAdminSocket();
-  const onNew = () => {
+    const onNew = () => {
       // Refresh list if on first page and no active filters, so we display accurate data
-      if (page !== 1 || q || region || applicantType || eligible !== "all") return;
+      if (page !== 1 || q || region || applicantType || eligible !== "all")
+        return;
       load();
     };
     s.on("form:submitted", onNew);
@@ -180,11 +181,7 @@ const Tests: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {tests.map((t, i) => (
-            <TestCard
-              key={t._id}
-              test={t}
-              index={(page - 1) * limit + i}
-            />
+            <TestCard key={t._id} test={t} index={(page - 1) * limit + i} />
           ))}
         </div>
       )}

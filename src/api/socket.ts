@@ -5,7 +5,10 @@ let socket: Socket | null = null;
 export function getAdminSocket() {
   if (socket) return socket;
   const token = localStorage.getItem("adminToken");
-  const url = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_BACKEND_API_URL?.replace(/\/api$/, "") ?? "http://localhost:5000");
+  const url =
+    import.meta.env.VITE_SOCKET_URL ||
+    (import.meta.env.VITE_BACKEND_API_URL?.replace(/\/api$/, "") ??
+      "http://localhost:5000");
   socket = io(url, {
     transports: ["websocket", "polling"],
     auth: { token },

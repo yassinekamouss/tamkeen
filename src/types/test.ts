@@ -29,7 +29,12 @@ export interface TestItem {
 export interface FormSubmittedEventDTO {
   id: string;
   createdAt: string;
-  applicant: { id: string; type: "physique" | "morale"; name?: string; email?: string };
+  applicant: {
+    id: string;
+    type: "physique" | "morale";
+    name?: string;
+    email?: string;
+  };
   formType: string; // 'eligibility'
   region?: string;
   eligible?: boolean;

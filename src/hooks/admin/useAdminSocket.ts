@@ -16,7 +16,7 @@ export function useAdminSocket(onForm?: (e: FormSubmittedEventDTO) => void) {
     s.on("connect", onConnect);
     s.on("disconnect", onDisconnect);
 
-  const onFormSubmitted = (e: FormSubmittedEventDTO) => {
+    const onFormSubmitted = (e: FormSubmittedEventDTO) => {
       unreadRef.current += 1;
       setUnread(unreadRef.current);
       onForm?.(e);

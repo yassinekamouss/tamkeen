@@ -11,7 +11,15 @@ import {
   UserCircle,
 } from "lucide-react";
 
-const Sidebar = ({ isOpen, testsUnread = 0, onResetTestsUnread }: { isOpen: boolean; testsUnread?: number; onResetTestsUnread?: () => void }) => {
+const Sidebar = ({
+  isOpen,
+  testsUnread = 0,
+  onResetTestsUnread,
+}: {
+  isOpen: boolean;
+  testsUnread?: number;
+  onResetTestsUnread?: () => void;
+}) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -142,7 +150,7 @@ const Sidebar = ({ isOpen, testsUnread = 0, onResetTestsUnread }: { isOpen: bool
           <UserCircle className="w-5 h-5 mr-3" />
           Utilisateurs
         </NavLink>
-        
+
         <div className="border-t border-gray-200 pt-4 mt-4">
           <button
             onClick={handleLogout}
