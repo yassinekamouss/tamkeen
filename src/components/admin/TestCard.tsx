@@ -49,8 +49,12 @@ const TestCard: React.FC<{
 
   const dateLabel = formatAbsoluteDate(test.createdAt);
 
+  const isRecent = test.createdAt && Date.now() - new Date(test.createdAt).getTime() < 30_000;
+
   return (
-    <div className="bg-white border border-slate-200 rounded-lg hover:shadow-sm transition-all duration-200">
+    <div className={`bg-white border rounded-lg hover:shadow-sm transition-all duration-200 ${
+      isRecent ? "border-blue-300 ring-1 ring-blue-100" : "border-slate-200"
+    }`}>
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -69,6 +73,11 @@ const TestCard: React.FC<{
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {isRecent && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700">
+                Nouveau
+              </span>
+            )}
             {dateLabel && (
               <span className="text-xs text-slate-600">{dateLabel}</span>
             )}

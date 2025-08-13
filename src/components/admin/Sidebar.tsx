@@ -11,7 +11,7 @@ import {
   UserCircle,
 } from "lucide-react";
 
-const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
+const Sidebar = ({ isOpen, testsUnread = 0, onResetTestsUnread }: { isOpen: boolean; testsUnread?: number; onResetTestsUnread?: () => void }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -80,6 +80,7 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
         {/* Tests */}
         <NavLink
           to="/admin/tests"
+          onClick={() => onResetTestsUnread?.()}
           className={({ isActive }) =>
             `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
               isActive
@@ -87,7 +88,14 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
-          <ClipboardCheck className="w-5 h-5 mr-3" />
+          <div className="relative mr-3">
+            <ClipboardCheck className="w-5 h-5" />
+            {testsUnread > 0 && (
+              <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center">
+                {testsUnread > 99 ? "99+" : testsUnread}
+              </span>
+            )}
+          </div>
           Tests
         </NavLink>
 

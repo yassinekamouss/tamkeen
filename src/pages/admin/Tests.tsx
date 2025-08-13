@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import TestCard from "../../components/admin/TestCard";
 import { fetchTests } from "../../services/testService";
 import type { TestItem } from "../../types/test";
 import { REGIONS } from "../../components/eligibility/constants";
+import { getAdminSocket } from "../../api/socket";
+// Realtime event type not needed here since we refetch on event
 
 type EligibleFilter = "all" | "true" | "false";
 
@@ -22,37 +24,48 @@ const Tests: React.FC = () => {
   const [limit] = useState(20);
   const [hasMore, setHasMore] = useState(false);
 
-  const queryKey = useMemo(
-    () => ({ q, eligible, applicantType, region, page, limit }),
-    [q, eligible, applicantType, region, page, limit]
-  );
+  // no memo key, load() already memoized
+
+  const load = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const resp = await fetchTests({
+        q: q || undefined,
+        eligible: eligible === "all" ? undefined : eligible === "true",
+        applicantType: applicantType || undefined,
+        region: region || undefined,
+        page,
+        limit,
+      });
+      setTests(resp.tests);
+      setTotal(resp.total);
+      setHasMore(resp.hasMore);
+    } catch (e) {
+      setError("Erreur lors du chargement des tests");
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [q, eligible, applicantType, region, page, limit]);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const resp = await fetchTests({
-          q: q || undefined,
-          eligible: eligible === "all" ? undefined : eligible === "true",
-          applicantType: applicantType || undefined,
-          region: region || undefined,
-          page,
-          limit,
-        });
-        setTests(resp.tests);
-        setTotal(resp.total);
-        setHasMore(resp.hasMore);
-      } catch (e) {
-        setError("Erreur lors du chargement des tests");
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryKey]);
+  }, [load]);
+
+  // Realtime: listen for new test submissions and prepend
+  useEffect(() => {
+    const s = getAdminSocket();
+  const onNew = () => {
+      // Refresh list if on first page and no active filters, so we display accurate data
+      if (page !== 1 || q || region || applicantType || eligible !== "all") return;
+      load();
+    };
+    s.on("form:submitted", onNew);
+    return () => {
+      s.off("form:submitted", onNew);
+    };
+  }, [page, q, region, applicantType, eligible, load]);
 
   const resetAndSearch = () => setPage(1);
 
@@ -167,7 +180,11 @@ const Tests: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {tests.map((t, i) => (
-            <TestCard key={t._id} test={t} index={(page - 1) * limit + i} />
+            <TestCard
+              key={t._id}
+              test={t}
+              index={(page - 1) * limit + i}
+            />
           ))}
         </div>
       )}
