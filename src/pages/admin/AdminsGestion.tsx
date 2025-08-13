@@ -14,7 +14,7 @@ import type { Admin, NewAdmin } from "../../components/admin/admins/types";
 import AddAdminModal from "../../components/admin/admins/AddAdminModal";
 import EditAdminModal from "../../components/admin/admins/EditAdminModal";
 
-const Admin: React.FC = () => {
+const AdminsGestion: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null);
@@ -229,4 +229,4 @@ const Admin: React.FC = () => {
   );
 };
 
-export default Admin;
+export default AdminsGestion;
