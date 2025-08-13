@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://backendtamkeen-a8f551795f89.herokuapp.com/api",
+  baseURL: import.meta.env.VITE_BACKEND_API_URL || "http://localhost:5000/api",
   headers: {
     "Content-Type": "application/json",
   },
