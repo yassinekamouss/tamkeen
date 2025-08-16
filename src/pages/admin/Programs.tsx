@@ -462,6 +462,7 @@ const Programs: React.FC = () => {
               d'éligibilité
             </p>
           </div>
+        {isAdministrator && (
           <button
             onClick={() => {
               resetForm();
@@ -471,6 +472,7 @@ const Programs: React.FC = () => {
             <Plus className="w-5 h-5 mr-2" />
             Nouveau Programme
           </button>
+        )}
         </div>
       </div>
 
