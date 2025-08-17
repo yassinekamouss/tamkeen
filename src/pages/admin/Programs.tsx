@@ -53,6 +53,11 @@ interface Program {
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
+    chiffreAffaireParSecteur?: {
+      secteur: string;
+      min: number | null;
+      max: number | null;
+    }[];
     age?: {
       minAge: number | null;
       maxAge: number | null;
@@ -79,6 +84,11 @@ interface ProgramFormData {
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
+    chiffreAffaireParSecteur: {
+      secteur: string;
+      min: number | null;
+      max: number | null;
+    }[];
     age: {
       minAge: number | null;
       maxAge: number | null;
@@ -94,6 +104,55 @@ interface ProgramFormData {
 }
 
 const Programs: React.FC = () => {
+  // Small inline widget to apply a min/max to all selected sectors
+  const BulkApplyCA: React.FC<{
+    onApply: (min: number | null, max: number | null) => void;
+  }> = ({ onApply }) => {
+    const [min, setMin] = useState<number | "" | null>("");
+    const [max, setMax] = useState<number | "" | null>("");
+    return (
+      <div className="bg-gray-50 border border-gray-200 rounded-md p-2 mb-3">
+        <div className="text-xs text-gray-600 mb-2">
+          Appliquer aux secteurs sélectionnés
+        </div>
+        <div className="flex gap-2 items-end">
+          <div className="flex-1">
+            <label className="block text-[11px] text-gray-500 mb-1">Min</label>
+            <input
+              type="number"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded"
+              value={min === null ? "" : min}
+              onChange={(e) =>
+                setMin(e.target.value ? Number(e.target.value) : null)
+              }
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-[11px] text-gray-500 mb-1">Max</label>
+            <input
+              type="number"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded"
+              value={max === null ? "" : max}
+              onChange={(e) =>
+                setMax(e.target.value ? Number(e.target.value) : null)
+              }
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              onApply(
+                min === "" ? null : (min as number | null),
+                max === "" ? null : (max as number | null)
+              )
+            }
+            className="px-3 py-2 bg-slate-700 text-white rounded hover:bg-slate-800 text-sm">
+            Appliquer à tous
+          </button>
+        </div>
+      </div>
+    );
+  };
   // Reusable checklist with bulk actions for criteria selection
   const MultiSelectGroup: React.FC<{
     label: string;
@@ -213,6 +272,7 @@ const Programs: React.FC = () => {
       statutJuridique: [],
       applicantType: [],
       montantInvestissement: [],
+      chiffreAffaireParSecteur: [],
       age: {
         minAge: null,
         maxAge: null,
@@ -288,6 +348,8 @@ const Programs: React.FC = () => {
       link: program.link,
       criteres: {
         ...program.criteres,
+        chiffreAffaireParSecteur:
+          (program.criteres as any).chiffreAffaireParSecteur || [],
         age: {
           minAge: program.criteres.age?.minAge ?? null,
           maxAge: program.criteres.age?.maxAge ?? null,
@@ -347,6 +409,7 @@ const Programs: React.FC = () => {
         secteurActivite: [],
         statutJuridique: [],
         applicantType: [],
+        chiffreAffaireParSecteur: [],
         age: {
           minAge: null,
           maxAge: null,
@@ -1122,10 +1185,13 @@ const Programs: React.FC = () => {
 
                       {/* Chiffre d'affaires */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                          Chiffre d'affaires (MAD)
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Chiffre d'affaires global (optionnel)
                         </label>
-                        <div className="flex space-x-4">
+                        <p className="text-xs text-gray-500 mb-2">
+                          Ignoré si des valeurs par secteur sont définies.
+                        </p>
+                        <div className="flex space-x-4 mb-4">
                           <div className="flex-1">
                             <label className="block text-xs text-gray-500 mb-1">
                               Minimum
@@ -1139,21 +1205,18 @@ const Programs: React.FC = () => {
                                   .chiffreAffaireMin || ""
                               }
                               onChange={(e) =>
-                                setFormData({
-                                  ...formData,
+                                setFormData((prev) => ({
+                                  ...prev,
                                   criteres: {
-                                    ...formData.criteres,
+                                    ...prev.criteres,
                                     chiffreAffaire: {
-                                      ...formData.criteres.chiffreAffaire,
+                                      ...prev.criteres.chiffreAffaire,
                                       chiffreAffaireMin: e.target.value
                                         ? Number(e.target.value)
                                         : null,
-                                      chiffreAffaireMax:
-                                        formData.criteres.chiffreAffaire
-                                          .chiffreAffaireMax,
                                     },
                                   },
-                                })
+                                }))
                               }
                             />
                           </div>
@@ -1170,24 +1233,199 @@ const Programs: React.FC = () => {
                                   .chiffreAffaireMax || ""
                               }
                               onChange={(e) =>
-                                setFormData({
-                                  ...formData,
+                                setFormData((prev) => ({
+                                  ...prev,
                                   criteres: {
-                                    ...formData.criteres,
+                                    ...prev.criteres,
                                     chiffreAffaire: {
-                                      ...formData.criteres.chiffreAffaire,
+                                      ...prev.criteres.chiffreAffaire,
                                       chiffreAffaireMax: e.target.value
                                         ? Number(e.target.value)
                                         : null,
-                                      chiffreAffaireMin:
-                                        formData.criteres.chiffreAffaire
-                                          .chiffreAffaireMin,
                                     },
                                   },
-                                })
+                                }))
                               }
                             />
                           </div>
+                        </div>
+
+                        {/* Per-sector revenue */}
+                        <div className="border border-gray-200 rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">
+                              Chiffre d'affaires par secteur
+                            </span>
+                          </div>
+                          {/* Bulk apply */}
+                          <BulkApplyCA
+                            onApply={(min, max) => {
+                              setFormData((prev) => {
+                                const selected = prev.criteres.secteurActivite;
+                                const map = new Map(
+                                  prev.criteres.chiffreAffaireParSecteur.map(
+                                    (e) => [e.secteur, e]
+                                  )
+                                );
+                                selected.forEach((s) => {
+                                  const existing = map.get(s);
+                                  if (existing) {
+                                    existing.min = min;
+                                    existing.max = max;
+                                  } else {
+                                    map.set(s, { secteur: s, min, max });
+                                  }
+                                });
+                                const nextArr = Array.from(map.values()).filter(
+                                  (e) => selected.includes(e.secteur)
+                                );
+                                return {
+                                  ...prev,
+                                  criteres: {
+                                    ...prev.criteres,
+                                    chiffreAffaireParSecteur: nextArr,
+                                  },
+                                };
+                              });
+                            }}
+                          />
+
+                          {/* Rows per selected sector */}
+                          {formData.criteres.secteurActivite.length === 0 ? (
+                            <p className="text-xs text-gray-500">
+                              Sélectionnez d'abord des secteurs d'activité.
+                            </p>
+                          ) : (
+                            <div className="space-y-2">
+                              {formData.criteres.secteurActivite.map(
+                                (secteur) => {
+                                  const entry = (
+                                    formData.criteres
+                                      .chiffreAffaireParSecteur || []
+                                  ).find((e) => e.secteur === secteur) || {
+                                    secteur,
+                                    min: null,
+                                    max: null,
+                                  };
+                                  return (
+                                    <div
+                                      key={secteur}
+                                      className="grid grid-cols-12 gap-2 items-end">
+                                      <div className="col-span-4">
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                          Secteur
+                                        </label>
+                                        <input
+                                          disabled
+                                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded"
+                                          value={secteur}
+                                        />
+                                      </div>
+                                      <div className="col-span-4">
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                          Min
+                                        </label>
+                                        <input
+                                          type="number"
+                                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                                          value={entry.min ?? ""}
+                                          onChange={(e) => {
+                                            const val = e.target.value
+                                              ? Number(e.target.value)
+                                              : null;
+                                            setFormData((prev) => {
+                                              const arr = [
+                                                ...(prev.criteres
+                                                  .chiffreAffaireParSecteur ||
+                                                  []),
+                                              ];
+                                              const idx = arr.findIndex(
+                                                (a) => a.secteur === secteur
+                                              );
+                                              if (idx >= 0)
+                                                arr[idx] = {
+                                                  ...arr[idx],
+                                                  min: val,
+                                                };
+                                              else
+                                                arr.push({
+                                                  secteur,
+                                                  min: val,
+                                                  max: entry.max ?? null,
+                                                });
+                                              // keep only selected sectors
+                                              const next = arr.filter((a) =>
+                                                prev.criteres.secteurActivite.includes(
+                                                  a.secteur
+                                                )
+                                              );
+                                              return {
+                                                ...prev,
+                                                criteres: {
+                                                  ...prev.criteres,
+                                                  chiffreAffaireParSecteur:
+                                                    next,
+                                                },
+                                              };
+                                            });
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="col-span-4">
+                                        <label className="block text-xs text-gray-500 mb-1">
+                                          Max
+                                        </label>
+                                        <input
+                                          type="number"
+                                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                                          value={entry.max ?? ""}
+                                          onChange={(e) => {
+                                            const val = e.target.value
+                                              ? Number(e.target.value)
+                                              : null;
+                                            setFormData((prev) => {
+                                              const arr = [
+                                                ...(prev.criteres
+                                                  .chiffreAffaireParSecteur ||
+                                                  []),
+                                              ];
+                                              const idx = arr.findIndex(
+                                                (a) => a.secteur === secteur
+                                              );
+                                              if (idx >= 0)
+                                                arr[idx] = {
+                                                  ...arr[idx],
+                                                  max: val,
+                                                };
+                                              else
+                                                arr.push({
+                                                  secteur,
+                                                  min: entry.min ?? null,
+                                                  max: val,
+                                                });
+                                              const next = arr.filter((a) =>
+                                                prev.criteres.secteurActivite.includes(
+                                                  a.secteur
+                                                )
+                                              );
+                                              return {
+                                                ...prev,
+                                                criteres: {
+                                                  ...prev.criteres,
+                                                  chiffreAffaireParSecteur:
+                                                    next,
+                                                },
+                                              };
+                                            });
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1202,13 +1440,35 @@ const Programs: React.FC = () => {
                           }))}
                           selected={formData.criteres.secteurActivite}
                           onChange={(next) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              criteres: {
-                                ...prev.criteres,
-                                secteurActivite: next as string[],
-                              },
-                            }))
+                            setFormData((prev) => {
+                              const selected = next as string[];
+                              const map = new Map(
+                                (
+                                  prev.criteres.chiffreAffaireParSecteur || []
+                                ).map((e) => [e.secteur, e])
+                              );
+                              // ensure entries for selected, keep existing values
+                              selected.forEach((s) => {
+                                if (!map.has(s))
+                                  map.set(s, {
+                                    secteur: s,
+                                    min: null,
+                                    max: null,
+                                  });
+                              });
+                              // remove entries not selected
+                              const nextArr = Array.from(map.values()).filter(
+                                (e) => selected.includes(e.secteur)
+                              );
+                              return {
+                                ...prev,
+                                criteres: {
+                                  ...prev.criteres,
+                                  secteurActivite: selected,
+                                  chiffreAffaireParSecteur: nextArr,
+                                },
+                              };
+                            })
                           }
                         />
                       </div>
