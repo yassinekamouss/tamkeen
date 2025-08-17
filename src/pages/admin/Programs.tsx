@@ -1134,6 +1134,7 @@ const Programs: React.FC = () => {
                           ))}
                         </div>
                       </div>
+
                       {/* Age */}
                       <div className="mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -1550,6 +1551,7 @@ const Programs: React.FC = () => {
                           }
                         />
                       </div>
+
                       {/* Année de création */}
                       <div>
                         <MultiSelectGroup
