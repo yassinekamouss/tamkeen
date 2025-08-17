@@ -103,10 +103,16 @@ interface ProgramFormData {
   };
 }
 
-    const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
-    const isAdministrator = adminProfile?.role === "Administrateur";
+const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
+const isAdministrator = adminProfile?.role === "Administrateur";
 
 const Programs: React.FC = () => {
+  // Map secteur value -> full label for display purposes
+  const secteurLabelByValue = useMemo(
+    () =>
+      new Map<string, string>(SECTEURS_TRAVAIL.map((s) => [s.value, s.key])),
+    []
+  );
   // Small inline widget to apply a min/max to all selected sectors
   const BulkApplyCA: React.FC<{
     onApply: (min: number | null, max: number | null) => void;
@@ -343,7 +349,7 @@ const Programs: React.FC = () => {
       criteres: {
         ...program.criteres,
         chiffreAffaireParSecteur:
-          (program.criteres as any).chiffreAffaireParSecteur || [],
+          program.criteres?.chiffreAffaireParSecteur ?? [],
         age: {
           minAge: program.criteres.age?.minAge ?? null,
           maxAge: program.criteres.age?.maxAge ?? null,
@@ -373,10 +379,7 @@ const Programs: React.FC = () => {
 
   const toggleActive = async (id: string, isActive: boolean) => {
     try {
-      await axios.patch(
-        `/programs/${id}/toggle`,
-        { isActive: !isActive },
-      );
+      await axios.patch(`/programs/${id}/toggle`, { isActive: !isActive });
       await fetchPrograms();
     } catch {
       setError("Erreur lors de la modification du statut.");
@@ -525,17 +528,17 @@ const Programs: React.FC = () => {
               d'éligibilité
             </p>
           </div>
-        {isAdministrator && (
-          <button
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
-            className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl flex items-center">
-            <Plus className="w-5 h-5 mr-2" />
-            Nouveau Programme
-          </button>
-        )}
+          {isAdministrator && (
+            <button
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+              className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl flex items-center">
+              <Plus className="w-5 h-5 mr-2" />
+              Nouveau Programme
+            </button>
+          )}
         </div>
       </div>
 
@@ -709,176 +712,177 @@ const Programs: React.FC = () => {
       )}
 
       {/* Programs Grid */}
-   <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-  {filteredPrograms.map((program) => (
-    <div
-      key={program._id}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-300">
-      
-      {/* Card Header */}
-      <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
-        <div className="flex justify-between items-start">
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white mb-1">
-                {program.name}
-              </h3>
-              
-              {/* Badges à droite du nom pour les Consultants */}
-              {!isAdministrator && (
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                      program.isActive
-                        ? "bg-green-100 text-green-700 border border-green-200"
-                        : "bg-red-100 text-red-700 border border-red-200"
-                    }`}>
-                    {program.isActive ? "Actif" : "Inactif"}
-                  </span>
-                  {program.hero?.isHero && (
-                    <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
-                      Publié
-                    </span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+        {filteredPrograms.map((program) => (
+          <div
+            key={program._id}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-300">
+            {/* Card Header */}
+            <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-white mb-1">
+                      {program.name}
+                    </h3>
+
+                    {/* Badges à droite du nom pour les Consultants */}
+                    {!isAdministrator && (
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                            program.isActive
+                              ? "bg-green-100 text-green-700 border border-green-200"
+                              : "bg-red-100 text-red-700 border border-red-200"
+                          }`}>
+                          {program.isActive ? "Actif" : "Inactif"}
+                        </span>
+                        {program.hero?.isHero && (
+                          <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
+                            Publié
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Badges en dessous du nom pour les Administrateurs */}
+                  {isAdministrator && (
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                          program.isActive
+                            ? "bg-green-100 text-green-700 border border-green-200"
+                            : "bg-red-100 text-red-700 border border-red-200"
+                        }`}>
+                        {program.isActive ? "Actif" : "Inactif"}
+                      </span>
+                      {program.hero?.isHero && (
+                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
+                          Publié
+                        </span>
+                      )}
+                    </div>
                   )}
+                </div>
+
+                {/* Bouton Activer/Désactiver - Seulement pour Administrateur */}
+                {isAdministrator && (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() =>
+                        toggleActive(program._id, program.isActive)
+                      }
+                      className={`p-2 rounded-lg transition-colors ${
+                        program.isActive
+                          ? "bg-slate-500 hover:bg-slate-600"
+                          : "bg-slate-400 hover:bg-slate-500"
+                      }`}
+                      title={program.isActive ? "Désactiver" : "Activer"}>
+                      {program.isActive ? (
+                        <EyeOff className="w-4 h-4 text-white" />
+                      ) : (
+                        <Eye className="w-4 h-4 text-white" />
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Card Body */}
+            <div className="p-6">
+              <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                {program.description}
+              </p>
+
+              {/* Criteria Summary */}
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center text-sm">
+                  <User className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Type:{" "}
+                    {program.criteres.applicantType.length > 0
+                      ? program.criteres.applicantType.join(", ")
+                      : "Tous"}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-sm">
+                  <Building className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Secteurs:{" "}
+                    {program.criteres?.secteurActivite?.length > 0
+                      ? `${program.criteres.secteurActivite.length} sélectionnés`
+                      : "Tous"}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-sm">
+                  <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Investissement:{" "}
+                    {program.criteres.montantInvestissement.length > 0
+                      ? `${program.criteres.montantInvestissement.length} tranches`
+                      : "Tous montants"}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-sm">
+                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Début:{" "}
+                    {program.DateDebut
+                      ? new Date(program.DateDebut).toLocaleDateString()
+                      : "N/A"}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-sm">
+                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Fin:{" "}
+                    {program.DateFin
+                      ? new Date(program.DateFin).toLocaleDateString()
+                      : "N/A"}
+                  </span>
+                </div>
+              </div>
+
+              {/* ✅ Actions - Seulement pour les Administrateurs */}
+              {isAdministrator && (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEdit(program)}
+                    className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Modifier
+                  </button>
+                  <button
+                    onClick={() => handlePublish(program)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
+                      program.hero?.isHero
+                        ? "bg-yellow-50 hover:bg-yellow-100 text-yellow-700"
+                        : "bg-blue-50 hover:bg-blue-100 text-blue-700"
+                    }`}
+                    title={
+                      program.hero?.isHero
+                        ? "Modifier la publication"
+                        : "Publier le programme"
+                    }>
+                    <Share className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(program._id)}
+                    className="bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               )}
             </div>
-            
-            {/* Badges en dessous du nom pour les Administrateurs */}
-            {isAdministrator && (
-              <div className="flex items-center gap-2">
-                <span
-                  className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                    program.isActive
-                      ? "bg-green-100 text-green-700 border border-green-200"
-                      : "bg-red-100 text-red-700 border border-red-200"
-                  }`}>
-                  {program.isActive ? "Actif" : "Inactif"}
-                </span>
-                {program.hero?.isHero && (
-                  <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
-                    Publié
-                  </span>
-                )}
-              </div>
-            )}
           </div>
-          
-          {/* Bouton Activer/Désactiver - Seulement pour Administrateur */}
-          {isAdministrator && (
-            <div className="flex space-x-2">
-              <button
-                onClick={() => toggleActive(program._id, program.isActive)}
-                className={`p-2 rounded-lg transition-colors ${
-                  program.isActive
-                    ? "bg-slate-500 hover:bg-slate-600"
-                    : "bg-slate-400 hover:bg-slate-500"
-                }`}
-                title={program.isActive ? "Désactiver" : "Activer"}>
-                {program.isActive ? (
-                  <EyeOff className="w-4 h-4 text-white" />
-                ) : (
-                  <Eye className="w-4 h-4 text-white" />
-                )}
-              </button>
-            </div>
-          )}
-        </div>
+        ))}
       </div>
-
-      {/* Card Body */}
-      <div className="p-6">
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {program.description}
-        </p>
-
-        {/* Criteria Summary */}
-        <div className="space-y-3 mb-6">
-          <div className="flex items-center text-sm">
-            <User className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Type:{" "}
-              {program.criteres.applicantType.length > 0
-                ? program.criteres.applicantType.join(", ")
-                : "Tous"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <Building className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Secteurs:{" "}
-              {program.criteres?.secteurActivite?.length > 0
-                ? `${program.criteres.secteurActivite.length} sélectionnés`
-                : "Tous"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Investissement:{" "}
-              {program.criteres.montantInvestissement.length > 0
-                ? `${program.criteres.montantInvestissement.length} tranches`
-                : "Tous montants"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Début:{" "}
-              {program.DateDebut
-                ? new Date(program.DateDebut).toLocaleDateString()
-                : "N/A"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Fin:{" "}
-              {program.DateFin
-                ? new Date(program.DateFin).toLocaleDateString()
-                : "N/A"}
-            </span>
-          </div>
-        </div>
-
-        {/* ✅ Actions - Seulement pour les Administrateurs */}
-        {isAdministrator && (
-          <div className="flex space-x-2">
-            <button
-              onClick={() => handleEdit(program)}
-              className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
-              <Edit className="w-4 h-4 mr-2" />
-              Modifier
-            </button>
-            <button
-              onClick={() => handlePublish(program)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
-                program.hero?.isHero
-                  ? "bg-yellow-50 hover:bg-yellow-100 text-yellow-700"
-                  : "bg-blue-50 hover:bg-blue-100 text-blue-700"
-              }`}
-              title={
-                program.hero?.isHero
-                  ? "Modifier la publication"
-                  : "Publier le programme"
-              }>
-              <Share className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleDelete(program._id)}
-              className="bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  ))}
-</div>
 
       {filteredPrograms.length === 0 && (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
@@ -1268,184 +1272,186 @@ const Programs: React.FC = () => {
                             />
                           </div>
                         </div>
+                      </div>
 
-                        {/* Per-sector revenue */}
-                        <div className="border border-gray-200 rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700">
-                              Chiffre d'affaires par secteur
-                            </span>
-                          </div>
-                          {/* Bulk apply */}
-                          <BulkApplyCA
-                            onApply={(min, max) => {
-                              setFormData((prev) => {
-                                const selected = prev.criteres.secteurActivite;
-                                const map = new Map(
-                                  prev.criteres.chiffreAffaireParSecteur.map(
-                                    (e) => [e.secteur, e]
-                                  )
-                                );
-                                selected.forEach((s) => {
-                                  const existing = map.get(s);
-                                  if (existing) {
-                                    existing.min = min;
-                                    existing.max = max;
-                                  } else {
-                                    map.set(s, { secteur: s, min, max });
-                                  }
-                                });
-                                const nextArr = Array.from(map.values()).filter(
-                                  (e) => selected.includes(e.secteur)
-                                );
-                                return {
-                                  ...prev,
-                                  criteres: {
-                                    ...prev.criteres,
-                                    chiffreAffaireParSecteur: nextArr,
-                                  },
-                                };
-                              });
-                            }}
-                          />
-
-                          {/* Rows per selected sector */}
-                          {formData.criteres.secteurActivite.length === 0 ? (
-                            <p className="text-xs text-gray-500">
-                              Sélectionnez d'abord des secteurs d'activité.
-                            </p>
-                          ) : (
-                            <div className="space-y-2">
-                              {formData.criteres.secteurActivite.map(
-                                (secteur) => {
-                                  const entry = (
-                                    formData.criteres
-                                      .chiffreAffaireParSecteur || []
-                                  ).find((e) => e.secteur === secteur) || {
-                                    secteur,
-                                    min: null,
-                                    max: null,
-                                  };
-                                  return (
-                                    <div
-                                      key={secteur}
-                                      className="grid grid-cols-12 gap-2 items-end">
-                                      <div className="col-span-4">
-                                        <label className="block text-xs text-gray-500 mb-1">
-                                          Secteur
-                                        </label>
-                                        <input
-                                          disabled
-                                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded"
-                                          value={secteur}
-                                        />
-                                      </div>
-                                      <div className="col-span-4">
-                                        <label className="block text-xs text-gray-500 mb-1">
-                                          Min
-                                        </label>
-                                        <input
-                                          type="number"
-                                          className="w-full px-3 py-2 border border-gray-300 rounded"
-                                          value={entry.min ?? ""}
-                                          onChange={(e) => {
-                                            const val = e.target.value
-                                              ? Number(e.target.value)
-                                              : null;
-                                            setFormData((prev) => {
-                                              const arr = [
-                                                ...(prev.criteres
-                                                  .chiffreAffaireParSecteur ||
-                                                  []),
-                                              ];
-                                              const idx = arr.findIndex(
-                                                (a) => a.secteur === secteur
-                                              );
-                                              if (idx >= 0)
-                                                arr[idx] = {
-                                                  ...arr[idx],
-                                                  min: val,
-                                                };
-                                              else
-                                                arr.push({
-                                                  secteur,
-                                                  min: val,
-                                                  max: entry.max ?? null,
-                                                });
-                                              // keep only selected sectors
-                                              const next = arr.filter((a) =>
-                                                prev.criteres.secteurActivite.includes(
-                                                  a.secteur
-                                                )
-                                              );
-                                              return {
-                                                ...prev,
-                                                criteres: {
-                                                  ...prev.criteres,
-                                                  chiffreAffaireParSecteur:
-                                                    next,
-                                                },
-                                              };
-                                            });
-                                          }}
-                                        />
-                                      </div>
-                                      <div className="col-span-4">
-                                        <label className="block text-xs text-gray-500 mb-1">
-                                          Max
-                                        </label>
-                                        <input
-                                          type="number"
-                                          className="w-full px-3 py-2 border border-gray-300 rounded"
-                                          value={entry.max ?? ""}
-                                          onChange={(e) => {
-                                            const val = e.target.value
-                                              ? Number(e.target.value)
-                                              : null;
-                                            setFormData((prev) => {
-                                              const arr = [
-                                                ...(prev.criteres
-                                                  .chiffreAffaireParSecteur ||
-                                                  []),
-                                              ];
-                                              const idx = arr.findIndex(
-                                                (a) => a.secteur === secteur
-                                              );
-                                              if (idx >= 0)
-                                                arr[idx] = {
-                                                  ...arr[idx],
-                                                  max: val,
-                                                };
-                                              else
-                                                arr.push({
-                                                  secteur,
-                                                  min: entry.min ?? null,
-                                                  max: val,
-                                                });
-                                              const next = arr.filter((a) =>
-                                                prev.criteres.secteurActivite.includes(
-                                                  a.secteur
-                                                )
-                                              );
-                                              return {
-                                                ...prev,
-                                                criteres: {
-                                                  ...prev.criteres,
-                                                  chiffreAffaireParSecteur:
-                                                    next,
-                                                },
-                                              };
-                                            });
-                                          }}
-                                        />
-                                      </div>
-                                    </div>
-                                  );
-                                }
-                              )}
-                            </div>
-                          )}
+                      {/* Per-sector revenue */}
+                      <div className="col-span-2 border border-gray-200 rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-700">
+                            Chiffre d'affaires par secteur
+                          </span>
                         </div>
+                        {/* Bulk apply */}
+                        <BulkApplyCA
+                          onApply={(min, max) => {
+                            setFormData((prev) => {
+                              const selected = prev.criteres.secteurActivite;
+                              const map = new Map(
+                                prev.criteres.chiffreAffaireParSecteur.map(
+                                  (e) => [e.secteur, e]
+                                )
+                              );
+                              selected.forEach((s) => {
+                                const existing = map.get(s);
+                                if (existing) {
+                                  existing.min = min;
+                                  existing.max = max;
+                                } else {
+                                  map.set(s, { secteur: s, min, max });
+                                }
+                              });
+                              const nextArr = Array.from(map.values()).filter(
+                                (e) => selected.includes(e.secteur)
+                              );
+                              return {
+                                ...prev,
+                                criteres: {
+                                  ...prev.criteres,
+                                  chiffreAffaireParSecteur: nextArr,
+                                },
+                              };
+                            });
+                          }}
+                        />
+
+                        {/* Rows per selected sector */}
+                        {formData.criteres.secteurActivite.length === 0 ? (
+                          <p className="text-xs text-gray-500">
+                            Sélectionnez d'abord des secteurs d'activité.
+                          </p>
+                        ) : (
+                          <div className="space-y-2">
+                            {formData.criteres.secteurActivite.map(
+                              (secteur) => {
+                                console.log(secteur);
+                                const entry = (
+                                  formData.criteres.chiffreAffaireParSecteur ||
+                                  []
+                                ).find((e) => e.secteur === secteur) || {
+                                  secteur,
+                                  min: null,
+                                  max: null,
+                                };
+                                return (
+                                  <div
+                                    key={secteur}
+                                    className="grid grid-cols-12 gap-2 items-end">
+                                    <div className="col-span-6">
+                                      <label className="block text-xs text-gray-500 mb-1">
+                                        Secteur
+                                      </label>
+                                      <input
+                                        disabled
+                                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded"
+                                        value={
+                                          secteurLabelByValue.get(secteur) ??
+                                          secteur
+                                        }
+                                      />
+                                    </div>
+                                    <div className="col-span-3">
+                                      <label className="block text-xs text-gray-500 mb-1">
+                                        Min
+                                      </label>
+                                      <input
+                                        type="number"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded"
+                                        value={entry.min ?? ""}
+                                        onChange={(e) => {
+                                          const val = e.target.value
+                                            ? Number(e.target.value)
+                                            : null;
+                                          setFormData((prev) => {
+                                            const arr = [
+                                              ...(prev.criteres
+                                                .chiffreAffaireParSecteur ||
+                                                []),
+                                            ];
+                                            const idx = arr.findIndex(
+                                              (a) => a.secteur === secteur
+                                            );
+                                            if (idx >= 0)
+                                              arr[idx] = {
+                                                ...arr[idx],
+                                                min: val,
+                                              };
+                                            else
+                                              arr.push({
+                                                secteur,
+                                                min: val,
+                                                max: entry.max ?? null,
+                                              });
+                                            // keep only selected sectors
+                                            const next = arr.filter((a) =>
+                                              prev.criteres.secteurActivite.includes(
+                                                a.secteur
+                                              )
+                                            );
+                                            return {
+                                              ...prev,
+                                              criteres: {
+                                                ...prev.criteres,
+                                                chiffreAffaireParSecteur: next,
+                                              },
+                                            };
+                                          });
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="col-span-3">
+                                      <label className="block text-xs text-gray-500 mb-1">
+                                        Max
+                                      </label>
+                                      <input
+                                        type="number"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded"
+                                        value={entry.max ?? ""}
+                                        onChange={(e) => {
+                                          const val = e.target.value
+                                            ? Number(e.target.value)
+                                            : null;
+                                          setFormData((prev) => {
+                                            const arr = [
+                                              ...(prev.criteres
+                                                .chiffreAffaireParSecteur ||
+                                                []),
+                                            ];
+                                            const idx = arr.findIndex(
+                                              (a) => a.secteur === secteur
+                                            );
+                                            if (idx >= 0)
+                                              arr[idx] = {
+                                                ...arr[idx],
+                                                max: val,
+                                              };
+                                            else
+                                              arr.push({
+                                                secteur,
+                                                min: entry.min ?? null,
+                                                max: val,
+                                              });
+                                            const next = arr.filter((a) =>
+                                              prev.criteres.secteurActivite.includes(
+                                                a.secteur
+                                              )
+                                            );
+                                            return {
+                                              ...prev,
+                                              criteres: {
+                                                ...prev.criteres,
+                                                chiffreAffaireParSecteur: next,
+                                              },
+                                            };
+                                          });
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              }
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* Secteurs d'activité */}
