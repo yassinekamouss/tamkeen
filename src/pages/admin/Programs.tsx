@@ -103,6 +103,9 @@ interface ProgramFormData {
   };
 }
 
+    const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
+    const isAdministrator = adminProfile?.role === "Administrateur";
+
 const Programs: React.FC = () => {
   // Small inline widget to apply a min/max to all selected sectors
   const BulkApplyCA: React.FC<{
@@ -293,10 +296,7 @@ const Programs: React.FC = () => {
 
   const fetchPrograms = async () => {
     try {
-      const token = localStorage.getItem("adminToken");
-      const response = await axios.get("/programs", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get("/programs");
       setPrograms(response.data);
     } catch {
       setError("Erreur lors du chargement des programmes.");
@@ -309,8 +309,6 @@ const Programs: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("adminToken");
-
       // Conversion en Date si valeur présente, sinon null
       const payload = {
         ...formData,
@@ -319,13 +317,9 @@ const Programs: React.FC = () => {
       };
 
       if (editingProgram) {
-        await axios.put(`/programs/${editingProgram._id}`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.put(`/programs/${editingProgram._id}`, payload);
       } else {
-        await axios.post("/programs", payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.post("/programs", payload);
       }
 
       await fetchPrograms();
@@ -369,10 +363,7 @@ const Programs: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce programme ?")) {
       try {
-        const token = localStorage.getItem("adminToken");
-        await axios.delete(`/programs/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(`/programs/${id}`);
         await fetchPrograms();
       } catch {
         setError("Erreur lors de la suppression du programme.");
@@ -382,13 +373,9 @@ const Programs: React.FC = () => {
 
   const toggleActive = async (id: string, isActive: boolean) => {
     try {
-      const token = localStorage.getItem("adminToken");
       await axios.patch(
         `/programs/${id}/toggle`,
         { isActive: !isActive },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
       );
       await fetchPrograms();
     } catch {
@@ -446,10 +433,7 @@ const Programs: React.FC = () => {
     if (!publishingProgram) return;
 
     try {
-      const token = localStorage.getItem("adminToken");
-      await axios.put(`/programs/${publishingProgram._id}/hero`, heroData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(`/programs/${publishingProgram._id}/hero`, heroData);
 
       await fetchPrograms();
       setShowPublishModal(false);
@@ -541,6 +525,7 @@ const Programs: React.FC = () => {
               d'éligibilité
             </p>
           </div>
+        {isAdministrator && (
           <button
             onClick={() => {
               resetForm();
@@ -550,6 +535,7 @@ const Programs: React.FC = () => {
             <Plus className="w-5 h-5 mr-2" />
             Nouveau Programme
           </button>
+        )}
         </div>
       </div>
 
@@ -723,144 +709,176 @@ const Programs: React.FC = () => {
       )}
 
       {/* Programs Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-        {filteredPrograms.map((program) => (
-          <div
-            key={program._id}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-300">
-            {/* Card Header */}
-            <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-white mb-1">
-                    {program.name}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                        program.isActive
-                          ? "bg-green-100 text-green-700 border border-green-200"
-                          : "bg-red-100 text-red-700 border border-red-200"
-                      }`}>
-                      {program.isActive ? "Actif" : "Inactif"}
-                    </span>
-                    {program.hero?.isHero && (
-                      <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
-                        Publié
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => toggleActive(program._id, program.isActive)}
-                    className={`p-2 rounded-lg transition-colors ${
+   <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+  {filteredPrograms.map((program) => (
+    <div
+      key={program._id}
+      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-300">
+      
+      {/* Card Header */}
+      <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold text-white mb-1">
+                {program.name}
+              </h3>
+              
+              {/* Badges à droite du nom pour les Consultants */}
+              {!isAdministrator && (
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
                       program.isActive
-                        ? "bg-slate-500 hover:bg-slate-600"
-                        : "bg-slate-400 hover:bg-slate-500"
-                    }`}
-                    title={program.isActive ? "Désactiver" : "Activer"}>
-                    {program.isActive ? (
-                      <EyeOff className="w-4 h-4 text-white" />
-                    ) : (
-                      <Eye className="w-4 h-4 text-white" />
-                    )}
-                  </button>
+                        ? "bg-green-100 text-green-700 border border-green-200"
+                        : "bg-red-100 text-red-700 border border-red-200"
+                    }`}>
+                    {program.isActive ? "Actif" : "Inactif"}
+                  </span>
+                  {program.hero?.isHero && (
+                    <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
+                      Publié
+                    </span>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
-
-            {/* Card Body */}
-            <div className="p-6">
-              <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                {program.description}
-              </p>
-
-              {/* Criteria Summary */}
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center text-sm">
-                  <User className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Type:{" "}
-                    {program.criteres.applicantType.length > 0
-                      ? program.criteres.applicantType.join(", ")
-                      : "Tous"}
+            
+            {/* Badges en dessous du nom pour les Administrateurs */}
+            {isAdministrator && (
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                    program.isActive
+                      ? "bg-green-100 text-green-700 border border-green-200"
+                      : "bg-red-100 text-red-700 border border-red-200"
+                  }`}>
+                  {program.isActive ? "Actif" : "Inactif"}
+                </span>
+                {program.hero?.isHero && (
+                  <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
+                    Publié
                   </span>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <Building className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Secteurs:{" "}
-                    {program.criteres?.secteurActivite?.length > 0
-                      ? `${program.criteres.secteurActivite.length} sélectionnés`
-                      : "Tous"}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Investissement:{" "}
-                    {program.criteres.montantInvestissement.length > 0
-                      ? `${program.criteres.montantInvestissement.length} tranches`
-                      : "Tous montants"}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Début:{" "}
-                    {program.DateDebut
-                      ? new Date(program.DateDebut).toLocaleDateString()
-                      : "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Fin:{" "}
-                    {program.DateFin
-                      ? new Date(program.DateFin).toLocaleDateString()
-                      : "N/A"}
-                  </span>
-                </div>
+                )}
               </div>
-
-              {/* Actions */}
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleEdit(program)}
-                  className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
-                  <Edit className="w-4 h-4 mr-2" />
-                  Modifier
-                </button>
-                <button
-                  onClick={() => handlePublish(program)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
-                    program.hero?.isHero
-                      ? "bg-yellow-50 hover:bg-yellow-100 text-yellow-700"
-                      : "bg-blue-50 hover:bg-blue-100 text-blue-700"
-                  }`}
-                  title={
-                    program.hero?.isHero
-                      ? "Modifier la publication"
-                      : "Publier le programme"
-                  }>
-                  <Share className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(program._id)}
-                  className="bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+            )}
           </div>
-        ))}
+          
+          {/* Bouton Activer/Désactiver - Seulement pour Administrateur */}
+          {isAdministrator && (
+            <div className="flex space-x-2">
+              <button
+                onClick={() => toggleActive(program._id, program.isActive)}
+                className={`p-2 rounded-lg transition-colors ${
+                  program.isActive
+                    ? "bg-slate-500 hover:bg-slate-600"
+                    : "bg-slate-400 hover:bg-slate-500"
+                }`}
+                title={program.isActive ? "Désactiver" : "Activer"}>
+                {program.isActive ? (
+                  <EyeOff className="w-4 h-4 text-white" />
+                ) : (
+                  <Eye className="w-4 h-4 text-white" />
+                )}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Card Body */}
+      <div className="p-6">
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {program.description}
+        </p>
+
+        {/* Criteria Summary */}
+        <div className="space-y-3 mb-6">
+          <div className="flex items-center text-sm">
+            <User className="w-4 h-4 text-gray-500 mr-2" />
+            <span className="text-gray-600">
+              Type:{" "}
+              {program.criteres.applicantType.length > 0
+                ? program.criteres.applicantType.join(", ")
+                : "Tous"}
+            </span>
+          </div>
+
+          <div className="flex items-center text-sm">
+            <Building className="w-4 h-4 text-gray-500 mr-2" />
+            <span className="text-gray-600">
+              Secteurs:{" "}
+              {program.criteres?.secteurActivite?.length > 0
+                ? `${program.criteres.secteurActivite.length} sélectionnés`
+                : "Tous"}
+            </span>
+          </div>
+
+          <div className="flex items-center text-sm">
+            <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
+            <span className="text-gray-600">
+              Investissement:{" "}
+              {program.criteres.montantInvestissement.length > 0
+                ? `${program.criteres.montantInvestissement.length} tranches`
+                : "Tous montants"}
+            </span>
+          </div>
+
+          <div className="flex items-center text-sm">
+            <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+            <span className="text-gray-600">
+              Début:{" "}
+              {program.DateDebut
+                ? new Date(program.DateDebut).toLocaleDateString()
+                : "N/A"}
+            </span>
+          </div>
+
+          <div className="flex items-center text-sm">
+            <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+            <span className="text-gray-600">
+              Fin:{" "}
+              {program.DateFin
+                ? new Date(program.DateFin).toLocaleDateString()
+                : "N/A"}
+            </span>
+          </div>
+        </div>
+
+        {/* ✅ Actions - Seulement pour les Administrateurs */}
+        {isAdministrator && (
+          <div className="flex space-x-2">
+            <button
+              onClick={() => handleEdit(program)}
+              className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
+              <Edit className="w-4 h-4 mr-2" />
+              Modifier
+            </button>
+            <button
+              onClick={() => handlePublish(program)}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
+                program.hero?.isHero
+                  ? "bg-yellow-50 hover:bg-yellow-100 text-yellow-700"
+                  : "bg-blue-50 hover:bg-blue-100 text-blue-700"
+              }`}
+              title={
+                program.hero?.isHero
+                  ? "Modifier la publication"
+                  : "Publier le programme"
+              }>
+              <Share className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleDelete(program._id)}
+              className="bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
 
       {filteredPrograms.length === 0 && (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
