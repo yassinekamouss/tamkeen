@@ -1,27 +1,24 @@
-import axios from "axios";
+import axios from "../../api/axios";
 import React, { useState, useEffect } from "react";
 import type { Admin } from "../../components/admin/admins/types";
 
 const Reports: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [userType, setUserType] = useState("all");
+  const [applicantType, setApplicantType] = useState("all");
 
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [, setLoading] = useState(true);
-  const [selectedAdminId, setSelectedAdminId] = useState<string>("");
+  const [consultantAssocie, setConsultantAssocie] = useState<string>("");
 
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await axios.get("/admin"); 
-        if (Array.isArray(response.data)) {
-          setAdmins(response.data);
-        } else {
-          console.error("La réponse n'est pas un tableau :", response.data);
-        }
-      } catch (err) {
+        const response = await axios.get("/admin");
+        setAdmins(response.data);
+        console.log(response.data);
+      } catch {
         setError("Erreur lors du chargement des administrateurs.");
       } finally {
         setLoading(false);
@@ -42,10 +39,10 @@ const Reports: React.FC = () => {
     axios
       .get("/users/export", {
         params: {
-          startDate,
+          // startDate,
           endDate,
-          userType,
-          adminId: selectedAdminId, // ✅ ici on envoie le bon paramètre
+          applicantType,
+          adminId: consultantAssocie, // ✅ ici on envoie le bon paramètre
         },
         responseType: "blob",
       })
@@ -60,9 +57,9 @@ const Reports: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      <div className="bg-white p-4 rounded shadow space-y-4">
-        <h2 className="text-lg font-semibold">Exporter les clients</h2>
+    <div className="p-6 space-y-6 bg-gray-100 min-h-screen">
+      <div className="bg-white p-6 rounded-lg shadow-md space-y-6 border border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-800">Exporter les clients</h2>
 
         {/* Sélection des dates */}
         <div className="flex gap-4">
@@ -70,21 +67,21 @@ const Reports: React.FC = () => {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="border rounded p-2 w-full"
+            className="border border-gray-300 rounded p-2 w-full bg-gray-50 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
           />
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="border rounded p-2 w-full"
+            className="border border-gray-300 rounded p-2 w-full bg-gray-50 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
           />
         </div>
 
         {/* Type utilisateur */}
         <select
-          value={userType}
-          onChange={(e) => setUserType(e.target.value)}
-          className="border rounded p-2 w-full"
+          value={applicantType}
+          onChange={(e) => setApplicantType(e.target.value)}
+          className="border border-gray-300 rounded p-2 w-full bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
         >
           <option value="all">Tous les types</option>
           <option value="morale">Personne morale</option>
@@ -93,10 +90,11 @@ const Reports: React.FC = () => {
 
         {/* Sélecteur administrateur */}
         <select
-          value={selectedAdminId}
-          onChange={(e) => setSelectedAdminId(e.target.value)}
+          value={consultantAssocie}
+          onChange={(e) => setConsultantAssocie(e.target.value)}
+          className="border border-gray-300 rounded p-2 w-full bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
         >
-          <option value="">Choisir un Utilisateur</option>
+          <option value="">Tous les Consultants</option>
           {Array.isArray(admins) &&
             admins.map((admin) => (
               <option key={admin._id} value={admin._id}>
@@ -108,7 +106,7 @@ const Reports: React.FC = () => {
         {/* Bouton télécharger */}
         <button
           onClick={handleDownload}
-          className="bg-green-600 text-white px-4 py-2 rounded"
+          className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
         >
           Télécharger en Excel
         </button>
@@ -117,6 +115,7 @@ const Reports: React.FC = () => {
         {error && <p className="text-red-600">{error}</p>}
       </div>
     </div>
+
   );
 };
 
