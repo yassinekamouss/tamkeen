@@ -87,16 +87,16 @@ const AdminTable: React.FC<Props> = ({ filteredAdmins, onEdit, onDelete,onResetP
                 </button>
                 <button
                   onClick={() => onDelete(admin._id)}
-                  className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                  className="text-red-600 hover:text-red-900  mr-3 transition-colors duration-200"
                   title="Supprimer l'administrateur"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
                  <button
                 onClick={() => onResetPassword(admin._id)}
-                className="text-blue-600 hover:text-blue-900 transition-colors duration-200"
+                className="text-blue-600 hover:text-blue-900  mr-3 transition-colors duration-200"
                 title="Réinitialiser le mot de passe"
-           >
+                  >
                 <Key className="w-4 h-4" />
               </button>
             </td>
