@@ -37,7 +37,7 @@ const AdminsGestion: React.FC = () => {
     const fetchAdmins = async () => {
       try {
         const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
-        const response = await axios.get("/admin", { params: { _id: adminProfile._id } });
+        const response = await axios.get("/admin/others", { params: { _id: adminProfile._id } });
         setAdmins(response.data);
       } catch {
         setError("Erreur lors du chargement des administrateurs.");
