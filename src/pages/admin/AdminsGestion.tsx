@@ -36,7 +36,8 @@ const AdminsGestion: React.FC = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await axios.get("/admin");
+        const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
+        const response = await axios.get("/admin/others", { params: { _id: adminProfile._id } });
         setAdmins(response.data);
       } catch {
         setError("Erreur lors du chargement des administrateurs.");
@@ -99,6 +100,19 @@ const AdminsGestion: React.FC = () => {
       console.error("Erreur lors de la suppression :", error);
     }
   };
+
+ const handleResetPassword = async (adminId: string) => {
+  if (!window.confirm("Voulez-vous vraiment réinitialiser le mot de passe ?")) return;
+
+  try {
+    const res = await axios.post(`/admin/${adminId}/reset-password`);
+    alert(res.data.message); // ✅ affiche le message du backend
+    console.log("Mot de passe réinitialisé !");
+  } catch (error) {
+    console.error("Erreur lors de la réinitialisation du mot de passe :", error);
+    alert("Erreur lors de la réinitialisation du mot de passe.");
+  }
+};
 
   if (loading) {
     return (
@@ -201,6 +215,7 @@ const AdminsGestion: React.FC = () => {
       setIsEditModalOpen(true);
     }}
     onDelete={handleDeleteAdmin}
+    onResetPassword={handleResetPassword}
   />
 </div>
 

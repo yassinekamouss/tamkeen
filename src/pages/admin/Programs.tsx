@@ -1,13 +1,6 @@
 // src/pages/admin/Programs.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
-import {
-  SECTEURS_TRAVAIL,
-  REGIONS,
-  STATUT_JURIDIQUE_OPTIONS,
-  MONTANT_INVESTISSEMENT_OPTIONS,
-  ANNEE_CREATION,
-} from "../../components/eligibility/constants_for_adding_programs";
 import {
   Target,
   Plus,
@@ -24,11 +17,11 @@ import {
   Building,
   DollarSign,
   User,
-  X,
   FileX,
   Share,
 } from "lucide-react";
 import PublishProgamModal from "../../components/admin/programs/PublishProgramModal";
+import ProgramFormModal from "../../components/admin/programs/ProgramFormModal";
 
 interface Program {
   _id: string;
@@ -53,6 +46,11 @@ interface Program {
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
+    chiffreAffaireParSecteur?: {
+      secteur: string;
+      min: number | null;
+      max: number | null;
+    }[];
     age?: {
       minAge: number | null;
       maxAge: number | null;
@@ -79,6 +77,11 @@ interface ProgramFormData {
     statutJuridique: string[];
     applicantType: string[];
     montantInvestissement: string[];
+    chiffreAffaireParSecteur: {
+      secteur: string;
+      min: number | null;
+      max: number | null;
+    }[];
     age: {
       minAge: number | null;
       maxAge: number | null;
@@ -93,105 +96,10 @@ interface ProgramFormData {
   };
 }
 
-    const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
-    const isAdministrator = adminProfile?.role === "Administrateur";
+const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
+const isAdministrator = adminProfile?.role === "Administrateur";
 
 const Programs: React.FC = () => {
-  // Reusable checklist with bulk actions for criteria selection
-  const MultiSelectGroup: React.FC<{
-    label: string;
-    options: { label: string; value: string | number }[];
-    selected: (string | number)[];
-    onChange: (next: (string | number)[]) => void;
-    height?: "sm" | "md" | "lg";
-  }> = ({ label, options, selected, onChange, height = "md" }) => {
-    const [query, setQuery] = useState("");
-    const sizeClass = useMemo(() => {
-      switch (height) {
-        case "sm":
-          return "max-h-28";
-        case "lg":
-          return "max-h-64";
-        default:
-          return "max-h-40";
-      }
-    }, [height]);
-
-    const filtered = useMemo(
-      () =>
-        options.filter((o) =>
-          String(o.label).toLowerCase().includes(query.toLowerCase())
-        ),
-      [options, query]
-    );
-
-    const allValues = useMemo(() => options.map((o) => o.value), [options]);
-    const setAll = () => onChange(allValues);
-    const clearAll = () => onChange([]);
-
-    const toggleValue = (value: string | number, checked: boolean) => {
-      if (checked) onChange([...(selected as (string | number)[]), value]);
-      else onChange(selected.filter((v) => v !== value));
-    };
-
-    return (
-      <div>
-        <div className="flex items-center justify-between mb-2 gap-2">
-          <label className="block text-sm font-medium text-gray-700">
-            {label}
-          </label>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={setAll}
-              className="text-xs px-2 py-1 rounded border border-gray-300 hover:bg-gray-50">
-              Tout
-            </button>
-            <button
-              type="button"
-              onClick={clearAll}
-              className="text-xs px-2 py-1 rounded border border-gray-300 hover:bg-gray-50">
-              Aucun
-            </button>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 mb-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-2 top-2.5 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Filtrer..."
-              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
-          </div>
-          <span className="text-xs text-gray-500 whitespace-nowrap">
-            {selected.length}/{options.length} sélectionnés
-          </span>
-        </div>
-        <div
-          className={`${sizeClass} overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2 bg-white`}>
-          {filtered.length === 0 ? (
-            <p className="text-xs text-gray-500">Aucune option</p>
-          ) : (
-            filtered.map((opt) => (
-              <label key={String(opt.value)} className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  checked={selected.includes(opt.value)}
-                  onChange={(e) => toggleValue(opt.value, e.target.checked)}
-                />
-                <span className="ml-2 text-sm text-gray-700">{opt.label}</span>
-              </label>
-            ))
-          )}
-        </div>
-      </div>
-    );
-  };
-
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -216,6 +124,7 @@ const Programs: React.FC = () => {
       statutJuridique: [],
       applicantType: [],
       montantInvestissement: [],
+      chiffreAffaireParSecteur: [],
       age: {
         minAge: null,
         maxAge: null,
@@ -282,6 +191,8 @@ const Programs: React.FC = () => {
       link: program.link,
       criteres: {
         ...program.criteres,
+        chiffreAffaireParSecteur:
+          program.criteres?.chiffreAffaireParSecteur ?? [],
         age: {
           minAge: program.criteres.age?.minAge ?? null,
           maxAge: program.criteres.age?.maxAge ?? null,
@@ -311,10 +222,7 @@ const Programs: React.FC = () => {
 
   const toggleActive = async (id: string, isActive: boolean) => {
     try {
-      await axios.patch(
-        `/programs/${id}/toggle`,
-        { isActive: !isActive },
-      );
+      await axios.patch(`/programs/${id}/toggle`, { isActive: !isActive });
       await fetchPrograms();
     } catch {
       setError("Erreur lors de la modification du statut.");
@@ -334,6 +242,7 @@ const Programs: React.FC = () => {
         secteurActivite: [],
         statutJuridique: [],
         applicantType: [],
+        chiffreAffaireParSecteur: [],
         age: {
           minAge: null,
           maxAge: null,
@@ -379,8 +288,6 @@ const Programs: React.FC = () => {
       setError("Erreur lors de la publication du programme.");
     }
   };
-
-  // handleMultiSelectChange replaced by MultiSelectGroup onChange handlers
 
   const [remainingDays, setRemainingDays] = useState<number | null>(null);
   const [filterDate, setFilterDate] = useState<string>("");
@@ -462,17 +369,17 @@ const Programs: React.FC = () => {
               d'éligibilité
             </p>
           </div>
-        {isAdministrator && (
-          <button
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
-            className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl flex items-center">
-            <Plus className="w-5 h-5 mr-2" />
-            Nouveau Programme
-          </button>
-        )}
+          {isAdministrator && (
+            <button
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+              className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl flex items-center">
+              <Plus className="w-5 h-5 mr-2" />
+              Nouveau Programme
+            </button>
+          )}
         </div>
       </div>
 
@@ -646,176 +553,177 @@ const Programs: React.FC = () => {
       )}
 
       {/* Programs Grid */}
-   <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-  {filteredPrograms.map((program) => (
-    <div
-      key={program._id}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-300">
-      
-      {/* Card Header */}
-      <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
-        <div className="flex justify-between items-start">
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white mb-1">
-                {program.name}
-              </h3>
-              
-              {/* Badges à droite du nom pour les Consultants */}
-              {!isAdministrator && (
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                      program.isActive
-                        ? "bg-green-100 text-green-700 border border-green-200"
-                        : "bg-red-100 text-red-700 border border-red-200"
-                    }`}>
-                    {program.isActive ? "Actif" : "Inactif"}
-                  </span>
-                  {program.hero?.isHero && (
-                    <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
-                      Publié
-                    </span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+        {filteredPrograms.map((program) => (
+          <div
+            key={program._id}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-300">
+            {/* Card Header */}
+            <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-white mb-1">
+                      {program.name}
+                    </h3>
+
+                    {/* Badges à droite du nom pour les Consultants */}
+                    {!isAdministrator && (
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                            program.isActive
+                              ? "bg-green-100 text-green-700 border border-green-200"
+                              : "bg-red-100 text-red-700 border border-red-200"
+                          }`}>
+                          {program.isActive ? "Actif" : "Inactif"}
+                        </span>
+                        {program.hero?.isHero && (
+                          <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
+                            Publié
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Badges en dessous du nom pour les Administrateurs */}
+                  {isAdministrator && (
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                          program.isActive
+                            ? "bg-green-100 text-green-700 border border-green-200"
+                            : "bg-red-100 text-red-700 border border-red-200"
+                        }`}>
+                        {program.isActive ? "Actif" : "Inactif"}
+                      </span>
+                      {program.hero?.isHero && (
+                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
+                          Publié
+                        </span>
+                      )}
+                    </div>
                   )}
+                </div>
+
+                {/* Bouton Activer/Désactiver - Seulement pour Administrateur */}
+                {isAdministrator && (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() =>
+                        toggleActive(program._id, program.isActive)
+                      }
+                      className={`p-2 rounded-lg transition-colors ${
+                        program.isActive
+                          ? "bg-slate-500 hover:bg-slate-600"
+                          : "bg-slate-400 hover:bg-slate-500"
+                      }`}
+                      title={program.isActive ? "Désactiver" : "Activer"}>
+                      {program.isActive ? (
+                        <EyeOff className="w-4 h-4 text-white" />
+                      ) : (
+                        <Eye className="w-4 h-4 text-white" />
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Card Body */}
+            <div className="p-6">
+              <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                {program.description}
+              </p>
+
+              {/* Criteria Summary */}
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center text-sm">
+                  <User className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Type:{" "}
+                    {program.criteres.applicantType.length > 0
+                      ? program.criteres.applicantType.join(", ")
+                      : "Tous"}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-sm">
+                  <Building className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Secteurs:{" "}
+                    {program.criteres?.secteurActivite?.length > 0
+                      ? `${program.criteres.secteurActivite.length} sélectionnés`
+                      : "Tous"}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-sm">
+                  <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Investissement:{" "}
+                    {program.criteres.montantInvestissement.length > 0
+                      ? `${program.criteres.montantInvestissement.length} tranches`
+                      : "Tous montants"}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-sm">
+                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Début:{" "}
+                    {program.DateDebut
+                      ? new Date(program.DateDebut).toLocaleDateString()
+                      : "N/A"}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-sm">
+                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+                  <span className="text-gray-600">
+                    Fin:{" "}
+                    {program.DateFin
+                      ? new Date(program.DateFin).toLocaleDateString()
+                      : "N/A"}
+                  </span>
+                </div>
+              </div>
+
+              {/* ✅ Actions - Seulement pour les Administrateurs */}
+              {isAdministrator && (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEdit(program)}
+                    className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Modifier
+                  </button>
+                  <button
+                    onClick={() => handlePublish(program)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
+                      program.hero?.isHero
+                        ? "bg-yellow-50 hover:bg-yellow-100 text-yellow-700"
+                        : "bg-blue-50 hover:bg-blue-100 text-blue-700"
+                    }`}
+                    title={
+                      program.hero?.isHero
+                        ? "Modifier la publication"
+                        : "Publier le programme"
+                    }>
+                    <Share className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(program._id)}
+                    className="bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               )}
             </div>
-            
-            {/* Badges en dessous du nom pour les Administrateurs */}
-            {isAdministrator && (
-              <div className="flex items-center gap-2">
-                <span
-                  className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                    program.isActive
-                      ? "bg-green-100 text-green-700 border border-green-200"
-                      : "bg-red-100 text-red-700 border border-red-200"
-                  }`}>
-                  {program.isActive ? "Actif" : "Inactif"}
-                </span>
-                {program.hero?.isHero && (
-                  <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
-                    Publié
-                  </span>
-                )}
-              </div>
-            )}
           </div>
-          
-          {/* Bouton Activer/Désactiver - Seulement pour Administrateur */}
-          {isAdministrator && (
-            <div className="flex space-x-2">
-              <button
-                onClick={() => toggleActive(program._id, program.isActive)}
-                className={`p-2 rounded-lg transition-colors ${
-                  program.isActive
-                    ? "bg-slate-500 hover:bg-slate-600"
-                    : "bg-slate-400 hover:bg-slate-500"
-                }`}
-                title={program.isActive ? "Désactiver" : "Activer"}>
-                {program.isActive ? (
-                  <EyeOff className="w-4 h-4 text-white" />
-                ) : (
-                  <Eye className="w-4 h-4 text-white" />
-                )}
-              </button>
-            </div>
-          )}
-        </div>
+        ))}
       </div>
-
-      {/* Card Body */}
-      <div className="p-6">
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {program.description}
-        </p>
-
-        {/* Criteria Summary */}
-        <div className="space-y-3 mb-6">
-          <div className="flex items-center text-sm">
-            <User className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Type:{" "}
-              {program.criteres.applicantType.length > 0
-                ? program.criteres.applicantType.join(", ")
-                : "Tous"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <Building className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Secteurs:{" "}
-              {program.criteres?.secteurActivite?.length > 0
-                ? `${program.criteres.secteurActivite.length} sélectionnés`
-                : "Tous"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Investissement:{" "}
-              {program.criteres.montantInvestissement.length > 0
-                ? `${program.criteres.montantInvestissement.length} tranches`
-                : "Tous montants"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Début:{" "}
-              {program.DateDebut
-                ? new Date(program.DateDebut).toLocaleDateString()
-                : "N/A"}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-gray-600">
-              Fin:{" "}
-              {program.DateFin
-                ? new Date(program.DateFin).toLocaleDateString()
-                : "N/A"}
-            </span>
-          </div>
-        </div>
-
-        {/* ✅ Actions - Seulement pour les Administrateurs */}
-        {isAdministrator && (
-          <div className="flex space-x-2">
-            <button
-              onClick={() => handleEdit(program)}
-              className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
-              <Edit className="w-4 h-4 mr-2" />
-              Modifier
-            </button>
-            <button
-              onClick={() => handlePublish(program)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
-                program.hero?.isHero
-                  ? "bg-yellow-50 hover:bg-yellow-100 text-yellow-700"
-                  : "bg-blue-50 hover:bg-blue-100 text-blue-700"
-              }`}
-              title={
-                program.hero?.isHero
-                  ? "Modifier la publication"
-                  : "Publier le programme"
-              }>
-              <Share className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleDelete(program._id)}
-              className="bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  ))}
-</div>
 
       {filteredPrograms.length === 0 && (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
@@ -842,497 +750,16 @@ const Programs: React.FC = () => {
         </div>
       )}
 
-      {/* Modal for Create/Edit Program */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl ring-1 ring-black/5 w-full max-w-5xl lg:max-w-6xl max-h-[90vh] flex flex-col">
-            {/* Modal Header */}
-            <div className="bg-slate-700 px-6 py-4 rounded-t-2xl sticky top-0 z-20 shadow-sm border-b border-slate-600/50">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold text-white">
-                  {editingProgram
-                    ? "Modifier le programme"
-                    : "Nouveau programme"}
-                </h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  aria-label="Fermer la fenêtre"
-                  className="text-white transition-colors p-2 rounded-md bg-slate-600/60 focus:outline-none focus:ring-2 focus:ring-white/60">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+      {/* Modal for Create/Edit Program - extracted */}
+      <ProgramFormModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleSubmit}
+        formData={formData}
+        setFormData={setFormData}
+        isEditing={!!editingProgram}
+      />
 
-            {/* Modal Body */}
-            <form
-              onSubmit={handleSubmit}
-              className="flex-1 overflow-y-auto p-6">
-              <div className="space-y-6">
-                {/* Basic Information */}
-                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                  <h4 className="text-sm font-medium text-gray-800 mb-4">
-                    Informations de base
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nom du programme *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Ex: Programme de soutien aux startups"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        value={formData.name}
-                        onChange={(e) =>
-                          setFormData({ ...formData, name: e.target.value })
-                        }
-                      />
-                    </div>
-
-                    {/* Site web */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Site web
-                      </label>
-                      <input
-                        type="url"
-                        placeholder="https://www.exemple.com"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        value={formData.link}
-                        onChange={(e) =>
-                          setFormData({ ...formData, link: e.target.value })
-                        }
-                      />
-                    </div>
-
-                    {/* Statut */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Statut
-                      </label>
-                      <select
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        value={formData.isActive.toString()}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            isActive: e.target.value === "true",
-                          })
-                        }>
-                        <option value="true">Actif</option>
-                        <option value="false">Inactif</option>
-                      </select>
-                    </div>
-
-                    {/* Dates côte à côte */}
-                    <div className="flex space-x-4">
-                      <div className="flex-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Date de début
-                        </label>
-                        <input
-                          type="date"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          value={
-                            formData.DateDebut
-                              ? formData.DateDebut.split("T")[0]
-                              : ""
-                          }
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              DateDebut: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-
-                      <div className="flex-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Date fin
-                        </label>
-                        <input
-                          type="date"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          value={
-                            formData.DateFin
-                              ? formData.DateFin.split("T")[0]
-                              : ""
-                          }
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              DateFin: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    required
-                    rows={3}
-                    placeholder="Décrivez les objectifs et les avantages de ce programme de subvention..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                  />
-                </div>
-
-                {/* Criteria Section */}
-                <div>
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b flex items-center">
-                      <CheckCircle className="w-5 h-5 mr-2 text-blue-600" />
-                      Critères d'éligibilité
-                    </h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Type d'applicant */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                          Type d'applicant
-                        </label>
-                        <div className="space-y-2">
-                          {["physique", "morale"].map((type) => (
-                            <label key={type} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                checked={formData.criteres.applicantType.includes(
-                                  type
-                                )}
-                                onChange={(e) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    criteres: {
-                                      ...prev.criteres,
-                                      applicantType: e.target.checked
-                                        ? [...prev.criteres.applicantType, type]
-                                        : prev.criteres.applicantType.filter(
-                                            (t) => t !== type
-                                          ),
-                                    },
-                                  }))
-                                }
-                              />
-                              <span className="ml-2 text-sm text-gray-700">
-                                {type === "physique"
-                                  ? "Personne physique"
-                                  : "Personne morale"}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/*sexe */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                          Sexe
-                        </label>
-                        <div className="space-y-2">
-                          {["homme", "femme"].map((gender) => (
-                            <label key={gender} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                checked={formData.criteres.sexe.includes(
-                                  gender
-                                )}
-                                onChange={(e) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    criteres: {
-                                      ...prev.criteres,
-                                      sexe: e.target.checked
-                                        ? [...prev.criteres.sexe, gender]
-                                        : prev.criteres.sexe.filter(
-                                            (g) => g !== gender
-                                          ),
-                                    },
-                                  }))
-                                }
-                              />
-                              <span className="ml-2 text-sm text-gray-700">
-                                {gender === "homme" ? "Homme" : "Femme"}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                      {/* Age */}
-                      <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                          Âge
-                        </label>
-                        <div className="flex space-x-4">
-                          <div className="flex-1">
-                            <label className="block text-xs text-gray-500 mb-1">
-                              Âge minimum
-                            </label>
-                            <input
-                              type="number"
-                              min={18}
-                              max={100}
-                              placeholder="18"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              value={formData.criteres.age.minAge || ""}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  criteres: {
-                                    ...formData.criteres,
-                                    age: {
-                                      ...formData.criteres.age,
-                                      minAge: e.target.value
-                                        ? Number(e.target.value)
-                                        : null,
-                                      maxAge:
-                                        formData.criteres.age?.maxAge ?? null,
-                                    },
-                                  },
-                                })
-                              }
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <label className="block text-xs text-gray-500 mb-1">
-                              Âge maximum
-                            </label>
-                            <input
-                              type="number"
-                              min={18}
-                              max={100}
-                              placeholder="65"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              value={formData.criteres.age.maxAge || ""}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  criteres: {
-                                    ...formData.criteres,
-                                    age: {
-                                      ...formData.criteres.age,
-                                      maxAge: e.target.value
-                                        ? Number(e.target.value)
-                                        : null,
-                                      minAge:
-                                        formData.criteres.age?.minAge ?? null,
-                                    },
-                                  },
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Chiffre d'affaires */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                          Chiffre d'affaires (MAD)
-                        </label>
-                        <div className="flex space-x-4">
-                          <div className="flex-1">
-                            <label className="block text-xs text-gray-500 mb-1">
-                              Minimum
-                            </label>
-                            <input
-                              type="number"
-                              placeholder="100000"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              value={
-                                formData.criteres.chiffreAffaire
-                                  .chiffreAffaireMin || ""
-                              }
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  criteres: {
-                                    ...formData.criteres,
-                                    chiffreAffaire: {
-                                      ...formData.criteres.chiffreAffaire,
-                                      chiffreAffaireMin: e.target.value
-                                        ? Number(e.target.value)
-                                        : null,
-                                      chiffreAffaireMax:
-                                        formData.criteres.chiffreAffaire
-                                          .chiffreAffaireMax,
-                                    },
-                                  },
-                                })
-                              }
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <label className="block text-xs text-gray-500 mb-1">
-                              Maximum
-                            </label>
-                            <input
-                              type="number"
-                              placeholder="5000000"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              value={
-                                formData.criteres.chiffreAffaire
-                                  .chiffreAffaireMax || ""
-                              }
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  criteres: {
-                                    ...formData.criteres,
-                                    chiffreAffaire: {
-                                      ...formData.criteres.chiffreAffaire,
-                                      chiffreAffaireMax: e.target.value
-                                        ? Number(e.target.value)
-                                        : null,
-                                      chiffreAffaireMin:
-                                        formData.criteres.chiffreAffaire
-                                          .chiffreAffaireMin,
-                                    },
-                                  },
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Secteurs d'activité */}
-                      <div className="col-span-2">
-                        <MultiSelectGroup
-                          label="Secteurs d'activité"
-                          height="lg"
-                          options={SECTEURS_TRAVAIL.map((s) => ({
-                            label: s.key,
-                            value: s.value,
-                          }))}
-                          selected={formData.criteres.secteurActivite}
-                          onChange={(next) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              criteres: {
-                                ...prev.criteres,
-                                secteurActivite: next as string[],
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-
-                      {/* Statuts juridiques */}
-                      <div>
-                        <MultiSelectGroup
-                          label="Statuts juridiques"
-                          options={STATUT_JURIDIQUE_OPTIONS.map((o) => ({
-                            label: o.key,
-                            value: o.value,
-                          }))}
-                          selected={formData.criteres.statutJuridique}
-                          onChange={(next) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              criteres: {
-                                ...prev.criteres,
-                                statutJuridique: next as string[],
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-
-                      {/* Montant d'investissement */}
-                      <div>
-                        <MultiSelectGroup
-                          label="Montant d'investissement"
-                          options={MONTANT_INVESTISSEMENT_OPTIONS.map((o) => ({
-                            label: o.key,
-                            value: o.value,
-                          }))}
-                          selected={formData.criteres.montantInvestissement}
-                          onChange={(next) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              criteres: {
-                                ...prev.criteres,
-                                montantInvestissement: next as string[],
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-
-                      {/* Régions */}
-                      <div>
-                        <MultiSelectGroup
-                          label="Régions"
-                          options={REGIONS.map((r) => ({ label: r, value: r }))}
-                          selected={formData.criteres.region}
-                          onChange={(next) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              criteres: {
-                                ...prev.criteres,
-                                region: next as string[],
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-                      {/* Année de création */}
-                      <div>
-                        <MultiSelectGroup
-                          label="Année de création"
-                          options={ANNEE_CREATION.map((a) => ({
-                            label: String(a),
-                            value: a,
-                          }))}
-                          selected={formData.criteres.anneeCreation}
-                          onChange={(next) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              criteres: {
-                                ...prev.criteres,
-                                anneeCreation: next,
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="flex justify-end space-x-3 mt-8">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-3 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium transition-all duration-200 shadow-lg">
-                  {editingProgram ? "Mettre à jour" : "Créer le programme"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
       {/* Modal de publication */}
       {showPublishModal && (
         <PublishProgamModal

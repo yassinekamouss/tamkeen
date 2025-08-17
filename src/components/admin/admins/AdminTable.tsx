@@ -1,14 +1,15 @@
 import React from "react";
-import { Edit, Trash2, UserX } from "lucide-react";
+import { Edit, Trash2, UserX , Key } from "lucide-react";
 import type { Admin } from "./types";
 
 interface Props {
   filteredAdmins: Admin[];
   onEdit: (admin: Admin) => void;
   onDelete: (id: string) => void;
+  onResetPassword: (id: string) => void; 
 }
 
-const AdminTable: React.FC<Props> = ({ filteredAdmins, onEdit, onDelete }) => {
+const AdminTable: React.FC<Props> = ({ filteredAdmins, onEdit, onDelete,onResetPassword }) => {
   if (filteredAdmins.length === 0) {
     return (
       <div className="text-center py-12">
@@ -80,18 +81,27 @@ const AdminTable: React.FC<Props> = ({ filteredAdmins, onEdit, onDelete }) => {
                 <button
                   onClick={() => onEdit(admin)}
                   className="text-gray-600 hover:text-gray-900 mr-3 transition-colors duration-200"
-                >
+                  title="Modifier l'administrateur"
+              >
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => onDelete(admin._id)}
-                  className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                  className="text-red-600 hover:text-red-900  mr-3 transition-colors duration-200"
+                  title="Supprimer l'administrateur"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-              </td>
-            </tr>
-          ))}
+                 <button
+                onClick={() => onResetPassword(admin._id)}
+                className="text-blue-600 hover:text-blue-900  mr-3 transition-colors duration-200"
+                title="Réinitialiser le mot de passe"
+                  >
+                <Key className="w-4 h-4" />
+              </button>
+            </td>
+          </tr>
+        ))}
         </tbody>
       </table>
     </div>
