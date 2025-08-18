@@ -80,8 +80,12 @@ export const STATUT_JURIDIQUE_OPTIONS = [
     value: "sarlu"
   },
   {
-    key: "Société anonyme (SAS)",
+    key: "SAS",
     value: "societe-sas"
+  },
+  {
+    key: "SA",
+    value: "societe-anonyme"
   },
   {
     key: "Aucune forme juridique",
@@ -98,10 +102,6 @@ export const STATUT_JURIDIQUE_OPTIONS = [
   {
     key: "Auto-entrepreneur",
     value: "auto-entrepreneur"
-  },
-  {
-    key: "Aucune forme",
-    value: "aucune-forme"
   }
 ];
 
