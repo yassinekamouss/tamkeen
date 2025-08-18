@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
 import { useEffect, useState } from "react";
 import { LayoutDashboard } from "lucide-react";
@@ -10,6 +10,7 @@ const LayoutAdmin = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { unread, resetUnread } = useAdminSocket();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Reset the unread badge when the Tests page is active
   useEffect(() => {
@@ -36,6 +37,16 @@ const LayoutAdmin = () => {
   const [editMode, setEditMode] = useState(false);
   const [tempProfile, setTempProfile] = useState(adminProfile);
 
+  const handleLogout = async () => {
+    try {
+      await axios.post("/admin/logout");
+    } catch (err) {
+      console.error("Erreur lors de la déconnexion :", err);
+    }
+    localStorage.removeItem("adminProfile");
+    navigate("/admin/login");
+  };
+
   return (
     <div className="flex bg-gray-50 min-h-screen">
       <Sidebar
@@ -58,8 +69,9 @@ const LayoutAdmin = () => {
                 title="Afficher/Masquer le menu">
                 <LayoutDashboard
                   size={20}
-                  className={`text-gray-600 hover:text-gray-800 transition-transform duration-300 ${sidebarOpen ? "rotate-0" : "rotate-180"
-                    }`}
+                  className={`text-gray-600 hover:text-gray-800 transition-transform duration-300 ${
+                    sidebarOpen ? "rotate-0" : "rotate-180"
+                  }`}
                 />
               </div>
 
@@ -304,6 +316,12 @@ const LayoutAdmin = () => {
                         Modifier
                       </button>
                     )}
+                    {/* Bouton de déconnexion */}
+                    <button
+                      className="w-full px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-md text-sm border border-red-200 mt-3 transition-colors duration-200"
+                      onClick={handleLogout}>
+                      Déconnexion
+                    </button>
                   </div>
                 </div>
               </div>
