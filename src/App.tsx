@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import "./App.css";
 import Loader from "./components/Spinner.tsx";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Public pages (route-level code splitting)
 const Home = lazy(() => import("./pages/Home"));
@@ -14,7 +15,9 @@ const Login = lazy(() => import("./pages/admin/Login"));
 const PrivateRoute = lazy(() => import("./components/PrivateRoute"));
 const LayoutAdmin = lazy(() => import("./pages/admin/LayoutAdmin"));
 const AccessDenied = lazy(() => import("./components/AccessDenied"));
-const RoleProtectedRoute = lazy(() => import("./components/RoleProtectedRoute"));
+const RoleProtectedRoute = lazy(
+  () => import("./components/RoleProtectedRoute")
+);
 
 // Admin nested routes
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
@@ -31,6 +34,7 @@ function App() {
   return (
     <Router>
       <div className="w-full">
+        <ScrollToTop />
         <Suspense fallback={<Loader />}>
           <Routes>
             {/* Public routes */}
@@ -40,7 +44,7 @@ function App() {
             <Route path="/faq" element={<FAQ />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/admin/login" element={<Login />} />
-            
+
             {/* Page d'accès refusé */}
             <Route path="/admin/access-denied" element={<AccessDenied />} />
 
@@ -54,18 +58,17 @@ function App() {
                 <Route path="tests" element={<Tests />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="news" element={<AdminNews />} />
-                
+
                 {/* ✅ Route protégée par rôle Administrateur */}
-                <Route 
-                  path="app-users" 
+                <Route
+                  path="app-users"
                   element={
-                    <RoleProtectedRoute 
+                    <RoleProtectedRoute
                       requiredRole="Administrateur"
-                      fallbackPath="/admin/access-denied"
-                    >
+                      fallbackPath="/admin/access-denied">
                       <AdminsGestion />
                     </RoleProtectedRoute>
-                  } 
+                  }
                 />
               </Route>
             </Route>
