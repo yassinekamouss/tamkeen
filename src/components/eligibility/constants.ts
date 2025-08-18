@@ -49,6 +49,10 @@ export const STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS = [
     key: "eligibility.statutJuridiquePersonneMorale.societeSas",
   },
   {
+    value: "societe-anonyme",
+    key: "eligibility.statutJuridiquePersonneMorale.societeAnonyme",
+  },
+  {
     value: "aucune-forme-juridique",
     key: "eligibility.statutJuridiquePersonneMorale.aucuneFormeJuridique",
   },
@@ -72,7 +76,7 @@ export const STATUT_JURIDIQUE_PERSONNE_PHYSIQUE_OPTIONS = [
     key: "eligibility.statutJuridiquePersonnePhysique.enCoursCreation",
   },
   {
-    value: "aucune-forme",
+    value: "aucune-forme-juridique",
     key: "eligibility.statutJuridiquePersonnePhysique.aucuneForme",
   },
 ];

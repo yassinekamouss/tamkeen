@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import PublishProgamModal from "../../components/admin/programs/PublishProgramModal";
 import ProgramFormModal from "../../components/admin/programs/ProgramFormModal";
+import ProgramDetailsModal from "../../components/admin/programs/ProgramDetailsModal";
 
 interface Program {
   _id: string;
@@ -111,6 +112,11 @@ const Programs: React.FC = () => {
   const [publishingProgram, setPublishingProgram] = useState<Program | null>(
     null
   );
+
+
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
+
 
   const [formData, setFormData] = useState<ProgramFormData>({
     name: "",
@@ -288,6 +294,11 @@ const Programs: React.FC = () => {
       setError("Erreur lors de la publication du programme.");
     }
   };
+
+  const handleViewDetails = (program: Program) => {
+  setSelectedProgram(program);
+  setShowDetailsModal(true);
+    };
 
   const [remainingDays, setRemainingDays] = useState<number | null>(null);
   const [filterDate, setFilterDate] = useState<string>("");
@@ -720,6 +731,17 @@ const Programs: React.FC = () => {
                   </button>
                 </div>
               )}
+
+              {!isAdministrator && (
+          <div className="flex space-x-2">
+            <button
+              onClick={() => handleViewDetails(program)}
+              className="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
+              <Eye className="w-4 h-4 mr-2" />
+              Voir détails
+            </button>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -772,6 +794,15 @@ const Programs: React.FC = () => {
           onSubmit={handlePublishSubmit}
         />
       )}
+
+      <ProgramDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => {
+          setShowDetailsModal(false);
+          setSelectedProgram(null);
+        }}
+        program={selectedProgram}
+      />
     </div>
   );
 };
