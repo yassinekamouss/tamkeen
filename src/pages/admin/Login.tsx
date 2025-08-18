@@ -1,5 +1,6 @@
 // src/pages/admin/Login.tsx
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
@@ -14,7 +15,17 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  // Detect if the browser provides a native password reveal control (e.g., Legacy Microsoft Edge)
+  const nativeRevealSupported = useMemo(() => {
+    if (typeof navigator === "undefined") return false;
+    const ua = navigator.userAgent || "";
+    // Legacy Edge (EdgeHTML) exposes a native password reveal button
+    const isLegacyEdge = ua.includes("Edge/") && !ua.includes("Edg/");
+    return isLegacyEdge;
+  }, []);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -23,9 +34,8 @@ const Login: React.FC = () => {
 
     try {
       const res = await axios.post("/admin/login", loginData);
-     
-      const admin = res.data.admin;
 
+      const admin = res.data.admin;
 
       localStorage.setItem("adminProfile", JSON.stringify(admin));
 
@@ -91,17 +101,47 @@ const Login: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="admin-password"
+                  className="block text-sm font-medium text-gray-700 mb-2">
                   Mot de passe
                 </label>
-                <input
-                  type="password"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    id="admin-password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    className={`w-full pr-12 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none`}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                  />
+                  {!nativeRevealSupported && (
+                    <button
+                      id="toggle-password-visibility"
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      aria-pressed={showPassword}
+                      aria-label={
+                        showPassword
+                          ? "Masquer le mot de passe"
+                          : "Afficher le mot de passe"
+                      }
+                      title={
+                        showPassword
+                          ? "Masquer le mot de passe"
+                          : "Afficher le mot de passe"
+                      }
+                      className="absolute inset-y-0 right-0 w-10 flex items-center justify-center text-gray-500 hover:text-gray-700 bg-transparent border-0 p-0 m-0 focus:outline focus:outline-2 focus:outline-orange-500">
+                      {showPassword ? (
+                        <EyeOff aria-hidden="true" size={20} />
+                      ) : (
+                        <Eye aria-hidden="true" size={20} />
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
 
               <button
