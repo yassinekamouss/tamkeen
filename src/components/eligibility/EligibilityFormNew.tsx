@@ -23,7 +23,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
   // État du formulaire
   const [formData, setFormData] = useState<FormData>({
-    applicantType: "",
+  applicantType: "physique",
     email: "",
     montantInvestissement: "",
     acceptPrivacyPolicy: false,
@@ -125,7 +125,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const handleNewTest = () => {
     setShowResult(false);
     setFormData({
-      applicantType: "",
+  applicantType: "physique",
       email: "",
       montantInvestissement: "",
       acceptPrivacyPolicy: false,
