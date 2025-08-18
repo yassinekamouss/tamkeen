@@ -31,6 +31,15 @@ import {
   Plus,
   ClipboardCheck,
 } from "lucide-react";
+import { getAdminSocket } from "../../api/socket";
+import { fetchRecentActivities } from "../../services/activityService";
+import type { ActivityItem } from "../../types/admin/activity";
+
+function activityKey(a: ActivityItem): string {
+  // Prefer socket id then REST _id, fallback to composite
+  const anyA = a as ActivityItem & { _id?: string; id?: string };
+  return anyA.id || anyA._id || `${a.type}-${a.createdAt}`;
+}
 
 // Register Chart.js components once
 ChartJS.register(
@@ -75,6 +84,7 @@ const Dashboard: React.FC = () => {
   });
   const [extra, setExtra] = useState<AdminStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,6 +106,50 @@ const Dashboard: React.FC = () => {
     };
 
     fetchStats();
+  }, []);
+
+  // Load last 5 activities on mount
+  useEffect(() => {
+    let mounted = true;
+    fetchRecentActivities(5)
+      .then((items) => {
+        if (!mounted) return;
+        // Ensure sorted desc by createdAt
+        const sorted = [...items].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setActivities(sorted.slice(0, 5));
+      })
+      .catch(() => {});
+
+    // Socket live updates
+    const s = getAdminSocket();
+    const onNew = (e: ActivityItem) => {
+      setActivities((prev) => {
+        const next = [e, ...prev];
+        // De-dup by id if present
+        const seen = new Set<string>();
+        const unique = next.filter((it) => {
+          const id = activityKey(it);
+          if (seen.has(id)) return false;
+          seen.add(id);
+          return true;
+        });
+        // Sort desc and keep 5
+        unique.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        return unique.slice(0, 5);
+      });
+    };
+    s.on("activity:new", onNew);
+
+    return () => {
+      mounted = false;
+      s.off("activity:new", onNew);
+    };
   }, []);
 
   // Memoized chart data/options
@@ -376,27 +430,38 @@ const Dashboard: React.FC = () => {
             Activité récente
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-gray-500 rounded-full mr-3"></div>
-              <span className="text-sm text-gray-700">
-                Nouveau test d'éligibilité effectué
-              </span>
-              <span className="text-xs text-gray-500 ml-auto">Il y a 2h</span>
-            </div>
-            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-gray-500 rounded-full mr-3"></div>
-              <span className="text-sm text-gray-700">
-                Programme "Go Siyaha" mis à jour
-              </span>
-              <span className="text-xs text-gray-500 ml-auto">Il y a 5h</span>
-            </div>
-            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-gray-500 rounded-full mr-3"></div>
-              <span className="text-sm text-gray-700">
-                Nouvel utilisateur inscrit
-              </span>
-              <span className="text-xs text-gray-500 ml-auto">Il y a 1j</span>
-            </div>
+            {activities.length === 0 ? (
+              <div className="text-sm text-gray-500">
+                Aucune activité récente.
+              </div>
+            ) : (
+              activities.map((a) => (
+                <div
+                  key={activityKey(a)}
+                  className="flex items-center p-3 bg-gray-50 rounded-lg">
+                  <div
+                    className={
+                      "w-2 h-2 rounded-full mr-3 " +
+                      (a.type.startsWith("program")
+                        ? "bg-amber-500"
+                        : a.type.startsWith("news")
+                        ? "bg-purple-500"
+                        : a.type === "user_updated"
+                        ? "bg-slate-500"
+                        : "bg-blue-600")
+                    }></div>
+                  <div className="flex-1">
+                    <div className="text-sm text-gray-800 font-medium">
+                      {a.title}
+                    </div>
+                    <div className="text-xs text-gray-600">{a.message}</div>
+                  </div>
+                  <span className="text-xs text-gray-500 ml-3">
+                    {new Date(a.createdAt).toLocaleString()}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
