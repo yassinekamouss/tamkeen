@@ -164,7 +164,7 @@ const Sidebar = ({
         <div className="border-t border-gray-200 pt-4 mt-4">
           <button
             onClick={handleLogout}
-            className="flex items-center w-full px-3 py-2.5 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+            className="flex items-center w-full px-3 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-md rounded-lg transition-colors duration-200">
             <LogOut className="w-5 h-5 mr-3" />
             Déconnexion
           </button>
