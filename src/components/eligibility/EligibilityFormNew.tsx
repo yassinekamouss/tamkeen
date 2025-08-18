@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-
 import Modal from "./Modals/Modal";
 import LoadingModal from "./Modals/LoadingModal";
 
@@ -23,7 +22,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
   // État du formulaire
   const [formData, setFormData] = useState<FormData>({
-  applicantType: "physique",
+    applicantType: "physique",
     email: "",
     montantInvestissement: "",
     acceptPrivacyPolicy: false,
@@ -40,7 +39,6 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [showServerErrorModal, setShowServerErrorModal] = useState(false);
-
 
   // Gestionnaires d'événements
   const handleInputChange = (
@@ -97,11 +95,11 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
       setErrors(validationErrors);
       return;
     }
-     setShowLoadingModal(true);
+    setShowLoadingModal(true);
 
     try {
       const eligibilityResult = await checkEligibility(formData);
-       setShowLoadingModal(false); 
+      setShowLoadingModal(false);
 
       if (eligibilityResult.errorMessage) {
         setServerError(eligibilityResult.errorMessage);
@@ -125,7 +123,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const handleNewTest = () => {
     setShowResult(false);
     setFormData({
-  applicantType: "physique",
+      applicantType: "physique",
       email: "",
       montantInvestissement: "",
       acceptPrivacyPolicy: false,
@@ -155,16 +153,16 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         <Modal
           isOpen={showServerErrorModal}
           onClose={() => setShowServerErrorModal(false)}
-          title="Erreur"
-        >
+          title="Erreur">
           <p>{serverError}</p>
         </Modal>
 
         {/* Modal avec spinner pendant le traitement */}
-        <LoadingModal isOpen={showLoadingModal} title="Vérification en cours..." />
+        <LoadingModal
+          isOpen={showLoadingModal}
+          title="Vérification en cours..."
+        />
       </>
-
-
 
       <section
         id="eligibility-form"
@@ -237,7 +235,6 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                 />
               )}
             </form>
-           
           </div>
         </div>
       </section>
