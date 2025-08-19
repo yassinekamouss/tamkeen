@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Modal from "./Modals/Modal";
+import ErrorModal from "./Modals/ErrorModal";
 import LoadingModal from "./Modals/LoadingModal";
 
 import type { FormData, FormErrors, EligibilityFormProps } from "./types";
@@ -87,38 +87,66 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-    const validationErrors = validateEligibilityForm(formData, t);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+  const validationErrors = validateEligibilityForm(formData, t);
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    
+    // Optionnel : Scroller vers la première erreur
+    setTimeout(() => {
+      const firstErrorField = Object.keys(validationErrors)[0];
+      const errorElement = document.getElementsByName(firstErrorField)[0] ||
+                          document.querySelector(`[name="${firstErrorField}"]`);
+      
+      if (errorElement) {
+        errorElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        if ('focus' in errorElement) {
+          (errorElement as HTMLElement).focus();
+        }
+      }
+    }, 100);
+    
+    return;
+  }
+submitForm();
+}
+
+  const submitForm = async () => {
+
+  // Le reste reste identique
+  setShowLoadingModal(true);
+
+  try {
+    const eligibilityResult = await checkEligibility(formData);
+    setShowLoadingModal(false);
+
+    if (eligibilityResult.errorMessage) {
+      setServerError(eligibilityResult.errorMessage);
+      setShowResult(false);
+      setShowServerErrorModal(true);
       return;
     }
-    setShowLoadingModal(true);
 
-    try {
-      const eligibilityResult = await checkEligibility(formData);
-      setShowLoadingModal(false);
+    setServerError(null);
+    setIsEligible(eligibilityResult.isEligible);
+    setEligibleProgram(eligibilityResult.programs || []);
+    setShowResult(true);
 
-      if (eligibilityResult.errorMessage) {
-        setServerError(eligibilityResult.errorMessage);
-        setShowResult(false);
-        setShowServerErrorModal(true);
-        return;
-      }
-
-      setServerError(null);
-      setIsEligible(eligibilityResult.isEligible);
-      setEligibleProgram(eligibilityResult.programs || []);
-      setShowResult(true);
-
-      console.log("Form submitted:", formData);
-      console.log("Eligibility result:", eligibilityResult);
-    } catch (error) {
-      console.error("Erreur lors de la soumission :", error);
-    }
-  };
+    console.log("Form submitted:", formData);
+    console.log("Eligibility result:", eligibilityResult);
+  } catch (error) {
+    setShowLoadingModal(false);
+    console.error("Erreur lors de la soumission :", error);
+    setServerError("Une erreur inattendue s'est produite. Veuillez réessayer.");
+    setShowServerErrorModal(true);
+  }
+};
 
   const handleNewTest = () => {
     setShowResult(false);
@@ -150,12 +178,14 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         {/* ... ton style et ton formulaire ... */}
 
         {/* Modal pour afficher les erreurs serveur */}
-        <Modal
-          isOpen={showServerErrorModal}
-          onClose={() => setShowServerErrorModal(false)}
-          title="Erreur">
-          <p>{serverError}</p>
-        </Modal>
+       <ErrorModal
+  isOpen={showServerErrorModal}
+  onClose={() => setShowServerErrorModal(false)}
+  message={serverError || ""}
+  showRetryButton={false}
+  onRetry={submitForm}
+  closeText="Annuler"
+/>
 
         {/* Modal avec spinner pendant le traitement */}
         <LoadingModal
