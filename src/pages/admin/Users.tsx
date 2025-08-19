@@ -8,7 +8,6 @@ import {
   UserCheck,
   Building,
   Edit,
-  Trash2,
   Eye,
   AlertCircle,
   FileX,
@@ -141,18 +140,7 @@ const Users: React.FC = () => {
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer ce candidat ?")) return;
-
-    try {
-      await axios.delete(`/api/users/${userId}`);
-      console.log("Candidat supprimé !");
-      // ➤ Recharge ou filtre localement :
-      setUsers((prev) => prev.filter((u) => u._id !== userId));
-    } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-    }
-  };
+  
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -423,11 +411,7 @@ const Users: React.FC = () => {
                         className="text-gray-600 hover:text-gray-900 mr-3">
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => handleDeleteUser(user._id)}
-                        className="text-red-600 hover:text-red-900">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    
                     </td>
                   </tr>
                 ))}
