@@ -10,7 +10,7 @@
   "hero": {
     "slides": [
       {
-        "subtitle": "Simplifiez Votre Accès À La Subvention",
+        "subtitle": "Simplifiez votre accès aux subventions",
         "title": "Vous avez un projet d'investissement",
         "description": "et vous vous demandez si vous pouvez bénéficier d'un appui ou d'une subvention ?"
       },
@@ -29,7 +29,7 @@
   },
   "eligibility": {
     "title": "Test d'Éligibilité",
-    "subtitle": "Vérifiez votre éligibilité aux subventions Tamkeen",
+    "subtitle": "Vérifiez votre éligibilité aux différentes subventions",
     "backButton": "Retour à l'accueil",
     "applicantType": {
       "label": "Sélectionnez votre type de demandeur",
@@ -92,9 +92,11 @@
     "statutJuridiquePersonneMorale": {
       "sarl": "SARL",
       "sarlu": "SARLU",
-      "societeSas": "Société anonyme (SAS)",
+      "societeSas": "SAS",
       "aucuneFormeJuridique": "Aucune forme juridique",
-      "enCoursCreation": "En cours de création"
+      "enCoursCreation": "En cours de création",
+      "societeAnonyme": "SA"
+
     },
     "secteursTravail": {
       "EconomieRurale": "Economie rurale (agriculture, élevage, valorisation de produits de la ferme...)",
@@ -168,15 +170,15 @@
   },
   "about": {
     "title": "Qui Sommes-Nous ?",
-    "subtitle": "votre outil de pré-éligibilité",
-    "description": "Nous aidons les porteurs de projets, les entreprises et les coopératives à savoir rapidement s'ils répondent aux critères d'accès aux aides publiques disponibles au Maroc.",
+    "subtitle": "",
+    "description": "Nous aidons les porteurs de projets, les entreprises et les coopératives à savoir en un clic s'ils répondent aux critères d'accès aux aides publiques disponibles au Maroc.",
     "howItWorks": {
       "title": "Comment Ça Marche ?",
-      "subtitle": "Indiquez votre statut, votre activité, votre région et les informations clés sur votre structure.",
+      "subtitle": "Vous entrez vos critères, nous trouvons vos subventions.",
       "steps": [
         {
           "title": "Remplissez le formulaire",
-          "description": "Indiquez votre statut, votre activité, votre région et les informations clés sur votre structure."
+          "description": "Indiquez les informations clés sur votre structure."
         },
         {
           "title": "Analyse immédiate",
@@ -184,7 +186,7 @@
         },
         {
           "title": "Obtenez votre résultat",
-          "description": "Vous saurez instantanément si vous êtes potentiellement éligible ou non à une subvention."
+          "description": "Vous saurez instantanément si vous êtes potentiellement éligible à une ou plusieurs subvention."
         }
       ]
     },

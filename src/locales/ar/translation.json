@@ -94,7 +94,8 @@
       "sarlu": "شركة ذات مسؤولية محدودة بشريك واحد",
       "societeSas": "شركة مساهمة مبسطة",
       "aucuneFormeJuridique": "بدون شكل قانوني",
-      "enCoursCreation": "في طور الإنشاء"
+      "enCoursCreation": "في طور الإنشاء",
+      "societeAnonyme": "شركة مساهمة"
     },
     "secteursTravail": {
       "EconomieRurale": "الاقتصاد الريفي (الزراعة، تربية الماشية، تثمين منتجات المزرعة...)",
