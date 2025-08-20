@@ -1,23 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Header, Footer } from "../components";
 import { useTranslation } from "react-i18next";
 import logo from "../assets/logo.webp";
 import backgroundImage from "../assets/image2.webp";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
+import axios from "../api/axios";
+interface Partenaire {
+  _id: string;
+  nom: string;
+  url: string;
+  img: string;
+}
 const About: React.FC = () => {
   const { t } = useTranslation();
+  const [partenaires, setPartenaires] = useState<Partenaire[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const partenaires = [
+  const fetchPartenaires = async () => {
+    try {
+      const response = await axios.get("/partenaires");
+      setPartenaires(response.data);
+    } catch {
+      setError("Erreur lors du chargement des partenaires.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
 
-    "/public/coca.png",
-    "/public/greenfinance.png",
-    "/public/oreal.png",
-    "/public/adidas.png",
-    "/public/tamkeen.png",
+    fetchPartenaires();
+  }, []);
 
 
-  ];
 
   // const scrollRef = React.useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = React.useState(0);
@@ -103,7 +118,9 @@ const About: React.FC = () => {
       </section>
 
       {/* How It Works Section */}
-
+      {loading && <p className="text-center mt-8">Chargement...</p>}
+      {error && <p className="text-center mt-8 text-red-500">{error}</p>}
+      
       <div className="p-8 bg-gray-50 overflow-hidden">
         <h2 className="text-2xl font-semibold text-center mb-8">
           Nos Partenaires
@@ -126,13 +143,16 @@ const About: React.FC = () => {
               transition: isPaused ? "transform 0.5s ease" : "none",
             }}
           >
-            {[...partenaires, ...partenaires].map((src, index) => (
+            {[...partenaires, ...partenaires].map((partenaire, index) => (
               <div key={index} className="min-w-[180px] flex items-center justify-center">
-                <img
-                  src={src}
-                  alt={`Partenaire ${index + 1}`}
-                  className="max-h-20 object-contain"
-                />
+                <a href={partenaire.url} target="_blank" rel="noopener noreferrer" >
+                  <img
+                    src={partenaire.img}
+                    alt={`Partenaire ${index + 1}`}
+                    title={partenaire.nom}
+
+                    className="max-h-20 object-contain"
+                  /></a>
               </div>
             ))}
           </div>
