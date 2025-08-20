@@ -175,17 +175,16 @@ submitForm();
   return (
     <>
       <>
-        {/* ... ton style et ton formulaire ... */}
-
+       
         {/* Modal pour afficher les erreurs serveur */}
        <ErrorModal
-  isOpen={showServerErrorModal}
-  onClose={() => setShowServerErrorModal(false)}
-  message={serverError || ""}
-  showRetryButton={false}
-  onRetry={submitForm}
-  closeText="Annuler"
-/>
+          isOpen={showServerErrorModal}
+          onClose={() => setShowServerErrorModal(false)}
+          message={serverError || ""}
+          showRetryButton={false}
+          onRetry={submitForm}
+          closeText="Annuler"
+        />
 
         {/* Modal avec spinner pendant le traitement */}
         <LoadingModal

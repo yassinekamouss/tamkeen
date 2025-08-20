@@ -660,7 +660,7 @@ const Programs: React.FC = () => {
                   <span className="text-gray-600">
                     Début:{" "}
                     {program.DateDebut
-                      ? new Date(program.DateDebut).toLocaleDateString()
+                      ? new Date(program.DateDebut).toLocaleDateString('fr-FR')
                       : "N/A"}
                   </span>
                 </div>
@@ -670,7 +670,7 @@ const Programs: React.FC = () => {
                   <span className="text-gray-600">
                     Fin:{" "}
                     {program.DateFin
-                      ? new Date(program.DateFin).toLocaleDateString()
+                      ? new Date(program.DateFin).toLocaleDateString('fr-FR')
                       : "N/A"}
                   </span>
                 </div>
