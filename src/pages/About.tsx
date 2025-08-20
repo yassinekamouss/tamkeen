@@ -3,9 +3,56 @@ import { Header, Footer } from "../components";
 import { useTranslation } from "react-i18next";
 import logo from "../assets/logo.webp";
 import backgroundImage from "../assets/image2.webp";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const About: React.FC = () => {
   const { t } = useTranslation();
+
+  const partenaires = [
+
+    "/public/coca.png",
+    "/public/greenfinance.png",
+    "/public/oreal.png",
+    "/public/adidas.png",
+    "/public/tamkeen.png",
+
+
+  ];
+
+  // const scrollRef = React.useRef<HTMLDivElement | null>(null);
+  const [position, setPosition] = React.useState(0);
+
+  const [isPaused, setIsPaused] = React.useState(false);
+
+  // Largeur approximative d’un logo (carte)
+  const step = 180;
+  // Auto-défilement continu
+  React.useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setPosition((prev) => prev - 1); // défile pixel par pixel
+    }, 20); // vitesse (20ms ≈ 50fps)
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  // Remet à zéro quand on a défilé une moitié (pour effet infini)
+  const totalWidth = partenaires.length * step;
+  React.useEffect(() => {
+    if (Math.abs(position) >= totalWidth) {
+      setPosition(0);
+    }
+  }, [position, totalWidth]);
+
+  // Scroll manuel avec flèches
+  const handleScroll = (direction: string) => {
+    setIsPaused(true);
+    setPosition((prev) =>
+      direction === "left" ? prev + 2 * step : prev - 2 * step
+    );
+    // reprendre l’auto-scroll après un petit délai
+    setTimeout(() => setIsPaused(false), 800);
+  };
 
   return (
     <div className="w-full">
@@ -38,6 +85,9 @@ const About: React.FC = () => {
           </div>
 
           {/* Main Content */}
+
+
+
           <div className="mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
               {t("about.title")}
@@ -53,6 +103,51 @@ const About: React.FC = () => {
       </section>
 
       {/* How It Works Section */}
+
+      <div className="p-8 bg-gray-50 overflow-hidden">
+        <h2 className="text-2xl font-semibold text-center mb-8">
+          Nos Partenaires
+        </h2>
+
+        <div className="relative w-full">
+          {/* Bouton gauche */}
+          <button
+            onClick={() => handleScroll("left")}
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full hover:bg-gray-100 z-10"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-700" />
+          </button>
+
+          {/* Bande de logos */}
+          <div
+            className="flex gap-10"
+            style={{
+              transform: `translateX(${position}px)`,
+              transition: isPaused ? "transform 0.5s ease" : "none",
+            }}
+          >
+            {[...partenaires, ...partenaires].map((src, index) => (
+              <div key={index} className="min-w-[180px] flex items-center justify-center">
+                <img
+                  src={src}
+                  alt={`Partenaire ${index + 1}`}
+                  className="max-h-20 object-contain"
+                />
+              </div>
+            ))}
+          </div>
+
+
+          {/* Bouton droit */}
+          <button
+            onClick={() => handleScroll("right")}
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full hover:bg-gray-100 z-10"
+          >
+            <ChevronRight className="w-6 h-6 text-gray-700" />
+          </button>
+        </div>
+      </div>
+
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">

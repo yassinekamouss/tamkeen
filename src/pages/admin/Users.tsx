@@ -48,8 +48,6 @@ const Users: React.FC = () => {
     etat?: string;
     consultantAssocie?: { _id: string; username: string } | null;
   }
-
-  useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get("/users");
@@ -60,6 +58,8 @@ const Users: React.FC = () => {
         setLoading(false);
       }
     };
+  useEffect(() => {
+
 
     fetchUsers();
   }, []);
@@ -135,6 +135,7 @@ const Users: React.FC = () => {
       console.log("Candidat mis à jour :", response.data);
       // Tu peux ici recharger les candidats si besoin
       setIsEditModalOpen(false);
+      await fetchUsers();
     } catch (error) {
       console.error("Erreur lors de la mise à jour :", error);
     }

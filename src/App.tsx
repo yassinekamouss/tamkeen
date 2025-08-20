@@ -27,6 +27,7 @@ const UserDetails = lazy(() => import("./pages/admin/UserDetails"));
 const Tests = lazy(() => import("./pages/admin/Tests"));
 const Reports = lazy(() => import("./pages/admin/Reports"));
 const AdminNews = lazy(() => import("./pages/admin/News.tsx"));
+const Partenaires = lazy(() => import("./pages/admin/partenaires"));
 
 const AdminsGestion = lazy(() => import("./pages/admin/AdminsGestion.tsx"));
 
@@ -58,6 +59,7 @@ function App() {
                 <Route path="tests" element={<Tests />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="news" element={<AdminNews />} />
+                <Route path="partenaires" element={<Partenaires />} />
 
                 {/* ✅ Route protégée par rôle Administrateur */}
                 <Route
