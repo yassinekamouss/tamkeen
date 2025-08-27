@@ -1,6 +1,6 @@
 import api from "../api/axios";
 
-export class TamkeenChatService {
+class TamkeenChatService {
   private static instance: TamkeenChatService;
   private conversationHistory: Array<{
     role: "user" | "assistant";
@@ -75,4 +75,6 @@ export class TamkeenChatService {
   }
 }
 
+// Exports pour compatibilité
+export { TamkeenChatService };
 export default TamkeenChatService;

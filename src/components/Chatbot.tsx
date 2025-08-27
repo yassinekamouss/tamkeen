@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import imageLogo from "../assets/image_logo.webp";
 import { useTranslation } from "react-i18next";
-import TamkeenChatService from "../services/chatService";
+import { TamkeenChatService } from "../services/chatService";
 import type { Message } from "./chatbot/types";
 import LauncherButton from "./chatbot/LauncherButton";
 import Header from "./chatbot/Header";

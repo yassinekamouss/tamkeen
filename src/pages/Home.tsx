@@ -34,11 +34,10 @@ const Home: React.FC = () => {
         </Suspense>
       </LazyOnVisible>
       <Footer />
-      <LazyOnVisible>
-        <Suspense fallback={null}>
-          <Chatbot />
-        </Suspense>
-      </LazyOnVisible>
+      {/* Chatbot toujours visible comme bouton flottant */}
+      <Suspense fallback={null}>
+        <Chatbot />
+      </Suspense>
     </div>
   );
 };

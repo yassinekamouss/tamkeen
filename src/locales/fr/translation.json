@@ -289,16 +289,6 @@
   },
   "chatbot": {
     "initialMessage": "Bonjour ! Je suis Tamkeen, votre assistant pour les subventions au Maroc. Comment puis-je vous accompagner dans votre projet ?",
-    "botResponses": [
-      "📋 Pour vérifier votre éligibilité, je vous invite à remplir notre formulaire. Cela ne prend que quelques minutes !",
-      "💡 Excellent projet ! Les subventions au Maroc couvrent de nombreux secteurs. Quel est votre domaine d'activité principal ?",
-      "🎯 Parfait ! Je vois plusieurs opportunités de financement qui pourraient correspondre à votre profil.",
-      "📊 Basé sur les critères actuels, votre projet semble prometteur. Avez-vous déjà constitué votre dossier ?",
-      "🚀 Les délais d'instruction varient selon le type d'aide, généralement entre 30 et 90 jours ouvrables.",
-      "📁 Les documents essentiels incluent : statuts, bilans, business plan et justificatifs d'identité.",
-      "🤝 Notre équipe d'experts peut vous accompagner personnellement dans vos démarches. Souhaitez-vous être contacté ?",
-      "💰 Le montant des subventions dépend de votre secteur et du type de projet. Parlez-moi de votre investissement prévu."
-    ],
     "assistantOnline": "Assistant Tamkeen en ligne",
     "invitationMessage": "Des questions sur les subventions ? Je suis là pour vous aider ! 🚀",
     "tamkeenAssistant": "Tamkeen Assistant",

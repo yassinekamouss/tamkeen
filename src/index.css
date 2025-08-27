@@ -115,3 +115,62 @@ button:focus-visible {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
+
+/* Styles personnalisés pour le rendu Markdown du chatbot */
+.chatbot-message {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.chatbot-message h1,
+.chatbot-message h2,
+.chatbot-message h3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.chatbot-message h1:first-child,
+.chatbot-message h2:first-child,
+.chatbot-message h3:first-child {
+  margin-top: 0;
+}
+
+.chatbot-message p {
+  margin-bottom: 0.5rem;
+}
+
+.chatbot-message p:last-child {
+  margin-bottom: 0;
+}
+
+.chatbot-message ul,
+.chatbot-message ol {
+  margin-bottom: 0.5rem;
+}
+
+.chatbot-message ul:last-child,
+.chatbot-message ol:last-child {
+  margin-bottom: 0;
+}
+
+.chatbot-message code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9em;
+}
+
+.chatbot-message a {
+  transition: color 0.2s ease;
+}
+
+.chatbot-message a:hover {
+  text-decoration: underline;
+}
+
+.chatbot-message strong {
+  font-weight: 600;
+}
+
+/* Amélioration des émojis dans le chatbot */
+.chatbot-message span {
+  line-height: 1.2;
+}

@@ -1,5 +1,6 @@
 import React from "react";
 import type { Message } from "./types";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface Props {
   messages: Message[];
@@ -41,7 +42,14 @@ const MessagesList: React.FC<Props> = ({
                     : "bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-tr-sm"
                 }`}>
                 <div className="text-xs sm:text-sm leading-relaxed">
-                  {message.text}
+                  {message.isBot ? (
+                    <MarkdownRenderer
+                      content={message.text}
+                      className="chatbot-message"
+                    />
+                  ) : (
+                    message.text
+                  )}
                 </div>
                 <p
                   className={`text-xs mt-2 ${
