@@ -61,11 +61,21 @@ const AdminNews: React.FC = () => {
   const loadCategories = async () => {
     try {
       const response = await newsService.getCategories();
-      setCategories(response.data);
+
+      // catégories statiques
+      const staticCategories = ["Subventions Européennes", "Subventions Nationales", "Success Stories", "Entrepreneuriat Féminin", "Guides & Ressources", "Partenariats", "Services Tamkeen", "Export & International", "Alertes Financement"];
+
+      // fusion dynamique + statique en évitant les doublons
+      const allCategories = [
+        ...new Set([...(response.data || []), ...staticCategories]),
+      ];
+
+      setCategories(allCategories);
     } catch (error) {
       console.error("Erreur lors du chargement des catégories:", error);
     }
   };
+
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -349,8 +359,8 @@ const AdminNews: React.FC = () => {
                     {loading
                       ? "Enregistrement..."
                       : editingNews
-                      ? "Modifier"
-                      : "Créer"}
+                        ? "Modifier"
+                        : "Créer"}
                   </button>
 
                   {editingNews && (
