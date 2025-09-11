@@ -1,13 +1,12 @@
 import axios from "axios";
 
-const baseURL =
-  process.env.NODE_ENV === "production"
-    ? "/api" // via le proxy Vercel
-    : "http://localhost:5000/api"; // backend local
+const baseURL = typeof window !== "undefined" && window.location.hostname === "localhost"
+  ? "http://localhost:5000/api"
+  : "/api";
 
 const api = axios.create({
   baseURL,
-  withCredentials: true, // pour envoyer les cookies
+  withCredentials: true,
 });
 
 export default api;
