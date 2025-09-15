@@ -18,6 +18,14 @@ interface HeroProgram {
     descriptionAr: string;
   };
 }
+interface HeroAnnonce{
+  _id :string ;
+  title : string;
+  description : string ;
+  autor : string;
+  voirPlus : string;
+  
+}
 
 const CACHE_KEY = "hero_programs_v1";
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes

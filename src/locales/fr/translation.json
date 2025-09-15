@@ -91,12 +91,11 @@
     },
     "statutJuridiquePersonneMorale": {
       "sarl": "SARL",
-      "sarlu": "SARLU",
+      "sarlu": "SARLAU",
       "societeSas": "SAS",
       "aucuneFormeJuridique": "Aucune forme juridique",
       "enCoursCreation": "En cours de création",
       "societeAnonyme": "SA"
-
     },
     "secteursTravail": {
       "EconomieRurale": "Economie rurale (agriculture, élevage, valorisation de produits de la ferme...)",
