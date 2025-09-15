@@ -41,8 +41,8 @@ export const STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS = [
     key: "eligibility.statutJuridiquePersonneMorale.sarl",
   },
   {
-    value: "sarlu",
-    key: "eligibility.statutJuridiquePersonneMorale.sarlu",
+    value: "sarlau",
+    key: "eligibility.statutJuridiquePersonneMorale.sarlau",
   },
   {
     value: "societe-sas",

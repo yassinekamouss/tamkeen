@@ -44,7 +44,7 @@
       "prenom": "Prénom",
       "prenomPlaceholder": "Votre prénom",
       "telephone": "Téléphone",
-      "telephonePlaceholder": "+212 6 XX XX XX XX",
+      "telephonePlaceholder": "6 XX XX XX XX",
       "secteurTravail": "Secteur de travail",
       "region": "Région",
       "statutJuridique": "Statut juridique",
@@ -91,7 +91,7 @@
     },
     "statutJuridiquePersonneMorale": {
       "sarl": "SARL",
-      "sarlu": "SARLAU",
+      "sarlau": "SARLAU",
       "societeSas": "SAS",
       "aucuneFormeJuridique": "Aucune forme juridique",
       "enCoursCreation": "En cours de création",

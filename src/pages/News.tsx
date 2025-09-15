@@ -221,9 +221,7 @@ const News: React.FC = () => {
                     }`}>
                     <div className="relative overflow-hidden">
                       <img
-                        src={`https://picsum.photos/${
-                          index === 0 ? "600/350" : "400/250"
-                        }?random=${article.id}`}
+                        src= {article.image}
                         alt={article.title}
                         className={`w-full ${
                           index === 0 ? "h-64" : "h-48"
@@ -268,7 +266,13 @@ const News: React.FC = () => {
                         {article.excerpt}
                       </p>
 
-                      <button className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors group-hover:translate-x-1">
+                     {article.externalUrl && (
+                      <a
+                        href={article.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors group-hover:translate-x-1"
+                      >
                         Lire la suite
                         <svg
                           className="ml-2 w-5 h-5 transition-transform"
@@ -282,7 +286,9 @@ const News: React.FC = () => {
                             d="M9 5l7 7-7 7"
                           />
                         </svg>
-                      </button>
+                      </a>
+                    )}
+
                     </div>
                   </article>
                 ))}
