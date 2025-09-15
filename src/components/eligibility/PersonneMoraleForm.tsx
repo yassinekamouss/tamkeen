@@ -39,23 +39,31 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             placeholder={t("eligibility.morale.nomEntreprisePlaceholder")}
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t("eligibility.physique.telephone")} *
-          </label>
-          <input
-            type="tel"
-            name="telephone"
-            value={formData.telephone || ""}
-            onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.telephone ? "border-red-500" : "border-gray-300"
-              }`}
-            placeholder={t("eligibility.physique.telephonePlaceholder")}
-          />
-          {errors.telephone && (
-            <p className="text-red-500 text-xs mt-1">{errors.telephone}</p>
-          )}
-        </div>
+       <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t("eligibility.physique.telephone")} *
+            </label>
+            <div className="flex">
+              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 bg-gray-100 text-gray-500 text-sm">
+                +212
+              </span>
+              <input
+                type="tel"
+                name="telephone"
+                value={formData.telephone || ""}
+                onChange={onInputChange}
+                maxLength={9} 
+                className={`w-full px-4 py-2.5 border rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                  errors.telephone ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder={t("eligibility.physique.telephonePlaceholder")}
+              />
+            </div>
+            {errors.telephone && (
+              <p className="text-red-500 text-xs mt-1">{errors.telephone}</p>
+            )}
+          </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {t("eligibility.email")} *

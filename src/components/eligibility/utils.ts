@@ -31,6 +31,12 @@ export const getYearsForCA = (anneeCreation?: string): number[] => {
 
 export const checkEligibility = async (data: FormData): Promise<EligibilityResult> => {
   try {
+
+    if (data.telephone) {
+      if (!data.telephone.startsWith("+212")) {
+        data.telephone = `+212${data.telephone}`;
+      }
+    }
    
     const response = await api.post("/test/eligibilite", data);
 
