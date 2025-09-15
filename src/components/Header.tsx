@@ -37,7 +37,7 @@ const Header: React.FC = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white shadow-lg">
+    <header className="sticky top-0 left-0 right-0 z-50 transition-all duration-300 bg-white shadow-lg">
       <div className="w-full px-4 sm:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           {/* Logo */}
