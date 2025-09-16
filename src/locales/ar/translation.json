@@ -91,7 +91,7 @@
     },
     "statutJuridiquePersonneMorale": {
       "sarl": "شركة ذات مسؤولية محدودة",
-      "sarlu": "شركة ذات مسؤولية محدودة بشريك واحد",
+      "sarlau": "شركة ذات مسؤولية محدودة بشريك واحد",
       "societeSas": "شركة مساهمة مبسطة",
       "aucuneFormeJuridique": "بدون شكل قانوني",
       "enCoursCreation": "في طور الإنشاء",
