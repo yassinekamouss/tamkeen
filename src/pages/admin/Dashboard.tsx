@@ -87,6 +87,8 @@ const Dashboard: React.FC = () => {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const navigate = useNavigate();
 
+
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -300,7 +302,7 @@ const Dashboard: React.FC = () => {
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Utilisateurs</p>
+              <p className="text-gray-600 text-sm font-medium">Total Utilisateurs</p>
               <p className="text-3xl font-bold text-gray-900">
                 {stats.totalUsers}
               </p>

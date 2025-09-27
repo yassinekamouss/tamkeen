@@ -29,6 +29,9 @@ interface User {
   };
 }
 
+
+
+
 const Users: React.FC = () => {
   const navigate = useNavigate();
   const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "{}");
@@ -43,24 +46,64 @@ const Users: React.FC = () => {
     "all"
   );
 
+  //partie consultant
+  interface Admin {
+    _id: string;
+    username: string;
+  }
+
+  const [admins, setAdmins] = useState<Admin[]>([]);
+
+  const fetchAdmins = async () => {
+    try {
+      const response = await axios.get("/admin");
+      setAdmins(response.data);
+    } catch {
+      setError("Erreur lors du chargement des administrateurs.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleConsultantChange = async (user: User, consultant: Admin) => {
+    try {
+
+      await axios.put(`/users/${user._id}`, {
+        consultantAssocie: consultant || null, // Envoyer null si aucune valeur n'est sélectionnée
+      });
+      setUsers((prev) =>
+        prev.map((u) =>
+          u._id === user._id
+            ? { ...u, consultantAssocie: { _id: consultant._id, username: consultant.username } }
+            : u
+        )
+      );
+    } catch (error) {
+      alert("Erreur lors de la mise à jour du consultant associé.");
+    }
+  };
   interface UserUpdatedPayload {
     _id: string;
     etat?: string;
     consultantAssocie?: { _id: string; username: string } | null;
   }
-    const fetchUsers = async () => {
-      try {
+  const fetchUsers = async () => {
+    try {
+      if (adminProfile.role === "Consultant") {
+        const response = await axios.get(`/users/consultant/${adminProfile._id}`);
+        setUsers(response.data);
+      } else {
         const response = await axios.get("/users");
         setUsers(response.data);
-      } catch {
-        setError("Erreur lors du chargement des utilisateurs.");
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch {
+      setError("Erreur lors du chargement des utilisateurs.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-
-
+    fetchAdmins();
     fetchUsers();
   }, []);
 
@@ -73,11 +116,11 @@ const Users: React.FC = () => {
         prev.map((u) =>
           u._id === payload._id
             ? {
-                ...u,
-                etat: payload.etat ?? u.etat,
-                consultantAssocie:
-                  payload.consultantAssocie ?? u.consultantAssocie,
-              }
+              ...u,
+              etat: payload.etat ?? u.etat,
+              consultantAssocie:
+                payload.consultantAssocie ?? u.consultantAssocie,
+            }
             : u
         )
       );
@@ -141,7 +184,7 @@ const Users: React.FC = () => {
     }
   };
 
-  
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -204,7 +247,7 @@ const Users: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-2xl font-bold text-gray-900">{users.length}</p>
-              <p className="text-gray-600">Total utilisateurs</p>
+              <p className="text-gray-600">Utilisateurs</p>
             </div>
           </div>
         </div>
@@ -283,6 +326,7 @@ const Users: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredUsers.map((user) => (
+
                   <tr
                     key={user._id}
                     className="hover:bg-gray-50 transition-colors">
@@ -290,15 +334,14 @@ const Users: React.FC = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           <div
-                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${
-                              user.applicantType === "physique"
-                                ? "bg-gray-500"
-                                : "bg-gray-400"
-                            }`}>
+                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${user.applicantType === "physique"
+                              ? "bg-gray-500"
+                              : "bg-gray-400"
+                              }`}>
                             {user.applicantType === "physique"
                               ? `${(user.prenom || "").charAt(0)}${(
-                                  user.nom || ""
-                                ).charAt(0)}`
+                                user.nom || ""
+                              ).charAt(0)}`
                               : (user.nomEntreprise || "").charAt(0)}
                           </div>
                         </div>
@@ -316,11 +359,10 @@ const Users: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.applicantType === "physique"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-gray-200 text-gray-800"
-                        }`}>
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.applicantType === "physique"
+                          ? "bg-gray-100 text-gray-800"
+                          : "bg-gray-200 text-gray-800"
+                          }`}>
                         {user.applicantType === "physique"
                           ? "Personne physique"
                           : "Personne morale"}
@@ -336,20 +378,19 @@ const Users: React.FC = () => {
                         <select
                           disabled={Boolean(
                             user.consultantAssocie?._id &&
-                              user.consultantAssocie._id !== adminProfile._id
+                            user.consultantAssocie._id !== adminProfile._id
                           )}
                           title={
                             user.consultantAssocie?._id &&
-                            user.consultantAssocie._id !== adminProfile._id
+                              user.consultantAssocie._id !== adminProfile._id
                               ? "Un consultant est déjà associé à ce client"
                               : ""
                           }
-                          className={`border border-gray-300 rounded px-2 py-1 text-sm ${
-                            user.consultantAssocie?._id &&
+                          className={`border border-gray-300 rounded px-2 py-1 text-sm ${user.consultantAssocie?._id &&
                             user.consultantAssocie._id !== adminProfile._id
-                              ? "cursor-not-allowed bg-gray-100"
-                              : ""
-                          }`}
+                            ? "cursor-not-allowed bg-gray-100"
+                            : ""
+                            }`}
                           value={user.etat || ""}
                           onChange={async (e) => {
                             const newEtat = e.target.value;
@@ -385,14 +426,39 @@ const Users: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="text-sm text-gray-900">
-                        {user.consultantAssocie ? (
+                      <div className={` ${user.consultantAssocie ? "text-sm text-gray-900" : "italic text-gray-400"}`}>
+                        <select name="consultant" className={`${adminProfile.role === "Administrateur" ? "" : "cursor-not-allowed bg-gray-100"}`} disabled={adminProfile.role !== "Administrateur"} value={user.consultantAssocie ? user.consultantAssocie._id : ""}
+                          onChange={(e) => {
+                            const selectedValue = e.target.value;
+                            const adminObj = selectedValue ? JSON.parse(selectedValue) : null;
+                            handleConsultantChange(user, adminObj);
+                          }}>
+                          {/* Option par défaut si aucun consultant n'est associé */}
+                          {!user.consultantAssocie && (
+                            <option value="" className="text-gray-400 italic">
+                              Aucun consultant associé
+                            </option>
+                          )}
+
+                          {/* Si un consultant est associé, afficher son nom comme option sélectionnée */}
+                          {user.consultantAssocie && (
+                            <option value={JSON.stringify(user.consultantAssocie)}>
+                              {user.consultantAssocie.username}
+                            </option>
+                          )}
+                          {admins.filter((admin) => admin._id !== user.consultantAssocie?._id).map((admin) => (
+                            <option key={admin._id} value={JSON.stringify(admin)}>
+                              {admin.username}
+                            </option>
+                          ))}
+                        </select>
+                        {/* {user.consultantAssocie ? (
                           user.consultantAssocie.username
                         ) : (
                           <span className="text-gray-400 italic">
                             Non attribué
                           </span>
-                        )}
+                        )} */}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -412,7 +478,7 @@ const Users: React.FC = () => {
                         className="text-gray-600 hover:text-gray-900 mr-3">
                         <Edit className="w-4 h-4" />
                       </button>
-                    
+
                     </td>
                   </tr>
                 ))}
