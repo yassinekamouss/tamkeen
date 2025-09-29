@@ -35,6 +35,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const [eligibleProgram, setEligibleProgram] = useState<
     programsNamesAndLinks[]
   >([]);
+  const [testId, setTestId] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const [showLoadingModal, setShowLoadingModal] = useState(false);
@@ -136,6 +137,7 @@ submitForm();
     setServerError(null);
     setIsEligible(eligibilityResult.isEligible);
     setEligibleProgram(eligibilityResult.programs || []);
+    setTestId(eligibilityResult.testId || null);
     setShowResult(true);
 
     console.log("Form submitted:", formData);
@@ -168,6 +170,7 @@ submitForm();
         eligibleProgram={eligibleProgram}
         formData={formData}
         onNewTest={handleNewTest}
+        testId ={testId}
       />
     );
   }

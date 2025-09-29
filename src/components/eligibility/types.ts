@@ -50,6 +50,7 @@ export interface EligibilityResult {
   isEligible: boolean;
   programs?: programsNamesAndLinks[];
   errorMessage?: string;
+  testId?: string;
 }
 
 

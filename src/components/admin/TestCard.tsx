@@ -1,5 +1,5 @@
 import React from "react";
-import { Building2, User2 } from "lucide-react";
+import { Building2, User2, Phone ,Mail } from "lucide-react";
 import type { TestItem } from "../../types/test";
 
 function formatRelativeDate(dateStr?: string) {
@@ -52,11 +52,31 @@ const TestCard: React.FC<{
   const isRecent =
     test.createdAt && Date.now() - new Date(test.createdAt).getTime() < 30_000;
 
+
+    const handleEmailClick = (e: React.MouseEvent, email: string) => {
+  e.preventDefault();
+  window.location.href = `mailto:${email}`;
+};
+
+
   return (
     <div
-      className={`bg-white border rounded-lg hover:shadow-sm transition-all duration-200 ${
+      className={`bg-white border rounded-lg hover:shadow-sm transition-all duration-200 relative ${
         isRecent ? "border-blue-300 ring-1 ring-blue-100" : "border-slate-200"
       }`}>
+      {/* Indicateur wannaBeContacted - Coin supérieur droit */}
+      {test.wannaBeContacted && (
+        <div className="absolute -top-2 -right-2 z-10">
+          <div className="relative">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+              <Phone className="w-5 h-5 text-white" />
+            </div>
+            {/* Effet de pulsation */}
+            <div className="absolute inset-0 w-10 h-10 bg-blue-400 rounded-full animate-ping opacity-30"></div>
+          </div>
+        </div>
+      )}
+
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -66,9 +86,18 @@ const TestCard: React.FC<{
               </div>
             )}
             <div>
-              <h3 className="font-semibold text-slate-900">
-                Test #{test._id?.slice(-6)}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-slate-900">
+                  Test #{test._id?.slice(-6)}
+                </h3>
+                {/* Badge de contact inline */}
+                {test.wannaBeContacted && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700 border border-blue-200">
+                    <Phone className="w-3 h-3" />
+                    Souhaite être contacté
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-slate-500">
                 {formatRelativeDate(test.createdAt)}
               </p>
@@ -104,7 +133,7 @@ const TestCard: React.FC<{
                 <User2 className="w-4 h-4 text-slate-600" />
               )}
             </div>
-            <div className="text-sm">
+            <div className="text-sm flex-1">
               <div className="text-slate-900 font-medium">
                 {test.personne?.applicantType === "morale"
                   ? test.personne?.nomEntreprise
@@ -112,8 +141,25 @@ const TestCard: React.FC<{
                       test.personne?.prenom ?? ""
                     }`}
               </div>
-              <div className="text-slate-500">{test.personne?.email}</div>
+              
+<div className="text-slate-500 flex items-center gap-1">
+  <button 
+    onClick={(e) => handleEmailClick(e, test.personne?.email || '')}
+    className="hover:text-blue-600 hover:underline transition-colors duration-200 flex items-center gap-1 text-left"
+    title="Envoyer un email"
+  >
+    {test.personne?.email}
+    <Mail className="w-3 h-3 opacity-60" />
+  </button>
+</div>
             </div>
+            {/* Indicateur de contact dans la section personne */}
+            {test.wannaBeContacted && (
+              <div className="flex items-center gap-1 text-blue-600">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-xs font-medium">Demande de contact</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -184,8 +230,8 @@ const TestCard: React.FC<{
                       {test.chiffreAffaires.chiffreAffaire2022 == null &&
                         test.chiffreAffaires.chiffreAffaire2023 == null &&
                         test.chiffreAffaires.chiffreAffaire2024 == null && (
-                          <div>Non spécifié</div>
-                        )}
+                        <div>Non spécifié</div>
+                      )}
                     </>
                   ) : (
                     <div>Non spécifié</div>

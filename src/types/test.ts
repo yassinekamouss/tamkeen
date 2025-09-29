@@ -22,6 +22,7 @@ export interface TestItem {
   montantInvestissement?: string | number | null;
   programmesEligibles: string[];
   personne: PersonneLite;
+  wannaBeContacted : boolean;
   createdAt?: string;
 }
 

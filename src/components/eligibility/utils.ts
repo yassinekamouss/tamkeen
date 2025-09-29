@@ -41,9 +41,9 @@ export const checkEligibility = async (data: FormData): Promise<EligibilityResul
     const response = await api.post("/test/eligibilite", data);
 
     if(response.data.programs.length > 0){
-      return { isEligible : true , programs : response.data.programs };
+      return { isEligible : true , programs : response.data.programs , testId: response.data.testId };
     } else {
-      return { isEligible: false };
+      return { isEligible: false ,testId: response.data.testId };
     }
   } catch (error:any) {
    const message =error.response?.data?.message ||
