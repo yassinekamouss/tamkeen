@@ -175,6 +175,53 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         continue;
       }
 
+      // Emails simples (auto-link) - capture la première occurrence
+      const emailMatch = remaining.match(
+        /^(.*?)([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})(.*)$/i
+      );
+      if (emailMatch) {
+        if (emailMatch[1]) parts.push(<span key={key++}>{emailMatch[1]}</span>);
+        const email = emailMatch[2];
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+          email
+        )}`;
+        parts.push(
+          <a
+            key={key++}
+            href={gmailUrl}
+            className="text-blue-600 hover:text-blue-800 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Envoyer un email via Gmail">
+            {email}
+          </a>
+        );
+        remaining = emailMatch[3];
+        continue;
+      }
+
+      // URLs simples (http/https) auto-link
+      const urlMatch = remaining.match(
+        /^(.*?)(https?:\/\/[\w.-]+(?:\/[\w\-._~:/?#[\]@!$&'()*+,;=%]*)?)(.*)$/i
+      );
+      if (urlMatch) {
+        if (urlMatch[1]) parts.push(<span key={key++}>{urlMatch[1]}</span>);
+        const url = urlMatch[2];
+        parts.push(
+          <a
+            key={key++}
+            href={url}
+            className="text-blue-600 hover:text-blue-800 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Ouvrir le lien">
+            {url}
+          </a>
+        );
+        remaining = urlMatch[3];
+        continue;
+      }
+
       // Emojis de base
       const emojiMatch = remaining.match(
         /^(.*?)(✅|❌|📋|💼|🏢|👤|📍|📊|💰)(.*)$/

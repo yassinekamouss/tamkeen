@@ -45,15 +45,11 @@ const Chatbot: React.FC = () => {
       // Envoi du message via le service OpenAI
       const response = await chatService.current.sendMessage(inputValue);
 
-      // Le nouveau service n'a plus de contexte à récupérer
-      // ChatGPT gère tout automatiquement
-
-      // La réponse ChatGPT est déjà complète, aucun traitement supplémentaire nécessaire
-      const botResponse = response;
+      const sanitized = sanitizeBotText(response);
 
       const botMessage: Message = {
         id: Date.now() + 1,
-        text: botResponse,
+        text: sanitized,
         isBot: true,
         timestamp: new Date(),
       };
@@ -106,12 +102,13 @@ const Chatbot: React.FC = () => {
         action,
         mappedAction
       );
+      const sanitized = sanitizeBotText(response);
 
       // Plus besoin de contexte - ChatGPT gère tout automatiquement
 
       const botMessage: Message = {
         id: Date.now() + 1,
-        text: response,
+        text: sanitized,
         isBot: true,
         timestamp: new Date(),
       };
@@ -137,8 +134,8 @@ const Chatbot: React.FC = () => {
       action: "Je souhaite avoir des informations sur Tamkeen",
     },
     {
-      text: "📋 Nos programmes disponibles",
-      action: "Quels sont les programmes de subventions disponibles ?",
+      text: "📋 Programmes référencés",
+      action: "Quels sont les programmes de subventions référencés ?",
     },
     {
       text: "✅ Tester mon éligibilité",
@@ -149,6 +146,38 @@ const Chatbot: React.FC = () => {
       action: "Comment puis-je vous contacter ?",
     },
   ];
+
+  // Post-traitement : neutraliser anciennes formulations de propriété
+  function sanitizeBotText(text: string): string {
+    if (!text) return text;
+    const replacements: { pattern: RegExp; replacement: string }[] = [
+      {
+        pattern: /\b[Nn]os programmes disponibles\b/g,
+        replacement: "programmes référencés",
+      },
+      {
+        pattern: /\b[Nn]os programmes\b/g,
+        replacement: "programmes référencés",
+      },
+      {
+        pattern: /\b[Nn]os subventions\b/g,
+        replacement: "programmes publics référencés",
+      },
+      {
+        pattern: /our available programs/gi,
+        replacement: "programs referenced by Tamkeen",
+      },
+      {
+        pattern: /our programs/gi,
+        replacement: "programs referenced by Tamkeen",
+      },
+    ];
+    let out = text;
+    replacements.forEach((r) => {
+      out = out.replace(r.pattern, r.replacement);
+    });
+    return out;
+  }
 
   const resetConversation = () => {
     chatService.current.resetConversation();
