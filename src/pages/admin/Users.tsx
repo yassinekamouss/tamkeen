@@ -316,302 +316,307 @@ const Users: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     État
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Consultant associé
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
+                  {adminProfile.role === "Administrateur" &&
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Consultant associé
+                    </th> 
+                  }
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredUsers.map((user) => (
 
-                  <tr
-                    key={user._id}
-                    className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div
-                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${user.applicantType === "physique"
-                              ? "bg-gray-500"
-                              : "bg-gray-400"
-                              }`}>
-                            {user.applicantType === "physique"
-                              ? `${(user.prenom || "").charAt(0)}${(
-                                user.nom || ""
-                              ).charAt(0)}`
-                              : (user.nomEntreprise || "").charAt(0)}
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.applicantType === "physique"
-                              ? `${user.prenom} ${user.nom}`
-                              : user.nomEntreprise}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {user.email}
-                          </div>
+                <tr
+                  key={user._id}
+                  className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10">
+                        <div
+                          className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${user.applicantType === "physique"
+                            ? "bg-gray-500"
+                            : "bg-gray-400"
+                            }`}>
+                          {user.applicantType === "physique"
+                            ? `${(user.prenom || "").charAt(0)}${(
+                              user.nom || ""
+                            ).charAt(0)}`
+                            : (user.nomEntreprise || "").charAt(0)}
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.applicantType === "physique"
-                          ? "bg-gray-100 text-gray-800"
-                          : "bg-gray-200 text-gray-800"
-                          }`}>
-                        {user.applicantType === "physique"
-                          ? "Personne physique"
-                          : "Personne morale"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {user.telephone}
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {user.applicantType === "physique"
+                            ? `${user.prenom} ${user.nom}`
+                            : user.nomEntreprise}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {user.email}
+                        </div>
                       </div>
-                    </td>
-                    <td>
-                      <div className="text-sm text-gray-900">
-                        <select
-                          disabled={Boolean(
-                            user.consultantAssocie?._id &&
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.applicantType === "physique"
+                        ? "bg-gray-100 text-gray-800"
+                        : "bg-gray-200 text-gray-800"
+                        }`}>
+                      {user.applicantType === "physique"
+                        ? "Personne physique"
+                        : "Personne morale"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {user.telephone}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="text-sm text-gray-900">
+                      <select
+                        disabled={Boolean(
+                          user.consultantAssocie?._id &&
+                          user.consultantAssocie._id !== adminProfile._id
+                        )}
+                        title={
+                          user.consultantAssocie?._id &&
                             user.consultantAssocie._id !== adminProfile._id
-                          )}
-                          title={
-                            user.consultantAssocie?._id &&
-                              user.consultantAssocie._id !== adminProfile._id
-                              ? "Un consultant est déjà associé à ce client"
-                              : ""
-                          }
-                          className={`border border-gray-300 rounded px-2 py-1 text-sm ${user.consultantAssocie?._id &&
-                            user.consultantAssocie._id !== adminProfile._id
-                            ? "cursor-not-allowed bg-gray-100"
+                            ? "Un consultant est déjà associé à ce client"
                             : ""
-                            }`}
-                          value={user.etat || ""}
-                          onChange={async (e) => {
-                            const newEtat = e.target.value;
-                            // if (user.assistant) {
-                            //   user.assistant._id = adminProfile._id; // Set the assistant to the admin's ID
-                            // } else {
-                            user.consultantAssocie = {
-                              _id: adminProfile._id,
-                              username: adminProfile.username,
-                            };
-                            // }
-                            try {
-                              await axios.put(`/users/${user._id}`, {
-                                ...user,
-                                etat: newEtat,
-                              });
-                              setUsers((prev) =>
-                                prev.map((u) =>
-                                  u._id === user._id
-                                    ? { ...u, etat: newEtat }
-                                    : u
-                                )
-                              );
-                            } catch {
-                              alert("Erreur lors de la mise à jour de l'état.");
-                            }
-                          }}>
-                          <option value="">Sélectionner</option>
-                          <option value="En traitement">En traitement</option>
-                          <option value="En attente">En attente</option>
-                          <option value="Terminé">Terminé</option>
-                        </select>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className={` ${user.consultantAssocie ? "text-sm text-gray-900" : "italic text-gray-400"}`}>
-                        <select name="consultant" className={`${adminProfile.role === "Administrateur" ? "" : "cursor-not-allowed bg-gray-100"}`} disabled={adminProfile.role !== "Administrateur"} value={user.consultantAssocie ? user.consultantAssocie._id : ""}
-                          onChange={(e) => {
-                            const selectedValue = e.target.value;
-                            const adminObj = selectedValue ? JSON.parse(selectedValue) : null;
-                            handleConsultantChange(user, adminObj);
-                          }}>
-                          {/* Option par défaut si aucun consultant n'est associé */}
-                          {!user.consultantAssocie && (
-                            <option value="" className="text-gray-400 italic">
-                              Aucun consultant associé
-                            </option>
-                          )}
+                        }
+                        className={`border border-gray-300 rounded px-2 py-1 text-sm ${user.consultantAssocie?._id &&
+                          user.consultantAssocie._id !== adminProfile._id
+                          ? "cursor-not-allowed bg-gray-100"
+                          : ""
+                          }`}
+                        value={user.etat || ""}
+                        onChange={async (e) => {
+                          const newEtat = e.target.value;
+                          // if (user.assistant) {
+                          //   user.assistant._id = adminProfile._id; // Set the assistant to the admin's ID
+                          // } else {
+                          user.consultantAssocie = {
+                            _id: adminProfile._id,
+                            username: adminProfile.username,
+                          };
+                          // }
+                          try {
+                            await axios.put(`/users/${user._id}`, {
+                              ...user,
+                              etat: newEtat,
+                            });
+                            setUsers((prev) =>
+                              prev.map((u) =>
+                                u._id === user._id
+                                  ? { ...u, etat: newEtat }
+                                  : u
+                              )
+                            );
+                          } catch {
+                            alert("Erreur lors de la mise à jour de l'état.");
+                          }
+                        }}>
+                        {/* <option value="">Sélectionner</option> */}
+                        <option value="En traitement">En traitement</option>
+                        <option value="En attente">En attente</option>
+                        <option value="Terminé">Terminé</option>
+                      </select>
+                    </div>
+                  </td>
+                  {
+                    adminProfile.role === "Administrateur" && (
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className={` ${user.consultantAssocie ? "text-sm text-gray-900" : "italic text-gray-400"}`}>
+                      <select name="consultant" className={`${adminProfile.role === "Administrateur" ? "" : "cursor-not-allowed bg-gray-100"}`} disabled={adminProfile.role !== "Administrateur"} value={user.consultantAssocie ? user.consultantAssocie._id : ""}
+                        onChange={(e) => {
+                          const selectedValue = e.target.value;
+                          const adminObj = selectedValue ? JSON.parse(selectedValue) : null;
+                          handleConsultantChange(user, adminObj);
+                        }}>
+                        {/* Option par défaut si aucun consultant n'est associé */}
+                        {!user.consultantAssocie && (
+                          <option value="" className="text-gray-400 italic">
+                            Aucun consultant associé
+                          </option>
+                        )}
 
-                          {/* Si un consultant est associé, afficher son nom comme option sélectionnée */}
-                          {user.consultantAssocie && (
-                            <option value={JSON.stringify(user.consultantAssocie)}>
-                              {user.consultantAssocie.username}
-                            </option>
-                          )}
-                          {admins.filter((admin) => admin._id !== user.consultantAssocie?._id).map((admin) => (
-                            <option key={admin._id} value={JSON.stringify(admin)}>
-                              {admin.username}
-                            </option>
-                          ))}
-                        </select>
-                        {/* {user.consultantAssocie ? (
+                        {/* Si un consultant est associé, afficher son nom comme option sélectionnée */}
+                        {user.consultantAssocie && (
+                          <option value={JSON.stringify(user.consultantAssocie)}>
+                            {user.consultantAssocie.username}
+                          </option>
+                        )}
+                        {admins.filter((admin) => admin._id !== user.consultantAssocie?._id).map((admin) => (
+                          <option key={admin._id} value={JSON.stringify(admin)}>
+                            {admin.username}
+                          </option>
+                        ))}
+                      </select>
+                      {/* {user.consultantAssocie ? (
                           user.consultantAssocie.username
                         ) : (
                           <span className="text-gray-400 italic">
                             Non attribué
                           </span>
                         )} */}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() =>
-                          navigate(`/admin/user/details/${user._id}`)
-                        }
-                        className="text-gray-600 hover:text-gray-900 mr-3 transition-colors duration-200">
-                        <Eye className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setIsEditModalOpen(true);
-                        }}
-                        className="text-gray-600 hover:text-gray-900 mr-3">
-                        <Edit className="w-4 h-4" />
-                      </button>
-
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {isEditModalOpen && selectedUser && (
-              <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-8 border border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-6">
-                    Modifier les informations
-                  </h2>
-
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (selectedUser) {
-                        updateUser(selectedUser);
-                      }
-                    }}>
-                    <div className="mb-5">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
-                        value={selectedUser.email}
-                        onChange={(e) =>
-                          setSelectedUser({
-                            ...selectedUser,
-                            email: e.target.value,
-                          })
-                        }
-                        placeholder="exemple@domaine.com"
-                      />
                     </div>
+                  </td>)
+                  }
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button
+                      onClick={() =>
+                        navigate(`/admin/user/details/${user._id}`)
+                      }
+                      className="text-gray-600 hover:text-gray-900 mr-3 transition-colors duration-200">
+                      <Eye className="w-4 h-4" />
+                    </button>
 
+                    <button
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setIsEditModalOpen(true);
+                      }}
+                      className="text-gray-600 hover:text-gray-900 mr-3">
+                      <Edit className="w-4 h-4" />
+                    </button>
+
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+            {isEditModalOpen && selectedUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-8 border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                Modifier les informations
+              </h2>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (selectedUser) {
+                    updateUser(selectedUser);
+                  }
+                }}>
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                    value={selectedUser.email}
+                    onChange={(e) =>
+                      setSelectedUser({
+                        ...selectedUser,
+                        email: e.target.value,
+                      })
+                    }
+                    placeholder="exemple@domaine.com"
+                  />
+                </div>
+
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Téléphone
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                    value={selectedUser.telephone}
+                    onChange={(e) =>
+                      setSelectedUser({
+                        ...selectedUser,
+                        telephone: e.target.value,
+                      })
+                    }
+                    placeholder="+212 6XXXXXXXX"
+                  />
+                </div>
+
+                {selectedUser.applicantType === "physique" ? (
+                  <>
                     <div className="mb-5">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Téléphone
+                        Prénom
                       </label>
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
-                        value={selectedUser.telephone}
+                        value={selectedUser.prenom}
                         onChange={(e) =>
                           setSelectedUser({
                             ...selectedUser,
-                            telephone: e.target.value,
+                            prenom: e.target.value,
                           })
                         }
-                        placeholder="+212 6XXXXXXXX"
+                        placeholder="Prénom"
                       />
                     </div>
-
-                    {selectedUser.applicantType === "physique" ? (
-                      <>
-                        <div className="mb-5">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Prénom
-                          </label>
-                          <input
-                            type="text"
-                            className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
-                            value={selectedUser.prenom}
-                            onChange={(e) =>
-                              setSelectedUser({
-                                ...selectedUser,
-                                prenom: e.target.value,
-                              })
-                            }
-                            placeholder="Prénom"
-                          />
-                        </div>
-                        <div className="mb-5">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Nom
-                          </label>
-                          <input
-                            type="text"
-                            className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
-                            value={selectedUser.nom}
-                            onChange={(e) =>
-                              setSelectedUser({
-                                ...selectedUser,
-                                nom: e.target.value,
-                              })
-                            }
-                            placeholder="Nom"
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      <div className="mb-5">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Dénomination
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
-                          value={selectedUser.nomEntreprise}
-                          onChange={(e) =>
-                            setSelectedUser({
-                              ...selectedUser,
-                              nomEntreprise: e.target.value,
-                            })
-                          }
-                          placeholder="Dénomination"
-                        />
-                      </div>
-                    )}
-
-                    <div className="flex justify-end gap-3 mt-6">
-                      <button
-                        type="button"
-                        onClick={() => setIsEditModalOpen(false)}
-                        className="px-5 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition">
-                        Annuler
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-5 py-2 text-sm font-medium bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
-                        Enregistrer
-                      </button>
+                    <div className="mb-5">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nom
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                        value={selectedUser.nom}
+                        onChange={(e) =>
+                          setSelectedUser({
+                            ...selectedUser,
+                            nom: e.target.value,
+                          })
+                        }
+                        placeholder="Nom"
+                      />
                     </div>
-                  </form>
+                  </>
+                ) : (
+                  <div className="mb-5">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Dénomination
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                      value={selectedUser.nomEntreprise}
+                      onChange={(e) =>
+                        setSelectedUser({
+                          ...selectedUser,
+                          nomEntreprise: e.target.value,
+                        })
+                      }
+                      placeholder="Dénomination"
+                    />
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditModalOpen(false)}
+                    className="px-5 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition">
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 text-sm font-medium bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
+                    Enregistrer
+                  </button>
                 </div>
-              </div>
-            )}
+              </form>
+            </div>
           </div>
         )}
       </div>
+        )}
     </div>
+    </div >
   );
 };
 

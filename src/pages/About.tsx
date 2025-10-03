@@ -3,7 +3,7 @@ import { Header, Footer } from "../components";
 import { useTranslation } from "react-i18next";
 import logo from "../assets/logo.webp";
 import backgroundImage from "../assets/image2.webp";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+// import { ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "../api/axios";
 interface Partenaire {
   _id: string;
@@ -33,42 +33,35 @@ const About: React.FC = () => {
   }, []);
 
 
-
-  // const scrollRef = React.useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = React.useState(0);
-
   const [isPaused, setIsPaused] = React.useState(false);
 
-  // Largeur approximative d’un logo (carte)
-  const step = 180;
-  // Auto-défilement continu
+  position;
+  const step = 200; // largeur approximative d’un logo (augmenté)
+
+  // Auto-défilement fluide
   React.useEffect(() => {
     if (isPaused) return;
+
     const interval = setInterval(() => {
-      setPosition((prev) => prev - 1); // défile pixel par pixel
-    }, 20); // vitesse (20ms ≈ 50fps)
+      setPosition((prev) => {
+        // reset invisible pour effet infini
+        const newPos = prev - 1;
+        return Math.abs(newPos) >= partenaires.length * step ? 0 : newPos;
+      });
+    }, 16); // 60fps
 
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  // Remet à zéro quand on a défilé une moitié (pour effet infini)
-  const totalWidth = partenaires.length * step;
-  React.useEffect(() => {
-    if (Math.abs(position) >= totalWidth) {
-      setPosition(0);
-    }
-  }, [position, totalWidth]);
-
-  // Scroll manuel avec flèches
-  const handleScroll = (direction: string) => {
-    setIsPaused(true);
-    setPosition((prev) =>
-      direction === "left" ? prev + 2 * step : prev - 2 * step
-    );
-    // reprendre l’auto-scroll après un petit délai
-    setTimeout(() => setIsPaused(false), 800);
-  };
-
+  // // Scroll manuel
+  // const handleScroll = (direction: "left" | "right") => {
+  //   setIsPaused(true);
+  //   setPosition((prev) =>
+  //     direction === "left" ? prev + 2 * step : prev - 2 * step
+  //   );
+  //   setTimeout(() => setIsPaused(false), 800);
+  // };
   return (
     <div className="w-full">
       <Header />
@@ -117,56 +110,89 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      {loading && <p className="text-center mt-8">Chargement...</p>}
-      {error && <p className="text-center mt-8 text-red-500">{error}</p>}
-      
-      <div className="p-8 bg-gray-50 overflow-hidden">
-        <h2 className="text-2xl font-semibold text-center mb-8">
-          Nos Partenaires
-        </h2>
+      {/* {loading && <p className="text-center mt-8">Chargement...</p>} */}
 
-        <div className="relative w-full">
-          {/* Bouton gauche */}
-          <button
-            onClick={() => handleScroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full hover:bg-gray-100 z-10"
-          >
-            <ChevronLeft className="w-6 h-6 text-gray-700" />
-          </button>
+      {!error && (
+        <div className="p-8 bg-gray-50 overflow-hidden relative">
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
+            Nos Partenaires
+          </h2>
+          {loading && (
+            <div className="flex justify-center items-center mt-8 space-x-2">
+              <span className="w-3 h-3 bg-gray-900 rounded-full animate-bounce"></span>
+              <span className="w-3 h-3 bg-gray-800 rounded-full animate-bounce animation-delay-200"></span>
+              <span className="w-3 h-3 bg-gray-700 rounded-full animate-bounce animation-delay-400"></span>
+            </div>
+          )}
 
-          {/* Bande de logos */}
+          <style>
+            {`
+    .animation-delay-200 {
+      animation-delay: 0.2s;
+    }
+    .animation-delay-400 {
+      animation-delay: 0.4s;
+    }
+  `}
+          </style>
+
           <div
-            className="flex gap-10"
-            style={{
-              transform: `translateX(${position}px)`,
-              transition: isPaused ? "transform 0.5s ease" : "none",
-            }}
+            className="overflow-hidden relative flex items-center"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
-            {[...partenaires, ...partenaires].map((partenaire, index) => (
-              <div key={index} className="min-w-[180px] flex items-center justify-center">
-                <a href={partenaire.url} target="_blank" rel="noopener noreferrer" >
-                  <img
-                    src={partenaire.img}
-                    alt={`Partenaire ${index + 1}`}
-                    title={partenaire.nom}
-
-                    className="max-h-20 object-contain"
-                  /></a>
-              </div>
-            ))}
+            <div
+              className={`flex gap-12 animate-scroll logos-wrapper`}
+              style={{
+                animationPlayState: isPaused ? "paused" : "running",
+              }}
+            >
+              {/* Dupliquer plusieurs fois pour effet infini */}
+              {Array(3)
+                .fill(partenaires)
+                .flat()
+                .map((partenaire, index) => (
+                  <div
+                    key={index}
+                    className="min-w-[200px] flex items-center justify-center"
+                  >
+                    <a
+                      href={partenaire.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:scale-110 transition-transform duration-300"
+                    >
+                      <img
+                        src={partenaire.img}
+                        alt={partenaire.nom}
+                        title={partenaire.nom}
+                        className="max-h-28 object-contain"
+                      />
+                    </a>
+                  </div>
+                ))}
+            </div>
           </div>
-
-
-          {/* Bouton droit */}
-          <button
-            onClick={() => handleScroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full hover:bg-gray-100 z-10"
-          >
-            <ChevronRight className="w-6 h-6 text-gray-700" />
-          </button>
         </div>
-      </div>
+      )}
+      {/* CSS global (index.css ou Tailwind) */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+      @keyframes scroll {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-33.3333%);
+        }
+      }
+      .animate-scroll {
+        animation: scroll 20s linear infinite;
+      }
+    `
+        }}
+      />
 
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

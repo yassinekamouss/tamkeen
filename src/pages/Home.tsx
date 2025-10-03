@@ -13,9 +13,9 @@ const Home: React.FC = () => {
     <div className="w-full">
       <Header />
       <Hero onNavigateToForm={scrollToForm} />
-
-      <EligibilityForm />
-
+      <div id="eligibility-form">
+        <EligibilityForm />
+      </div>
       <Footer />
 
       <Chatbot />

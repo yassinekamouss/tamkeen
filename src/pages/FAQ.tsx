@@ -61,12 +61,14 @@ const FAQ: React.FC = () => {
               <p className="text-gray-600 mb-4">
                 {t("faq.moreQuestionsSubtitle")}
               </p>
-              <a
-                href="mailto:contact@masubvention.ma"
-                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                {t("faq.contactButton")}
-              </a>
+                    <a
+                      href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@masubvention.ma"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-blue-600 hover:bg-blue-50 transition-all duration-300 shadow-md inline-block"
+                    > {t("faq.contactButton")}
+                    </a>              
+
             </div>
           </div>
         </div>
