@@ -10,6 +10,7 @@ const About = lazy(() => import("./pages/About"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const News = lazy(() => import("./pages/News.tsx"));
+const NewsDetail = lazy(() => import("./pages/NewsDetail"));
 // Admin auth & layout
 const Login = lazy(() => import("./pages/admin/Login"));
 const PrivateRoute = lazy(() => import("./components/PrivateRoute"));
@@ -42,6 +43,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/news" element={<News />} />
+            <Route path="/news/:slugOrId" element={<NewsDetail />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/admin/login" element={<Login />} />

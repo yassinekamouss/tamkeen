@@ -11,6 +11,8 @@ export interface NewsItem {
   author: string;
   featured: boolean;
   externalUrl?: string; // Lien vers le site externe
+  slug?: string;
+  published?: boolean;
 }
 
 export interface CreateNewsItem {
@@ -54,6 +56,12 @@ export const newsService = {
   },
 
   // Récupérer une actualité par ID
+  getBySlugOrId: async (
+    slugOrId: string | number
+  ): Promise<SingleNewsResponse> => {
+    const response = await axios.get(`/news/${slugOrId}`);
+    return response.data;
+  },
 
   // Récupérer les actualités en vedette
 
