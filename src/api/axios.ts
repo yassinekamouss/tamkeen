@@ -1,8 +1,6 @@
 import axios from "axios";
-
-const baseURL = import.meta.env.MODE === "production"
-    ? "/api" // via le proxy Vercel
-    : "http://localhost:5000/api"; // backend local
+ 
+const baseURL = import.meta.env.VITE_BACKEND_API_URL;
 
 
 const api = axios.create({
