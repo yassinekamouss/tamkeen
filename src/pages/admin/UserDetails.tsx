@@ -24,7 +24,7 @@ interface Test {
     prenom?: string;
     nomEntreprise?: string;
     email: string;
-    telephone: string;
+    telephones?: string[];
   };
 }
 
@@ -101,10 +101,13 @@ const UserDetails = () => {
                         </div>
                         <div className="space-y-1">
                           <dt className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                            Téléphone
+                            Téléphone(s)
                           </dt>
                           <dd className="text-sm text-slate-700">
-                            {personne.telephone}
+                            {Array.isArray(personne.telephones) &&
+                            personne.telephones.length > 0
+                              ? personne.telephones.join(", ")
+                              : "—"}
                           </dd>
                         </div>
                       </>

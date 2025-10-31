@@ -1,4 +1,6 @@
 import React from "react";
+import { useEffect, useState } from "react";
+import api from "../../api/axios";
 import { useTranslation } from "react-i18next";
 import type { FormData, FormErrors } from "./types";
 import {
@@ -23,6 +25,52 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
   onInputChange,
 }) => {
   const { t } = useTranslation();
+  const [availablePhones, setAvailablePhones] = useState<string[]>([]);
+  const [phoneMode, setPhoneMode] = useState<"select" | "new">("new");
+
+  useEffect(() => {
+    const email = formData.email;
+    const isValidEmail = /\S+@\S+\.\S+/.test(email);
+    if (!isValidEmail) {
+      setAvailablePhones([]);
+      setPhoneMode("new");
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await api.get("/test/eligibilite/phones", {
+          params: { email },
+        });
+        if (cancelled) return;
+        const phones: string[] = data?.telephones || [];
+        setAvailablePhones(phones);
+        if (phones.length > 0) {
+          setPhoneMode("select");
+          // Pré-sélectionner le premier numéro si aucun n'est saisi
+          const current = formData.telephone;
+          const selected =
+            current && phones.includes(current) ? current : phones[0];
+          if (selected) {
+            // Propager au parent
+            onInputChange({
+              target: { name: "telephone", value: selected },
+            } as unknown as React.ChangeEvent<HTMLInputElement>);
+          }
+        } else {
+          setPhoneMode("new");
+        }
+      } catch {
+        // En cas d'erreur, on garde le mode saisie libre
+        setAvailablePhones([]);
+        setPhoneMode("new");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.email]);
 
   return (
     <div className="animate-fadeIn space-y-4">
@@ -36,8 +84,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="nom"
             value={formData.nom || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.nom ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.nom ? "border-red-500" : "border-gray-300"
+            }`}
             placeholder={t("eligibility.physique.nomPlaceholder")}
           />
           {errors.nom && (
@@ -54,8 +103,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="prenom"
             value={formData.prenom || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.prenom ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.prenom ? "border-red-500" : "border-gray-300"
+            }`}
             placeholder={t("eligibility.physique.prenomPlaceholder")}
           />
           {errors.prenom && (
@@ -77,8 +127,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             max={100}
             value={formData.age || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.age ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.age ? "border-red-500" : "border-gray-300"
+            }`}
             placeholder={t("eligibility.physique.agePlaceholder")}
           />
           {errors.age && (
@@ -94,8 +145,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="sexe"
             value={formData.sexe || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.sexe ? "border-red-500" : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.sexe ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {sexe.map((option) => (
               <option key={option} value={option}>
@@ -119,8 +171,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="email"
             value={formData.email}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.email ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            }`}
             placeholder={t("eligibility.emailPlaceholder")}
           />
           {errors.email && (
@@ -132,7 +185,33 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {t("eligibility.physique.telephone")} *
           </label>
-                  <div className="flex">
+          {phoneMode === "select" && availablePhones.length > 0 ? (
+            <select
+              name="telephone"
+              value={formData.telephone || availablePhones[0] || ""}
+              onChange={(e) => {
+                if (e.target.value === "__new__") {
+                  setPhoneMode("new");
+                  // Effacer la valeur actuelle pour saisir un nouveau numéro
+                  onInputChange({
+                    target: { name: "telephone", value: "" },
+                  } as unknown as React.ChangeEvent<HTMLInputElement>);
+                } else {
+                  onInputChange(e);
+                }
+              }}
+              className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                errors.telephone ? "border-red-500" : "border-gray-300"
+              }`}>
+              {availablePhones.map((ph) => (
+                <option key={ph} value={ph}>
+                  {ph}
+                </option>
+              ))}
+              <option value="__new__">+ Nouveau numéro…</option>
+            </select>
+          ) : (
+            <div className="flex">
               <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 bg-gray-100 text-gray-500 text-sm">
                 +212
               </span>
@@ -141,17 +220,18 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
                 name="telephone"
                 value={formData.telephone || ""}
                 onChange={onInputChange}
-                maxLength={9} 
+                maxLength={9}
                 className={`w-full px-4 py-2.5 border rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.telephone ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder={t("eligibility.physique.telephonePlaceholder")}
               />
             </div>
-            {errors.telephone && (
-              <p className="text-red-500 text-xs mt-1">{errors.telephone}</p>
-            )}
-          </div>
+          )}
+          {errors.telephone && (
+            <p className="text-red-500 text-xs mt-1">{errors.telephone}</p>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -163,8 +243,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="secteurTravail"
             value={formData.secteurTravail || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.secteurTravail ? "border-red-500" : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.secteurTravail ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {SECTEURS_TRAVAIL.map((secteur) => (
               <option key={secteur} value={secteur}>
@@ -185,8 +266,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="region"
             value={formData.region || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.region ? "border-red-500" : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.region ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {REGIONS.map((region) => (
               <option key={region} value={region}>
@@ -209,10 +291,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="statutJuridique"
             value={formData.statutJuridique || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.statutJuridique
-              ? "border-red-500"
-              : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.statutJuridique ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {STATUT_JURIDIQUE_PERSONNE_PHYSIQUE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -235,8 +316,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
             name="anneeCreation"
             value={formData.anneeCreation || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.anneeCreation ? "border-red-500" : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.anneeCreation ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {ANNEE_CREATION_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>

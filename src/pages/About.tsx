@@ -5,6 +5,7 @@ import logo from "../assets/logo.webp";
 import backgroundImage from "../assets/image2.webp";
 // import { ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "../api/axios";
+import { Helmet } from "react-helmet-async";
 interface Partenaire {
   _id: string;
   nom: string;
@@ -38,7 +39,6 @@ const About: React.FC = () => {
 
   position;
   const step = 200; // largeur approximative d’un logo (augmenté)
-
   // Auto-défilement fluide
   React.useEffect(() => {
     if (isPaused) return;
@@ -54,16 +54,19 @@ const About: React.FC = () => {
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  // // Scroll manuel
-  // const handleScroll = (direction: "left" | "right") => {
-  //   setIsPaused(true);
-  //   setPosition((prev) =>
-  //     direction === "left" ? prev + 2 * step : prev - 2 * step
-  //   );
-  //   setTimeout(() => setIsPaused(false), 800);
-  // };
   return (
     <div className="w-full">
+      <Helmet>
+        {/* On utilise vos traductions pour le titre et la description */}
+        <title>{`${t("about.title")} | Tamkeen`}</title>
+        <meta name="description" content={t("about.description")} />
+
+        {/* Bonus : Balises Open Graph pour les réseaux sociaux */}
+        <meta property="og:title" content={`${t("about.title")} | Tamkeen`} />
+        <meta property="og:description" content={t("about.description")} />
+        {/* On peut même réutiliser l'image de fond pour le partage */}
+        <meta property="og:image" content={backgroundImage} />
+      </Helmet>
       <Header />
 
       {/* Hero Section with Background */}

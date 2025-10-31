@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { FormData, FormErrors } from "./types";
 import {
@@ -7,6 +7,7 @@ import {
   STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS,
   ANNEE_CREATION_OPTIONS,
 } from "./constants";
+import api from "../../api/axios";
 
 interface PersonneMoraleFormProps {
   formData: FormData;
@@ -22,6 +23,49 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
   onInputChange,
 }) => {
   const { t } = useTranslation();
+  const [availablePhones, setAvailablePhones] = useState<string[]>([]);
+  const [phoneMode, setPhoneMode] = useState<"select" | "new">("new");
+
+  useEffect(() => {
+    const email = formData.email;
+    const isValidEmail = /\S+@\S+\.\S+/.test(email);
+    if (!isValidEmail) {
+      setAvailablePhones([]);
+      setPhoneMode("new");
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await api.get("/test/eligibilite/phones", {
+          params: { email },
+        });
+        if (cancelled) return;
+        const phones: string[] = data?.telephones || [];
+        setAvailablePhones(phones);
+        if (phones.length > 0) {
+          setPhoneMode("select");
+          const current = formData.telephone;
+          const selected =
+            current && phones.includes(current) ? current : phones[0];
+          if (selected) {
+            onInputChange({
+              target: { name: "telephone", value: selected },
+            } as unknown as React.ChangeEvent<HTMLInputElement>);
+          }
+        } else {
+          setPhoneMode("new");
+        }
+      } catch {
+        setAvailablePhones([]);
+        setPhoneMode("new");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.email]);
 
   return (
     <div className="animate-fadeIn space-y-4">
@@ -39,10 +83,35 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             placeholder={t("eligibility.morale.nomEntreprisePlaceholder")}
           />
         </div>
-       <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("eligibility.physique.telephone")} *
-            </label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t("eligibility.physique.telephone")} *
+          </label>
+          {phoneMode === "select" && availablePhones.length > 0 ? (
+            <select
+              name="telephone"
+              value={formData.telephone || availablePhones[0] || ""}
+              onChange={(e) => {
+                if (e.target.value === "__new__") {
+                  setPhoneMode("new");
+                  onInputChange({
+                    target: { name: "telephone", value: "" },
+                  } as unknown as React.ChangeEvent<HTMLInputElement>);
+                } else {
+                  onInputChange(e);
+                }
+              }}
+              className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                errors.telephone ? "border-red-500" : "border-gray-300"
+              }`}>
+              {availablePhones.map((ph) => (
+                <option key={ph} value={ph}>
+                  {ph}
+                </option>
+              ))}
+              <option value="__new__">+ Nouveau numéro…</option>
+            </select>
+          ) : (
             <div className="flex">
               <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 bg-gray-100 text-gray-500 text-sm">
                 +212
@@ -52,17 +121,18 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
                 name="telephone"
                 value={formData.telephone || ""}
                 onChange={onInputChange}
-                maxLength={9} 
+                maxLength={9}
                 className={`w-full px-4 py-2.5 border rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.telephone ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder={t("eligibility.physique.telephonePlaceholder")}
               />
             </div>
-            {errors.telephone && (
-              <p className="text-red-500 text-xs mt-1">{errors.telephone}</p>
-            )}
-          </div>
+          )}
+          {errors.telephone && (
+            <p className="text-red-500 text-xs mt-1">{errors.telephone}</p>
+          )}
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -73,18 +143,16 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="email"
             value={formData.email}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.email ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            }`}
             placeholder={t("eligibility.emailPlaceholder")}
           />
           {errors.email && (
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
           )}
         </div>
-
       </div>
-
-
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -95,8 +163,9 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="secteurTravail"
             value={formData.secteurTravail || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.secteurTravail ? "border-red-500" : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.secteurTravail ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {SECTEURS_TRAVAIL.map((secteur) => (
               <option key={secteur} value={secteur}>
@@ -105,9 +174,7 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             ))}
           </select>
           {errors.secteurTravail && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.secteurTravail}
-            </p>
+            <p className="text-red-500 text-xs mt-1">{errors.secteurTravail}</p>
           )}
         </div>
 
@@ -119,8 +186,9 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="anneeCreation"
             value={formData.anneeCreation || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.anneeCreation ? "border-red-500" : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.anneeCreation ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {ANNEE_CREATION_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -143,8 +211,9 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="region"
             value={formData.region || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.region ? "border-red-500" : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.region ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {REGIONS.map((region) => (
               <option key={region} value={region}>
@@ -165,8 +234,9 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
             name="statutJuridique"
             value={formData.statutJuridique || ""}
             onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${errors.statutJuridique ? "border-red-500" : "border-gray-300"
-              }`}>
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.statutJuridique ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="">{t("eligibility.selectPlaceholder")}</option>
             {STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>

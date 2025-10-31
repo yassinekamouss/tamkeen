@@ -1,12 +1,25 @@
 import React from "react";
 import { Header, Footer } from "../components";
 import { useTranslation } from 'react-i18next';
+import { Helmet } from "react-helmet-async"; 
+
 
 const Privacy: React.FC = () => {
   const { t } = useTranslation();
 
   return (
     <div className="w-full">
+
+      <Helmet>
+        {/* On utilise vos traductions pour le titre et la description */}
+        <title>{`${t('privacy_modal.title')} | Tamkeen`}</title>
+        <meta name="description" content={t('privacy_modal.intro')} />
+
+        {/* Bonus : Balises Open Graph pour les réseaux sociaux */}
+        <meta property="og:title" content={`${t('privacy_modal.title')} | Tamkeen`} />
+        <meta property="og:description" content={t('privacy_modal.intro')} />
+      </Helmet>
+      
       <Header />
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 mt-16">
         <div className="max-w-4xl mx-auto">

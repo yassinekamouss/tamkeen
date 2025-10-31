@@ -4,6 +4,7 @@ import { newsService, type NewsItem } from "../services/newsService";
 import Spinner from "../components/Spinner";
 import { Link } from "react-router-dom";
 import NewsCard from "../components/news/NewsCard";
+import { Helmet } from "react-helmet-async";
 
 const News: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -57,6 +58,24 @@ const News: React.FC = () => {
 
   return (
     <div className="w-full bg-white">
+
+      <Helmet>
+        {/* On réutilise le contenu de votre section Hero */}
+        <title>Actualités & Opportunités | Tamkeen</title>
+        <meta
+          name="description"
+          content="Restez informé des dernières subventions, formations et success stories pour développer votre entreprise"
+        />
+        <meta
+          property="og:title"
+          content="Actualités & Opportunités | Tamkeen"
+        />
+        <meta
+          property="og:description"
+          content="Restez informé des dernières subventions, formations et success stories pour développer votre entreprise"
+        />
+      </Helmet>
+
       <Header />
 
       {/* Hero Section - Style News Portal */}

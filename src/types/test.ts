@@ -5,7 +5,7 @@ export interface PersonneLite {
   prenom?: string;
   nomEntreprise?: string;
   email: string;
-  telephone: string;
+  telephones?: string[];
 }
 
 export interface TestItem {
@@ -22,7 +22,7 @@ export interface TestItem {
   montantInvestissement?: string | number | null;
   programmesEligibles: string[];
   personne: PersonneLite;
-  wannaBeContacted? : boolean;
+  wannaBeContacted?: boolean;
   createdAt?: string;
 }
 
