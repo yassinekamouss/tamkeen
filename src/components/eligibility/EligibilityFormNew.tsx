@@ -88,67 +88,69 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     }
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const validationErrors = validateEligibilityForm(formData, t);
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    
-    // Optionnel : Scroller vers la première erreur
-    setTimeout(() => {
-      const firstErrorField = Object.keys(validationErrors)[0];
-      const errorElement = document.getElementsByName(firstErrorField)[0] ||
-                          document.querySelector(`[name="${firstErrorField}"]`);
-      
-      if (errorElement) {
-        errorElement.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
-        });
-        if ('focus' in errorElement) {
-          (errorElement as HTMLElement).focus();
+    const validationErrors = validateEligibilityForm(formData, t);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+
+      // Optionnel : Scroller vers la première erreur
+      setTimeout(() => {
+        const firstErrorField = Object.keys(validationErrors)[0];
+        const errorElement =
+          document.getElementsByName(firstErrorField)[0] ||
+          document.querySelector(`[name="${firstErrorField}"]`);
+
+        if (errorElement) {
+          errorElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          if ("focus" in errorElement) {
+            (errorElement as HTMLElement).focus();
+          }
         }
-      }
-    }, 100);
-    
-    return;
-  }
-submitForm();
-}
+      }, 100);
 
-  const submitForm = async () => {
-
-  // Le reste reste identique
-  setShowLoadingModal(true);
-
-  try {
-    const eligibilityResult = await checkEligibility(formData);
-    setShowLoadingModal(false);
-
-    if (eligibilityResult.errorMessage) {
-      setServerError(eligibilityResult.errorMessage);
-      setShowResult(false);
-      setShowServerErrorModal(true);
       return;
     }
+    submitForm();
+  };
 
-    setServerError(null);
-    setIsEligible(eligibilityResult.isEligible);
-    setEligibleProgram(eligibilityResult.programs || []);
-    setTestId(eligibilityResult.testId || null);
-    setShowResult(true);
+  const submitForm = async () => {
+    // Le reste reste identique
+    setShowLoadingModal(true);
 
-    console.log("Form submitted:", formData);
-    console.log("Eligibility result:", eligibilityResult);
-  } catch (error) {
-    setShowLoadingModal(false);
-    console.error("Erreur lors de la soumission :", error);
-    setServerError("Une erreur inattendue s'est produite. Veuillez réessayer.");
-    setShowServerErrorModal(true);
-  }
-};
+    try {
+      const eligibilityResult = await checkEligibility(formData);
+      setShowLoadingModal(false);
+
+      if (eligibilityResult.errorMessage) {
+        setServerError(eligibilityResult.errorMessage);
+        setShowResult(false);
+        setShowServerErrorModal(true);
+        return;
+      }
+
+      setServerError(null);
+      setIsEligible(eligibilityResult.isEligible);
+      setEligibleProgram(eligibilityResult.programs || []);
+      setTestId(eligibilityResult.testId || null);
+      setShowResult(true);
+
+      console.log("Form submitted:", formData);
+      console.log("Eligibility result:", eligibilityResult);
+    } catch (error) {
+      setShowLoadingModal(false);
+      console.error("Erreur lors de la soumission :", error);
+      setServerError(
+        "Une erreur inattendue s'est produite. Veuillez réessayer."
+      );
+      setShowServerErrorModal(true);
+    }
+  };
 
   const handleNewTest = () => {
     setShowResult(false);
@@ -160,6 +162,17 @@ submitForm();
       statutJuridique: "",
     });
     setErrors({});
+
+    // Scroll vers le haut du formulaire (ou de la page) pour repartir du début
+    // Utilise RAF pour attendre le re-render, puis scrolle en douceur
+    requestAnimationFrame(() => {
+      const formEl = document.getElementById("eligibility-form");
+      if (formEl) {
+        formEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      }
+    });
   };
 
   // Affichage du résultat
@@ -170,7 +183,7 @@ submitForm();
         eligibleProgram={eligibleProgram}
         formData={formData}
         onNewTest={handleNewTest}
-        testId ={testId}
+        testId={testId}
       />
     );
   }
@@ -178,9 +191,8 @@ submitForm();
   return (
     <>
       <>
-       
         {/* Modal pour afficher les erreurs serveur */}
-       <ErrorModal
+        <ErrorModal
           isOpen={showServerErrorModal}
           onClose={() => setShowServerErrorModal(false)}
           message={serverError || ""}
