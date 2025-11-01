@@ -13,13 +13,24 @@ export default function ScrollToTop() {
     if (hash) {
       const el = document.getElementById(hash.replace("#", ""));
       if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
     }
 
     // Default: scroll to page top
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    // Hint the browser not to restore previous scroll automatically
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    // Use RAF to ensure it runs after layout
+    requestAnimationFrame(() => {
+      // Try all common targets for robustness across browsers
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
   }, [pathname, hash]);
 
   return null;
