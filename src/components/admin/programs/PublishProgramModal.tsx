@@ -53,6 +53,7 @@ interface PublishModalProps {
 interface HeroData {
   isHero: boolean;
   image: string;
+  imageFile?: File;
   titleFr: string;
   titleAr: string;
   subtitleFr: string;
@@ -78,28 +79,34 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
     descriptionAr: program?.hero?.descriptionAr || "",
   });
 
+  console.log("heroData.image", heroData.image);
+
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState("");
 
-  const handleImageChange = (url: string) => {
-    setHeroData({ ...heroData, image: url });
-    setImageError("");
-
-    // Test de l'image
-    if (url) {
-      const img = new Image();
-      img.onload = () => setImageError("");
-      img.onerror = () => setImageError("URL de l'image invalide");
-      img.src = url;
-    }
-  };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await onSubmit(heroData);
+      const formDataToSend = new FormData();
+      formDataToSend.append("isHero", String(heroData.isHero));
+      formDataToSend.append("titleFr", heroData.titleFr);
+      formDataToSend.append("titleAr", heroData.titleAr);
+      formDataToSend.append("subtitleFr", heroData.subtitleFr);
+      formDataToSend.append("subtitleAr", heroData.subtitleAr);
+      formDataToSend.append("descriptionFr", heroData.descriptionFr);
+      formDataToSend.append("descriptionAr", heroData.descriptionAr);
+
+      // Si c'est un vrai fichier à uploader
+      if (heroData.imageFile) {
+        formDataToSend.append("image", heroData.imageFile);
+      }
+
+      await onSubmit(formDataToSend);
+
       onClose();
     } catch (error) {
       console.error("Erreur lors de la publication:", error);
@@ -178,18 +185,45 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    URL de l'image *
+                    Image de couverture *
                   </label>
-                  <input
-                    type="url"
-                    required={heroData.isHero}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      imageError ? "border-red-300" : "border-gray-300"
-                    }`}
-                    value={heroData.image}
-                    onChange={(e) => handleImageChange(e.target.value)}
-                    placeholder="https://exemple.com/image.jpg"
-                  />
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg bg-white hover:bg-gray-50 transition-colors cursor-pointer relative group">
+                    <div className="space-y-2 text-center">
+                      <div className="mx-auto h-12 w-12 text-gray-400 group-hover:text-blue-500 transition-colors">
+                        <Upload className="mx-auto h-12 w-12" />
+                      </div>
+                      <div className="flex text-sm text-gray-600">
+                        <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                          <span>Télécharger un fichier</span>
+                          <input
+                            id="file-upload"
+                            name="file-upload"
+                            type="file"
+                            accept="image/*"
+                            required={heroData.isHero}
+                            className="sr-only"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const imageUrl = URL.createObjectURL(file);
+                                setHeroData({ 
+                                  ...heroData, 
+                                  image: imageUrl,
+                                  imageFile: file 
+                                });
+                                setImageError("");
+                              }
+                            }}
+                          />
+                        </label>
+                        <p className="pl-1">ou glisser-déposer</p>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        PNG, JPG , jusqu'à 5MB
+                      </p>
+                    </div>
+                  </div>
+
                   {imageError && (
                     <p className="text-red-600 text-sm mt-1">{imageError}</p>
                   )}
