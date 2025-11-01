@@ -284,7 +284,16 @@ const Programs: React.FC = () => {
     if (!publishingProgram) return;
 
     try {
-      await axios.put(`/programs/${publishingProgram._id}/hero`, heroData);
+     await axios.put(
+        `/programs/${publishingProgram._id}/hero`,
+        heroData, // ici heroData devient FormData
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
 
       await fetchPrograms();
       setShowPublishModal(false);
