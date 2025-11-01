@@ -4,7 +4,7 @@ let socket: Socket | null = null;
 
 export function getAdminSocket() {
   if (socket) return socket;
-  const url = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+  const url = import.meta.env.VITE_SOCKET_URL;
   socket = io(url, {
     transports: ["websocket", "polling"],
     withCredentials: true,
