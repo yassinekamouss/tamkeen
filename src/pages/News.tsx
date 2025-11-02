@@ -16,7 +16,7 @@ const News: React.FC = () => {
   const loadNews = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await newsService.getAllNews({
+      const response = await newsService.getPublishedNews({
         category: selectedCategory === "all" ? undefined : selectedCategory,
         limit: 20,
       });
@@ -187,13 +187,13 @@ const News: React.FC = () => {
               {/* CTA Section - Integrated Style */}
               <div className="bg-white border border-gray-200 rounded-lg p-8 lg:p-10 shadow-sm">
                 <div className="max-w-4xl mx-auto">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                     <div className="flex-1">
                       <div className="inline-block bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">
                         ACCOMPAGNEMENT PERSONNALISÉ
                       </div>
                       <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
-                        Besoin d'aide pour trouver un financement ?
+                     Besoin d'aide pour trouver un financement ?
                       </h3>
                       <p className="text-gray-600 leading-relaxed mb-6">
                         Nos experts analysent votre éligibilité et vous

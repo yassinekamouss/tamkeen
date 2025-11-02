@@ -39,7 +39,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, to, featured }) => {
   return (
     <Link
       to={to}
-      className="group block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+      className="group flex flex-col h-full bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
       aria-label={`Lire l'actualité: ${title}`}>
       <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
         {image ? (
@@ -68,7 +68,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, to, featured }) => {
           </div>
         )}
       </div>
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-grow">
         <div className="flex items-center text-xs text-gray-500 mb-2">
           <span className="font-medium">{author}</span>
           <span className="mx-2">•</span>
@@ -76,10 +76,10 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, to, featured }) => {
             {formatDate(publishedAt)}
           </time>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors min-h-[3.5rem]">
           {title}
         </h3>
-        <p className="text-sm text-gray-600 line-clamp-3">{excerpt}</p>
+        <p className="text-sm text-gray-600 line-clamp-3 min-h-[4.5rem]">{excerpt}</p>
       </div>
     </Link>
   );

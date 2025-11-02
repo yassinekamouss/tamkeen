@@ -51,6 +51,17 @@ export interface SingleNewsResponse {
 }
 
 export const newsService = {
+  // Récupérer toutes les actualités publiées avec filtres optionnels
+  getPublishedNews: async (params?: {
+    category?: string;
+    featured?: boolean;
+    limit?: number;
+    page?: number;
+  }): Promise<NewsResponse> => {
+    const response = await axios.get("/news/published", { params });
+    return response.data;
+  },
+
   // Récupérer toutes les actualités avec filtres optionnels
   getAllNews: async (params?: {
     category?: string;
