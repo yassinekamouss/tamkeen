@@ -485,7 +485,14 @@ const Partenaires: React.FC = () => {
                                     <div className="mt-3">
                                         <p className="text-sm font-medium text-gray-700 mb-2">Aperçu:</p>
                                         <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                                            <img src={currentPartenaire.img} alt={currentPartenaire.nom} className="w-full h-28 object-cover rounded" />
+                                            <img 
+                                                src={currentPartenaire.imageFile 
+                                                    ? currentPartenaire.img 
+                                                    : `${import.meta.env.VITE_PREFIX_URL}/partenaires/${currentPartenaire.img}`
+                                                } 
+                                                alt={currentPartenaire.nom} 
+                                                className="w-full h-28 object-cover rounded" 
+                                            />
                                         </div>
                                     </div>
                                 )}

@@ -6,7 +6,8 @@ export function getAdminSocket() {
   if (socket) return socket;
   const url = import.meta.env.VITE_SOCKET_URL;
   socket = io(url, {
-    transports: ["websocket", "polling"],
+    // transports: ["websocket", "polling"],
+    transports: ["polling"],
     withCredentials: true,
     autoConnect: true,
     reconnection: true,

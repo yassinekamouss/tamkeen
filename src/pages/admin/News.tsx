@@ -35,7 +35,7 @@ const AdminNews: React.FC = () => {
     excerpt: "",
     content: "",
     image: "",
-    imageFile: null, // AJOUTÉ : pour le nouvel objet File
+    imageFile: null,
     category: "",
     author: "",
     featured: false,
@@ -66,10 +66,8 @@ const AdminNews: React.FC = () => {
     try {
       const response = await newsService.getCategories();
 
-      // catégories statiques
       const staticCategories = ["Subventions Européennes", "Subventions Nationales", "Success Stories", "Entrepreneuriat Féminin", "Guides & Ressources", "Partenariats", "Services Tamkeen", "Export & International", "Alertes Financement"];
 
-      // fusion dynamique + statique en évitant les doublons
       const allCategories = [
         ...new Set([...(response.data || []), ...staticCategories]),
       ];
@@ -79,7 +77,6 @@ const AdminNews: React.FC = () => {
       console.error("Erreur lors du chargement des catégories:", error);
     }
   };
-
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -93,31 +90,48 @@ const AdminNews: React.FC = () => {
         type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
-  // NOUVEAU : Fonction dédiée pour l'input de type File
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
 
     if (file) {
-      // 1. Validation basique (taille, type si nécessaire)
-      // 2. Création d'une URL locale temporaire pour l'aperçu
       const imageUrl = URL.createObjectURL(file);
 
-      // Stocke l'objet File ET l'URL temporaire pour l'aperçu
-      setFormData((prev) => ({
-        ...prev,
-        image: imageUrl,
-        imageFile: file,
-      }));
+      // Revoke previous blob URL if any to avoid memory leaks
+      setFormData((prev) => {
+        try {
+          if (prev.image && typeof prev.image === 'string' && prev.image.startsWith('blob:')) {
+            URL.revokeObjectURL(prev.image);
+          }
+        } catch (err) {
+          // ignore
+        }
+
+        return {
+          ...prev,
+          image: imageUrl,
+          imageFile: file,
+        };
+      });
       setImageError("");
     } else {
-      // Si l'utilisateur annule la sélection de fichier
       setFormData((prev) => ({
         ...prev,
         imageFile: null,
       }));
     }
   };
+
   const resetForm = () => {
+    // revoke blob URL if present
+    try {
+      if (formData.image && typeof formData.image === 'string' && formData.image.startsWith('blob:')) {
+        URL.revokeObjectURL(formData.image);
+      }
+    } catch (err) {
+      // ignore
+    }
+
     setFormData({
       title: "",
       excerpt: "",
@@ -128,12 +142,11 @@ const AdminNews: React.FC = () => {
       author: "",
       featured: false,
       externalUrl: "",
+      published: true,
     });
     setEditingNews(null);
     setError("");
   };
-
-  // AdminNews.tsx (Suite)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,49 +154,32 @@ const AdminNews: React.FC = () => {
     setError("");
 
     try {
-      // 1. Créer un objet FormData
       const formDataToSend = new FormData();
 
-      // 2. Ajouter les champs de texte
       formDataToSend.append("title", formData.title);
       formDataToSend.append("excerpt", formData.excerpt);
       formDataToSend.append("content", formData.content);
       formDataToSend.append("category", formData.category);
       formDataToSend.append("author", formData.author);
-      formDataToSend.append("featured", String(formData.featured)); // Convertir le booléen en chaîne
-      formDataToSend.append("published", String(!!formData.published)); // Convert to "true" or "false"
+      formDataToSend.append("featured", String(formData.featured));
+      formDataToSend.append("published", String(!!formData.published));
 
-      // Ajouter les champs optionnels (vérifier qu'ils existent pour éviter 'null' ou 'undefined' dans FormData)
       if (formData.externalUrl) {
         formDataToSend.append("externalUrl", formData.externalUrl);
       }
 
-      // 3. Gérer l'image :
       if (formData.imageFile) {
-        // Si un NOUVEAU fichier est sélectionné
         formDataToSend.append("image", formData.imageFile);
-      } else if (!editingNews && !formData.image) {
-        // Optionnel : Vérification si l'image est requise lors de la création
-        // setError("Veuillez sélectionner une image pour la création.");
-        // setLoading(false);
-        // return;
-
       } else if (editingNews && !formData.imageFile) {
-        // IMPORTANT : Si on est en mode édition et qu'il n'y a pas de nouveau fichier (imageFile est null),
-        // on ajoute l'ancienne URL pour indiquer au backend de la conserver.
         formDataToSend.append("image", formData.image ?? "");
       }
 
-      // 4. Appel du service API
       if (editingNews) {
-        // Pour la mise à jour, on passe l'ID et le FormData
         await newsService.updateNews(editingNews.id, formDataToSend);
       } else {
-        // Pour la création, on passe le FormData
         await newsService.createNews(formDataToSend);
       }
 
-      // ... (messages de succès, resetForm, loadNews)
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
       resetForm();
@@ -202,11 +198,13 @@ const AdminNews: React.FC = () => {
       excerpt: newsItem.excerpt,
       content: newsItem.content,
       image: newsItem.image,
-      imageFile: null, // Pas de fichier sélectionné au départ
+      imageFile: null,
       category: newsItem.category,
       author: newsItem.author,
       featured: newsItem.featured,
       externalUrl: newsItem.externalUrl || "",
+      // Keep the actual published state when editing
+      published: typeof newsItem.published === 'boolean' ? newsItem.published : true,
     });
     setEditingNews(newsItem);
   };
@@ -239,7 +237,7 @@ const AdminNews: React.FC = () => {
     });
   };
 
-  // Filtrer et paginer les actualités
+  // Filtrer les actualités
   const filteredNews = news.filter(
     (article) =>
       article.title.toLowerCase().includes(searchFilter.toLowerCase()) ||
@@ -247,56 +245,50 @@ const AdminNews: React.FC = () => {
       article.category.toLowerCase().includes(searchFilter.toLowerCase())
   );
 
+  // Pagination sur toutes les actualités filtrées
   const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedNews = filteredNews.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const paginatedNews = filteredNews.slice(startIndex, startIndex + itemsPerPage);
 
-  // Réinitialiser la page quand le filtre change
+  // Séparer les actualités paginées en publiées et non publiées
+  const publishedPaginated = paginatedNews.filter((article) => !!article.published);
+  const unpublishedPaginated = paginatedNews.filter((article) => !article.published);
+
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchFilter(e.target.value);
     setCurrentPage(1);
   };
 
+  const [isDragging, setIsDragging] = useState(false); 
 
-//dragger les images 
-// AdminNews.tsx (Partie état et fonctions)
-const [isDragging, setIsDragging] = useState(false); 
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
 
-const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => { // Notez le type d'événement
-  e.preventDefault();
-  setIsDragging(true);
-};
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
 
-const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
-  e.preventDefault();
-  setIsDragging(false);
-};
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
 
-const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
-  e.preventDefault();
-  setIsDragging(false);
-
-  const file = e.dataTransfer.files?.[0];
-  
-  if (file && file.type.startsWith('image/')) {
-    const imageUrl = URL.createObjectURL(file);
-    setFormData((prev) => ({
-      ...prev,
-      image: imageUrl, 
-      imageFile: file,
-    }));
-    // Optionnel : Réinitialiser la valeur de l'input caché pour permettre la resélection
-    // (cela peut être plus complexe avec React et n'est souvent pas nécessaire)
-    setImageError("");
-  } else {
-    // Gérez le cas où le fichier n'est pas une image
-    setImageError("Le fichier déposé n'est pas une image valide (PNG/JPG requis).");
-  }
-};
-// ... handleFileChange reste le même
+    const file = e.dataTransfer.files?.[0];
+    
+    if (file && file.type.startsWith('image/')) {
+      const imageUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({
+        ...prev,
+        image: imageUrl, 
+        imageFile: file,
+      }));
+      setImageError("");
+    } else {
+      setImageError("Le fichier déposé n'est pas une image valide (PNG/JPG requis).");
+    }
+  };
 
   return (
     <div className="p-6">
@@ -310,7 +302,6 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
           </p>
         </div>
 
-        {/* Messages de succès et d'erreur */}
         {showSuccess && (
           <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
             ✅ Actualité {editingNews ? "modifiée" : "créée"} avec succès !
@@ -324,7 +315,7 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
         )}
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Formulaire à gauche - FIXED */}
+          {/* Formulaire à gauche */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -342,7 +333,7 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                     value={formData.title}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
                     placeholder="Titre de l'actualité"
                   />
                 </div>
@@ -357,7 +348,7 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                     value={formData.author}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
                     placeholder="ex: Équipe Tamkeen"
                   />
                 </div>
@@ -371,7 +362,7 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500">
                     <option value="">Sélectionner une catégorie</option>
                     {categories.map((category) => (
                       <option key={category} value={category}>
@@ -381,19 +372,42 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                   </select>
                 </div>
 
-                <div>
+                <div className="flex items-center gap-6">
+                  {/* Featured checkbox */}
                   <label className="flex items-center">
                     <input
                       type="checkbox"
                       name="featured"
                       checked={formData.featured}
                       onChange={handleInputChange}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-slate-600 focus:ring-slate-500"
                     />
                     <span className="ml-2 text-sm font-medium text-gray-700">
                       Actualité en vedette
                     </span>
                   </label>
+
+                  {/* Published toggle - modern simple switch */}
+                  <div className="flex items-center">
+                    <span className="mr-3 text-sm font-medium text-gray-700">Publié</span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={!!formData.published}
+                      aria-label={formData.published ? 'Dépublier' : 'Publier'}
+                      onClick={() => setFormData((prev) => ({ ...prev, published: !prev.published }))}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setFormData((prev) => ({ ...prev, published: !prev.published }));
+                        }
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${formData.published ? 'bg-indigo-600 ring-indigo-300' : 'bg-gray-200 ring-gray-300'}`}
+                    >
+                      <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${formData.published ? 'translate-x-5' : 'translate-x-0'}`} />
+                    </button>
+                    <span className="ml-3 text-sm text-gray-600 font-medium">{formData.published ? 'Oui' : 'Non'}</span>
+                  </div>
                 </div>
 
                 <div>
@@ -406,7 +420,7 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                     onChange={handleInputChange}
                     required
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
                     placeholder="Résumé de l'actualité (1-2 phrases)"
                   />
                 </div>
@@ -421,7 +435,7 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                     onChange={handleInputChange}
                     required
                     rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
                     placeholder="Contenu détaillé de l'actualité"
                   />
                 </div>
@@ -431,26 +445,24 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                     Image de l'actualité *
                   </label>
 
-                  {/* 💡 NOUVEAU : La balise <label> englobe maintenant toute la zone cliquable et gère le Drag/Drop */}
                   <label
                     htmlFor="image-upload"
                     className={`
-      mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md bg-white 
-      transition-colors cursor-pointer relative group w-full 
-      ${isDragging
-                        ? 'border-blue-500 bg-blue-50'
+                      mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md bg-white 
+                      transition-colors cursor-pointer relative group w-full 
+                      ${isDragging
+                        ? 'border-slate-500 bg-slate-50'
                         : 'hover:bg-gray-50 border-gray-300'
                       }
-    `}
+                    `}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                   >
                     <div className="space-y-1 text-center">
-                      <Upload className="mx-auto h-10 w-10 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                      <Upload className="mx-auto h-10 w-10 text-gray-400 group-hover:text-slate-500 transition-colors" />
                       <div className="flex text-sm text-gray-600 justify-center">
-                        {/* Le SPAN reste ici, mais le label parent gère la fonctionnalité */}
-                        <span className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                        <span className="relative cursor-pointer rounded-md font-medium text-slate-600 hover:text-slate-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-slate-500">
                           Télécharger un fichier
                         </span>
                         <p className="pl-1">ou glisser-déposer</p>
@@ -459,7 +471,6 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                         PNG, JPG, max 5MB
                       </p>
 
-                      {/* L'INPUT EST TOUJOURS DANS LE LABEL ET CACHÉ */}
                       <input
                         id="image-upload"
                         name="image-upload"
@@ -469,14 +480,13 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                         onChange={handleFileChange}
                       />
 
-                      {/* Afficher le nom du fichier ou de l'URL existante */}
                       {formData.imageFile ? (
                         <p className="text-sm font-medium text-gray-900 truncate mt-2">
-                          **Fichier prêt:** {formData.imageFile.name}
+                          Fichier prêt: {formData.imageFile.name}
                         </p>
                       ) : formData.image ? (
                         <p className="text-sm text-gray-500 truncate mt-2">
-                          **Image actuelle:** {formData.image.substring(formData.image.lastIndexOf('/') + 1)}
+                              Image actuelle: {typeof formData.image === 'string' ? formData.image.substring(formData.image.lastIndexOf('/') + 1) : ''}
                         </p>
                       ) : (
                         <p className="text-sm text-gray-500 mt-2">
@@ -486,7 +496,6 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                     </div>
                   </label>
 
-                  {/* L'aperçu et l'erreur restent en dehors du label pour éviter les problèmes de style */}
                   {imageError && (
                     <p className="text-red-600 text-sm mt-1">{imageError}</p>
                   )}
@@ -498,7 +507,12 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                       </p>
                       <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
                         <img
-                          src={formData.image}
+                          src={
+                            // if image is a blob/object URL (when user selected a file locally) use it directly
+                            typeof formData.image === 'string' && formData.image.startsWith('blob:')
+                              ? formData.image
+                              : `${import.meta.env.VITE_PREFIX_URL}/news/${formData.image}`
+                          }
                           alt="Aperçu de l'actualité"
                           className="w-full h-32 object-cover rounded"
                         />
@@ -516,7 +530,7 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
                     name="externalUrl"
                     value={formData.externalUrl}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
                     placeholder="https://site-externe.com/article"
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -551,131 +565,208 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
 
           {/* Liste des actualités à droite */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md sticky top-4">
+            <div className="bg-white rounded-lg shadow-md">
               <div className="p-6 border-b border-gray-200">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold text-gray-900">
-                    Actualités publiées ({filteredNews.length})
+                    Actualités ({filteredNews.length})
                   </h2>
                 </div>
 
-                {/* Barre de recherche */}
                 <div className="relative">
                   <input
                     type="text"
                     placeholder="Rechercher par titre, auteur ou catégorie..."
                     value={searchFilter}
                     onChange={handleFilterChange}
-                    className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                   />
                   <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 </div>
               </div>
 
               <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
-                <div className="divide-y divide-gray-200">
-                  {loading && news.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">
-                      Chargement des actualités...
-                    </div>
-                  ) : paginatedNews.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">
-                      {searchFilter
-                        ? "Aucune actualité trouvée pour cette recherche"
-                        : "Aucune actualité publiée pour le moment"}
-                    </div>
-                  ) : (
-                    paginatedNews.map((article) => (
-                      <div
-                        key={article.id}
-                        className="p-6 hover:bg-gray-50 transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-lg font-semibold text-gray-900 truncate">
-                                {article.title}
-                              </h3>
-                              {article.featured && (
-                                <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
-                                  <Star className="w-3 h-3" /> Featured
-                                </span>
-                              )}
-                            </div>{" "}
-                            <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                              <span className="flex items-center gap-1">
-                                <User className="w-4 h-4" />
-                                {article.author}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
-                                {formatDate(article.publishedAt)}
-                              </span>
-                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs flex items-center gap-1">
-                                <Tag className="w-3 h-3" />
-                                {article.category}
-                              </span>
-                            </div>
-                            <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-                              {article.excerpt}
-                            </p>
-                            {article.externalUrl && (
-                              <div className="flex items-center gap-1 text-xs text-blue-600">
-                                <ExternalLink className="w-3 h-3" />
-                                <span>Lien externe configuré</span>
-                              </div>
-                            )}
-                          </div>
+                {loading && news.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500">
+                    Chargement des actualités...
+                  </div>
+                ) : paginatedNews.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500">
+                    {searchFilter
+                      ? "Aucune actualité trouvée pour cette recherche"
+                      : "Aucune actualité pour le moment"}
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-200">
+                    {/* Section actualités publiées */}
+                    {publishedPaginated.length > 0 && (
+                      <div className="bg-white">
+                        <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
+                          <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                            Publiées ({filteredNews.filter(a => a.published).length})
+                          </h3>
+                        </div>
+                        <div className="divide-y divide-gray-200">
+                          {publishedPaginated.map((article) => (
+                            <div
+                              key={article.id}
+                              className="p-6 hover:bg-gray-50 transition-colors">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <h3 className="text-lg font-semibold text-gray-900 truncate">
+                                      {article.title}
+                                    </h3>
+                                    {article.featured && (
+                                      <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
+                                        <Star className="w-3 h-3" /> Vedette
+                                      </span>
+                                    )}
+                                    <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
+                                      Publiée
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                    <span className="flex items-center gap-1">
+                                      <User className="w-4 h-4" />
+                                      {article.author}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <Calendar className="w-4 h-4" />
+                                      {formatDate(article.publishedAt)}
+                                    </span>
+                                    <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs flex items-center gap-1">
+                                      <Tag className="w-3 h-3" />
+                                      {article.category}
+                                    </span>
+                                  </div>
+                                  <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                                    {article.excerpt}
+                                  </p>
+                                  {article.externalUrl && (
+                                    <div className="flex items-center gap-1 text-xs text-slate-600">
+                                      <ExternalLink className="w-3 h-3" />
+                                      <span>Lien externe configuré</span>
+                                    </div>
+                                  )}
+                                </div>
 
-                          <div className="flex items-center gap-2 ml-4">
-                            <button
-                              onClick={() => handleEdit(article)}
-                              className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                              title="Modifier">
-                              <Edit className="w-5 h-5" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(article.id)}
-                              className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                              title="Supprimer">
-                              <Trash2 className="w-5 h-5" />
-                            </button>
-                          </div>
+                                <div className="flex items-center gap-2 ml-4">
+                                  <button
+                                    onClick={() => handleEdit(article)}
+                                    className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                                    title="Modifier">
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(article.id)}
+                                    className="p-2 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+                                    title="Supprimer">
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ))
-                  )}
-                </div>
+                    )}
+
+                    {/* Section actualités non publiées */}
+                    {unpublishedPaginated.length > 0 && (
+                      <div className="bg-white">
+                        <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
+                          <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                            Brouillons ({filteredNews.filter(a => !a.published).length})
+                          </h3>
+                        </div>
+                        <div className="divide-y divide-gray-200">
+                          {unpublishedPaginated.map((article) => (
+                            <div
+                              key={article.id}
+                              className="p-6 hover:bg-gray-50 transition-colors bg-gray-50/50">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <h3 className="text-lg font-semibold text-gray-700 truncate">
+                                      {article.title}
+                                    </h3>
+                                    {article.featured && (
+                                      <span className="bg-slate-100 text-slate-700 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
+                                        <Star className="w-3 h-3" /> Vedette
+                                      </span>
+                                    )}
+                                    <span className="bg-gray-200 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">
+                                      Brouillon
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                    <span className="flex items-center gap-1">
+                                      <User className="w-4 h-4" />
+                                      {article.author}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <Calendar className="w-4 h-4" />
+                                      {formatDate(article.publishedAt)}
+                                    </span>
+                                    <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs flex items-center gap-1">
+                                      <Tag className="w-3 h-3" />
+                                      {article.category}
+                                    </span>
+                                  </div>
+                                  <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                                    {article.excerpt}
+                                  </p>
+                                  {article.externalUrl && (
+                                    <div className="flex items-center gap-1 text-xs text-slate-600">
+                                      <ExternalLink className="w-3 h-3" />
+                                      <span>Lien externe configuré</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="flex items-center gap-2 ml-4">
+                                  <button
+                                    onClick={() => handleEdit(article)}
+                                    className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                                    title="Modifier">
+                                    <Edit className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(article.id)}
+                                    className="p-2 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+                                    title="Supprimer">
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                  <div className="px-6 py-4 border-t border-gray-200 bg-white">
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-700">
-                        Affichage {startIndex + 1} à{" "}
-                        {Math.min(
-                          startIndex + itemsPerPage,
-                          filteredNews.length
-                        )}{" "}
-                        sur {filteredNews.length} résultats
+                        Affichage {startIndex + 1} à {Math.min(startIndex + itemsPerPage, filteredNews.length)} sur {filteredNews.length} résultats
                       </div>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() =>
-                            setCurrentPage((prev) => Math.max(prev - 1, 1))
-                          }
+                          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                           disabled={currentPage === 1}
                           className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
                           Précédent
                         </button>
-                        <span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded">
+                        <span className="px-3 py-1 text-sm bg-slate-100 text-slate-800 rounded font-medium">
                           {currentPage} / {totalPages}
                         </span>
                         <button
-                          onClick={() =>
-                            setCurrentPage((prev) =>
-                              Math.min(prev + 1, totalPages)
-                            )
-                          }
+                          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                           disabled={currentPage === totalPages}
                           className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
                           Suivant
@@ -691,6 +782,5 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
       </div>
     </div>
   );
-};
-
+}
 export default AdminNews;

@@ -99,7 +99,7 @@ const NewsDetail: React.FC = () => {
         {item.image && (
           <div className="rounded-xl overflow-hidden mb-8 bg-gray-100">
             <img
-              src={item.image}
+              src={`${import.meta.env.VITE_PREFIX_URL}/news/${item.image}`}
               alt={item.title}
               className="w-full h-auto object-cover"
             />
