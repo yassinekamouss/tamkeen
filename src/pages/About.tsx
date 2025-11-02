@@ -6,6 +6,7 @@ import backgroundImage from "../assets/image2.webp";
 // import { ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "../api/axios";
 import { Helmet } from "react-helmet-async";
+import SeoAlternates from "../components/SeoAlternates";
 interface Partenaire {
   _id: string;
   nom: string;
@@ -29,10 +30,8 @@ const About: React.FC = () => {
     }
   };
   useEffect(() => {
-
     fetchPartenaires();
   }, []);
-
 
   const [position, setPosition] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
@@ -67,6 +66,7 @@ const About: React.FC = () => {
         {/* On peut même réutiliser l'image de fond pour le partage */}
         <meta property="og:image" content={backgroundImage} />
       </Helmet>
+      <SeoAlternates />
       <Header />
 
       {/* Hero Section with Background */}
@@ -96,8 +96,6 @@ const About: React.FC = () => {
           </div>
 
           {/* Main Content */}
-
-
 
           <div className="mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
@@ -142,14 +140,12 @@ const About: React.FC = () => {
           <div
             className="overflow-hidden relative flex items-center"
             onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
+            onMouseLeave={() => setIsPaused(false)}>
             <div
               className={`flex gap-12 animate-scroll logos-wrapper`}
               style={{
                 animationPlayState: isPaused ? "paused" : "running",
-              }}
-            >
+              }}>
               {/* Dupliquer plusieurs fois pour effet infini */}
               {Array(3)
                 .fill(partenaires)
@@ -157,14 +153,12 @@ const About: React.FC = () => {
                 .map((partenaire, index) => (
                   <div
                     key={index}
-                    className="min-w-[200px] flex items-center justify-center"
-                  >
+                    className="min-w-[200px] flex items-center justify-center">
                     <a
                       href={partenaire.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:scale-110 transition-transform duration-300"
-                    >
+                      className="hover:scale-110 transition-transform duration-300">
                       <img
                         src={partenaire.img}
                         alt={partenaire.nom}
@@ -193,7 +187,7 @@ const About: React.FC = () => {
       .animate-scroll {
         animation: scroll 20s linear infinite;
       }
-    `
+    `,
         }}
       />
 

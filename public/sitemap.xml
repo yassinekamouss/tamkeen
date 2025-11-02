@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Home -->
+  <url>
+    <loc>https://masubvention.ma/</loc>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="https://masubvention.ma/fr/"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="https://masubvention.ma/ar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://masubvention.ma/"/>
+    <lastmod>2025-11-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- News -->
+  <url>
+    <loc>https://masubvention.ma/news</loc>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="https://masubvention.ma/fr/news"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="https://masubvention.ma/ar/news"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://masubvention.ma/news"/>
+    <lastmod>2025-11-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- About -->
+  <url>
+    <loc>https://masubvention.ma/about</loc>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="https://masubvention.ma/fr/about"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="https://masubvention.ma/ar/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://masubvention.ma/about"/>
+    <lastmod>2025-11-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- FAQ -->
+  <url>
+    <loc>https://masubvention.ma/faq</loc>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="https://masubvention.ma/fr/faq"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="https://masubvention.ma/ar/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://masubvention.ma/faq"/>
+    <lastmod>2025-11-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Privacy -->
+  <url>
+    <loc>https://masubvention.ma/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="https://masubvention.ma/fr/privacy"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="https://masubvention.ma/ar/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://masubvention.ma/privacy"/>
+    <lastmod>2025-11-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+</urlset>

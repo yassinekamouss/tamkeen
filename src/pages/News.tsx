@@ -5,6 +5,7 @@ import Spinner from "../components/Spinner";
 import { Link } from "react-router-dom";
 import NewsCard from "../components/news/NewsCard";
 import { Helmet } from "react-helmet-async";
+import SeoAlternates from "../components/SeoAlternates";
 
 const News: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -58,7 +59,6 @@ const News: React.FC = () => {
 
   return (
     <div className="w-full bg-white">
-
       <Helmet>
         {/* On réutilise le contenu de votre section Hero */}
         <title>Actualités & Opportunités | Tamkeen</title>
@@ -75,6 +75,7 @@ const News: React.FC = () => {
           content="Restez informé des dernières subventions, formations et success stories pour développer votre entreprise"
         />
       </Helmet>
+      <SeoAlternates />
 
       <Header />
 

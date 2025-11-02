@@ -2,6 +2,7 @@ import React from "react";
 import { Header, Footer } from "../components";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
+import SeoAlternates from "../components/SeoAlternates";
 
 const FAQ: React.FC = () => {
   const { t } = useTranslation();
@@ -14,10 +15,8 @@ const FAQ: React.FC = () => {
     { question: t("faq.q6"), answer: t("faq.a6") },
   ];
 
-
   return (
     <div className="w-full">
-
       <Helmet>
         {/* Utilise les traductions que vous avez déjà */}
         <title>{`${t("faq.title")} | Tamkeen`}</title>
@@ -27,6 +26,7 @@ const FAQ: React.FC = () => {
         <meta property="og:title" content={`${t("faq.title")} | Tamkeen`} />
         <meta property="og:description" content={t("faq.subtitle")} />
       </Helmet>
+      <SeoAlternates />
 
       <Header />
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 mt-16">
@@ -73,14 +73,14 @@ const FAQ: React.FC = () => {
               <p className="text-gray-600 mb-4">
                 {t("faq.moreQuestionsSubtitle")}
               </p>
-                    <a
-                      href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@masubvention.ma"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-blue-600 hover:bg-blue-50 transition-all duration-300 shadow-md inline-block"
-                    > {t("faq.contactButton")}
-                    </a>              
-
+              <a
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@masubvention.ma"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-blue-600 hover:bg-blue-50 transition-all duration-300 shadow-md inline-block">
+                {" "}
+                {t("faq.contactButton")}
+              </a>
             </div>
           </div>
         </div>

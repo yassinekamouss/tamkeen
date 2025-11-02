@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Header, Footer } from "../components";
 import Spinner from "../components/Spinner";
 import { newsService, type NewsItem } from "../services/newsService";
+import SeoAlternates from "../components/SeoAlternates";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -67,6 +68,7 @@ const NewsDetail: React.FC = () => {
 
   return (
     <div className="w-full bg-gray-50">
+      <SeoAlternates />
       <Header />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <nav className="mb-6 text-sm">
