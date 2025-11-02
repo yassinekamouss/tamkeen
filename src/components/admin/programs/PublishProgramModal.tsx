@@ -237,7 +237,9 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
                     </p>
                     <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
                       <img
-                        src={heroData.image}
+                        src={heroData.imageFile 
+                          ? heroData.image // Si c'est un fichier local, utiliser l'URL créée par createObjectURL
+                          : `${import.meta.env.VITE_PREFIX_URL}/programs/${heroData.image}`} // Sinon, utiliser l'URL complète
                         alt="Aperçu"
                         className="max-w-full h-32 object-cover rounded"
                         onError={() =>

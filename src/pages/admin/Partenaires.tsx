@@ -226,7 +226,7 @@ const Partenaires: React.FC = () => {
 
                             {/* Image */}
                             <img
-                                src={partenaire.img}
+                                src={`${import.meta.env.VITE_PREFIX_URL}/partenaires/${partenaire.img}`}
                                 alt={partenaire.nom}
                                 className="w-full h-40 object-cover"
                             />

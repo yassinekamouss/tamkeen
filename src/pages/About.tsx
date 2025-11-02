@@ -160,7 +160,7 @@ const About: React.FC = () => {
                       rel="noopener noreferrer"
                       className="hover:scale-110 transition-transform duration-300">
                       <img
-                        src={partenaire.img}
+                        src={`${import.meta.env.VITE_PREFIX_URL}/partenaires/${partenaire.img}`}
                         alt={partenaire.nom}
                         title={partenaire.nom}
                         className="max-h-28 object-contain"

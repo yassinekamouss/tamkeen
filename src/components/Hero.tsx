@@ -41,7 +41,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
       const img = new Image();
       img.onload = () => resolve();
       img.onerror = () => resolve();
-      img.src = src;
+      img.src = `${import.meta.env.VITE_PREFIX_URL}/programs/${src}`;
       // Give browser a hint to decode asynchronously
       img.decoding = "async";
     });
@@ -180,7 +180,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
                   : "opacity-0"
               }`}>
               <img
-                src={program.hero.image}
+                src={`${import.meta.env.VITE_PREFIX_URL}/programs/${program.hero.image}`}
                 alt={`Slide ${index + 1}`}
                 className="w-full h-full object-cover"
                 loading={index === 0 ? "eager" : "lazy"}

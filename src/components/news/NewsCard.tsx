@@ -44,7 +44,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ item, to, featured }) => {
       <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
         {image ? (
           <img
-            src={image}
+            src={`${import.meta.env.VITE_PREFIX_URL}/news/${image}`}
             alt={title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
