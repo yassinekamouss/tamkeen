@@ -15,15 +15,22 @@ export interface NewsItem {
   published?: boolean;
 }
 
-export interface CreateNewsItem {
+export interface CreateNewsItemBase {
   title: string;
   excerpt: string;
   content: string;
-  image: string;
+  image?: string; // Optionnel si on laisse le champ vide, ou pour l'ancienne URL
   category: string;
   author: string;
   featured: boolean;
   externalUrl?: string;
+  published?: boolean;
+}
+
+// 3. Interface pour l'état du formulaire côté frontend (avec le fichier)
+export interface CreateNewsItem extends CreateNewsItemBase {
+  // Ajout du champ File pour le frontend
+  imageFile?: File | null;
 }
 
 export interface NewsResponse {
@@ -72,7 +79,7 @@ export const newsService = {
   },
 
   // Créer une nouvelle actualité (Admin)
-  createNews: async (newsData: CreateNewsItem): Promise<SingleNewsResponse> => {
+  createNews: async (newsData: FormData): Promise<SingleNewsResponse> => {
     const response = await axios.post("/admin/news", newsData);
     return response.data;
   },
@@ -80,7 +87,7 @@ export const newsService = {
   // Mettre à jour une actualité (Admin)
   updateNews: async (
     id: number,
-    newsData: Partial<CreateNewsItem>
+    newsData: FormData | Partial<CreateNewsItemBase>
   ): Promise<SingleNewsResponse> => {
     const response = await axios.put(`/admin/news/${id}`, newsData);
     return response.data;

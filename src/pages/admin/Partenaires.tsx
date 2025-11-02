@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import {
     Plus, Edit,
     Trash2,
-    Handshake
+    Handshake,
+    Upload,
 } from "lucide-react";
 
 interface Partenaire {
@@ -11,12 +12,16 @@ interface Partenaire {
     nom: string;
     url: string;
     img: string;
+    imageFile?: File;
 }
 
 const Partenaires: React.FC = () => {
     const [partenaires, setPartenaires] = useState<Partenaire[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    // Etats pour la gestion d'images (upload + preview + drag & drop)
+    const [isDragging, setIsDragging] = useState(false);
+    const [imageError, setImageError] = useState<string>("");
 
     //pour gérer le modal d'ajout
 
@@ -52,23 +57,36 @@ const Partenaires: React.FC = () => {
 
     const updatePartenaire = async (updatedPartenaire: Partenaire) => {
         try {
-            const response = await axios.put(
-                `/partenaires/${updatedPartenaire._id}`,
-                updatedPartenaire
-            );
+            let response;
+            if (updatedPartenaire.imageFile) {
+                const fd = new FormData();
+                fd.append("nom", updatedPartenaire.nom);
+                fd.append("url", updatedPartenaire.url);
+                // Changer "img" en "image"
+                fd.append("image", updatedPartenaire.imageFile as File);
 
-            // Mettre à jour la liste localement
+                response = await axios.put(`/partenaires/${updatedPartenaire._id}`, fd, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+            } else {
+                response = await axios.put(
+                    `/partenaires/${updatedPartenaire._id}`,
+                    {
+                        nom: updatedPartenaire.nom,
+                        url: updatedPartenaire.url,
+                        img: updatedPartenaire.img,
+                    }
+                );
+            }
+
             setPartenaires((prev) =>
                 prev.map((p) =>
-                    p._id === updatedPartenaire._id ? response.data : p
+                    p._id === updatedPartenaire._id ? response.data.partenaire : p
                 )
             );
 
             setIsModalOpen(false);
             setCurrentPartenaire(null);
-
-            await fetchPartenaires();
-
         } catch (error) {
             console.error("Erreur lors de la mise à jour :", error);
         }
@@ -90,17 +108,70 @@ const Partenaires: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await axios.post("/partenaires/add", {
-                nom: currentPartenaire?.nom,
-                url: currentPartenaire?.url,
-                img: currentPartenaire?.img
-            });
-            await fetchPartenaires();
+            if (currentPartenaire?.imageFile) {
+                const fd = new FormData();
+                fd.append("nom", currentPartenaire.nom);
+                fd.append("url", currentPartenaire.url);
+                // Changer "img" en "image" pour correspondre à multer
+                fd.append("image", currentPartenaire.imageFile);
 
+                await axios.post("/partenaires/add", fd, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+            } else {
+                await axios.post("/partenaires/add", {
+                    nom: currentPartenaire?.nom,
+                    url: currentPartenaire?.url,
+                });
+            }
+            await fetchPartenaires();
         } catch (error) {
             console.error("Erreur lors de l'ajout :", error);
         }
     }
+
+    // Handlers pour input file et drag & drop
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        if (!currentPartenaire) return;
+
+        if (file) {
+            if (!file.type.startsWith("image/")) {
+                setImageError("Le fichier sélectionné n'est pas une image valide.");
+                return;
+            }
+
+            const imageUrl = URL.createObjectURL(file);
+            setCurrentPartenaire({ ...currentPartenaire, img: imageUrl, imageFile: file });
+            setImageError("");
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault();
+        setIsDragging(false);
+
+        const file = e.dataTransfer.files?.[0];
+        if (!currentPartenaire) return;
+
+        if (file && file.type.startsWith("image/")) {
+            const imageUrl = URL.createObjectURL(file);
+            setCurrentPartenaire({ ...currentPartenaire, img: imageUrl, imageFile: file });
+            setImageError("");
+        } else {
+            setImageError("Le fichier déposé n'est pas une image valide (PNG/JPG requis).");
+        }
+    };
 
 
 
@@ -246,18 +317,67 @@ const Partenaires: React.FC = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium">Image (URL)</label>
-                                <input
-                                    type="text"
-                                    value={currentPartenaire.img}
-                                    onChange={(e) =>
-                                        setCurrentPartenaire({
-                                            ...currentPartenaire,
-                                            img: e.target.value,
-                                        })
-                                    }
-                                    className="w-full border rounded p-2"
-                                />
+                                <label className="block text-sm font-medium mb-2">Image du partenaire</label>
+
+                                <label
+                                    htmlFor="partner-image-upload"
+                                    className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md bg-white transition-colors cursor-pointer relative group w-full ${isDragging ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50 border-gray-300'}`}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                >
+                                    <div className="space-y-1 text-center">
+                                        <Upload className="mx-auto h-8 w-8 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                                        <div className="flex text-sm text-gray-600 justify-center">
+                                            <span className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500">Télécharger un fichier</span>
+                                            <p className="pl-1">ou glisser-déposer</p>
+                                        </div>
+                                        <p className="text-xs text-gray-500">PNG, JPG, max 5MB</p>
+
+                                        <input
+                                            id="partner-image-upload"
+                                            name="partner-image-upload"
+                                            type="file"
+                                            accept="image/*"
+                                            className="sr-only"
+                                            onChange={handleFileChange}
+                                        />
+
+                                        {currentPartenaire.imageFile ? (
+                                            <p className="text-sm font-medium text-gray-900 truncate mt-2">**Fichier prêt:** {currentPartenaire.imageFile.name}</p>
+                                        ) : currentPartenaire.img ? (
+                                            <p className="text-sm text-gray-500 truncate mt-2">**Image actuelle:** {currentPartenaire.img.substring(currentPartenaire.img.lastIndexOf('/') + 1)}</p>
+                                        ) : (
+                                            <p className="text-sm text-gray-500 mt-2">Aucun fichier sélectionné</p>
+                                        )}
+                                    </div>
+                                </label>
+
+                                {imageError && <p className="text-red-600 text-sm mt-1">{imageError}</p>}
+
+                                {/* Aperçu */}
+                                {currentPartenaire.img && (
+                                    <div className="mt-3">
+                                        <p className="text-sm font-medium text-gray-700 mb-2">Aperçu:</p>
+                                        <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
+                                            <img src={currentPartenaire.img} alt={currentPartenaire.nom} className="w-full h-28 object-cover rounded" />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* URL manuelle (facultatif) */}
+                                <div className="mt-3">
+                                    <label className="block text-sm font-medium">Image (URL) — facultatif</label>
+                                    <input
+                                        type="text"
+                                        value={currentPartenaire.img}
+                                        onChange={(e) =>
+                                            setCurrentPartenaire({ ...currentPartenaire, img: e.target.value, imageFile: undefined })
+                                        }
+                                        className="w-full border rounded p-2"
+                                        placeholder="https://..."
+                                    />
+                                </div>
                             </div>
 
                             <div className="flex justify-end gap-2 mt-4">
@@ -323,18 +443,65 @@ const Partenaires: React.FC = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Image (URL)</label>
-                                <input
-                                    type="text"
-                                    value={currentPartenaire.img}
-                                    onChange={(e) =>
-                                        setCurrentPartenaire({
-                                            ...currentPartenaire,
-                                            img: e.target.value,
-                                        })
-                                    }
-                                    className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
-                                />
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Image du partenaire</label>
+
+                                <label
+                                    htmlFor="partner-image-upload-edit"
+                                    className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md bg-white transition-colors cursor-pointer relative group w-full ${isDragging ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50 border-gray-300'}`}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                >
+                                    <div className="space-y-1 text-center">
+                                        <Upload className="mx-auto h-8 w-8 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                                        <div className="flex text-sm text-gray-600 justify-center">
+                                            <span className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500">Télécharger un fichier</span>
+                                            <p className="pl-1">ou glisser-déposer</p>
+                                        </div>
+                                        <p className="text-xs text-gray-500">PNG, JPG, max 5MB</p>
+
+                                        <input
+                                            id="partner-image-upload-edit"
+                                            name="partner-image-upload-edit"
+                                            type="file"
+                                            accept="image/*"
+                                            className="sr-only"
+                                            onChange={handleFileChange}
+                                        />
+
+                                        {currentPartenaire.imageFile ? (
+                                            <p className="text-sm font-medium text-gray-900 truncate mt-2">**Fichier prêt:** {currentPartenaire.imageFile.name}</p>
+                                        ) : currentPartenaire.img ? (
+                                            <p className="text-sm text-gray-500 truncate mt-2">**Image actuelle:** {currentPartenaire.img.substring(currentPartenaire.img.lastIndexOf('/') + 1)}</p>
+                                        ) : (
+                                            <p className="text-sm text-gray-500 mt-2">Aucun fichier sélectionné</p>
+                                        )}
+                                    </div>
+                                </label>
+
+                                {imageError && <p className="text-red-600 text-sm mt-1">{imageError}</p>}
+
+                                {currentPartenaire.img && (
+                                    <div className="mt-3">
+                                        <p className="text-sm font-medium text-gray-700 mb-2">Aperçu:</p>
+                                        <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
+                                            <img src={currentPartenaire.img} alt={currentPartenaire.nom} className="w-full h-28 object-cover rounded" />
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="mt-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Image (URL) — facultatif</label>
+                                    <input
+                                        type="text"
+                                        value={currentPartenaire.img}
+                                        onChange={(e) =>
+                                            setCurrentPartenaire({ ...currentPartenaire, img: e.target.value, imageFile: undefined })
+                                        }
+                                        className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition"
+                                        placeholder="https://..."
+                                    />
+                                </div>
                             </div>
 
                             <div className="flex justify-end gap-2 mt-4">

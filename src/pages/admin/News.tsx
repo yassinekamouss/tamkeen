@@ -14,6 +14,7 @@ import {
   Calendar,
   Tag,
 } from "lucide-react";
+import { Upload } from "lucide-react";
 
 const AdminNews: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -34,11 +35,14 @@ const AdminNews: React.FC = () => {
     excerpt: "",
     content: "",
     image: "",
+    imageFile: null, // AJOUTÉ : pour le nouvel objet File
     category: "",
     author: "",
     featured: false,
     externalUrl: "",
+    published: true, 
   });
+  const [imageError, setImageError] = useState<string>("");
 
   useEffect(() => {
     loadNews();
@@ -89,13 +93,37 @@ const AdminNews: React.FC = () => {
         type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
+  // NOUVEAU : Fonction dédiée pour l'input de type File
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
 
+    if (file) {
+      // 1. Validation basique (taille, type si nécessaire)
+      // 2. Création d'une URL locale temporaire pour l'aperçu
+      const imageUrl = URL.createObjectURL(file);
+
+      // Stocke l'objet File ET l'URL temporaire pour l'aperçu
+      setFormData((prev) => ({
+        ...prev,
+        image: imageUrl,
+        imageFile: file,
+      }));
+      setImageError("");
+    } else {
+      // Si l'utilisateur annule la sélection de fichier
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: null,
+      }));
+    }
+  };
   const resetForm = () => {
     setFormData({
       title: "",
       excerpt: "",
       content: "",
       image: "",
+      imageFile: null,
       category: "",
       author: "",
       featured: false,
@@ -105,18 +133,57 @@ const AdminNews: React.FC = () => {
     setError("");
   };
 
+  // AdminNews.tsx (Suite)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      if (editingNews) {
-        await newsService.updateNews(editingNews.id, formData);
-      } else {
-        await newsService.createNews(formData);
+      // 1. Créer un objet FormData
+      const formDataToSend = new FormData();
+
+      // 2. Ajouter les champs de texte
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("excerpt", formData.excerpt);
+      formDataToSend.append("content", formData.content);
+      formDataToSend.append("category", formData.category);
+      formDataToSend.append("author", formData.author);
+      formDataToSend.append("featured", String(formData.featured)); // Convertir le booléen en chaîne
+      formDataToSend.append("published", String(!!formData.published)); // Convert to "true" or "false"
+
+      // Ajouter les champs optionnels (vérifier qu'ils existent pour éviter 'null' ou 'undefined' dans FormData)
+      if (formData.externalUrl) {
+        formDataToSend.append("externalUrl", formData.externalUrl);
       }
 
+      // 3. Gérer l'image :
+      if (formData.imageFile) {
+        // Si un NOUVEAU fichier est sélectionné
+        formDataToSend.append("image", formData.imageFile);
+      } else if (!editingNews && !formData.image) {
+        // Optionnel : Vérification si l'image est requise lors de la création
+        // setError("Veuillez sélectionner une image pour la création.");
+        // setLoading(false);
+        // return;
+
+      } else if (editingNews && !formData.imageFile) {
+        // IMPORTANT : Si on est en mode édition et qu'il n'y a pas de nouveau fichier (imageFile est null),
+        // on ajoute l'ancienne URL pour indiquer au backend de la conserver.
+        formDataToSend.append("image", formData.image ?? "");
+      }
+
+      // 4. Appel du service API
+      if (editingNews) {
+        // Pour la mise à jour, on passe l'ID et le FormData
+        await newsService.updateNews(editingNews.id, formDataToSend);
+      } else {
+        // Pour la création, on passe le FormData
+        await newsService.createNews(formDataToSend);
+      }
+
+      // ... (messages de succès, resetForm, loadNews)
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
       resetForm();
@@ -135,6 +202,7 @@ const AdminNews: React.FC = () => {
       excerpt: newsItem.excerpt,
       content: newsItem.content,
       image: newsItem.image,
+      imageFile: null, // Pas de fichier sélectionné au départ
       category: newsItem.category,
       author: newsItem.author,
       featured: newsItem.featured,
@@ -191,6 +259,44 @@ const AdminNews: React.FC = () => {
     setSearchFilter(e.target.value);
     setCurrentPage(1);
   };
+
+
+//dragger les images 
+// AdminNews.tsx (Partie état et fonctions)
+const [isDragging, setIsDragging] = useState(false); 
+
+const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => { // Notez le type d'événement
+  e.preventDefault();
+  setIsDragging(true);
+};
+
+const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+  e.preventDefault();
+  setIsDragging(false);
+};
+
+const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+  e.preventDefault();
+  setIsDragging(false);
+
+  const file = e.dataTransfer.files?.[0];
+  
+  if (file && file.type.startsWith('image/')) {
+    const imageUrl = URL.createObjectURL(file);
+    setFormData((prev) => ({
+      ...prev,
+      image: imageUrl, 
+      imageFile: file,
+    }));
+    // Optionnel : Réinitialiser la valeur de l'input caché pour permettre la resélection
+    // (cela peut être plus complexe avec React et n'est souvent pas nécessaire)
+    setImageError("");
+  } else {
+    // Gérez le cas où le fichier n'est pas une image
+    setImageError("Le fichier déposé n'est pas une image valide (PNG/JPG requis).");
+  }
+};
+// ... handleFileChange reste le même
 
   return (
     <div className="p-6">
@@ -322,16 +428,83 @@ const AdminNews: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Lien de l'image
+                    Image de l'actualité *
                   </label>
-                  <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="https://exemple.com/image.jpg"
-                  />
+
+                  {/* 💡 NOUVEAU : La balise <label> englobe maintenant toute la zone cliquable et gère le Drag/Drop */}
+                  <label
+                    htmlFor="image-upload"
+                    className={`
+      mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md bg-white 
+      transition-colors cursor-pointer relative group w-full 
+      ${isDragging
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'hover:bg-gray-50 border-gray-300'
+                      }
+    `}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    <div className="space-y-1 text-center">
+                      <Upload className="mx-auto h-10 w-10 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                      <div className="flex text-sm text-gray-600 justify-center">
+                        {/* Le SPAN reste ici, mais le label parent gère la fonctionnalité */}
+                        <span className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                          Télécharger un fichier
+                        </span>
+                        <p className="pl-1">ou glisser-déposer</p>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        PNG, JPG, max 5MB
+                      </p>
+
+                      {/* L'INPUT EST TOUJOURS DANS LE LABEL ET CACHÉ */}
+                      <input
+                        id="image-upload"
+                        name="image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={handleFileChange}
+                      />
+
+                      {/* Afficher le nom du fichier ou de l'URL existante */}
+                      {formData.imageFile ? (
+                        <p className="text-sm font-medium text-gray-900 truncate mt-2">
+                          **Fichier prêt:** {formData.imageFile.name}
+                        </p>
+                      ) : formData.image ? (
+                        <p className="text-sm text-gray-500 truncate mt-2">
+                          **Image actuelle:** {formData.image.substring(formData.image.lastIndexOf('/') + 1)}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-gray-500 mt-2">
+                          Aucun fichier sélectionné
+                        </p>
+                      )}
+                    </div>
+                  </label>
+
+                  {/* L'aperçu et l'erreur restent en dehors du label pour éviter les problèmes de style */}
+                  {imageError && (
+                    <p className="text-red-600 text-sm mt-1">{imageError}</p>
+                  )}
+
+                  {formData.image && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        Aperçu:
+                      </p>
+                      <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
+                        <img
+                          src={formData.image}
+                          alt="Aperçu de l'actualité"
+                          className="w-full h-32 object-cover rounded"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div>
