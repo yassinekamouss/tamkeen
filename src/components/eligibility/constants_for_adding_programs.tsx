@@ -76,8 +76,8 @@ export const STATUT_JURIDIQUE_OPTIONS = [
     value: "sarl"
   },
   {
-    key: "SARLU",
-    value: "sarlu"
+    key: "SARLAU",
+    value: "sarlau"
   },
   {
     key: "SAS",

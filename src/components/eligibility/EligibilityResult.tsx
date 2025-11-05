@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { FormData, programsNamesAndLinks } from "./types";
 import { useTranslation } from "react-i18next";
 import axios from "../../api/axios";
@@ -20,6 +20,23 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  // Scroll the result card into view when this component mounts
+  useEffect(() => {
+    // Wait for the browser to layout, then scroll the card into view centered
+    requestAnimationFrame(() => {
+      if (cardRef.current) {
+        try {
+          cardRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch (e) {
+          // Fallback for older browsers
+          const top = cardRef.current.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2 + cardRef.current.clientHeight / 2;
+          window.scrollTo({ top, left: 0, behavior: "smooth" });
+        }
+      }
+    });
+  }, []);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirmContact = async () => {
@@ -44,7 +61,7 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
   return (
     <>
       <div className="min-h-screen bg-gray-50 py-12 px-4 flex items-center justify-center">
-        <div className="max-w-lg mx-auto">
+        <div ref={cardRef} className="max-w-lg mx-auto">
           {isEligible ? (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
               {/* Icône de succès */}

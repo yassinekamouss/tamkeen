@@ -126,6 +126,8 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
               {t("eligibility.privacyPolicy.text1")}{" "}
               <Link
                 to="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 underline font-medium transition-colors duration-200">
                 {t("eligibility.privacyPolicy.link")}
               </Link>{" "}
