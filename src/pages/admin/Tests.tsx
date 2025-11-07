@@ -4,6 +4,7 @@ import { fetchTests } from "../../services/testService";
 import type { TestItem } from "../../types/test";
 import { REGIONS } from "../../components/eligibility/constants";
 import { getAdminSocket } from "../../api/socket";
+import Pagination from "../../components/Pagination";
 // Realtime event type not needed here since we refetch on event
 
 type EligibleFilter = "all" | "true" | "false";
@@ -21,9 +22,7 @@ const Tests: React.FC = () => {
   const [region, setRegion] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [limit] = useState(20);
-  const [hasMore, setHasMore] = useState(false);
-
+  const [limit] = useState(8);
   // no memo key, load() already memoized
 
   const load = useCallback(async () => {
@@ -40,7 +39,6 @@ const Tests: React.FC = () => {
       });
       setTests(resp.tests);
       setTotal(resp.total);
-      setHasMore(resp.hasMore);
     } catch (e) {
       setError("Erreur lors du chargement des tests");
       console.error(e);
@@ -187,30 +185,15 @@ const Tests: React.FC = () => {
       )}
 
       {/* Pagination simple */}
-      <div className="flex items-center justify-between mt-6 text-sm text-slate-600">
-        <div>
-          Total: <span className="font-medium">{total}</span>
-        </div>
-        <div className="flex gap-2">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className={`px-3 py-2 border rounded-lg ${
-              page === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
-            }`}>
-            Précédent
-          </button>
-          <span className="px-2 py-2">Page {page}</span>
-          <button
-            disabled={!hasMore}
-            onClick={() => setPage((p) => p + 1)}
-            className={`px-3 py-2 border rounded-lg ${
-              !hasMore ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
-            }`}>
-            Suivant
-          </button>
-        </div>
-      </div>
+  {/* Pagination */}
+<div className="mt-6">
+  <Pagination
+    currentPage={page}
+    totalPages={Math.ceil(total / limit)}
+    onPageChange={(p) => setPage(p)}
+  />
+</div>
+
     </div>
   );
 };

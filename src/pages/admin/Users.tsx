@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import axios from "../../api/axios";
 import { getAdminSocket } from "../../api/socket";
 import { useNavigate } from "react-router-dom";
+import  Pagination from "../../components/Pagination";
 import {
   Users as UsersIcon,
   Search,
@@ -43,6 +44,14 @@ const Users: React.FC = () => {
   const [filterType, setFilterType] = useState<"all" | "physique" | "morale">(
     "all"
   );
+
+
+  const [currentPage, setCurrentPage] = useState(1);
+const usersPerPage = 8;
+
+
+const indexOfLastUser = currentPage * usersPerPage;
+const indexOfFirstUser = indexOfLastUser - usersPerPage;
 
   //partie consultant
   interface Admin {
@@ -153,6 +162,8 @@ const Users: React.FC = () => {
     return matchesSearch && matchesType;
   });
 
+  
+const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -330,7 +341,7 @@ const Users: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
+                {currentUsers.map((user) => (
                   <tr
                     key={user._id}
                     className="hover:bg-gray-50 transition-colors">
@@ -375,39 +386,43 @@ const Users: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {(() => {
-                          const numbers: string[] = [];
-                          if (
-                            Array.isArray(user.telephones) &&
-                            user.telephones.length > 0
-                          ) {
-                            numbers.push(
-                              ...user.telephones.filter((t): t is string =>
-                                Boolean(t)
-                              )
-                            );
-                          }
-                          if (
-                            user.telephone &&
-                            !numbers.includes(user.telephone)
-                          ) {
-                            numbers.push(user.telephone);
-                          }
+                                        <div className="text-sm text-gray-900">
+                    {(() => {
+                      let numbers: string[] = [];
 
-                          return numbers.length > 0 ? (
-                            <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
-                              {numbers.map((num) => (
-                                <option key={num} value={num}>
-                                  {num}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            "—"
-                          );
-                        })()}
-                      </div>
+                      // 1️⃣ Si telephones est une string JSON, parser
+                      if (typeof user.telephones === "string") {
+                        try {
+                          const parsed = JSON.parse(user.telephones);
+                          if (Array.isArray(parsed)) {
+                            numbers = parsed.filter((t): t is string => Boolean(t));
+                          }
+                        } catch {
+                          numbers = [];
+                        }
+                      } else if (Array.isArray(user.telephones)) {
+                        numbers = user.telephones.filter((t): t is string => Boolean(t));
+                      }
+
+                      // 2️⃣ Ajouter le champ rétro-compat "telephone" si présent
+                      if (user.telephone && !numbers.includes(user.telephone)) {
+                        numbers.push(user.telephone);
+                      }
+
+                      // 3️⃣ Affichage
+                      return numbers.length > 0 ? (
+                        <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
+                          {numbers.map((num) => (
+                            <option key={num} value={num}>
+                              {num}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        "—"
+                      );
+                    })()}
+                  </div>
                     </td>
                     <td>
                       <div className="text-sm text-gray-900">
@@ -434,26 +449,33 @@ const Users: React.FC = () => {
                             // if (user.assistant) {
                             //   user.assistant._id = adminProfile._id; // Set the assistant to the admin's ID
                             // } else {
-                            user.consultantAssocie = {
-                              _id: adminProfile._id,
-                              username: adminProfile.username,
-                            };
-                            // }
-                            try {
-                              await axios.put(`/users/${user._id}`, {
-                                ...user,
-                                etat: newEtat,
-                              });
-                              setUsers((prev) =>
-                                prev.map((u) =>
-                                  u._id === user._id
-                                    ? { ...u, etat: newEtat }
-                                    : u
-                                )
-                              );
-                            } catch {
-                              alert("Erreur lors de la mise à jour de l'état.");
-                            }
+                          try {
+                            await axios.put(`/users/${user._id}`, {
+                              etat: newEtat,
+                              consultantAssocie: {
+                                _id: adminProfile._id,
+                                username: adminProfile.username,
+                              },
+                            });
+
+                            setUsers((prev) =>
+                              prev.map((u) =>
+                                u._id === user._id
+                                  ? {
+                                      ...u,
+                                      etat: newEtat,
+                                      consultantAssocie: {
+                                        _id: adminProfile._id,
+                                        username: adminProfile.username,
+                                      },
+                                    }
+                                  : u
+                              )
+                            );
+                          } catch {
+                            alert("Erreur lors de la mise à jour de l'état.");
+                          }
+
                           }}>
                           {/* <option value="">Sélectionner</option> */}
                           <option value="En traitement">En traitement</option>
@@ -685,7 +707,15 @@ const Users: React.FC = () => {
           </div>
         )}
       </div>
+         <Pagination
+  currentPage={currentPage}
+  totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
+  onPageChange={(page) => setCurrentPage(page)}
+/>
+
     </div>
+
+ 
   );
 };
 

@@ -13,10 +13,9 @@ const PrivateRoute = () => {
         const apiAdmin = response.data.admin;
         
         // Synchroniser localStorage avec les données de l'API
-        const localAdmin = JSON.parse(localStorage.getItem("adminProfile") || "null");
-        if (!localAdmin || localAdmin.role !== apiAdmin.role) {
-          localStorage.setItem("adminProfile", JSON.stringify(apiAdmin));
-        }
+     
+      localStorage.setItem("adminProfile", JSON.stringify(apiAdmin));
+
         
         setIsAuthenticated(true);
       } catch {

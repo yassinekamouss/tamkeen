@@ -1,5 +1,5 @@
 import React from "react";
-import { Building2, User2, Phone ,Mail } from "lucide-react";
+import { Building2, User2, Phone, Mail } from "lucide-react";
 import type { TestItem } from "../../types/test";
 
 function formatRelativeDate(dateStr?: string) {
@@ -28,7 +28,7 @@ function formatAbsoluteDate(dateStr?: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
-  return `${date} ${time}`; // ex: 11/08/2025 14:32
+  return `${date} ${time}`;
 }
 
 const TestCard: React.FC<{
@@ -38,7 +38,6 @@ const TestCard: React.FC<{
 }> = ({ test, index, hidePerson }) => {
   const eligible = (test.programmesEligibles || []).length > 0;
 
-  // Montant d'investissement: montrer tel quel si c'est une chaîne (ex: "1M-50M"), sinon 0 si vide/null
   let montantLabel = "0";
   const mv = test.montantInvestissement;
   if (typeof mv === "string" && mv.trim() !== "") {
@@ -52,27 +51,27 @@ const TestCard: React.FC<{
   const isRecent =
     test.createdAt && Date.now() - new Date(test.createdAt).getTime() < 30_000;
 
-
-    const handleEmailClick = (e: React.MouseEvent, email: string) => {
-  e.preventDefault();
-  window.location.href = `mailto:${email}`;
-};
-
+  const handleEmailClick = (e: React.MouseEvent, email: string) => {
+    e.preventDefault();
+    window.location.href = `mailto:${email}`;
+  };
 
   return (
     <div
       className={`bg-white border rounded-lg hover:shadow-sm transition-all duration-200 relative ${
         isRecent ? "border-blue-300 ring-1 ring-blue-100" : "border-slate-200"
       }`}>
-      {/* Indicateur wannaBeContacted - Coin supérieur droit */}
+      {/* Indicateur wannaBeContacted - Position absolue stabilisée */}
       {test.wannaBeContacted && (
-        <div className="absolute -top-2 -right-2 z-10">
-          <div className="relative">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+        <div className="absolute -top-2 -right-2 z-10 pointer-events-none">
+          <div className="relative w-10 h-10">
+            {/* Cercle de pulsation en arrière-plan */}
+            <div className="absolute inset-0 w-10 h-10 bg-blue-400 rounded-full opacity-0 animate-[ping_2s_ease-in-out_infinite]"></div>
+            
+            {/* Badge principal - sans animation pulse */}
+            <div className="absolute inset-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
               <Phone className="w-5 h-5 text-white" />
             </div>
-            {/* Effet de pulsation */}
-            <div className="absolute inset-0 w-10 h-10 bg-blue-400 rounded-full animate-ping opacity-30"></div>
           </div>
         </div>
       )}
@@ -142,21 +141,24 @@ const TestCard: React.FC<{
                     }`}
               </div>
               
-<div className="text-slate-500 flex items-center gap-1">
-  <button 
-    onClick={(e) => handleEmailClick(e, test.personne?.email || '')}
-    className="hover:text-blue-600 hover:underline transition-colors duration-200 flex items-center gap-1 text-left"
-    title="Envoyer un email"
-  >
-    {test.personne?.email}
-    <Mail className="w-3 h-3 opacity-60" />
-  </button>
-</div>
+              <div className="text-slate-500 flex items-center gap-1">
+                <button 
+                  onClick={(e) => handleEmailClick(e, test.personne?.email || '')}
+                  className="hover:text-blue-600 hover:underline transition-colors duration-200 flex items-center gap-1 text-left"
+                  title="Envoyer un email"
+                >
+                  {test.personne?.email}
+                  <Mail className="w-3 h-3 opacity-60" />
+                </button>
+              </div>
             </div>
-            {/* Indicateur de contact dans la section personne */}
+            {/* Indicateur de contact dans la section personne - animation douce */}
             {test.wannaBeContacted && (
               <div className="flex items-center gap-1 text-blue-600">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full relative">
+                  {/* Animation d'opacité au lieu de pulse */}
+                  <div className="absolute inset-0 w-2 h-2 bg-blue-500 rounded-full animate-[pulse_2s_ease-in-out_infinite]"></div>
+                </div>
                 <span className="text-xs font-medium">Demande de contact</span>
               </div>
             )}
