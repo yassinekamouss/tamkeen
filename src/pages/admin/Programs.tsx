@@ -95,10 +95,6 @@ interface ProgramFormData {
     region: string[];
   };
 }
-
-const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
-const isAdministrator = adminProfile?.role === "Administrateur";
-
 const Programs: React.FC = () => {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,6 +102,9 @@ const Programs: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
+  const isAdministrator = adminProfile?.role === "Administrateur";
+
 
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [publishingProgram, setPublishingProgram] = useState<Program | null>(
