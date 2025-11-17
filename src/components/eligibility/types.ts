@@ -8,6 +8,7 @@ export interface FormData {
   email: string;
   telephone?: string;
   secteurTravail?: string;
+  branche?: string;
   anneeCreation?: string;
   // Personne morale
   nomEntreprise?: string;
@@ -31,6 +32,7 @@ export interface FormErrors {
   email?: string;
   telephone?: string;
   secteurTravail?: string;
+  branche?: string;
   region?: string;
   nomEntreprise?: string;
   anneeCreation?: string;

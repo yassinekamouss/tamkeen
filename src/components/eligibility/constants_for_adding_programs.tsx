@@ -1,73 +1,110 @@
 export const SECTEURS_TRAVAIL = [
   {
-    key: "Economie rurale (agriculture, élevage, valorisation de produits de la ferme...)",
-    value: "EconomieRurale"
+    "key": "Agriculture - Économie rurale",
+    "value": "EconomieRurale"
   },
   {
-    key: "Industrie - activités de transformation",
-    value: "Industrie"
+    "key": "Exploitation forestière",
+    "value": "ExploitationForestiere"
   },
   {
-    key: "Commerce traditionnel - Ecommerce",
-    value: "CommerceTraditionnelEcommerce"
+    "key": "Pêche maritime",
+    "value": "PecheMaritime"
   },
   {
-    key: "Recherche & Développement - Innovation en industrie",
-    value: "RechercheInnovation"
+    "key": "Pêche côtière",
+    "value": "PecheCotiere"
   },
   {
-    key: "Logistique- transport",
-    value: "LogistiqueTransport"
+    "key": "Industries extractives",
+    "value": "IndustriesExtractives"
   },
   {
-    key: "Développement de solutions digitales - NTIC",
-    value: "SolutionsDigitalesNTIC"
+    "key": "Industries de transformation",
+    "value": "IndustriesTransformation"
   },
   {
-    key: "Artisanat et activités assimilées",
-    value: "ArtisanatActivitesAssimilees"
+    "key": "Production et distribution d’électricité, de gaz, de vapeur et d’air conditionné",
+    "value": "EnergieElectriciteGaz"
   },
   {
-    key: "Activités économiques liées à l'art et la culture",
-    value: "ActivitesEconomiquesArtCulture"
+    "key": "Production et distribution d’eau, assainissement et gestion des déchets",
+    "value": "EauAssainissementDechets"
   },
   {
-    key: "Industries créatrices et culturelles",
-    value: "IndustriesCreaticesCulturelles"
+    "key": "Transport et stockage - Logistique",
+    "value": "TransportLogistique"
   },
   {
-    key: "Activités économiques liées au sport",
-    value: "ActivitesEconomiquesSport"
+    "key": "Commerce traditionnel - Ecommerce",
+    "value": "CommerceTraditionnelEcommerce"
   },
   {
-    key: "Activité touristique (Animation touristique, Restauration, Agent de voyages de type Organisateur-Distributeur de voyages, activités annexes)",
-    value: "ActiviteTouristique"
+    "key": "Recherche & Développement - Innovation industrielle",
+    "value": "RechercheInnovation"
   },
   {
-    key: "Services aux personnes",
-    value: "ServicesPersonnes"
+    "key": "Solutions digitales - NTIC",
+    "value": "SolutionsDigitalesNTIC"
   },
   {
-    key: "Services aux entreprises (prestataires de services, installateurs, réparation...)",
-    value: "ServicesEntreprises"
+    "key": "Médias et communication",
+    "value": "MediasCommunication"
   },
   {
-    key: "Efficacité énergétique",
-    value: "EfficaciteEnergetique"
+    "key": "Activités scientifiques et techniques spécialisées",
+    "value": "ActivitesScientifiquesTechniques"
   },
   {
-    key: "Promotion immobilière",
-    value: "PromotionImmobiliere"
+    "key": "Education",
+    "value": "Education"
   },
   {
-    key: "Pêche maritime",
-    value: "PecheMaritime"
+    "key": "Santé humaine et action sociale",
+    "value": "SanteActionSociale"
   },
   {
-    key: "Pêche côtière",
-    value: "PecheForiere"
+    "key": "Arts, divertissement et activités de spectacles",
+    "value": "ArtsDivertissementSpectacles"
+  },
+  {
+    "key": "Activités économiques liées à l'art et à la culture",
+    "value": "ActivitesArtCulture"
+  },
+  {
+    "key": "Industries créatives et culturelles",
+    "value": "IndustriesCreativesCulturelles"
+  },
+  {
+    "key": "Activités économiques liées au sport",
+    "value": "ActivitesSport"
+  },
+  {
+    "key": "Activité touristique",
+    "value": "ActiviteTouristique"
+  },
+  {
+    "key": "Services aux personnes",
+    "value": "ServicesPersonnes"
+  },
+  {
+    "key": "Services aux entreprises",
+    "value": "ServicesEntreprises"
+  },
+  {
+    "key": "Autres activités de services",
+    "value": "AutresServices"
+  },
+  {
+    "key": "Efficacité énergétique",
+    "value": "EfficaciteEnergetique"
+  },
+  {
+    "key": "Promotion immobilière",
+    "value": "PromotionImmobiliere"
   }
 ];
+
 
 
 export const STATUT_JURIDIQUE_OPTIONS = [

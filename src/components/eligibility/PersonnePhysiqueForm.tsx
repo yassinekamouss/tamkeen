@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../../api/axios";
 import { useTranslation } from "react-i18next";
 import type { FormData, FormErrors } from "./types";
@@ -9,6 +8,7 @@ import {
   STATUT_JURIDIQUE_PERSONNE_PHYSIQUE_OPTIONS,
   ANNEE_CREATION_OPTIONS,
   sexe,
+  BRANCHES_PAR_SECTEUR,
 } from "./constants";
 
 interface PersonnePhysiqueFormProps {
@@ -24,7 +24,10 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
   errors,
   onInputChange,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const sectorKey = (formData.secteurTravail || "") as keyof typeof BRANCHES_PAR_SECTEUR;
+  const branchesForSector = sectorKey ? BRANCHES_PAR_SECTEUR[sectorKey] || [] : [];
+
   const [availablePhones, setAvailablePhones] = useState<string[]>([]);
   const [phoneMode, setPhoneMode] = useState<"select" | "new">("new");
 
@@ -37,6 +40,7 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
       return;
     }
     let cancelled = false;
+
     (async () => {
       try {
         const { data } = await api.get("/test/eligibilite/phones", {
@@ -47,12 +51,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
         setAvailablePhones(phones);
         if (phones.length > 0) {
           setPhoneMode("select");
-          // Pré-sélectionner le premier numéro si aucun n'est saisi
           const current = formData.telephone;
-          const selected =
-            current && phones.includes(current) ? current : phones[0];
+          const selected = current && phones.includes(current) ? current : phones[0];
           if (selected) {
-            // Propager au parent
             onInputChange({
               target: { name: "telephone", value: selected },
             } as unknown as React.ChangeEvent<HTMLInputElement>);
@@ -61,11 +62,11 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           setPhoneMode("new");
         }
       } catch {
-        // En cas d'erreur, on garde le mode saisie libre
         setAvailablePhones([]);
         setPhoneMode("new");
       }
     })();
+
     return () => {
       cancelled = true;
     };
@@ -114,7 +115,6 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
         </div>
       </div>
 
-      {/* Âge & Sexe */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -192,7 +192,6 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
               onChange={(e) => {
                 if (e.target.value === "__new__") {
                   setPhoneMode("new");
-                  // Effacer la valeur actuelle pour saisir un nouveau numéro
                   onInputChange({
                     target: { name: "telephone", value: "" },
                   } as unknown as React.ChangeEvent<HTMLInputElement>);
@@ -282,7 +281,35 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Branche dépendante du secteur (affiché après la sélection du secteur) */}
+      {branchesForSector.length > 0 && (
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t("eligibility.branch") || "Branche"} *
+          </label>
+          <select
+            name="branche"
+            value={formData.branche || ""}
+            onChange={onInputChange}
+            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.branche ? "border-red-500" : "border-gray-300"
+            }`}>
+            <option value="">{t("eligibility.selectPlaceholder")}</option>
+            {branchesForSector.map((b) => (
+              <option key={b.value} value={b.value}>
+                {i18n.language && i18n.language.startsWith("ar")
+                  ? t(`eligibility.branchesAR.${b.value}`)
+                  : t(`eligibility.branchesFR.${b.value}`)}
+              </option>
+            ))}
+          </select>
+          {errors.branche && (
+            <p className="text-red-500 text-xs mt-1">{errors.branche}</p>
+          )}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {t("eligibility.physique.statutJuridique")} *
