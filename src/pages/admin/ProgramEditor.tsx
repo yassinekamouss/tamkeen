@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../api/axios";
 import { CheckCircle, Save, ArrowLeft, Info } from "lucide-react";
@@ -15,6 +15,7 @@ import {
   type Field,
   type RuleGroupType,
   type ValueEditorType,
+  type ValueEditorProps,
 } from "react-querybuilder";
 import "react-querybuilder/dist/query-builder.css";
 import "../../components/admin/programs/rqb-tailwind-fix.css";
@@ -33,7 +34,18 @@ interface Program {
   criteres: RuleGroupType;
 }
 
-// On utilise les opérateurs par défaut de react-querybuilder
+// OPÉRATEURS PERSONNALISÉS - uniquement ceux que vous voulez
+const customOperators = [
+  { name: "=", label: "=" },
+  { name: "!=", label: "≠" },
+  { name: "<", label: "<" },
+  { name: ">", label: ">" },
+  { name: "<=", label: "≤" },
+  { name: ">=", label: "≥" },
+  { name: "in", label: "dans (in)" },
+  { name: "notIn", label: "pas dans (not in)" },
+  { name: "between", label: "entre (between)" },
+];
 
 // Construction des champs à partir des constantes existantes
 function useRqbFields() {
@@ -68,6 +80,7 @@ function useRqbFields() {
       name: "type_applicant",
       label: "Type d'applicant",
       valueEditorType: "select",
+      operators: customOperators,
       values: [
         { name: "physique", label: "Personne physique" },
         { name: "morale", label: "Personne morale" },
@@ -77,6 +90,7 @@ function useRqbFields() {
       name: "sexe",
       label: "Sexe",
       valueEditorType: "select",
+      operators: customOperators,
       values: [
         { name: "homme", label: "Homme" },
         { name: "femme", label: "Femme" },
@@ -86,46 +100,54 @@ function useRqbFields() {
       name: "age",
       label: "Âge",
       inputType: "number",
+      operators: customOperators,
     },
     {
       name: "secteur_activite",
       label: "Secteur d'activité",
       valueEditorType: "select",
+      operators: customOperators,
       values: secteurValues,
     },
     {
       name: "branche",
       label: "Branche",
       valueEditorType: "select",
+      operators: customOperators,
       values: brancheValues,
     },
     {
       name: "region",
       label: "Région",
       valueEditorType: "select",
+      operators: customOperators,
       values: regionValues,
     },
     {
       name: "statut_juridique",
       label: "Statut juridique",
       valueEditorType: "select",
+      operators: customOperators,
       values: statutValues,
     },
     {
       name: "annee_creation",
       label: "Année de création",
       valueEditorType: "select",
+      operators: customOperators,
       values: anneeValues,
     },
     {
       name: "chiffre_affaires",
       label: "Chiffre d'affaires (max des 3 dernières années)",
       inputType: "number",
+      operators: customOperators,
     },
     {
       name: "montant_investissement",
       label: "Montant d'investissement",
       valueEditorType: "select",
+      operators: customOperators,
       values: investissementValues,
     },
   ];
@@ -141,7 +163,7 @@ const defaultRules: RuleGroupType = {
 const ProgramEditor: React.FC = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const programId = params.id; // undefined for creation
+  const programId = params.id;
 
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(!!programId);
@@ -158,61 +180,102 @@ const ProgramEditor: React.FC = () => {
 
   const fields = useRqbFields();
 
-  // Normalize criteres from API: allow stringified JSON or object
-  const isRuleGroup = (obj: unknown): obj is RuleGroupType => {
-    return (
-      !!obj &&
-      typeof obj === "object" &&
-      Array.isArray((obj as RuleGroupType).rules)
-    );
-  };
-  const normalizeRules = useCallback((c: unknown): RuleGroupType => {
-    try {
-      const parsed = typeof c === "string" ? JSON.parse(c) : c;
-      if (isRuleGroup(parsed)) return parsed;
-    } catch {
-      /* ignore parse errors */
-    }
-    return defaultRules;
-  }, []);
-
   useEffect(() => {
     let mounted = true;
+    
     async function fetchOne() {
-      if (!programId) return;
+      if (!programId) {
+        console.log("📝 Mode création - pas de chargement");
+        setLoading(false);
+        return;
+      }
+      
+      console.log("📥 Chargement du programme:", programId);
+      setLoading(true);
+      setError(null);
+      
       try {
         const res = await axios.get(`/programs/${programId}`);
         const p = res.data?.program ?? res.data;
-        if (!mounted) return;
-        setProgram(() => ({
+        
+        console.log("📦 Données reçues:", JSON.stringify(p, null, 2));
+        console.log("📋 Critères bruts:", p.criteres);
+        
+        if (!mounted) {
+          console.log("⚠️ Component unmounted, aborting");
+          return;
+        }
+        
+        // Normaliser les critères avec une copie profonde
+        let normalizedCriteres;
+        if (typeof p.criteres === 'string') {
+          try {
+            normalizedCriteres = JSON.parse(p.criteres);
+          } catch {
+            normalizedCriteres = { ...defaultRules };
+          }
+        } else if (p.criteres && typeof p.criteres === 'object' && Array.isArray(p.criteres.rules)) {
+          normalizedCriteres = JSON.parse(JSON.stringify(p.criteres));
+        } else {
+          normalizedCriteres = { ...defaultRules };
+        }
+        
+        console.log("✨ Critères normalisés:", JSON.stringify(normalizedCriteres, null, 2));
+        
+        const dateDebut = p.DateDebut ? String(p.DateDebut).split("T")[0] : "";
+        const dateFin = p.DateFin ? String(p.DateFin).split("T")[0] : "";
+        
+        const newProgram: Program = {
           name: p.name ?? "",
           description: p.description ?? "",
           isActive: Boolean(p.isActive),
-          DateDebut: p.DateDebut ? String(p.DateDebut) : "",
-          DateFin: p.DateFin ? String(p.DateFin) : "",
+          DateDebut: dateDebut,
+          DateFin: dateFin,
           link: p.link ?? "",
-          criteres: normalizeRules(p.criteres),
+          criteres: normalizedCriteres,
           _id: p._id ?? p.id,
           id: p.id ?? p._id,
-        }));
-      } catch {
-        setError("Erreur lors du chargement du programme");
+        };
+        
+        console.log("🎯 État final du programme:", JSON.stringify(newProgram, null, 2));
+        
+        setTimeout(() => {
+          if (mounted) {
+            setProgram(newProgram);
+            console.log("✅ Programme mis à jour dans le state");
+          }
+        }, 0);
+        
+      } catch (err) {
+        console.error("❌ Erreur lors du chargement:", err);
+        if (mounted) {
+          setError("Erreur lors du chargement du programme");
+        }
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          if (mounted) {
+            setLoading(false);
+            console.log("✅ Loading terminé");
+          }
+        }, 100);
       }
     }
+    
     fetchOne();
+    
     return () => {
+      console.log("🧹 Cleanup - unmounting");
       mounted = false;
     };
-  }, [programId, normalizeRules]);
+  }, [programId]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
+    
     try {
-      const payload: Program = {
+      const payload = {
         name: program.name,
         description: program.description,
         isActive: program.isActive,
@@ -223,8 +286,10 @@ const ProgramEditor: React.FC = () => {
           ? new Date(program.DateFin).toISOString()
           : null,
         link: program.link || "",
-        criteres: program.criteres ?? defaultRules,
+        criteres: program.criteres,
       };
+
+      console.log("💾 Sauvegarde du payload:", payload);
 
       if (programId) {
         await axios.put(`/programs/${programId}`, payload);
@@ -233,7 +298,8 @@ const ProgramEditor: React.FC = () => {
       }
 
       navigate("/admin/programs");
-    } catch {
+    } catch (err) {
+      console.error("❌ Erreur lors de la sauvegarde:", err);
       setError("Erreur lors de l'enregistrement du programme");
     } finally {
       setSaving(false);
@@ -242,23 +308,118 @@ const ProgramEditor: React.FC = () => {
 
   const pageTitle = programId ? "Modifier le programme" : "Nouveau programme";
 
-  // Ensure multiselect editor for IN / NOT IN on fields with values
-  const getValueEditorType = useMemo(() => {
+  // Custom Value Editor pour tous les cas
+  const CustomValueEditor = (props: ValueEditorProps) => {
+    console.log("🎨 CustomValueEditor props:", {
+      type: props.type,
+      operator: props.operator,
+      fieldData: props.fieldData,
+      value: props.value
+    });
+    
+    // Cas 1: Multiselect pour opérateurs "in", "notIn"
+    if (props.operator === "in" || props.operator === "notIn") {
+      console.log("🎯 Multiselect détecté pour opérateur:", props.operator);
+      
+      const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedOptions = Array.from(e.target.selectedOptions).map(
+          (option) => option.value
+        );
+        console.log("✅ Multiselect change:", selectedOptions);
+        props.handleOnChange(selectedOptions);
+      };
+
+      const currentValue = Array.isArray(props.value) ? props.value : [];
+
+      return (
+        <div className="flex flex-col gap-1">
+          <select
+            multiple
+            className="w-full px-2 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{ minHeight: "120px" }}
+            value={currentValue}
+            onChange={handleChange}>
+            {props.values?.map((v) => (
+              <option key={v.name} value={v.name}>
+                {v.label}
+              </option>
+            ))}
+          </select>
+          <span className="text-xs text-gray-500">
+            Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs options
+          </span>
+        </div>
+      );
+    }
+
+    // Cas 2: Select simple pour champs avec values (opérateurs = ou !=)
+    if (props.values && props.values.length > 0 && props.operator !== "in" && props.operator !== "notIn") {
+      return (
+        <select
+          className="w-full px-2 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={props.value as string}
+          onChange={(e) => props.handleOnChange(e.target.value)}>
+          <option value="">-- Sélectionner --</option>
+          {props.values.map((v) => (
+            <option key={v.name} value={v.name}>
+              {v.label}
+            </option>
+          ))}
+        </select>
+      );
+    }
+
+    // Cas 3: Input number
+    if (props.inputType === "number") {
+      return (
+        <input
+          type="number"
+          className="w-full px-2 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={props.value as string}
+          onChange={(e) => props.handleOnChange(e.target.value)}
+        />
+      );
+    }
+
+    // Cas 4: Input text par défaut
     return (
-      _field: string,
-      operator: string,
-      misc: { fieldData: Field }
-    ): ValueEditorType => {
-      const fd = misc?.fieldData;
-      if (
-        (operator === "in" || operator === "notIn" || operator === "not in") &&
-        fd?.values
-      ) {
-        return "multiselect";
+      <input
+        type="text"
+        className="w-full px-2 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        value={props.value as string}
+        onChange={(e) => props.handleOnChange(e.target.value)}
+      />
+    );
+  };
+
+  // Fonction pour déterminer le type d'éditeur basé sur l'opérateur
+  const getValueEditorType = useCallback(
+    (field: string, operator: string): ValueEditorType => {
+      console.log(`🔧 getValueEditorType: field=${field}, operator=${operator}`);
+      
+      // Pour les opérateurs "in" et "notIn", on force le type multiselect
+      if (operator === "in" || operator === "notIn") {
+        const fieldData = fields.find(f => f.name === field);
+        if (fieldData?.values && fieldData.values.length > 0) {
+          console.log("✅ Retour multiselect pour", field);
+          return "multiselect";
+        }
       }
-      return (fd?.valueEditorType as ValueEditorType) || "text";
-    };
-  }, []);
+      
+      // Pour les autres opérateurs, utiliser le type du field
+      const fieldData = fields.find(f => f.name === field);
+      if (fieldData?.valueEditorType) {
+        console.log("📝 Type du field:", fieldData.valueEditorType);
+        return fieldData.valueEditorType as ValueEditorType;
+      }
+      
+      console.log("📝 Type par défaut: text");
+      return "text";
+    },
+    [fields]
+  );
+
+  console.log("🎬 Render - program.criteres:", program.criteres);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -277,7 +438,7 @@ const ProgramEditor: React.FC = () => {
           form="program-editor-form"
           disabled={saving}
           className="inline-flex items-center px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 text-white disabled:opacity-60">
-          <Save className="w-4 h-4 mr-2" />{" "}
+          <Save className="w-4 h-4 mr-2" />
           {saving ? "Enregistrement..." : "Enregistrer"}
         </button>
       </div>
@@ -358,11 +519,7 @@ const ProgramEditor: React.FC = () => {
                   <input
                     type="date"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    value={
-                      program.DateDebut
-                        ? String(program.DateDebut).split("T")[0]
-                        : ""
-                    }
+                    value={program.DateDebut || ""}
                     onChange={(e) =>
                       setProgram((p) => ({ ...p, DateDebut: e.target.value }))
                     }
@@ -375,11 +532,7 @@ const ProgramEditor: React.FC = () => {
                   <input
                     type="date"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    value={
-                      program.DateFin
-                        ? String(program.DateFin).split("T")[0]
-                        : ""
-                    }
+                    value={program.DateFin || ""}
                     onChange={(e) =>
                       setProgram((p) => ({ ...p, DateFin: e.target.value }))
                     }
@@ -410,25 +563,29 @@ const ProgramEditor: React.FC = () => {
               d'éligibilité (logique)
             </h2>
 
-            {/* Wrapper pour limiter les effets de Tailwind sur RQB */}
             <div className="rqb-container not-prose">
               <QueryBuilder
+                key={`qb-${programId || 'new'}-${JSON.stringify(program.criteres)}`}
                 fields={fields}
-                query={program.criteres ?? defaultRules}
-                onQueryChange={(q: RuleGroupType) =>
-                  setProgram((p) => ({ ...p, criteres: q }))
-                }
+                query={program.criteres}
+                onQueryChange={(q: RuleGroupType) => {
+                  console.log("🔄 Query changed:", JSON.stringify(q, null, 2));
+                  setProgram((p) => ({ ...p, criteres: q }));
+                }}
                 getValueEditorType={getValueEditorType}
+                controlElements={{
+                  valueEditor: CustomValueEditor,
+                }}
               />
             </div>
 
-            {/* Aperçu JSON (facultatif) */}
+            {/* Aperçu JSON */}
             <details className="mt-4">
               <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
                 Aperçu JSON des critères
               </summary>
               <pre className="mt-2 text-xs bg-gray-50 p-3 rounded border overflow-auto">
-                {JSON.stringify(program.criteres ?? defaultRules, null, 2)}
+                {JSON.stringify(program.criteres, null, 2)}
               </pre>
             </details>
           </section>
