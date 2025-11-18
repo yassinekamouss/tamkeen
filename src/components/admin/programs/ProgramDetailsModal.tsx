@@ -3,14 +3,7 @@ import React from "react";
 import {
   X,
   Calendar,
-  Building,
-  User,
-  DollarSign,
-  MapPin,
-  Users,
-  Briefcase,
   Target,
-  TrendingUp,
   Clock,
   Link,
   Info,
@@ -18,6 +11,19 @@ import {
   XCircle,
   Star,
 } from "lucide-react";
+
+type Rule = {
+  id?: string;
+  field: string;
+  operator: string;
+  value: unknown;
+  valueSource?: string;
+};
+type RuleGroup = {
+  id?: string;
+  combinator?: string; // 'and' | 'or'
+  rules: Rule[];
+};
 
 interface Program {
   _id: string;
@@ -37,28 +43,7 @@ interface Program {
     descriptionFr: string;
     descriptionAr: string;
   };
-  criteres: {
-    secteurActivite: string[];
-    statutJuridique: string[];
-    applicantType: string[];
-    montantInvestissement: string[];
-    chiffreAffaireParSecteur?: {
-      secteur: string;
-      min: number | null;
-      max: number | null;
-    }[];
-    age?: {
-      minAge: number | null;
-      maxAge: number | null;
-    };
-    sexe?: string[];
-    chiffreAffaire: {
-      chiffreAffaireMin: number | null;
-      chiffreAffaireMax: number | null;
-    };
-    anneeCreation: (string | number)[];
-    region: string[];
-  };
+  criteres: RuleGroup;
 }
 
 interface ProgramDetailsModalProps {
@@ -74,19 +59,13 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
 }) => {
   if (!isOpen || !program) return null;
 
-  const formatAmount = (amount: number | null) => {
-    if (!amount) return "N/A";
-    return new Intl.NumberFormat('fr-MA', {
-      style: 'currency',
-      currency: 'MAD',
-    }).format(amount);
-  };
+  // Note: amount formatting removed as legacy view is dropped
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
+    return new Date(date).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
     });
   };
 
@@ -195,232 +174,34 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
                 <Target className="w-6 h-6 mr-2 text-slate-600" />
                 Critères d'éligibilité
               </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Types d'applicants */}
-                <div className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-center mb-3">
-                    <User className="w-5 h-5 text-purple-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Types d'applicants</h4>
-                  </div>
-                  <div className="space-y-1">
-                    {program.criteres.applicantType.length > 0 ? (
-                      program.criteres.applicantType.map((type, index) => (
-                        <span
-                          key={index}
-                          className="inline-block bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm mr-1 mb-1">
-                          {type}
+              {/* Ruleset (react-querybuilder) only */}
+              <div className="bg-white border border-gray-200 rounded-xl p-4">
+                <div className="mb-3 text-sm text-gray-600">
+                  Combinateur:{" "}
+                  <span className="font-semibold">
+                    {program.criteres.combinator || "and"}
+                  </span>
+                </div>
+                {(program.criteres.rules || []).length === 0 ? (
+                  <p className="text-gray-500">Aucune règle définie.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {program.criteres.rules.map((r, idx) => (
+                      <li
+                        key={r.id || idx}
+                        className="text-sm text-gray-800 bg-gray-50 p-2 rounded border">
+                        <span className="font-mono">{r.field}</span>
+                        <span className="mx-2 text-gray-500">{r.operator}</span>
+                        <span className="font-mono break-all">
+                          {Array.isArray(r.value)
+                            ? JSON.stringify(r.value)
+                            : String(r.value)}
                         </span>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">Tous les types acceptés</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Secteurs d'activité */}
-                <div className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-center mb-3">
-                    <Building className="w-5 h-5 text-blue-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Secteurs d'activité</h4>
-                  </div>
-                  <div className="space-y-1">
-                    {program.criteres.secteurActivite.length > 0 ? (
-                      program.criteres.secteurActivite.map((secteur, index) => (
-                        <span
-                          key={index}
-                          className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm mr-1 mb-1">
-                          {secteur}
-                        </span>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">Tous les secteurs acceptés</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Statuts juridiques */}
-                <div className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-center mb-3">
-                    <Briefcase className="w-5 h-5 text-indigo-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Statuts juridiques</h4>
-                  </div>
-                  <div className="space-y-1">
-                    {program.criteres.statutJuridique.length > 0 ? (
-                      program.criteres.statutJuridique.map((statut, index) => (
-                        <span
-                          key={index}
-                          className="inline-block bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-sm mr-1 mb-1">
-                          {statut}
-                        </span>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">Tous les statuts acceptés</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Régions */}
-                <div className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-center mb-3">
-                    <MapPin className="w-5 h-5 text-green-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Régions</h4>
-                  </div>
-                  <div className="space-y-1">
-                    {program.criteres.region.length > 0 ? (
-                      program.criteres.region.map((region, index) => (
-                        <span
-                          key={index}
-                          className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm mr-1 mb-1">
-                          {region}
-                        </span>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">Toutes les régions acceptées</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Montants et chiffres d'affaires */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                {/* Montants d'investissement */}
-                <div className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-center mb-3">
-                    <DollarSign className="w-5 h-5 text-yellow-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Montants d'investissement</h4>
-                  </div>
-                  <div className="space-y-1">
-                    {program.criteres.montantInvestissement.length > 0 ? (
-                      program.criteres.montantInvestissement.map((montant, index) => (
-                        <span
-                          key={index}
-                          className="inline-block bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm mr-1 mb-1">
-                          {montant}
-                        </span>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">Tous les montants acceptés</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Chiffre d'affaires global */}
-                <div className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-center mb-3">
-                    <TrendingUp className="w-5 h-5 text-orange-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Chiffre d'affaires</h4>
-                  </div>
-                  {program.criteres.chiffreAffaire.chiffreAffaireMin || 
-                   program.criteres.chiffreAffaire.chiffreAffaireMax ? (
-                    <div className="space-y-2">
-                      {program.criteres.chiffreAffaire.chiffreAffaireMin && (
-                        <p className="text-sm text-gray-700">
-                          <span className="font-medium">Minimum:</span>{" "}
-                          {formatAmount(program.criteres.chiffreAffaire.chiffreAffaireMin)}
-                        </p>
-                      )}
-                      {program.criteres.chiffreAffaire.chiffreAffaireMax && (
-                        <p className="text-sm text-gray-700">
-                          <span className="font-medium">Maximum:</span>{" "}
-                          {formatAmount(program.criteres.chiffreAffaire.chiffreAffaireMax)}
-                        </p>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">Aucune restriction</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Chiffre d'affaires par secteur */}
-              {program.criteres.chiffreAffaireParSecteur && 
-               program.criteres.chiffreAffaireParSecteur.length > 0 && (
-                <div className="bg-white border border-gray-200 rounded-xl p-4 mt-4">
-                  <div className="flex items-center mb-3">
-                    <TrendingUp className="w-5 h-5 text-teal-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Chiffre d'affaires par secteur</h4>
-                  </div>
-                 <div className="space-y-3">
-                  {program.criteres.chiffreAffaireParSecteur
-                    // On garde uniquement ceux qui ont au moins min ou max
-                    .filter((item) => item.min !== null || item.max !== null)
-                    .map((item, index) => (
-                      <div key={index} className="bg-teal-50 rounded-lg p-3">
-                        <h5 className="font-medium text-teal-800 mb-1">{item.secteur}</h5>
-                        <div className="text-sm text-teal-700">
-                          {item.min && <span>Min: {formatAmount(item.min)}</span>}
-                          {item.min && item.max && <span className="mx-2">•</span>}
-                          {item.max && <span>Max: {formatAmount(item.max)}</span>}
-                        </div>
-                      </div>
+                      </li>
                     ))}
-                </div>
-                </div>
-              )}
-
-              {/* Critères démographiques */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                {/* Âge */}
-                {(program.criteres.age?.minAge || program.criteres.age?.maxAge) && (
-                  <div className="bg-white border border-gray-200 rounded-xl p-4">
-                    <div className="flex items-center mb-3">
-                      <Users className="w-5 h-5 text-pink-600 mr-2" />
-                      <h4 className="font-semibold text-gray-800">Critères d'âge</h4>
-                    </div>
-                    <div className="space-y-1">
-                      {program.criteres.age?.minAge && (
-                        <p className="text-sm text-gray-700">
-                          <span className="font-medium">Âge minimum:</span> {program.criteres.age.minAge} ans
-                        </p>
-                      )}
-                      {program.criteres.age?.maxAge && (
-                        <p className="text-sm text-gray-700">
-                          <span className="font-medium">Âge maximum:</span> {program.criteres.age.maxAge} ans
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Genre */}
-                {program.criteres.sexe && program.criteres.sexe.length > 0 && (
-                  <div className="bg-white border border-gray-200 rounded-xl p-4">
-                    <div className="flex items-center mb-3">
-                      <Users className="w-5 h-5 text-cyan-600 mr-2" />
-                      <h4 className="font-semibold text-gray-800">Genre</h4>
-                    </div>
-                    <div className="space-y-1">
-                      {program.criteres.sexe.map((sexe, index) => (
-                        <span
-                          key={index}
-                          className="inline-block bg-cyan-100 text-cyan-800 px-2 py-1 rounded text-sm mr-1">
-                          {sexe}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                  </ul>
                 )}
               </div>
-
-              {/* Années de création */}
-              {program.criteres.anneeCreation.length > 0 && (
-                <div className="bg-white border border-gray-200 rounded-xl p-4 mt-4">
-                  <div className="flex items-center mb-3">
-                    <Calendar className="w-5 h-5 text-amber-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Années de création acceptées</h4>
-                  </div>
-                  <div className="space-y-1">
-                    {program.criteres.anneeCreation.map((annee, index) => (
-                      <span
-                        key={index}
-                        className="inline-block bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm mr-1 mb-1">
-                        {annee}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>

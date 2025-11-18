@@ -30,6 +30,7 @@ const Tests = lazy(() => import("./pages/admin/Tests"));
 const Reports = lazy(() => import("./pages/admin/Reports"));
 const AdminNews = lazy(() => import("./pages/admin/News.tsx"));
 const Partenaires = lazy(() => import("./pages/admin/Partenaires"));
+const ProgramEditor = lazy(() => import("./pages/admin/ProgramEditor"));
 
 const AdminsGestion = lazy(() => import("./pages/admin/AdminsGestion.tsx"));
 
@@ -69,6 +70,8 @@ function App() {
                 <Route path="users" element={<Users />} />
                 <Route path="user/details/:id" element={<UserDetails />} />
                 <Route path="programs" element={<Programs />} />
+                <Route path="programs/new" element={<ProgramEditor />} />
+                <Route path="programs/:id/edit" element={<ProgramEditor />} />
                 <Route path="tests" element={<Tests />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="news" element={<AdminNews />} />

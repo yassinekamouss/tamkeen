@@ -1,5 +1,6 @@
 // src/pages/admin/Programs.tsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 import {
   Target,
@@ -13,15 +14,26 @@ import {
   BarChart3,
   Grid3X3,
   AlertCircle,
-  Building,
-  DollarSign,
   User,
   FileX,
   Share,
 } from "lucide-react";
 import PublishProgamModal from "../../components/admin/programs/PublishProgramModal";
-import ProgramFormModal from "../../components/admin/programs/ProgramFormModal";
+// Modal de création/édition remplacé par une page dédiée
 import ProgramDetailsModal from "../../components/admin/programs/ProgramDetailsModal";
+
+type RuleLite = {
+  id?: string;
+  field: string;
+  operator: string;
+  value: unknown;
+  valueSource?: string;
+};
+type RuleGroupLite = {
+  id?: string;
+  rules: RuleLite[];
+  combinator?: string;
+};
 
 interface Program {
   _id: string;
@@ -41,107 +53,30 @@ interface Program {
     descriptionFr: string;
     descriptionAr: string;
   };
-  criteres: {
-    secteurActivite: string[];
-    statutJuridique: string[];
-    applicantType: string[];
-    montantInvestissement: string[];
-    chiffreAffaireParSecteur?: {
-      secteur: string;
-      min: number | null;
-      max: number | null;
-    }[];
-    age?: {
-      minAge: number | null;
-      maxAge: number | null;
-    };
-    sexe?: string[];
-    chiffreAffaire: {
-      chiffreAffaireMin: number | null;
-      chiffreAffaireMax: number | null;
-    };
-    anneeCreation: (string | number)[];
-    region: string[];
-  };
+  criteres: RuleGroupLite;
 }
 
-interface ProgramFormData {
-  name: string;
-  description: string;
-  isActive: boolean;
-  DateDebut: string;
-  DateFin: string;
-  link?: string;
-  criteres: {
-    secteurActivite: string[];
-    statutJuridique: string[];
-    applicantType: string[];
-    montantInvestissement: string[];
-    chiffreAffaireParSecteur: {
-      secteur: string;
-      min: number | null;
-      max: number | null;
-    }[];
-    age: {
-      minAge: number | null;
-      maxAge: number | null;
-    };
-    sexe: string[];
-    chiffreAffaire: {
-      chiffreAffaireMin: number | null;
-      chiffreAffaireMax: number | null;
-    };
-    anneeCreation: (string | number)[];
-    region: string[];
-  };
-}
+// Ancien type de formulaire retiré au profit d'un builder logique
 const Programs: React.FC = () => {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [editingProgram, setEditingProgram] = useState<Program | null>(null);
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
+  const adminProfile = JSON.parse(
+    localStorage.getItem("adminProfile") || "null"
+  );
   const isAdministrator = adminProfile?.role === "Administrateur";
-
 
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [publishingProgram, setPublishingProgram] = useState<Program | null>(
     null
   );
 
-
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
 
-
-  const [formData, setFormData] = useState<ProgramFormData>({
-    name: "",
-    description: "",
-    isActive: true,
-    DateDebut: "",
-    DateFin: "",
-    link: "",
-    criteres: {
-      secteurActivite: [],
-      statutJuridique: [],
-      applicantType: [],
-      montantInvestissement: [],
-      chiffreAffaireParSecteur: [],
-      age: {
-        minAge: null,
-        maxAge: null,
-      },
-      sexe: [],
-      chiffreAffaire: {
-        chiffreAffaireMin: null,
-        chiffreAffaireMax: null,
-      },
-      anneeCreation: [],
-      region: [],
-    },
-  });
+  // Plus de formulaire local ici; la page dédiée gère la création/édition
 
   useEffect(() => {
     fetchPrograms();
@@ -158,59 +93,10 @@ const Programs: React.FC = () => {
     }
   };
 
-  //Ajouter programme
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      // Conversion en Date si valeur présente, sinon null
-      const payload = {
-        ...formData,
-        DateDebut: formData.DateDebut ? new Date(formData.DateDebut) : null,
-        DateFin: formData.DateFin ? new Date(formData.DateFin) : null,
-      };
-
-      if (editingProgram) {
-        await axios.put(`/programs/${editingProgram._id}`, payload);
-      } else {
-        await axios.post("/programs", payload);
-      }
-
-      await fetchPrograms();
-      setShowModal(false);
-      resetForm();
-    } catch {
-      setError("Erreur lors de la sauvegarde du programme.");
-    }
-  };
+  // Création/édition gérées par ProgramEditor
 
   const handleEdit = (program: Program) => {
-    setEditingProgram(program);
-
-    setFormData({
-      name: program.name,
-      description: program.description,
-      isActive: program.isActive,
-      DateDebut: program.DateDebut ? program.DateDebut.toString() : "",
-      DateFin: program.DateFin ? program.DateFin.toString() : "",
-      link: program.link,
-      criteres: {
-        ...program.criteres,
-        chiffreAffaireParSecteur:
-          program.criteres?.chiffreAffaireParSecteur ?? [],
-        age: {
-          minAge: program.criteres.age?.minAge ?? null,
-          maxAge: program.criteres.age?.maxAge ?? null,
-        },
-        sexe: program.criteres.sexe ?? [],
-        chiffreAffaire: {
-          chiffreAffaireMin:
-            program.criteres.chiffreAffaire.chiffreAffaireMin ?? null,
-          chiffreAffaireMax:
-            program.criteres.chiffreAffaire.chiffreAffaireMax ?? null,
-        },
-      },
-    });
-    setShowModal(true);
+    navigate(`/admin/programs/${program._id}/edit`);
   };
 
   const handleDelete = async (id: string) => {
@@ -233,66 +119,22 @@ const Programs: React.FC = () => {
     }
   };
 
-  const resetForm = () => {
-    setEditingProgram(null);
-    setFormData({
-      name: "",
-      description: "",
-      isActive: true,
-      DateDebut: "",
-      DateFin: "",
-      link: "",
-      criteres: {
-        secteurActivite: [],
-        statutJuridique: [],
-        applicantType: [],
-        chiffreAffaireParSecteur: [],
-        age: {
-          minAge: null,
-          maxAge: null,
-        },
-        sexe: [],
-        montantInvestissement: [],
-        chiffreAffaire: {
-          chiffreAffaireMin: null,
-          chiffreAffaireMax: null,
-        },
-        anneeCreation: [],
-        region: [],
-      },
-    });
-  };
+  // plus de reset local
 
   const handlePublish = (program: Program) => {
     setPublishingProgram(program);
     setShowPublishModal(true);
   };
 
-  type HeroData = {
-    isHero: boolean;
-    image: string;
-    titleFr: string;
-    titleAr: string;
-    subtitleFr: string;
-    subtitleAr: string;
-    descriptionFr: string;
-    descriptionAr: string;
-  };
-
-  const handlePublishSubmit = async (heroData: HeroData) => {
+  const handlePublishSubmit = async (heroData: FormData) => {
     if (!publishingProgram) return;
 
     try {
-     await axios.put(
-        `/programs/${publishingProgram._id}/hero`,
-        heroData, // ici heroData devient FormData
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
+      await axios.put(`/programs/${publishingProgram._id}/hero`, heroData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       await fetchPrograms();
       setShowPublishModal(false);
@@ -303,9 +145,9 @@ const Programs: React.FC = () => {
   };
 
   const handleViewDetails = (program: Program) => {
-  setSelectedProgram(program);
-  setShowDetailsModal(true);
-    };
+    setSelectedProgram(program);
+    setShowDetailsModal(true);
+  };
 
   const [remainingDays, setRemainingDays] = useState<number | null>(null);
   const [filterDate, setFilterDate] = useState<string>("");
@@ -389,10 +231,7 @@ const Programs: React.FC = () => {
           </div>
           {isAdministrator && (
             <button
-              onClick={() => {
-                resetForm();
-                setShowModal(true);
-              }}
+              onClick={() => navigate("/admin/programs/new")}
               className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl flex items-center">
               <Plus className="w-5 h-5 mr-2" />
               Nouveau Programme
@@ -577,53 +416,56 @@ const Programs: React.FC = () => {
             key={program._id}
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-300">
             {/* Card Header */}
-         <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4 rounded-xl shadow-md">
-  <div className="flex justify-between items-center">
-    {/* Titre + Badges */}
-    <div>
-      <h3 className="text-xl font-bold text-white mb-1">{program.name}</h3>
-      {/* Badges en dessous du titre */}
-      <div className="flex items-center gap-2">
-        <span
-          className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-            program.isActive
-              ? "bg-green-100 text-green-700 border border-green-200"
-              : "bg-red-100 text-red-700 border border-red-200"
-          }`}>
-          {program.isActive ? "Actif" : "Inactif"}
-        </span>
-        {program.hero?.isHero && (
-          <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
-            Publié
-          </span>
-        )}
-      </div>
-    </div>
-    
-    {/* Toggle Simple - Seulement pour Administrateur */}
-    {isAdministrator && (
-    
-         <div className="relative group">
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={program.isActive}
-            onChange={() => toggleActive(program._id, program.isActive)}
-          />
-          <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-        </label>
-        
-        {/* Tooltip simple au hover */}
-        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-          <div className="bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-            {program.isActive ? 'Désactiver' : 'Activer'}
-          </div>
-        </div>
-      </div>
-    )}
-  </div>
-</div>
+            <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4 rounded-xl shadow-md">
+              <div className="flex justify-between items-center">
+                {/* Titre + Badges */}
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-1">
+                    {program.name}
+                  </h3>
+                  {/* Badges en dessous du titre */}
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                        program.isActive
+                          ? "bg-green-100 text-green-700 border border-green-200"
+                          : "bg-red-100 text-red-700 border border-red-200"
+                      }`}>
+                      {program.isActive ? "Actif" : "Inactif"}
+                    </span>
+                    {program.hero?.isHero && (
+                      <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
+                        Publié
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Toggle Simple - Seulement pour Administrateur */}
+                {isAdministrator && (
+                  <div className="relative group">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={program.isActive}
+                        onChange={() =>
+                          toggleActive(program._id, program.isActive)
+                        }
+                      />
+                      <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                    </label>
+
+                    {/* Tooltip simple au hover */}
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                      <div className="bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
+                        {program.isActive ? "Désactiver" : "Activer"}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Card Body */}
             <div className="p-6">
@@ -631,35 +473,24 @@ const Programs: React.FC = () => {
                 {program.description}
               </p>
 
-              {/* Criteria Summary */}
+              {/* Criteria Summary (supports logical builder) */}
               <div className="space-y-3 mb-6">
                 <div className="flex items-center text-sm">
                   <User className="w-4 h-4 text-gray-500 mr-2" />
                   <span className="text-gray-600">
-                    Type:{" "}
-                    {program.criteres.applicantType.length > 0
-                      ? program.criteres.applicantType.join(", ")
-                      : "Tous"}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <Building className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Secteurs:{" "}
-                    {program.criteres?.secteurActivite?.length > 0
-                      ? `${program.criteres.secteurActivite.length} sélectionnés`
-                      : "Tous"}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Investissement:{" "}
-                    {program.criteres.montantInvestissement.length > 0
-                      ? `${program.criteres.montantInvestissement.length} tranches`
-                      : "Tous montants"}
+                    {(() => {
+                      type RuleGroupLite =
+                        | { rules?: unknown[]; combinator?: string }
+                        | null
+                        | undefined;
+                      const rg = program.criteres as RuleGroupLite;
+                      if (rg && Array.isArray(rg.rules)) {
+                        return `Critères: ${rg.rules.length} règle(s) • ${
+                          rg.combinator || "AND"
+                        }`;
+                      }
+                      return "Critères: —";
+                    })()}
                   </span>
                 </div>
 
@@ -668,7 +499,7 @@ const Programs: React.FC = () => {
                   <span className="text-gray-600">
                     Début:{" "}
                     {program.DateDebut
-                      ? new Date(program.DateDebut).toLocaleDateString('fr-FR')
+                      ? new Date(program.DateDebut).toLocaleDateString("fr-FR")
                       : "N/A"}
                   </span>
                 </div>
@@ -678,7 +509,7 @@ const Programs: React.FC = () => {
                   <span className="text-gray-600">
                     Fin:{" "}
                     {program.DateFin
-                      ? new Date(program.DateFin).toLocaleDateString('fr-FR')
+                      ? new Date(program.DateFin).toLocaleDateString("fr-FR")
                       : "N/A"}
                   </span>
                 </div>
@@ -716,13 +547,13 @@ const Programs: React.FC = () => {
               )}
 
               {!isAdministrator && (
-          <div className="flex space-x-2">
-            <button
-              onClick={() => handleViewDetails(program)}
-              className="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
-              <Eye className="w-4 h-4 mr-2" />
-              Voir détails
-            </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleViewDetails(program)}
+                    className="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
+                    <Eye className="w-4 h-4 mr-2" />
+                    Voir détails
+                  </button>
                 </div>
               )}
             </div>
@@ -743,10 +574,7 @@ const Programs: React.FC = () => {
           </p>
           {!searchTerm && remainingDays === null && !filterDate && (
             <button
-              onClick={() => {
-                resetForm();
-                setShowModal(true);
-              }}
+              onClick={() => navigate("/admin/programs/new")}
               className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
               <Plus className="w-5 h-5 mr-2" />
               Créer un programme
@@ -754,16 +582,7 @@ const Programs: React.FC = () => {
           )}
         </div>
       )}
-
-      {/* Modal for Create/Edit Program - extracted */}
-      <ProgramFormModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        onSubmit={handleSubmit}
-        formData={formData}
-        setFormData={setFormData}
-        isEditing={!!editingProgram}
-      />
+      {/* Édition/Création via ProgramEditor (page dédiée) */}
 
       {/* Modal de publication */}
       {showPublishModal && (

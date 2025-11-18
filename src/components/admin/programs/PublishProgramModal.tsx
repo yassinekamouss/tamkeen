@@ -19,35 +19,13 @@ interface Program {
     descriptionFr: string;
     descriptionAr: string;
   };
-  criteres: {
-    secteurActivite: string[];
-    statutJuridique: string[];
-    applicantType: string[];
-    montantInvestissement: string[];
-    chiffreAffaireParSecteur?: {
-      secteur: string;
-      min: number | null;
-      max: number | null;
-    }[];
-    age?: {
-      minAge: number | null;
-      maxAge: number | null;
-    };
-    sexe?: string[];
-    chiffreAffaire: {
-      chiffreAffaireMin: number | null;
-      chiffreAffaireMax: number | null;
-    };
-    anneeCreation: (string | number)[];
-    region: string[];
-  };
 }
 
 interface PublishModalProps {
   show: boolean;
   onClose: () => void;
   program: Program | null;
-  onSubmit: (heroData: any) => Promise<void>;
+  onSubmit: (heroData: FormData) => Promise<void>;
 }
 
 interface HeroData {
@@ -83,8 +61,6 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
 
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState("");
-
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,7 +169,9 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
                         <Upload className="mx-auto h-12 w-12" />
                       </div>
                       <div className="flex text-sm text-gray-600">
-                        <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                           <span>Télécharger un fichier</span>
                           <input
                             id="file-upload"
@@ -206,10 +184,10 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
                               const file = e.target.files?.[0];
                               if (file) {
                                 const imageUrl = URL.createObjectURL(file);
-                                setHeroData({ 
-                                  ...heroData, 
+                                setHeroData({
+                                  ...heroData,
                                   image: imageUrl,
-                                  imageFile: file 
+                                  imageFile: file,
                                 });
                                 setImageError("");
                               }
@@ -237,9 +215,13 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
                     </p>
                     <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
                       <img
-                        src={heroData.imageFile 
-                          ? heroData.image // Si c'est un fichier local, utiliser l'URL créée par createObjectURL
-                          : `${import.meta.env.VITE_PREFIX_URL}/programs/${heroData.image}`} // Sinon, utiliser l'URL complète
+                        src={
+                          heroData.imageFile
+                            ? heroData.image // Si c'est un fichier local, utiliser l'URL créée par createObjectURL
+                            : `${import.meta.env.VITE_PREFIX_URL}/programs/${
+                                heroData.image
+                              }`
+                        } // Sinon, utiliser l'URL complète
                         alt="Aperçu"
                         className="max-w-full h-32 object-cover rounded"
                         onError={() =>
