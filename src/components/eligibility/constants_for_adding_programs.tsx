@@ -4,6 +4,10 @@ export const SECTEURS_TRAVAIL = [
     "value": "EconomieRurale"
   },
   {
+    "key":"Artisanat",
+    "value":"Artisanat"
+  },
+  {
     "key": "Exploitation forestière",
     "value": "ExploitationForestiere"
   },
@@ -182,7 +186,7 @@ export const ANNEE_CREATION = [
   "2024",
   "2023",
   "2022",
-  "Avant 2022",
+  "avant-2022",
 ];
 
 

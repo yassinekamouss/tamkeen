@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../api/axios";
-import { CheckCircle, Save, ArrowLeft, Info } from "lucide-react";
+import { CheckCircle, Save, ArrowLeft, Info, X, Check } from "lucide-react";
 import {
   SECTEURS_TRAVAIL,
   REGIONS,
@@ -14,13 +14,13 @@ import {
   QueryBuilder,
   type Field,
   type RuleGroupType,
-  type ValueEditorType,
   type ValueEditorProps,
+  type ValueEditorType,
+  type Translations,
 } from "react-querybuilder";
 import "react-querybuilder/dist/query-builder.css";
 import "../../components/admin/programs/rqb-tailwind-fix.css";
 
-// Types minimalistes pour limiter le couplage
 interface Program {
   _id?: string | number;
   id?: string | number;
@@ -34,20 +34,88 @@ interface Program {
   criteres: RuleGroupType;
 }
 
-// OPÉRATEURS PERSONNALISÉS - uniquement ceux que vous voulez
+// Traductions françaises pour QueryBuilder
+const frenchTranslations: Partial<Translations> = {
+  addRule: {
+    label: "+ Ajouter une règle",
+    title: "Ajouter une règle",
+  },
+  addGroup: {
+    label: "+ Ajouter un groupe",
+    title: "Ajouter un groupe",
+  },
+  removeRule: {
+    label: "✕",
+    title: "Supprimer la règle",
+  },
+  removeGroup: {
+    label: "✕",
+    title: "Supprimer le groupe",
+  },
+  combinators: {
+    title: "Combinateur",
+  },
+  fields: {
+    title: "Champ",
+    placeholderName: "~ Choisir un champ ~",
+    placeholderLabel: "~ Choisir un champ ~",
+    placeholderGroupLabel: "~ Choisir un groupe ~",
+  },
+  operators: {
+    title: "Opérateur",
+    placeholderName: "~ Choisir un opérateur ~",
+    placeholderLabel: "~ Choisir un opérateur ~",
+    placeholderGroupLabel: "~ Choisir un groupe ~",
+  },
+  value: {
+    title: "Valeur",
+  },
+  cloneRule: {
+    label: "⧉",
+    title: "Dupliquer la règle",
+  },
+  cloneRuleGroup: {
+    label: "⧉",
+    title: "Dupliquer le groupe",
+  },
+  dragHandle: {
+    label: "⁞⁞",
+    title: "Déplacer",
+  },
+  lockRule: {
+    label: "🔓",
+    title: "Verrouiller la règle",
+  },
+  lockGroup: {
+    label: "🔓",
+    title: "Verrouiller le groupe",
+  },
+  lockRuleDisabled: {
+    label: "🔒",
+    title: "Déverrouiller la règle",
+  },
+  lockGroupDisabled: {
+    label: "🔒",
+    title: "Déverrouiller le groupe",
+  },
+  notToggle: {
+    label: "Non",
+    title: "Inverser ce groupe",
+  },
+};
+
 const customOperators = [
-  { name: "=", label: "=" },
-  { name: "!=", label: "≠" },
-  { name: "<", label: "<" },
-  { name: ">", label: ">" },
-  { name: "<=", label: "≤" },
-  { name: ">=", label: "≥" },
-  { name: "in", label: "dans (in)" },
-  { name: "notIn", label: "pas dans (not in)" },
-  { name: "between", label: "entre (between)" },
+  { name: "=", label: "égal à" },
+  { name: "!=", label: "différent de" },
+  { name: "<", label: "inférieur à" },
+  { name: ">", label: "supérieur à" },
+  { name: "<=", label: "inférieur ou égal à" },
+  { name: ">=", label: "supérieur ou égal à" },
+  { name: "in", label: "dans la liste" },
+  { name: "notIn", label: "pas dans la liste" },
+  { name: "between", label: "entre" },
 ];
 
-// Construction des champs à partir des constantes existantes
 function useRqbFields() {
   type KV = { key: string; value: string };
   const secteurs = SECTEURS_TRAVAIL as unknown as KV[];
@@ -55,25 +123,17 @@ function useRqbFields() {
   const statutOpts = STATUT_JURIDIQUE_OPTIONS as unknown as KV[];
   const investOpts = MONTANT_INVESTISSEMENT_OPTIONS as unknown as KV[];
 
-  const secteurValues: { name: string; label: string }[] = secteurs.map(
-    (s) => ({ name: s.value, label: s.key })
-  );
-  const brancheValues: { name: string; label: string }[] = Object.values(
-    branchesMap
-  )
+  const secteurValues = secteurs.map((s) => ({ name: s.value, label: s.key }));
+  const brancheValues = Object.values(branchesMap)
     .flat()
     .map((b) => ({ name: b.value, label: b.key }));
-  const regionValues: { name: string; label: string }[] = (
-    REGIONS as string[]
-  ).map((r) => ({ name: r, label: r }));
-  const statutValues: { name: string; label: string }[] = statutOpts.map(
-    (o) => ({ name: o.value, label: o.key })
-  );
-  const investissementValues: { name: string; label: string }[] =
-    investOpts.map((o) => ({ name: o.value, label: o.key }));
-  const anneeValues: { name: string; label: string }[] = (
-    ANNEE_CREATION as (string | number)[]
-  ).map((a) => ({ name: String(a), label: String(a) }));
+  const regionValues = (REGIONS as string[]).map((r) => ({ name: r, label: r }));
+  const statutValues = statutOpts.map((o) => ({ name: o.value, label: o.key }));
+  const investissementValues = investOpts.map((o) => ({ name: o.value, label: o.key }));
+  const anneeValues = (ANNEE_CREATION as (string | number)[]).map((a) => ({
+    name: String(a),
+    label: String(a),
+  }));
 
   const fields: Field[] = [
     {
@@ -160,6 +220,297 @@ const defaultRules: RuleGroupType = {
   rules: [],
 };
 
+// Composant Select simple avec recherche
+const SearchableSelect: React.FC<{
+  value: string;
+  options: { name: string; label: string }[];
+  onChange: (value: string) => void;
+  placeholder?: string;
+}> = ({ value, options, onChange, placeholder = "-- Sélectionner --" }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const selectedOption = options.find((opt) => opt.name === value);
+
+  // Filtrer les options selon la recherche
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSelect = (optionName: string) => {
+    onChange(optionName);
+    setIsOpen(false);
+    setSearchTerm("");
+  };
+
+  return (
+    <div className="relative w-full">
+      {/* Bouton principal */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left transition-all"
+      >
+        <span className={selectedOption ? "text-gray-900" : "text-gray-400"}>
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+      </button>
+
+      {/* Menu déroulant */}
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => {
+              setIsOpen(false);
+              setSearchTerm("");
+            }}
+          />
+          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+            {/* Barre de recherche */}
+            <div className="p-2 border-b border-gray-200 sticky top-0 bg-white">
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                autoFocus
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Liste des options */}
+            <div className="max-h-64 overflow-y-auto">
+              {/* Option vide pour désélectionner */}
+              {value && (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelect("");
+                  }}
+                  className="px-3 py-2 cursor-pointer hover:bg-gray-50 text-gray-500 border-b border-gray-100 italic"
+                >
+                  {placeholder}
+                </div>
+              )}
+
+              {filteredOptions.length === 0 ? (
+                <div className="px-3 py-4 text-sm text-gray-500 text-center">
+                  Aucun résultat trouvé
+                </div>
+              ) : (
+                filteredOptions.map((option) => {
+                  const isSelected = value === option.name;
+                  return (
+                    <div
+                      key={option.name}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelect(option.name);
+                      }}
+                      className={`flex items-center justify-between px-3 py-2 cursor-pointer transition-colors ${
+                        isSelected
+                          ? "bg-blue-50 hover:bg-blue-100"
+                          : "hover:bg-gray-50"
+                      }`}
+                    >
+                      <span className={`text-sm ${isSelected ? "font-medium text-blue-900" : "text-gray-700"}`}>
+                        {option.label}
+                      </span>
+                      {isSelected && (
+                        <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// Composant MultiSelect amélioré avec recherche et sélection tout
+const ImprovedMultiSelect: React.FC<{
+  value: string[];
+  options: { name: string; label: string }[];
+  onChange: (value: string[]) => void;
+}> = ({ value, options, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const currentValue = Array.isArray(value) ? value : [];
+
+  const toggleOption = (optionName: string) => {
+    if (currentValue.includes(optionName)) {
+      onChange(currentValue.filter((v) => v !== optionName));
+    } else {
+      onChange([...currentValue, optionName]);
+    }
+  };
+
+  const removeOption = (optionName: string) => {
+    onChange(currentValue.filter((v) => v !== optionName));
+  };
+
+  const selectAll = () => {
+    const allFilteredValues = filteredOptions.map((opt) => opt.name);
+    // Combine les valeurs actuelles avec les nouvelles (sans doublons)
+    const newValues = [...new Set([...currentValue, ...allFilteredValues])];
+    onChange(newValues);
+  };
+
+  const deselectAll = () => {
+    const filteredValues = filteredOptions.map((opt) => opt.name);
+    onChange(currentValue.filter((v) => !filteredValues.includes(v)));
+  };
+
+  const selectedLabels = currentValue
+    .map((v) => options.find((o) => o.name === v)?.label)
+    .filter(Boolean);
+
+  // Filtrer les options selon la recherche
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="relative w-full">
+      {/* Bouton principal */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left transition-all"
+      >
+        <div className="flex flex-wrap gap-1.5 min-h-[24px]">
+          {currentValue.length === 0 ? (
+            <span className="text-gray-400 text-sm">Sélectionner des valeurs...</span>
+          ) : (
+            selectedLabels.map((label, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-sm rounded-md"
+              >
+                {label}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeOption(currentValue[idx]);
+                  }}
+                  className="hover:bg-blue-200 rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))
+         )}
+        </div>
+      </button>
+
+      {/* Menu déroulant */}
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+            {/* Barre de recherche */}
+            <div className="p-2 border-b border-gray-200 sticky top-0 bg-white">
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Boutons Tout sélectionner / Tout désélectionner */}
+            <div className="flex gap-2 p-2 border-b border-gray-200 bg-gray-50">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectAll();
+                }}
+                className="flex-1 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
+              >
+                Tout sélectionner
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deselectAll();
+                }}
+                className="flex-1 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              >
+                Tout désélectionner
+              </button>
+            </div>
+
+            {/* Liste des options */}
+            <div className="max-h-64 overflow-y-auto">
+              {filteredOptions.length === 0 ? (
+                <div className="px-3 py-4 text-sm text-gray-500 text-center">
+                  Aucun résultat trouvé
+                </div>
+              ) : (
+                filteredOptions.map((option) => {
+                  const isSelected = currentValue.includes(option.name);
+                  return (
+                    <div
+                      key={option.name}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleOption(option.name);
+                      }}
+                      className={`flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors ${
+                        isSelected
+                          ? "bg-blue-50 hover:bg-blue-100"
+                          : "hover:bg-gray-50"
+                      }`}
+                    >
+                      <div
+                        className={`w-5 h-5 border-2 rounded flex items-center justify-center flex-shrink-0 ${
+                          isSelected
+                            ? "bg-blue-600 border-blue-600"
+                            : "border-gray-300"
+                        }`}
+                      >
+                        {isSelected && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      <span className={`text-sm ${isSelected ? "font-medium text-blue-900" : "text-gray-700"}`}>
+                        {option.label}
+                      </span>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Bouton Terminer */}
+            <div className="p-2 border-t border-gray-200 bg-gray-50">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+              >
+                Terminer ({currentValue.length} sélectionné{currentValue.length > 1 ? 's' : ''})
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 const ProgramEditor: React.FC = () => {
   const navigate = useNavigate();
   const params = useParams();
@@ -172,7 +523,7 @@ const ProgramEditor: React.FC = () => {
     name: "",
     description: "",
     isActive: true,
-    DateDebut: "",
+    DateDebut: new Date().toISOString().split("T")[0], // Default to today's date
     DateFin: "",
     link: "",
     criteres: defaultRules,
@@ -182,49 +533,42 @@ const ProgramEditor: React.FC = () => {
 
   useEffect(() => {
     let mounted = true;
-    
+
     async function fetchOne() {
       if (!programId) {
-        console.log("📝 Mode création - pas de chargement");
         setLoading(false);
         return;
       }
-      
-      console.log("📥 Chargement du programme:", programId);
+
       setLoading(true);
       setError(null);
-      
+
       try {
         const res = await axios.get(`/programs/${programId}`);
         const p = res.data?.program ?? res.data;
-        
-        console.log("📦 Données reçues:", JSON.stringify(p, null, 2));
-        console.log("📋 Critères bruts:", p.criteres);
-        
-        if (!mounted) {
-          console.log("⚠️ Component unmounted, aborting");
-          return;
-        }
-        
-        // Normaliser les critères avec une copie profonde
+
+        if (!mounted) return;
+
         let normalizedCriteres;
-        if (typeof p.criteres === 'string') {
+        if (typeof p.criteres === "string") {
           try {
             normalizedCriteres = JSON.parse(p.criteres);
           } catch {
             normalizedCriteres = { ...defaultRules };
           }
-        } else if (p.criteres && typeof p.criteres === 'object' && Array.isArray(p.criteres.rules)) {
+        } else if (
+          p.criteres &&
+          typeof p.criteres === "object" &&
+          Array.isArray(p.criteres.rules)
+        ) {
           normalizedCriteres = JSON.parse(JSON.stringify(p.criteres));
         } else {
           normalizedCriteres = { ...defaultRules };
         }
-        
-        console.log("✨ Critères normalisés:", JSON.stringify(normalizedCriteres, null, 2));
-        
+
         const dateDebut = p.DateDebut ? String(p.DateDebut).split("T")[0] : "";
         const dateFin = p.DateFin ? String(p.DateFin).split("T")[0] : "";
-        
+
         const newProgram: Program = {
           name: p.name ?? "",
           description: p.description ?? "",
@@ -236,18 +580,13 @@ const ProgramEditor: React.FC = () => {
           _id: p._id ?? p.id,
           id: p.id ?? p._id,
         };
-        
-        console.log("🎯 État final du programme:", JSON.stringify(newProgram, null, 2));
-        
+
         setTimeout(() => {
           if (mounted) {
             setProgram(newProgram);
-            console.log("✅ Programme mis à jour dans le state");
           }
         }, 0);
-        
       } catch (err) {
-        console.error("❌ Erreur lors du chargement:", err);
         if (mounted) {
           setError("Erreur lors du chargement du programme");
         }
@@ -255,16 +594,14 @@ const ProgramEditor: React.FC = () => {
         setTimeout(() => {
           if (mounted) {
             setLoading(false);
-            console.log("✅ Loading terminé");
           }
         }, 100);
       }
     }
-    
+
     fetchOne();
-    
+
     return () => {
-      console.log("🧹 Cleanup - unmounting");
       mounted = false;
     };
   }, [programId]);
@@ -273,7 +610,7 @@ const ProgramEditor: React.FC = () => {
     e.preventDefault();
     setSaving(true);
     setError(null);
-    
+
     try {
       const payload = {
         name: program.name,
@@ -282,14 +619,10 @@ const ProgramEditor: React.FC = () => {
         DateDebut: program.DateDebut
           ? new Date(program.DateDebut).toISOString()
           : null,
-        DateFin: program.DateFin
-          ? new Date(program.DateFin).toISOString()
-          : null,
+        DateFin: program.DateFin ? new Date(program.DateFin).toISOString() : null,
         link: program.link || "",
         criteres: program.criteres,
       };
-
-      console.log("💾 Sauvegarde du payload:", payload);
 
       if (programId) {
         await axios.put(`/programs/${programId}`, payload);
@@ -299,7 +632,6 @@ const ProgramEditor: React.FC = () => {
 
       navigate("/admin/programs");
     } catch (err) {
-      console.error("❌ Erreur lors de la sauvegarde:", err);
       setError("Erreur lors de l'enregistrement du programme");
     } finally {
       setSaving(false);
@@ -308,118 +640,110 @@ const ProgramEditor: React.FC = () => {
 
   const pageTitle = programId ? "Modifier le programme" : "Nouveau programme";
 
-  // Custom Value Editor pour tous les cas
   const CustomValueEditor = (props: ValueEditorProps) => {
-    console.log("🎨 CustomValueEditor props:", {
-      type: props.type,
-      operator: props.operator,
-      fieldData: props.fieldData,
-      value: props.value
-    });
-    
-    // Cas 1: Multiselect pour opérateurs "in", "notIn"
-    if (props.operator === "in" || props.operator === "notIn") {
-      console.log("🎯 Multiselect détecté pour opérateur:", props.operator);
-      
-      const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedOptions = Array.from(e.target.selectedOptions).map(
-          (option) => option.value
-        );
-        console.log("✅ Multiselect change:", selectedOptions);
-        props.handleOnChange(selectedOptions);
+      if (props.operator === "between") {
+      // La valeur est souvent un tableau [min, max] ou une chaîne "min,max"
+      const values = Array.isArray(props.value)
+        ? props.value
+        : `${props.value ?? ''}`.split(',');
+
+      const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValues = [e.target.value, values[1] ?? ''];
+        props.handleOnChange(newValues);
       };
 
-      const currentValue = Array.isArray(props.value) ? props.value : [];
+      const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValues = [values[0] ?? '', e.target.value];
+        props.handleOnChange(newValues);
+      };
 
       return (
-        <div className="flex flex-col gap-1">
-          <select
-            multiple
-            className="w-full px-2 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            style={{ minHeight: "120px" }}
-            value={currentValue}
-            onChange={handleChange}>
-            {props.values?.map((v) => (
-              <option key={v.name} value={v.name}>
-                {v.label}
-              </option>
-            ))}
-          </select>
-          <span className="text-xs text-gray-500">
-            Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs options
-          </span>
+        <div className="flex items-center gap-2">
+          <input
+            type={props.inputType || "text"}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            value={values[0] ?? ""}
+            onChange={handleMinChange}
+            placeholder="Min"
+          />
+          <span className="text-gray-500">et</span>
+          <input
+            type={props.inputType || "text"}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            value={values[1] ?? ""}
+            onChange={handleMaxChange}
+            placeholder="Max"
+          />
         </div>
       );
     }
-
-    // Cas 2: Select simple pour champs avec values (opérateurs = ou !=)
-    if (props.values && props.values.length > 0 && props.operator !== "in" && props.operator !== "notIn") {
+    
+    if (props.operator === "in" || props.operator === "notIn") {
+      const currentValue = Array.isArray(props.value) ? props.value : [];
       return (
-        <select
-          className="w-full px-2 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={props.value as string}
-          onChange={(e) => props.handleOnChange(e.target.value)}>
-          <option value="">-- Sélectionner --</option>
-          {props.values.map((v) => (
-            <option key={v.name} value={v.name}>
-              {v.label}
-            </option>
-          ))}
-        </select>
+        <ImprovedMultiSelect
+          value={currentValue}
+          options={props.values || []}
+          onChange={props.handleOnChange}
+        />
       );
     }
 
-    // Cas 3: Input number
+    if (
+      props.values &&
+      props.values.length > 0 &&
+      props.operator !== "in" &&
+      props.operator !== "notIn"
+    ) {
+      return (
+        <SearchableSelect
+          value={props.value as string}
+          options={props.values}
+          onChange={props.handleOnChange}
+          placeholder="-- Sélectionner --"
+        />
+      );
+    }
+
     if (props.inputType === "number") {
       return (
         <input
           type="number"
-          className="w-full px-2 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           value={props.value as string}
           onChange={(e) => props.handleOnChange(e.target.value)}
         />
       );
     }
 
-    // Cas 4: Input text par défaut
     return (
       <input
         type="text"
-        className="w-full px-2 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         value={props.value as string}
         onChange={(e) => props.handleOnChange(e.target.value)}
       />
     );
   };
 
-  // Fonction pour déterminer le type d'éditeur basé sur l'opérateur
   const getValueEditorType = useCallback(
     (field: string, operator: string): ValueEditorType => {
-      console.log(`🔧 getValueEditorType: field=${field}, operator=${operator}`);
-      
-      // Pour les opérateurs "in" et "notIn", on force le type multiselect
       if (operator === "in" || operator === "notIn") {
-        const fieldData = fields.find(f => f.name === field);
+        const fieldData = fields.find((f) => f.name === field);
         if (fieldData?.values && fieldData.values.length > 0) {
-          console.log("✅ Retour multiselect pour", field);
           return "multiselect";
         }
       }
-      
-      // Pour les autres opérateurs, utiliser le type du field
-      const fieldData = fields.find(f => f.name === field);
+
+      const fieldData = fields.find((f) => f.name === field);
       if (fieldData?.valueEditorType) {
-        console.log("📝 Type du field:", fieldData.valueEditorType);
         return fieldData.valueEditorType as ValueEditorType;
       }
-      
-      console.log("📝 Type par défaut: text");
+
       return "text";
     },
     [fields]
   );
-
-  console.log("🎬 Render - program.criteres:", program.criteres);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -428,7 +752,8 @@ const ProgramEditor: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-50 text-gray-700">
+            className="inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" /> Retour
           </button>
           <h1 className="text-2xl font-bold text-gray-800">{pageTitle}</h1>
@@ -437,7 +762,8 @@ const ProgramEditor: React.FC = () => {
           type="submit"
           form="program-editor-form"
           disabled={saving}
-          className="inline-flex items-center px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 text-white disabled:opacity-60">
+          className="inline-flex items-center px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 text-white disabled:opacity-60"
+        >
           <Save className="w-4 h-4 mr-2" />
           {saving ? "Enregistrement..." : "Enregistrer"}
         </button>
@@ -448,21 +774,16 @@ const ProgramEditor: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
         </div>
       ) : (
-        <form
-          id="program-editor-form"
-          onSubmit={handleSave}
-          className="space-y-6">
+        <form id="program-editor-form" onSubmit={handleSave} className="space-y-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-800 rounded-md p-3">
               {error}
             </div>
           )}
 
-          {/* Informations de base */}
           <section className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Info className="w-5 h-5 mr-2 text-blue-600" /> Informations de
-              base
+              <Info className="w-5 h-5 mr-2 text-blue-600" /> Informations de base
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -506,7 +827,8 @@ const ProgramEditor: React.FC = () => {
                       ...p,
                       isActive: e.target.value === "true",
                     }))
-                  }>
+                  }
+                >
                   <option value="true">Actif</option>
                   <option value="false">Inactif</option>
                 </select>
@@ -556,38 +878,31 @@ const ProgramEditor: React.FC = () => {
             </div>
           </section>
 
-          {/* Critères d'éligibilité */}
           <section className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
               <CheckCircle className="w-5 h-5 mr-2 text-blue-600" /> Critères
-              d'éligibilité (logique)
+              d'éligibilité
             </h2>
 
-            <div className="rqb-container not-prose">
+            <div className="rqb-container">
               <QueryBuilder
-                key={`qb-${programId || 'new'}-${JSON.stringify(program.criteres)}`}
+                key={`qb-${programId || "new"}-${JSON.stringify(program.criteres)}`}
                 fields={fields}
                 query={program.criteres}
                 onQueryChange={(q: RuleGroupType) => {
-                  console.log("🔄 Query changed:", JSON.stringify(q, null, 2));
                   setProgram((p) => ({ ...p, criteres: q }));
                 }}
                 getValueEditorType={getValueEditorType}
                 controlElements={{
                   valueEditor: CustomValueEditor,
                 }}
+                translations={frenchTranslations}
+                combinators={[
+                  { name: "and", label: "ET" },
+                  { name: "or", label: "OU" },
+                ]}
               />
             </div>
-
-            {/* Aperçu JSON */}
-            <details className="mt-4">
-              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-                Aperçu JSON des critères
-              </summary>
-              <pre className="mt-2 text-xs bg-gray-50 p-3 rounded border overflow-auto">
-                {JSON.stringify(program.criteres, null, 2)}
-              </pre>
-            </details>
           </section>
         </form>
       )}

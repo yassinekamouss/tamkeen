@@ -174,3 +174,315 @@ button:focus-visible {
 .chatbot-message span {
   line-height: 1.2;
 }
+/* ============================
+   QUERY BUILDER - STYLE PROFESSIONNEL
+============================ */
+
+/* Reset du wrapper principal */
+.queryBuilder {
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ============================
+   GROUPE RACINE (niveau 0)
+============================ */
+.queryBuilder > .ruleGroup {
+  background: #ffffff !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  padding: 20px !important;
+}
+
+/* ============================
+   GROUPES (avec gestion automatique des niveaux)
+============================ */
+.ruleGroup {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Niveau 1 (premier enfant du root) */
+.queryBuilder > .ruleGroup > .ruleGroup-body > .ruleGroup {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+/* Niveau 2 */
+.ruleGroup .ruleGroup .ruleGroup {
+  background: #e5e7eb;
+  border-color: #c8cad0;
+}
+
+/* Niveau 3 */
+.ruleGroup .ruleGroup .ruleGroup .ruleGroup {
+  background: #dfe1e5;
+  border-color: #bfc1c6;
+}
+
+/* Niveau 4 */
+.ruleGroup .ruleGroup .ruleGroup .ruleGroup .ruleGroup {
+  background: #d9dbe0;
+  border-color: #b6b8bd;
+}
+
+/* Niveau 5+ */
+.ruleGroup .ruleGroup .ruleGroup .ruleGroup .ruleGroup .ruleGroup {
+  background: #d3d5da;
+  border-color: #adafb4;
+}
+
+/* Hover effect subtil */
+.ruleGroup:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-color: #9ca3af;
+}
+
+/* ============================
+   HEADER DU GROUPE
+============================ */
+.ruleGroup-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+/* ============================
+   COMBINATOR (ET/OU)
+============================ */
+.ruleGroup-combinators select {
+  padding: 8px 36px 8px 14px;
+  border-radius: 7px;
+  border: 1.5px solid #d1d5db;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231f2937' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ruleGroup-combinators select:hover {
+  border-color: #3b82f6;
+  background-color: #f9fafb;
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+}
+
+.ruleGroup-combinators select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ============================
+   BOUTONS D'ACTION
+============================ */
+.ruleGroup-addRule button,
+.ruleGroup-addGroup button {
+  padding: 8px 16px;
+  border-radius: 7px;
+  border: 1.5px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ruleGroup-addRule button:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.ruleGroup-addGroup button:hover {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+}
+
+.ruleGroup-addRule button:active,
+.ruleGroup-addGroup button:active {
+  transform: translateY(0);
+}
+
+/* Bouton supprimer le groupe */
+.ruleGroup-remove button {
+  padding: 8px 14px;
+  border-radius: 7px;
+  border: 1.5px solid #fee2e2;
+  background: #ffffff;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ruleGroup-remove button:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+}
+
+/* ============================
+   RÈGLES INDIVIDUELLES
+============================ */
+.rule {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 7px;
+  border: 1px solid rgba(209, 213, 219, 0.5);
+  transition: all 0.2s ease;
+}
+
+.rule:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Champs de la règle */
+.rule select,
+.rule input {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1.5px solid #d1d5db;
+  background: #ffffff;
+  font-size: 14px;
+  color: #1f2937;
+  transition: all 0.2s ease;
+}
+
+.rule select {
+  padding-right: 36px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231f2937' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+}
+
+.rule select:hover,
+.rule input:hover {
+  border-color: #9ca3af;
+}
+
+.rule select:focus,
+.rule input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Bouton supprimer la règle */
+.rule-remove button {
+  padding: 7px 11px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #dc2626;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+  margin-left: auto;
+}
+
+.rule-remove button:hover {
+  background: #fee2e2;
+  border-color: #fecaca;
+  transform: scale(1.1);
+}
+
+/* ============================
+   BODY DU GROUPE
+============================ */
+.ruleGroup-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ============================
+   ANIMATIONS
+============================ */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ============================
+   RESPONSIVE
+============================ */
+@media (max-width: 768px) {
+  .queryBuilder > .ruleGroup {
+    padding: 16px !important;
+  }
+  
+  .ruleGroup-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .ruleGroup-remove button {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+  
+  .rule {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .rule select,
+  .rule input {
+    width: 100%;
+  }
+  
+  .rule-remove button {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+}
