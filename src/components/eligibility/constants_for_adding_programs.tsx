@@ -40,6 +40,10 @@ export const SECTEURS_TRAVAIL = [
     "value": "TransportLogistique"
   },
   {
+    "key": "Hébergement et restauration",
+    "value": "HebergementRestauration"
+  },
+  {
     "key": "Commerce traditionnel - Ecommerce",
     "value": "CommerceTraditionnelEcommerce"
   },
@@ -259,7 +263,7 @@ export const BRANCHES_PAR_SECTEUR = {
   ],
 
   HebergementRestauration: [
-    { key: "Établissements d’hébergement touristique classés, à l’exception des résidences immobilières rattachées à un établissement d’hébergement touristique et des résidences immobilières pour le développement touristique", value: "HebergementTouristique" },
+    { key: "Établissements d’hébergement touristique classés", value: "HebergementTouristique" },
     { key: "Restaurants touristiques", value: "RestaurantsTouristiques" }
   ],
 
@@ -272,7 +276,7 @@ export const BRANCHES_PAR_SECTEUR = {
   ],
 
   MediasCommunication: [
-    { key: "Production audiovisuelle et musicale", value: "ProductionAudiovisuelle" },
+    { key: "Production de films cinématographiques et vidéo, programmes télévisés, enregistrements sonores et publication de matériel musical", value: "ProductionAudiovisuelle" },
     { key: "Activités de programmation et diffusion", value: "Diffusion" },
     { key: "Installation d’infrastructures de télécommunications", value: "Telecom" },
     { key: "Logiciels, conseil en informatique et autres activités informatiques", value: "Informatique" },

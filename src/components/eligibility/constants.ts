@@ -116,7 +116,7 @@ export const BRANCHES_PAR_SECTEUR = {
   ],
 
   MediasCommunication: [
-    { key: "Production audiovisuelle et musicale", value: "ProductionAudiovisuelle" },
+    { key: "Production de films cinématographiques et vidéo, programmes télévisés, enregistrements sonores et publication de matériel musical", value: "ProductionAudiovisuelle" },
     { key: "Activités de programmation et diffusion", value: "Diffusion" },
     { key: "Installation d’infrastructures de télécommunications", value: "Telecom" },
     { key: "Logiciels, conseil en informatique et autres activités informatiques", value: "Informatique" },
