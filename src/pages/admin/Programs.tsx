@@ -1,7 +1,7 @@
 // src/pages/admin/Programs.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../../api/axios";
+import axios, { ADMIN_FRONT_PREFIX } from "../../api/axios";
 import {
   Target,
   Plus,
@@ -96,7 +96,7 @@ const Programs: React.FC = () => {
   // Création/édition gérées par ProgramEditor
 
   const handleEdit = (program: Program) => {
-    navigate(`/admin/programs/${program._id}/edit`);
+    navigate(`${ADMIN_FRONT_PREFIX}/programs/${program._id}/edit`);
   };
 
   const handleDelete = async (id: string) => {
@@ -231,7 +231,7 @@ const Programs: React.FC = () => {
           </div>
           {isAdministrator && (
             <button
-              onClick={() => navigate("/admin/programs/new")}
+              onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/programs/new`)}
               className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl flex items-center">
               <Plus className="w-5 h-5 mr-2" />
               Nouveau Programme
@@ -574,7 +574,7 @@ const Programs: React.FC = () => {
           </p>
           {!searchTerm && remainingDays === null && !filterDate && (
             <button
-              onClick={() => navigate("/admin/programs/new")}
+              onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/programs/new`)}
               className="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
               <Plus className="w-5 h-5 mr-2" />
               Créer un programme

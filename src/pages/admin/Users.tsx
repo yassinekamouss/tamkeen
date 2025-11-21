@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import axios from "../../api/axios";
+import axios, { ADMIN_API_PREFIX } from "../../api/axios";
 import { getAdminSocket } from "../../api/socket";
 import { useNavigate } from "react-router-dom";
-import  Pagination from "../../components/Pagination";
+import { ADMIN_FRONT_PREFIX } from "../../api/axios";
+import Pagination from "../../components/Pagination";
 import {
   Users as UsersIcon,
   Search,
@@ -45,13 +46,11 @@ const Users: React.FC = () => {
     "all"
   );
 
-
   const [currentPage, setCurrentPage] = useState(1);
-const usersPerPage = 8;
+  const usersPerPage = 8;
 
-
-const indexOfLastUser = currentPage * usersPerPage;
-const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
 
   //partie consultant
   interface Admin {
@@ -63,7 +62,7 @@ const indexOfFirstUser = indexOfLastUser - usersPerPage;
 
   const fetchAdmins = useCallback(async () => {
     try {
-      const response = await axios.get("/admin");
+      const response = await axios.get(`${ADMIN_API_PREFIX}`);
       setAdmins(response.data);
     } catch {
       setError("Erreur lors du chargement des administrateurs.");
@@ -162,8 +161,7 @@ const indexOfFirstUser = indexOfLastUser - usersPerPage;
     return matchesSearch && matchesType;
   });
 
-  
-const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -386,43 +384,50 @@ const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-900">
-                    {(() => {
-                      let numbers: string[] = [];
+                      <div className="text-sm text-gray-900">
+                        {(() => {
+                          let numbers: string[] = [];
 
-                      // 1️⃣ Si telephones est une string JSON, parser
-                      if (typeof user.telephones === "string") {
-                        try {
-                          const parsed = JSON.parse(user.telephones);
-                          if (Array.isArray(parsed)) {
-                            numbers = parsed.filter((t): t is string => Boolean(t));
+                          // 1️⃣ Si telephones est une string JSON, parser
+                          if (typeof user.telephones === "string") {
+                            try {
+                              const parsed = JSON.parse(user.telephones);
+                              if (Array.isArray(parsed)) {
+                                numbers = parsed.filter((t): t is string =>
+                                  Boolean(t)
+                                );
+                              }
+                            } catch {
+                              numbers = [];
+                            }
+                          } else if (Array.isArray(user.telephones)) {
+                            numbers = user.telephones.filter((t): t is string =>
+                              Boolean(t)
+                            );
                           }
-                        } catch {
-                          numbers = [];
-                        }
-                      } else if (Array.isArray(user.telephones)) {
-                        numbers = user.telephones.filter((t): t is string => Boolean(t));
-                      }
 
-                      // 2️⃣ Ajouter le champ rétro-compat "telephone" si présent
-                      if (user.telephone && !numbers.includes(user.telephone)) {
-                        numbers.push(user.telephone);
-                      }
+                          // 2️⃣ Ajouter le champ rétro-compat "telephone" si présent
+                          if (
+                            user.telephone &&
+                            !numbers.includes(user.telephone)
+                          ) {
+                            numbers.push(user.telephone);
+                          }
 
-                      // 3️⃣ Affichage
-                      return numbers.length > 0 ? (
-                        <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
-                          {numbers.map((num) => (
-                            <option key={num} value={num}>
-                              {num}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        "—"
-                      );
-                    })()}
-                  </div>
+                          // 3️⃣ Affichage
+                          return numbers.length > 0 ? (
+                            <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
+                              {numbers.map((num) => (
+                                <option key={num} value={num}>
+                                  {num}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            "—"
+                          );
+                        })()}
+                      </div>
                     </td>
                     <td>
                       <div className="text-sm text-gray-900">
@@ -449,33 +454,32 @@ const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
                             // if (user.assistant) {
                             //   user.assistant._id = adminProfile._id; // Set the assistant to the admin's ID
                             // } else {
-                          try {
-                            await axios.put(`/users/${user._id}`, {
-                              etat: newEtat,
-                              consultantAssocie: {
-                                _id: adminProfile._id,
-                                username: adminProfile.username,
-                              },
-                            });
+                            try {
+                              await axios.put(`/users/${user._id}`, {
+                                etat: newEtat,
+                                consultantAssocie: {
+                                  _id: adminProfile._id,
+                                  username: adminProfile.username,
+                                },
+                              });
 
-                            setUsers((prev) =>
-                              prev.map((u) =>
-                                u._id === user._id
-                                  ? {
-                                      ...u,
-                                      etat: newEtat,
-                                      consultantAssocie: {
-                                        _id: adminProfile._id,
-                                        username: adminProfile.username,
-                                      },
-                                    }
-                                  : u
-                              )
-                            );
-                          } catch {
-                            alert("Erreur lors de la mise à jour de l'état.");
-                          }
-
+                              setUsers((prev) =>
+                                prev.map((u) =>
+                                  u._id === user._id
+                                    ? {
+                                        ...u,
+                                        etat: newEtat,
+                                        consultantAssocie: {
+                                          _id: adminProfile._id,
+                                          username: adminProfile.username,
+                                        },
+                                      }
+                                    : u
+                                )
+                              );
+                            } catch {
+                              alert("Erreur lors de la mise à jour de l'état.");
+                            }
                           }}>
                           {/* <option value="">Sélectionner</option> */}
                           <option value="En traitement">En traitement</option>
@@ -552,7 +556,9 @@ const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() =>
-                          navigate(`/admin/user/details/${user._id}`)
+                          navigate(
+                            `${ADMIN_FRONT_PREFIX}/user/details/${user._id}`
+                          )
                         }
                         className="text-gray-600 hover:text-gray-900 mr-3 transition-colors duration-200">
                         <Eye className="w-4 h-4" />
@@ -707,15 +713,12 @@ const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
           </div>
         )}
       </div>
-         <Pagination
-  currentPage={currentPage}
-  totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
-  onPageChange={(page) => setCurrentPage(page)}
-/>
-
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </div>
-
- 
   );
 };
 

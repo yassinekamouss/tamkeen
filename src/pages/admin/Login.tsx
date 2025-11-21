@@ -3,7 +3,7 @@ import React, { useMemo, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../../api/axios";
+import axios, { ADMIN_API_PREFIX, ADMIN_FRONT_PREFIX } from "../../api/axios";
 import logo from "../../assets/logo.webp";
 
 interface LoginData {
@@ -33,14 +33,14 @@ const Login: React.FC = () => {
     const loginData: LoginData = { email, password };
 
     try {
-      const res = await axios.post("/admin/login", loginData);
+      const res = await axios.post(`${ADMIN_API_PREFIX}/login`, loginData);
 
       const admin = res.data.admin;
 
       localStorage.setItem("adminProfile", JSON.stringify(admin));
 
       // Rediriger
-      navigate("/admin/dashboard");
+      navigate(`${ADMIN_FRONT_PREFIX}/dashboard`);
     } catch {
       setError("Échec de la connexion. Vérifiez vos identifiants.");
     }

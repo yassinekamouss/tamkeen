@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ADMIN_FRONT_PREFIX } from "./api/axios";
 import { Suspense, lazy } from "react";
 import "./App.css";
 import Loader from "./components/Spinner.tsx";
@@ -48,7 +49,7 @@ function App() {
             <Route path="/news/:slugOrId" element={<NewsDetail />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/privacy" element={<Privacy />} />
-            <Route path="/admin/login" element={<Login />} />
+            <Route path={`${ADMIN_FRONT_PREFIX}/login`} element={<Login />} />
 
             {/* Localized routes with language prefix (fr/ar) */}
             <Route path=":lang(fr|ar)" element={<LangLayout />}>
@@ -61,10 +62,13 @@ function App() {
             </Route>
 
             {/* Page d'accès refusé */}
-            <Route path="/admin/access-denied" element={<AccessDenied />} />
+            <Route
+              path={`${ADMIN_FRONT_PREFIX}/access-denied`}
+              element={<AccessDenied />}
+            />
 
             {/* Protected admin routes */}
-            <Route path="/admin" element={<PrivateRoute />}>
+            <Route path={ADMIN_FRONT_PREFIX} element={<PrivateRoute />}>
               <Route element={<LayoutAdmin />}>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="users" element={<Users />} />
@@ -83,7 +87,7 @@ function App() {
                   element={
                     <RoleProtectedRoute
                       requiredRole="Administrateur"
-                      fallbackPath="/admin/access-denied">
+                      fallbackPath={`${ADMIN_FRONT_PREFIX}/access-denied`}>
                       <AdminsGestion />
                     </RoleProtectedRoute>
                   }

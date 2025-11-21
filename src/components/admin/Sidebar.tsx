@@ -9,9 +9,9 @@ import {
   Newspaper,
   LogOut,
   UserCircle,
-  Handshake
+  Handshake,
 } from "lucide-react";
-import api from "../../api/axios";
+import api, { ADMIN_API_PREFIX, ADMIN_FRONT_PREFIX } from "../../api/axios";
 
 const Sidebar = ({
   isOpen,
@@ -24,24 +24,27 @@ const Sidebar = ({
 }) => {
   const navigate = useNavigate();
 
-  const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
+  const adminProfile = JSON.parse(
+    localStorage.getItem("adminProfile") || "null"
+  );
   const isAdministrator = adminProfile?.role === "Administrateur";
 
   const handleLogout = async () => {
     try {
-      await api.post("/admin/logout"); // supprime le cookie côté backend
+      await api.post(`${ADMIN_API_PREFIX}/logout`); // supprime le cookie côté backend
     } catch (err) {
       console.error("Erreur lors de la déconnexion :", err);
     }
 
     localStorage.removeItem("adminProfile"); // supprime le profil
-    navigate("/admin/login"); // redirige
+    navigate(`${ADMIN_FRONT_PREFIX}/login`); // redirige
   };
 
   return (
     <div
       className={`h-screen bg-white border-r border-gray-200 text-gray-800 p-5 space-y-6 fixed top-0 left-0 z-50 transition-all duration-300 ease-in-out shadow-sm
-        ${isOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"
+        ${
+          isOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"
         } overflow-hidden`}>
       {/* Logo Section centrer  */}
 
@@ -55,11 +58,12 @@ const Sidebar = ({
       {/* Navigation */}
       <nav className="flex flex-col space-y-1">
         <NavLink
-          to="/admin/dashboard"
+          to={`${ADMIN_FRONT_PREFIX}/dashboard`}
           className={({ isActive }) =>
-            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${isActive
-              ? "bg-gray-100 text-gray-900 font-medium"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
           <LayoutDashboard className="w-5 h-5 mr-3" />
@@ -67,11 +71,12 @@ const Sidebar = ({
         </NavLink>
 
         <NavLink
-          to="/admin/users"
+          to={`${ADMIN_FRONT_PREFIX}/users`}
           className={({ isActive }) =>
-            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${isActive
-              ? "bg-gray-100 text-gray-900 font-medium"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
           <Users className="w-5 h-5 mr-3" />
@@ -79,11 +84,12 @@ const Sidebar = ({
         </NavLink>
 
         <NavLink
-          to="/admin/programs"
+          to={`${ADMIN_FRONT_PREFIX}/programs`}
           className={({ isActive }) =>
-            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${isActive
-              ? "bg-gray-100 text-gray-900 font-medium"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
           <Target className="w-5 h-5 mr-3" />
@@ -92,12 +98,13 @@ const Sidebar = ({
 
         {/* Tests */}
         <NavLink
-          to="/admin/tests"
+          to={`${ADMIN_FRONT_PREFIX}/tests`}
           onClick={() => onResetTestsUnread?.()}
           className={({ isActive }) =>
-            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${isActive
-              ? "bg-gray-100 text-gray-900 font-medium"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
           <div className="relative mr-3">
@@ -113,11 +120,12 @@ const Sidebar = ({
 
         {/* News */}
         <NavLink
-          to="/admin/news"
+          to={`${ADMIN_FRONT_PREFIX}/news`}
           className={({ isActive }) =>
-            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${isActive
-              ? "bg-gray-100 text-gray-900 font-medium"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
           <Newspaper className="w-5 h-5 mr-3" />
@@ -126,11 +134,12 @@ const Sidebar = ({
 
         {/* Reports */}
         <NavLink
-          to="/admin/reports"
+          to={`${ADMIN_FRONT_PREFIX}/reports`}
           className={({ isActive }) =>
-            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${isActive
-              ? "bg-gray-100 text-gray-900 font-medium"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
           <FileText className="w-5 h-5 mr-3" />
@@ -138,11 +147,12 @@ const Sidebar = ({
         </NavLink>
         {/* Partenaires */}
         <NavLink
-          to="/admin/partenaires"
+          to={`${ADMIN_FRONT_PREFIX}/partenaires`}
           className={({ isActive }) =>
-            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${isActive
-              ? "bg-gray-100 text-gray-900 font-medium"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`
           }>
           <Handshake className="w-5 h-5 mr-3" />
@@ -154,11 +164,12 @@ const Sidebar = ({
       <div className="absolute bottom-5 left-5 right-5">
         {isAdministrator && (
           <NavLink
-            to="/admin/app-users"
+            to={`${ADMIN_FRONT_PREFIX}/app-users`}
             className={({ isActive }) =>
-              `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${isActive
-                ? "bg-gray-100 text-gray-900 font-medium"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+                isActive
+                  ? "bg-gray-100 text-gray-900 font-medium"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`
             }>
             <UserCircle className="w-5 h-5 mr-3" />

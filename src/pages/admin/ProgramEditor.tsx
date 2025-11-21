@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "../../api/axios";
+import axios, { ADMIN_FRONT_PREFIX } from "../../api/axios";
 import { CheckCircle, Save, ArrowLeft, Info, X, Check } from "lucide-react";
 import {
   SECTEURS_TRAVAIL,
@@ -127,9 +127,15 @@ function useRqbFields() {
   const brancheValues = Object.values(branchesMap)
     .flat()
     .map((b) => ({ name: b.value, label: b.key }));
-  const regionValues = (REGIONS as string[]).map((r) => ({ name: r, label: r }));
+  const regionValues = (REGIONS as string[]).map((r) => ({
+    name: r,
+    label: r,
+  }));
   const statutValues = statutOpts.map((o) => ({ name: o.value, label: o.key }));
-  const investissementValues = investOpts.map((o) => ({ name: o.value, label: o.key }));
+  const investissementValues = investOpts.map((o) => ({
+    name: o.value,
+    label: o.key,
+  }));
   const anneeValues = (ANNEE_CREATION as (string | number)[]).map((a) => ({
     name: String(a),
     label: String(a),
@@ -249,8 +255,7 @@ const SearchableSelect: React.FC<{
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left transition-all"
-      >
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left transition-all">
         <span className={selectedOption ? "text-gray-900" : "text-gray-400"}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>
@@ -289,8 +294,7 @@ const SearchableSelect: React.FC<{
                     e.stopPropagation();
                     handleSelect("");
                   }}
-                  className="px-3 py-2 cursor-pointer hover:bg-gray-50 text-gray-500 border-b border-gray-100 italic"
-                >
+                  className="px-3 py-2 cursor-pointer hover:bg-gray-50 text-gray-500 border-b border-gray-100 italic">
                   {placeholder}
                 </div>
               )}
@@ -313,9 +317,13 @@ const SearchableSelect: React.FC<{
                         isSelected
                           ? "bg-blue-50 hover:bg-blue-100"
                           : "hover:bg-gray-50"
-                      }`}
-                    >
-                      <span className={`text-sm ${isSelected ? "font-medium text-blue-900" : "text-gray-700"}`}>
+                      }`}>
+                      <span
+                        className={`text-sm ${
+                          isSelected
+                            ? "font-medium text-blue-900"
+                            : "text-gray-700"
+                        }`}>
                         {option.label}
                       </span>
                       {isSelected && (
@@ -382,17 +390,17 @@ const ImprovedMultiSelect: React.FC<{
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left transition-all"
-      >
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-left transition-all">
         <div className="flex flex-wrap gap-1.5 min-h-[24px]">
           {currentValue.length === 0 ? (
-            <span className="text-gray-400 text-sm">Sélectionner des valeurs...</span>
+            <span className="text-gray-400 text-sm">
+              Sélectionner des valeurs...
+            </span>
           ) : (
             selectedLabels.map((label, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-sm rounded-md"
-              >
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-sm rounded-md">
                 {label}
                 <button
                   type="button"
@@ -400,13 +408,12 @@ const ImprovedMultiSelect: React.FC<{
                     e.stopPropagation();
                     removeOption(currentValue[idx]);
                   }}
-                  className="hover:bg-blue-200 rounded-full p-0.5"
-                >
+                  className="hover:bg-blue-200 rounded-full p-0.5">
                   <X className="w-3 h-3" />
                 </button>
               </span>
             ))
-         )}
+          )}
         </div>
       </button>
 
@@ -438,8 +445,7 @@ const ImprovedMultiSelect: React.FC<{
                   e.stopPropagation();
                   selectAll();
                 }}
-                className="flex-1 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
-              >
+                className="flex-1 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors">
                 Tout sélectionner
               </button>
               <button
@@ -448,8 +454,7 @@ const ImprovedMultiSelect: React.FC<{
                   e.stopPropagation();
                   deselectAll();
                 }}
-                className="flex-1 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-              >
+                className="flex-1 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
                 Tout désélectionner
               </button>
             </div>
@@ -474,18 +479,21 @@ const ImprovedMultiSelect: React.FC<{
                         isSelected
                           ? "bg-blue-50 hover:bg-blue-100"
                           : "hover:bg-gray-50"
-                      }`}
-                    >
+                      }`}>
                       <div
                         className={`w-5 h-5 border-2 rounded flex items-center justify-center flex-shrink-0 ${
                           isSelected
                             ? "bg-blue-600 border-blue-600"
                             : "border-gray-300"
-                        }`}
-                      >
+                        }`}>
                         {isSelected && <Check className="w-3 h-3 text-white" />}
                       </div>
-                      <span className={`text-sm ${isSelected ? "font-medium text-blue-900" : "text-gray-700"}`}>
+                      <span
+                        className={`text-sm ${
+                          isSelected
+                            ? "font-medium text-blue-900"
+                            : "text-gray-700"
+                        }`}>
                         {option.label}
                       </span>
                     </div>
@@ -499,9 +507,9 @@ const ImprovedMultiSelect: React.FC<{
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
-              >
-                Terminer ({currentValue.length} sélectionné{currentValue.length > 1 ? 's' : ''})
+                className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+                Terminer ({currentValue.length} sélectionné
+                {currentValue.length > 1 ? "s" : ""})
               </button>
             </div>
           </div>
@@ -586,7 +594,7 @@ const ProgramEditor: React.FC = () => {
             setProgram(newProgram);
           }
         }, 0);
-      } catch (err) {
+      } catch {
         if (mounted) {
           setError("Erreur lors du chargement du programme");
         }
@@ -619,7 +627,9 @@ const ProgramEditor: React.FC = () => {
         DateDebut: program.DateDebut
           ? new Date(program.DateDebut).toISOString()
           : null,
-        DateFin: program.DateFin ? new Date(program.DateFin).toISOString() : null,
+        DateFin: program.DateFin
+          ? new Date(program.DateFin).toISOString()
+          : null,
         link: program.link || "",
         criteres: program.criteres,
       };
@@ -630,8 +640,8 @@ const ProgramEditor: React.FC = () => {
         await axios.post(`/programs`, payload);
       }
 
-      navigate("/admin/programs");
-    } catch (err) {
+      navigate(`${ADMIN_FRONT_PREFIX}/programs`);
+    } catch {
       setError("Erreur lors de l'enregistrement du programme");
     } finally {
       setSaving(false);
@@ -641,19 +651,19 @@ const ProgramEditor: React.FC = () => {
   const pageTitle = programId ? "Modifier le programme" : "Nouveau programme";
 
   const CustomValueEditor = (props: ValueEditorProps) => {
-      if (props.operator === "between") {
+    if (props.operator === "between") {
       // La valeur est souvent un tableau [min, max] ou une chaîne "min,max"
       const values = Array.isArray(props.value)
         ? props.value
-        : `${props.value ?? ''}`.split(',');
+        : `${props.value ?? ""}`.split(",");
 
       const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValues = [e.target.value, values[1] ?? ''];
+        const newValues = [e.target.value, values[1] ?? ""];
         props.handleOnChange(newValues);
       };
 
       const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValues = [values[0] ?? '', e.target.value];
+        const newValues = [values[0] ?? "", e.target.value];
         props.handleOnChange(newValues);
       };
 
@@ -677,7 +687,7 @@ const ProgramEditor: React.FC = () => {
         </div>
       );
     }
-    
+
     if (props.operator === "in" || props.operator === "notIn") {
       const currentValue = Array.isArray(props.value) ? props.value : [];
       return (
@@ -752,8 +762,7 @@ const ProgramEditor: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
-          >
+            className="inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-50 text-gray-700">
             <ArrowLeft className="w-4 h-4 mr-2" /> Retour
           </button>
           <h1 className="text-2xl font-bold text-gray-800">{pageTitle}</h1>
@@ -762,8 +771,7 @@ const ProgramEditor: React.FC = () => {
           type="submit"
           form="program-editor-form"
           disabled={saving}
-          className="inline-flex items-center px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 text-white disabled:opacity-60"
-        >
+          className="inline-flex items-center px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 text-white disabled:opacity-60">
           <Save className="w-4 h-4 mr-2" />
           {saving ? "Enregistrement..." : "Enregistrer"}
         </button>
@@ -774,7 +782,10 @@ const ProgramEditor: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
         </div>
       ) : (
-        <form id="program-editor-form" onSubmit={handleSave} className="space-y-6">
+        <form
+          id="program-editor-form"
+          onSubmit={handleSave}
+          className="space-y-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-800 rounded-md p-3">
               {error}
@@ -783,7 +794,8 @@ const ProgramEditor: React.FC = () => {
 
           <section className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Info className="w-5 h-5 mr-2 text-blue-600" /> Informations de base
+              <Info className="w-5 h-5 mr-2 text-blue-600" /> Informations de
+              base
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -827,8 +839,7 @@ const ProgramEditor: React.FC = () => {
                       ...p,
                       isActive: e.target.value === "true",
                     }))
-                  }
-                >
+                  }>
                   <option value="true">Actif</option>
                   <option value="false">Inactif</option>
                 </select>
@@ -886,7 +897,9 @@ const ProgramEditor: React.FC = () => {
 
             <div className="rqb-container">
               <QueryBuilder
-                key={`qb-${programId || "new"}-${JSON.stringify(program.criteres)}`}
+                key={`qb-${programId || "new"}-${JSON.stringify(
+                  program.criteres
+                )}`}
                 fields={fields}
                 query={program.criteres}
                 onQueryChange={(q: RuleGroupType) => {

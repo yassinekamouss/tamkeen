@@ -1,4 +1,4 @@
-import axios from "../api/axios";
+import axios, { ADMIN_API_PREFIX } from "../api/axios";
 
 export interface NewsItem {
   id: number;
@@ -91,7 +91,7 @@ export const newsService = {
 
   // Créer une nouvelle actualité (Admin)
   createNews: async (newsData: FormData): Promise<SingleNewsResponse> => {
-    const response = await axios.post("/admin/news", newsData);
+    const response = await axios.post(`${ADMIN_API_PREFIX}/news`, newsData);
     return response.data;
   },
 
@@ -100,7 +100,10 @@ export const newsService = {
     id: number,
     newsData: FormData | Partial<CreateNewsItemBase>
   ): Promise<SingleNewsResponse> => {
-    const response = await axios.put(`/admin/news/${id}`, newsData);
+    const response = await axios.put(
+      `${ADMIN_API_PREFIX}/news/${id}`,
+      newsData
+    );
     return response.data;
   },
 
@@ -108,7 +111,7 @@ export const newsService = {
   deleteNews: async (
     id: number
   ): Promise<{ success: boolean; message: string }> => {
-    const response = await axios.delete(`/admin/news/${id}`);
+    const response = await axios.delete(`${ADMIN_API_PREFIX}/news/${id}`);
     return response.data;
   },
 };

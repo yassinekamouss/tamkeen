@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import api from "../../api/axios";
+import api, { ADMIN_FRONT_PREFIX } from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 import {
   Chart as ChartJS,
@@ -86,8 +86,6 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const navigate = useNavigate();
-
-
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -302,7 +300,9 @@ const Dashboard: React.FC = () => {
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Total Utilisateurs</p>
+              <p className="text-gray-600 text-sm font-medium">
+                Total Utilisateurs
+              </p>
               <p className="text-3xl font-bold text-gray-900">
                 {stats.totalUsers}
               </p>
@@ -475,7 +475,7 @@ const Dashboard: React.FC = () => {
           </h3>
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => navigate("/admin/programs")}
+              onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/programs`)}
               className="flex flex-col items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
               <Plus className="w-6 h-6 text-gray-600 group-hover:text-gray-700 mb-2" />
               <span className="text-sm font-medium text-gray-700">
@@ -483,7 +483,7 @@ const Dashboard: React.FC = () => {
               </span>
             </button>
             <button
-              onClick={() => navigate("/admin/users")}
+              onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/users`)}
               className="flex flex-col items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
               <Users className="w-6 h-6 text-gray-600 group-hover:text-gray-700 mb-2" />
               <span className="text-sm font-medium text-gray-700">
@@ -491,7 +491,7 @@ const Dashboard: React.FC = () => {
               </span>
             </button>
             <button
-              onClick={() => navigate("/admin/tests")}
+              onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/tests`)}
               className="flex flex-col items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
               <ClipboardCheck className="w-6 h-6 text-gray-600 group-hover:text-gray-700 mb-2" />
               <span className="text-sm font-medium text-gray-700">
@@ -499,7 +499,7 @@ const Dashboard: React.FC = () => {
               </span>
             </button>
             <button
-              onClick={() => navigate("/admin/reports")}
+              onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/reports`)}
               className="flex flex-col items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
               <svg
                 className="w-6 h-6 text-gray-600 group-hover:text-gray-700 mb-2"

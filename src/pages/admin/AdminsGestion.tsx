@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "../../api/axios";
-import {
-  Shield,
-  Search,
-  AlertCircle,
-  Plus,
-} from "lucide-react";
+import axios, { ADMIN_API_PREFIX } from "../../api/axios";
+import { Shield, Search, AlertCircle, Plus } from "lucide-react";
 
 import AdminStats from "../../components/admin/admins/AdminStats";
 import AdminTable from "../../components/admin/admins/AdminTable";
@@ -24,7 +19,9 @@ const AdminsGestion: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterRole, setFilterRole] = useState<"all" | "Administrateur" | "Consultant">("all");
+  const [filterRole, setFilterRole] = useState<
+    "all" | "Administrateur" | "Consultant"
+  >("all");
 
   const [newAdmin, setNewAdmin] = useState<NewAdmin>({
     email: "",
@@ -36,8 +33,12 @@ const AdminsGestion: React.FC = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "null");
-        const response = await axios.get("/admin/others", { params: { _id: adminProfile._id } });
+        const adminProfile = JSON.parse(
+          localStorage.getItem("adminProfile") || "null"
+        );
+        const response = await axios.get(`${ADMIN_API_PREFIX}/others`, {
+          params: { _id: adminProfile._id },
+        });
         setAdmins(response.data);
       } catch {
         setError("Erreur lors du chargement des administrateurs.");
@@ -52,7 +53,7 @@ const AdminsGestion: React.FC = () => {
   const filteredAdmins = admins.filter((admin) => {
     const email = admin.email || "";
     const username = admin.username || "";
-    
+
     const matchesSearch =
       email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       username.toLowerCase().includes(searchTerm.toLowerCase());
@@ -65,35 +66,44 @@ const AdminsGestion: React.FC = () => {
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/admin/register", newAdmin);
+      const response = await axios.post(
+        `${ADMIN_API_PREFIX}/register`,
+        newAdmin
+      );
       setAdmins((prev) => [...prev, response.data.admin]);
-      setNewAdmin({ email: "", username: "", password: "", role: "Consultant" });
+      setNewAdmin({
+        email: "",
+        username: "",
+        password: "",
+        role: "Consultant",
+      });
       setIsAddModalOpen(false);
       console.log("Administrateur ajouté :", response.data.admin);
     } catch (error) {
       console.error("Erreur lors de l'ajout :", error);
     }
   };
-   
+
   const updateAdmin = async (updatedAdmin: Admin, id: string) => {
     try {
       const { ...adminData } = updatedAdmin;
-      const response = await axios.put(`/admin/${id}`, adminData);
+      const response = await axios.put(`${ADMIN_API_PREFIX}/${id}`, adminData);
       setAdmins((prev) =>
         prev.map((admin) => (admin._id === id ? response.data.admin : admin))
       );
       setIsEditModalOpen(false);
-    setSelectedAdmin(null);
-    setEditingAdminId(null);
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour :", error);
-  }
-};
+      setSelectedAdmin(null);
+      setEditingAdminId(null);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour :", error);
+    }
+  };
   const handleDeleteAdmin = async (adminId: string) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer cet administrateur ?")) return;
+    if (!window.confirm("Voulez-vous vraiment supprimer cet administrateur ?"))
+      return;
 
     try {
-      await axios.delete(`/admin/${adminId}`);
+      await axios.delete(`${ADMIN_API_PREFIX}/${adminId}`);
       setAdmins((prev) => prev.filter((admin) => admin._id !== adminId));
       console.log("Administrateur supprimé !");
     } catch (error) {
@@ -101,18 +111,24 @@ const AdminsGestion: React.FC = () => {
     }
   };
 
- const handleResetPassword = async (adminId: string) => {
-  if (!window.confirm("Voulez-vous vraiment réinitialiser le mot de passe ?")) return;
+  const handleResetPassword = async (adminId: string) => {
+    if (!window.confirm("Voulez-vous vraiment réinitialiser le mot de passe ?"))
+      return;
 
-  try {
-    const res = await axios.post(`/admin/${adminId}/reset-password`);
-    alert(res.data.message); // ✅ affiche le message du backend
-    console.log("Mot de passe réinitialisé !");
-  } catch (error) {
-    console.error("Erreur lors de la réinitialisation du mot de passe :", error);
-    alert("Erreur lors de la réinitialisation du mot de passe.");
-  }
-};
+    try {
+      const res = await axios.post(
+        `${ADMIN_API_PREFIX}/${adminId}/reset-password`
+      );
+      alert(res.data.message); // ✅ affiche le message du backend
+      console.log("Mot de passe réinitialisé !");
+    } catch (error) {
+      console.error(
+        "Erreur lors de la réinitialisation du mot de passe :",
+        error
+      );
+      alert("Erreur lors de la réinitialisation du mot de passe.");
+    }
+  };
 
   if (loading) {
     return (
@@ -188,7 +204,9 @@ const AdminsGestion: React.FC = () => {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={filterRole}
               onChange={(e) =>
-                setFilterRole(e.target.value as "all" | "Administrateur" | "Consultant")
+                setFilterRole(
+                  e.target.value as "all" | "Administrateur" | "Consultant"
+                )
               }>
               <option value="all">Tous les rôles</option>
               <option value="Administrateur">Administrateur</option>
@@ -199,28 +217,28 @@ const AdminsGestion: React.FC = () => {
       </div>
 
       {/* Statistics */}
-     <AdminStats admins={admins} />
+      <AdminStats admins={admins} />
 
-<div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-  <div className="px-6 py-4 border-b border-gray-200">
-    <h3 className="text-lg font-semibold text-gray-800">
-      Liste des administrateurs ({filteredAdmins.length})
-    </h3>
-  </div>
-  <AdminTable
-    filteredAdmins={filteredAdmins}
-    onEdit={(admin) => {
-      setSelectedAdmin(admin);
-      setEditingAdminId(admin._id);
-      setIsEditModalOpen(true);
-    }}
-    onDelete={handleDeleteAdmin}
-    onResetPassword={handleResetPassword}
-  />
-</div>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-800">
+            Liste des administrateurs ({filteredAdmins.length})
+          </h3>
+        </div>
+        <AdminTable
+          filteredAdmins={filteredAdmins}
+          onEdit={(admin) => {
+            setSelectedAdmin(admin);
+            setEditingAdminId(admin._id);
+            setIsEditModalOpen(true);
+          }}
+          onDelete={handleDeleteAdmin}
+          onResetPassword={handleResetPassword}
+        />
+      </div>
 
       {/* Add Admin Modal */}
-        <AddAdminModal
+      <AddAdminModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         newAdmin={newAdmin}
@@ -230,7 +248,10 @@ const AdminsGestion: React.FC = () => {
       {/* Edit Admin Modal */}
       <EditAdminModal
         isOpen={isEditModalOpen}
-        onClose={() => { setIsEditModalOpen(false); setSelectedAdmin(null); }}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedAdmin(null);
+        }}
         selectedAdmin={selectedAdmin}
         setSelectedAdmin={setSelectedAdmin}
         onSubmit={(e) => {

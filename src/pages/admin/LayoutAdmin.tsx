@@ -3,7 +3,7 @@ import Sidebar from "../../components/admin/Sidebar";
 import { useEffect, useState } from "react";
 import { LayoutDashboard } from "lucide-react";
 import logoTamkeen from "../../assets/logo.webp";
-import axios from "../../api/axios";
+import axios, { ADMIN_API_PREFIX, ADMIN_FRONT_PREFIX } from "../../api/axios";
 import { useAdminSocket } from "../../hooks/admin/useAdminSocket";
 
 const LayoutAdmin = () => {
@@ -14,7 +14,7 @@ const LayoutAdmin = () => {
 
   // Reset the unread badge when the Tests page is active
   useEffect(() => {
-    if (location.pathname.startsWith("/admin/tests")) {
+    if (location.pathname.startsWith(`${ADMIN_FRONT_PREFIX}/tests`)) {
       resetUnread();
     }
   }, [location.pathname, resetUnread]);
@@ -39,12 +39,12 @@ const LayoutAdmin = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/admin/logout");
+      await axios.post(`${ADMIN_API_PREFIX}/logout`);
     } catch (err) {
       console.error("Erreur lors de la déconnexion :", err);
     }
     localStorage.removeItem("adminProfile");
-    navigate("/admin/login");
+    navigate(`${ADMIN_FRONT_PREFIX}/login`);
   };
 
   return (
@@ -291,7 +291,10 @@ const LayoutAdmin = () => {
                               JSON.stringify(tempProfile)
                             );
                             axios
-                              .put(`/admin/${adminProfile._id}`, tempProfile)
+                              .put(
+                                `${ADMIN_API_PREFIX}/${adminProfile._id}`,
+                                tempProfile
+                              )
                               .then((response) =>
                                 console.log(
                                   "Profil mis à jour :",

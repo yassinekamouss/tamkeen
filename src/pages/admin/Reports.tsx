@@ -1,4 +1,4 @@
-import axios from "../../api/axios";
+import axios, { ADMIN_API_PREFIX } from "../../api/axios";
 import React, { useState, useEffect } from "react";
 import type { Admin } from "../../components/admin/admins/types";
 import { FileDown } from "lucide-react";
@@ -16,7 +16,7 @@ const Reports: React.FC = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await axios.get("/admin");
+        const response = await axios.get(`${ADMIN_API_PREFIX}`);
         setAdmins(response.data);
         console.log(response.data);
       } catch {
@@ -28,7 +28,6 @@ const Reports: React.FC = () => {
 
     fetchAdmins();
   }, []);
-
 
   // Télécharger directement en Excel
   const handleDownload = () => {
@@ -63,15 +62,12 @@ const Reports: React.FC = () => {
       <div className="mb-8 w-full max-w-6xl">
         <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center">
           <FileDown className="inline-block w-8 h-8 mr-3 text-gray-600" />
-
           Exporter les candidats
         </h1>
         <p className="text-gray-600">
           Exporter les tests des candidats inscrits sur la plateforme Tamkeen
         </p>
       </div>
-
-
 
       <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 w-full max-w-6xl space-y-8">
         <h2 className="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-4">
@@ -81,7 +77,9 @@ const Reports: React.FC = () => {
         {/* Sélection des dates */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-600 mb-1">Date de début</label>
+            <label className="text-sm font-medium text-gray-600 mb-1">
+              Date de début
+            </label>
             <input
               type="date"
               value={startDate}
@@ -93,7 +91,9 @@ const Reports: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-600 mb-1">Date de fin</label>
+            <label className="text-sm font-medium text-gray-600 mb-1">
+              Date de fin
+            </label>
             <input
               type="date"
               value={endDate}
@@ -108,13 +108,14 @@ const Reports: React.FC = () => {
 
         {/* Type utilisateur */}
         <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600 mb-1">Type d’utilisateur</label>
+          <label className="text-sm font-medium text-gray-600 mb-1">
+            Type d’utilisateur
+          </label>
           <select
             value={applicantType}
             onChange={(e) => setApplicantType(e.target.value)}
             className="border border-gray-300 rounded-lg p-2 w-full bg-gray-50 text-gray-700 
-                   focus:outline-none focus:ring-2 focus:ring-gray-400 transition"
-          >
+                   focus:outline-none focus:ring-2 focus:ring-gray-400 transition">
             <option value="all">Tous les types</option>
             <option value="morale">Personne morale</option>
             <option value="physique">Personne physique</option>
@@ -123,13 +124,14 @@ const Reports: React.FC = () => {
 
         {/* Sélecteur administrateur */}
         <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600 mb-1">Consultant associé</label>
+          <label className="text-sm font-medium text-gray-600 mb-1">
+            Consultant associé
+          </label>
           <select
             value={consultantAssocie}
             onChange={(e) => setConsultantAssocie(e.target.value)}
             className="border border-gray-300 rounded-lg p-2 w-full bg-gray-50 text-gray-700 
-                   focus:outline-none focus:ring-2 focus:ring-gray-400 transition"
-          >
+                   focus:outline-none focus:ring-2 focus:ring-gray-400 transition">
             <option value="">Tous les Consultants</option>
             {Array.isArray(admins) &&
               admins.map((admin) => (
@@ -145,8 +147,7 @@ const Reports: React.FC = () => {
           <button
             onClick={handleDownload}
             className="bg-gray-700 text-white px-6 py-2.5 rounded-lg shadow 
-                   hover:bg-gray-800 focus:ring-2 focus:ring-gray-400 transition"
-          >
+                   hover:bg-gray-800 focus:ring-2 focus:ring-gray-400 transition">
             Télécharger en Excel
           </button>
         </div>
@@ -155,8 +156,6 @@ const Reports: React.FC = () => {
         {error && <p className="text-red-600 font-medium">{error}</p>}
       </div>
     </div>
-
-
   );
 };
 
