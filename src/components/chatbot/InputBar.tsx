@@ -9,7 +9,8 @@ interface Props {
 
 const InputBar: React.FC<Props> = ({ value, onChange, onSend, onEnterKey }) => {
   return (
-    <div className="p-3 sm:p-6 border-t border-gray-200 bg-white flex-shrink-0">
+    // Ajout de rounded-b-2xl/3xl pour matcher le parent
+    <div className="p-3 sm:p-4 border-t border-gray-200 bg-white flex-shrink-0 rounded-b-2xl sm:rounded-b-3xl">
       <div className="flex space-x-2 sm:space-x-3 items-end">
         <div className="flex-1 relative">
           <textarea
@@ -18,7 +19,8 @@ const InputBar: React.FC<Props> = ({ value, onChange, onSend, onEnterKey }) => {
             onKeyPress={onEnterKey}
             placeholder="Tapez votre message..."
             rows={1}
-            className="w-full px-3 py-2 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm resize-none bg-gray-50 hover:bg-white transition-colors duration-200"
+            // Changement CRITIQUE : text-base sur mobile pour éviter le zoom iOS, text-sm sur desktop
+            className="w-full px-3 py-2 sm:px-3 sm:py-2 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base sm:text-sm resize-none bg-gray-50 hover:bg-white transition-colors duration-200"
             style={{ minHeight: "40px", maxHeight: "80px" }}
           />
         </div>

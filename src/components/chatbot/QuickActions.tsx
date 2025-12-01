@@ -9,8 +9,8 @@ interface Props {
 const QuickActions: React.FC<Props> = ({ items, onAction, visible }) => {
   if (!visible) return null;
   return (
-    <div className="px-3 py-3 sm:px-6 sm:py-4 border-t border-gray-200 bg-white/80 flex-shrink-0">
-      <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 font-medium">
+    <div className="px-3 py-3 sm:px-4 sm:py-3 border-t border-gray-200 bg-white/80 flex-shrink-0">
+      <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-2 font-medium">
         Actions rapides pour commencer :
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

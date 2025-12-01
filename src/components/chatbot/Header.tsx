@@ -8,7 +8,8 @@ interface Props {
 
 const Header: React.FC<Props> = ({ imageSrc, onReset, onClose }) => {
   return (
-    <div className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 p-4 sm:p-6 flex-shrink-0">
+    // Ajout de rounded-t-2xl/3xl pour matcher le parent et éviter les coins blancs
+    <div className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 p-4 sm:p-6 flex-shrink-0 rounded-t-2xl sm:rounded-t-3xl">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-4 left-4 w-8 h-8 border-2 border-white rotate-45"></div>
         <div className="absolute top-8 right-8 w-4 h-4 bg-white/20 rounded-full"></div>
