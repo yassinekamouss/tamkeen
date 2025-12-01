@@ -161,7 +161,7 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image de couverture *
+                    Image de couverture 
                   </label>
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg bg-white hover:bg-gray-50 transition-colors cursor-pointer relative group">
                     <div className="space-y-2 text-center">
@@ -178,7 +178,7 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
                             name="file-upload"
                             type="file"
                             accept="image/*"
-                            required={heroData.isHero}
+                            required={false}
                             className="sr-only"
                             onChange={(e) => {
                               const file = e.target.files?.[0];
@@ -329,11 +329,11 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            العنوان الرئيسي *
+                            العنوان الرئيسي
                           </label>
                           <input
                             type="text"
-                            required={heroData.isHero}
+                            required={false}
                             dir="rtl"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             value={heroData.titleAr}
@@ -349,11 +349,11 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            العنوان الفرعي *
+                            العنوان الفرعي
                           </label>
                           <input
                             type="text"
-                            required={heroData.isHero}
+                            required={false}
                             dir="rtl"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             value={heroData.subtitleAr}
@@ -369,11 +369,11 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            الوصف *
+                            الوصف 
                           </label>
                           <textarea
                             rows={4}
-                            required={heroData.isHero}
+                            required={false}
                             dir="rtl"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
                             value={heroData.descriptionAr}
