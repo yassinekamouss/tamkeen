@@ -91,6 +91,15 @@ const Header: React.FC = () => {
               }`}>
               {t("header.faq")}
             </Link>
+               <Link
+              to="/programs"
+              className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+                isActiveLink("/programs")
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-700 hover:text-blue-600"
+              }`}>
+              {t("header.programs")}
+            </Link>
             <div ref={dropdownRef} className="relative">
               <button
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}

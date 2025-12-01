@@ -5,6 +5,7 @@ import "./App.css";
 import Loader from "./components/Spinner.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import LangLayout from "./components/LangLayout";
+import DisponiblePrograms from "./pages/DisponibleProgrmas.tsx";
 
 // Public pages (route-level code splitting)
 const Home = lazy(() => import("./pages/Home"));
@@ -49,6 +50,7 @@ function App() {
             <Route path="/news/:slugOrId" element={<NewsDetail />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/programs" element={<DisponiblePrograms />} />
             <Route path={`${ADMIN_FRONT_PREFIX}/login`} element={<Login />} />
 
             {/* Localized routes with language prefix (fr/ar) */}
