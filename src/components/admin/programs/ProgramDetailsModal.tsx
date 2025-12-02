@@ -24,11 +24,17 @@ type RuleGroup = {
   combinator?: string; // 'and' | 'or'
   rules: Rule[];
 };
+  
+
+interface BilingualText{
+  fr: string;
+  ar: string;
+}
 
 interface Program {
   _id: string;
-  name: string;
-  description: string;
+  name: BilingualText;
+  description: BilingualText;
   isActive: boolean;
   DateDebut: string;
   DateFin: string;
@@ -77,7 +83,7 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <h2 className="text-2xl font-bold text-white mb-2">
-                {program.name}
+                {program.name.fr}
               </h2>
               <div className="flex items-center gap-3">
                 <span
@@ -121,7 +127,7 @@ const ProgramDetailsModal: React.FC<ProgramDetailsModalProps> = ({
                 </h3>
               </div>
               <p className="text-gray-700 leading-relaxed">
-                {program.description || "Aucune description disponible."}
+                {program.description.fr || "Aucune description disponible."}
               </p>
             </div>
 

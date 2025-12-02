@@ -35,10 +35,16 @@ type RuleGroupLite = {
   combinator?: string;
 };
 
+interface BilingualText{
+  fr: string;
+  ar: string;
+}
+
+
 interface Program {
   _id: string;
-  name: string;
-  description: string;
+  name: BilingualText;
+  description: BilingualText;
   isActive: boolean;
   DateDebut: string;
   DateFin: string;
@@ -155,8 +161,8 @@ const Programs: React.FC = () => {
   const filteredPrograms = programs.filter((program) => {
     // Filtre recherche
     const matchesSearch =
-      program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      program.description.toLowerCase().includes(searchTerm.toLowerCase());
+      program.name.fr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      program.description.fr.toLowerCase().includes(searchTerm.toLowerCase());
 
     const hasDate = Boolean(filterDate);
     const hasMaxDays = remainingDays !== null;
@@ -421,7 +427,7 @@ const Programs: React.FC = () => {
                 {/* Titre + Badges */}
                 <div>
                   <h3 className="text-xl font-bold text-white mb-1">
-                    {program.name}
+                    {program.name.fr}
                   </h3>
                   {/* Badges en dessous du titre */}
                   <div className="flex items-center gap-2">
@@ -470,7 +476,7 @@ const Programs: React.FC = () => {
             {/* Card Body */}
             <div className="p-6">
               <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                {program.description}
+                {program.description.fr}
               </p>
 
               {/* Criteria Summary (supports logical builder) */}

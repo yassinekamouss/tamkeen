@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { X, Share, Upload, Globe, Languages } from "lucide-react";
 
+
+interface BilingualText{
+  fr: string;
+  ar: string;
+} 
 interface Program {
   _id: string;
-  name: string;
-  description: string;
+  name: BilingualText;
+  description: BilingualText;
   isActive: boolean;
   DateDebut: string;
   DateFin: string;
@@ -107,7 +112,7 @@ const PublishProgramModal: React.FC<PublishModalProps> = ({
                     ? "Modifier la publication"
                     : "Publier le programme"}
                 </h2>
-                <p className="text-blue-100 text-sm">{program.name}</p>
+                <p className="text-blue-100 text-sm">{program.name.fr}</p>
               </div>
             </div>
             <button

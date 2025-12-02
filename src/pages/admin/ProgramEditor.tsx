@@ -21,11 +21,18 @@ import {
 import "react-querybuilder/dist/query-builder.css";
 import "../../components/admin/programs/rqb-tailwind-fix.css";
 
+
+
+interface BilingualText {
+  fr: string;
+  ar: string;
+}
+
 interface Program {
   _id?: string | number;
   id?: string | number;
-  name: string;
-  description: string;
+  name: BilingualText;
+  description: BilingualText;
   isActive: boolean;
   DateDebut: string | null;
   DateFin: string | null;
@@ -528,8 +535,8 @@ const ProgramEditor: React.FC = () => {
   const [loading, setLoading] = useState(!!programId);
   const [error, setError] = useState<string | null>(null);
   const [program, setProgram] = useState<Program>({
-    name: "",
-    description: "",
+    name: {fr: "" , ar: ""},
+    description: {fr: "", ar: ""},
     isActive: true,
     DateDebut: new Date().toISOString().split("T")[0], // Default to today's date
     DateFin: "",
@@ -793,101 +800,145 @@ const ProgramEditor: React.FC = () => {
           )}
 
           <section className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Info className="w-5 h-5 mr-2 text-blue-600" /> Informations de
-              base
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom du programme *
-                </label>
-                <input
-                  type="text"
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Ex: Programme de soutien aux startups"
-                  value={program.name}
-                  onChange={(e) =>
-                    setProgram((p) => ({ ...p, name: e.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Site web
-                </label>
-                <input
-                  type="url"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://..."
-                  value={program.link || ""}
-                  onChange={(e) =>
-                    setProgram((p) => ({ ...p, link: e.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Statut
-                </label>
-                <select
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={String(program.isActive)}
-                  onChange={(e) =>
-                    setProgram((p) => ({
-                      ...p,
-                      isActive: e.target.value === "true",
-                    }))
-                  }>
-                  <option value="true">Actif</option>
-                  <option value="false">Inactif</option>
-                </select>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-1">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <Info className="w-5 h-5 mr-2 text-blue-600" /> Informations de base
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Nom FR */}
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date de début
+                    Nom du programme (FR) *
                   </label>
                   <input
-                    type="date"
+                    type="text"
+                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    value={program.DateDebut || ""}
+                    placeholder="Ex: Programme de soutien aux startups"
+                    value={program.name.fr}
                     onChange={(e) =>
-                      setProgram((p) => ({ ...p, DateDebut: e.target.value }))
+                      setProgram((p) => ({ ...p, name: { ...p.name, fr: e.target.value } }))
                     }
                   />
                 </div>
-                <div className="flex-1">
+
+                {/* Nom AR */}
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date de fin
+                    Nom du programme (AR) 
                   </label>
                   <input
-                    type="date"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    value={program.DateFin || ""}
+                    type="text"
+                    required={false}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                    placeholder="مثال: برنامج دعم الشركات الناشئة"
+                    value={program.name.ar}
                     onChange={(e) =>
-                      setProgram((p) => ({ ...p, DateFin: e.target.value }))
+                      setProgram((p) => ({ ...p, name: { ...p.name, ar: e.target.value } }))
                     }
                   />
                 </div>
-              </div>
+
+                {/* Site web */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Site web
+                  </label>
+                  <input
+                    type="url"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="https://..."
+                    value={program.link || ""}
+                    onChange={(e) =>
+                      setProgram((p) => ({ ...p, link: e.target.value }))
+                    }
+                  />
+                </div>
+
+                {/* Statut */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Statut
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={String(program.isActive)}
+                    onChange={(e) =>
+                      setProgram((p) => ({
+                        ...p,
+                        isActive: e.target.value === "true",
+                      }))
+                    }
+                  >
+                    <option value="true">Actif</option>
+                    <option value="false">Inactif</option>
+                  </select>
+                </div>
+
+                {/* Dates */}
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Date de début
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={program.DateDebut || ""}
+                      onChange={(e) =>
+                        setProgram((p) => ({ ...p, DateDebut: e.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Date de fin
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={program.DateFin || ""}
+                      onChange={(e) =>
+                        setProgram((p) => ({ ...p, DateFin: e.target.value }))
+                      }
+                    />
+                  </div>
+                </div>
+
+              {/* Description FR */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description *
+                  Description (FR) 
                 </label>
                 <textarea
                   required
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={program.description}
+                  value={program.description.fr}
                   onChange={(e) =>
-                    setProgram((p) => ({ ...p, description: e.target.value }))
+                    setProgram((p) => ({ ...p, description: { ...p.description, fr: e.target.value } }))
                   }
+                />
+              </div>
+
+              {/* Description AR */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description (AR) *
+                </label>
+                <textarea
+                  required={false}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                  value={program.description.ar}
+                  onChange={(e) =>
+                    setProgram((p) => ({ ...p, description: { ...p.description, ar: e.target.value } }))
+                  }
+                  placeholder="مثال: وصف البرنامج باللغة العربية"
                 />
               </div>
             </div>
           </section>
+
 
           <section className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">

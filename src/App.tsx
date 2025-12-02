@@ -46,67 +46,67 @@ function App() {
           <Routes>
             {/* Public routes */}
       <Route
-  path="/"
-  element={
-    <PublicLayout>
-      <Home />
-    </PublicLayout>
-  }
-/>
+          path="/"
+          element={
+            <PublicLayout>
+              <Home />
+            </PublicLayout>
+          }
+        />
 
-<Route
-  path="/about"
-  element={
-    <PublicLayout>
-      <About />
-    </PublicLayout>
-  }
-/>
+        <Route
+          path="/about"
+          element={
+            <PublicLayout>
+              <About />
+            </PublicLayout>
+          }
+        />
 
-<Route
-  path="/news"
-  element={
-    <PublicLayout>
-      <News />
-    </PublicLayout>
-  }
-/>
+        <Route
+          path="/news"
+          element={
+            <PublicLayout>
+              <News />
+            </PublicLayout>
+          }
+        />
 
-<Route
-  path="/news/:slugOrId"
-  element={
-    <PublicLayout>
-      <NewsDetail />
-    </PublicLayout>
-  }
-/>
+        <Route
+          path="/news/:slugOrId"
+          element={
+            <PublicLayout>
+              <NewsDetail />
+            </PublicLayout>
+          }
+        />
 
-<Route
-  path="/faq"
-  element={
-    <PublicLayout>
-      <FAQ />
-    </PublicLayout>
-  }
-/>
+        <Route
+          path="/faq"
+          element={
+            <PublicLayout>
+              <FAQ />
+            </PublicLayout>
+          }
+        />
 
-<Route
-  path="/privacy"
-  element={
-    <PublicLayout>
-      <Privacy />
-    </PublicLayout>
-  }
-/>
+        <Route
+          path="/privacy"
+          element={
+            <PublicLayout>
+              <Privacy />
+            </PublicLayout>
+          }
+        />
 
-<Route
-  path="/programs"
-  element={
-    <PublicLayout>
-      <DisponiblePrograms />
-    </PublicLayout>
-  }
-/>
+        <Route
+          path="/programs"
+          element={
+            <PublicLayout>
+              <DisponiblePrograms />
+            </PublicLayout>
+          }
+        />
 
             <Route path={`${ADMIN_FRONT_PREFIX}/login`} element={<Login />} />
 
