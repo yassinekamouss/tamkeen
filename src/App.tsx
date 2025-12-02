@@ -6,6 +6,7 @@ import Loader from "./components/Spinner.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import LangLayout from "./components/LangLayout";
 import DisponiblePrograms from "./pages/DisponibleProgrmas.tsx";
+import PublicLayout from "./components/PublicLayout.tsx";
 
 // Public pages (route-level code splitting)
 const Home = lazy(() => import("./pages/Home"));
@@ -44,13 +45,69 @@ function App() {
         <Suspense fallback={<Loader />}>
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/news/:slugOrId" element={<NewsDetail />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/programs" element={<DisponiblePrograms />} />
+      <Route
+  path="/"
+  element={
+    <PublicLayout>
+      <Home />
+    </PublicLayout>
+  }
+/>
+
+<Route
+  path="/about"
+  element={
+    <PublicLayout>
+      <About />
+    </PublicLayout>
+  }
+/>
+
+<Route
+  path="/news"
+  element={
+    <PublicLayout>
+      <News />
+    </PublicLayout>
+  }
+/>
+
+<Route
+  path="/news/:slugOrId"
+  element={
+    <PublicLayout>
+      <NewsDetail />
+    </PublicLayout>
+  }
+/>
+
+<Route
+  path="/faq"
+  element={
+    <PublicLayout>
+      <FAQ />
+    </PublicLayout>
+  }
+/>
+
+<Route
+  path="/privacy"
+  element={
+    <PublicLayout>
+      <Privacy />
+    </PublicLayout>
+  }
+/>
+
+<Route
+  path="/programs"
+  element={
+    <PublicLayout>
+      <DisponiblePrograms />
+    </PublicLayout>
+  }
+/>
+
             <Route path={`${ADMIN_FRONT_PREFIX}/login`} element={<Login />} />
 
             {/* Localized routes with language prefix (fr/ar) */}

@@ -2,11 +2,11 @@ import axios, { ADMIN_API_PREFIX } from "../api/axios";
 
 export interface NewsItem {
   id: number;
-  title: string;
-  excerpt: string;
-  content: string;
+  title: MultilingualField;
+  excerpt: MultilingualField;
+  content: MultilingualField;
   image: string;
-  category: string;
+  category: MultilingualField;
   publishedAt: string;
   author: string;
   featured: boolean;
@@ -15,12 +15,17 @@ export interface NewsItem {
   published?: boolean;
 }
 
+export interface MultilingualField {
+  fr: string;
+  ar: string;
+}
+
 export interface CreateNewsItemBase {
-  title: string;
-  excerpt: string;
-  content: string;
+  title: MultilingualField;
+  excerpt: MultilingualField;
+  content: MultilingualField;
   image?: string; // Optionnel si on laisse le champ vide, ou pour l'ancienne URL
-  category: string;
+  category: MultilingualField;
   author: string;
   featured: boolean;
   externalUrl?: string;
@@ -53,7 +58,7 @@ export interface SingleNewsResponse {
 export const newsService = {
   // Récupérer toutes les actualités publiées avec filtres optionnels
   getPublishedNews: async (params?: {
-    category?: string;
+    category?: MultilingualField;
     featured?: boolean;
     limit?: number;
     page?: number;
@@ -64,7 +69,7 @@ export const newsService = {
 
   // Récupérer toutes les actualités avec filtres optionnels
   getAllNews: async (params?: {
-    category?: string;
+    category?: MultilingualField;
     featured?: boolean;
     limit?: number;
     page?: number;
@@ -84,7 +89,7 @@ export const newsService = {
   // Récupérer les actualités en vedette
 
   // Récupérer les catégories
-  getCategories: async (): Promise<{ success: boolean; data: string[] }> => {
+  getCategories: async (): Promise<{ success: boolean; data: MultilingualField[] }> => {
     const response = await axios.get("/news/categories");
     return response.data;
   },

@@ -4,10 +4,11 @@ import { Header, Footer } from "../components";
 import Spinner from "../components/Spinner";
 import { newsService, type NewsItem } from "../services/newsService";
 import SeoAlternates from "../components/SeoAlternates";
+import { useTranslation } from "react-i18next";
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string, lang: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString("fr-FR", {
+  return date.toLocaleDateString(lang === "ar" ? "ar-EG" : "fr-FR", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -19,6 +20,8 @@ const NewsDetail: React.FC = () => {
   const [item, setItem] = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { i18n } = useTranslation();
+  const lang = i18n.language as "fr" | "ar";
 
   useEffect(() => {
     const load = async () => {
@@ -29,13 +32,17 @@ const NewsDetail: React.FC = () => {
         const res = await newsService.getBySlugOrId(slugOrId);
         setItem(res.data);
       } catch {
-        setError("Impossible de charger cette actualité.");
+        setError(
+          lang === "ar"
+            ? "تعذر تحميل الخبر."
+            : "Impossible de charger cette actualité."
+        );
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [slugOrId]);
+  }, [slugOrId, lang]);
 
   if (loading) {
     return (
@@ -55,10 +62,13 @@ const NewsDetail: React.FC = () => {
         <Header />
         <div className="max-w-3xl mx-auto px-4 py-16">
           <p className="text-gray-700 mb-6">
-            {error || "Actualité introuvable."}
+            {error ||
+              (lang === "ar"
+                ? "الخبر غير موجود."
+                : "Actualité introuvable.")}
           </p>
           <Link to="/news" className="text-blue-600 hover:underline">
-            Retour aux actualités
+            {lang === "ar" ? "العودة إلى الأخبار" : "Retour aux actualités"}
           </Link>
         </div>
         <Footer />
@@ -73,25 +83,27 @@ const NewsDetail: React.FC = () => {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <nav className="mb-6 text-sm">
           <Link to="/news" className="text-blue-600 hover:underline">
-            Actualités
+            {lang === "ar" ? "الأخبار" : "Actualités"}
           </Link>
           <span className="mx-2 text-gray-400">/</span>
-          <span className="text-gray-700 line-clamp-1">{item.title}</span>
+          <span className="text-gray-700 line-clamp-1">
+            {item.title[lang] || item.title["fr"]}
+          </span>
         </nav>
 
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-          {item.title}
+          {item.title[lang] || item.title["fr"]}
         </h1>
         <div className="text-sm text-gray-500 mb-6">
           <span className="font-medium">{item.author}</span>
           <span className="mx-2">•</span>
           <time dateTime={new Date(item.publishedAt).toISOString()}>
-            {formatDate(item.publishedAt)}
+            {formatDate(item.publishedAt, lang)}
           </time>
           {item.category && (
             <>
               <span className="mx-2">•</span>
-              <span>{item.category}</span>
+              <span>{item.category[lang] || item.category["fr"]}</span>
             </>
           )}
         </div>
@@ -100,7 +112,7 @@ const NewsDetail: React.FC = () => {
           <div className="rounded-xl overflow-hidden mb-8 bg-gray-100">
             <img
               src={`${import.meta.env.VITE_PREFIX_URL}/news/${item.image}`}
-              alt={item.title}
+              alt={item.title[lang] || item.title["fr"]}
               className="w-full h-auto object-cover"
             />
           </div>
@@ -108,7 +120,7 @@ const NewsDetail: React.FC = () => {
 
         <article className="prose prose-gray max-w-none">
           <p className="whitespace-pre-line text-gray-800 leading-relaxed">
-            {item.content}
+            {item.content[lang] || item.content["fr"]}
           </p>
         </article>
 
@@ -118,13 +130,15 @@ const NewsDetail: React.FC = () => {
               href={item.externalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700">
-              Consulter la source
+              className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700"
+            >
+              {lang === "ar" ? "عرض المصدر" : "Consulter la source"}
               <svg
                 className="ml-2 w-5 h-5"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24">
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

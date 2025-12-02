@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface PaginationProps {
   currentPage: number;
@@ -12,20 +13,18 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
 }) => {
+  const { i18n } = useTranslation();
+  const lang = i18n.language as "fr" | "ar";
+
   if (totalPages <= 1) return null;
 
-  // Générer les numéros de page à afficher (avec ellipsis si nécessaire)
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
-    const maxVisible = 5; // Nombre maximum de boutons visibles
+    const maxVisible = 5;
 
     if (totalPages <= maxVisible) {
-      // Si peu de pages, tout afficher
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {
-      // Logique avec ellipsis
       if (currentPage <= 3) {
         for (let i = 1; i <= 4; i++) pages.push(i);
         pages.push("...");
@@ -48,8 +47,16 @@ const Pagination: React.FC<PaginationProps> = ({
 
   const pageNumbers = getPageNumbers();
 
+  // Textes selon la langue
+  const prevLabel = lang === "ar" ? "السابق" : "Précédent";
+  const nextLabel = lang === "ar" ? "التالي" : "Suivant";
+
+  // RTL => inversion des flèches
+  const isRTL = lang === "ar";
+
   return (
-    <div className="flex items-center justify-center mt-8 gap-2">
+    <div className="flex items-center justify-center mt-8 gap-2" dir={isRTL ? "rtl" : "ltr"}>
+      
       {/* Bouton Précédent */}
       <button
         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
@@ -60,8 +67,17 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
       >
-        <ChevronLeft className="w-4 h-4" />
-        <span className="hidden sm:inline">Précédent</span>
+        {isRTL ? (
+          <>
+            <ChevronRight className="w-4 h-4" />
+            <span className="hidden sm:inline">{prevLabel}</span>
+          </>
+        ) : (
+          <>
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">{prevLabel}</span>
+          </>
+        )}
       </button>
 
       {/* Numéros de page */}
@@ -100,8 +116,17 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
       >
-        <span className="hidden sm:inline">Suivant</span>
-        <ChevronRight className="w-4 h-4" />
+        {isRTL ? (
+          <>
+            <span className="hidden sm:inline">{nextLabel}</span>
+            <ChevronLeft className="w-4 h-4" />
+          </>
+        ) : (
+          <>
+            <span className="hidden sm:inline">{nextLabel}</span>
+            <ChevronRight className="w-4 h-4" />
+          </>
+        )}
       </button>
     </div>
   );

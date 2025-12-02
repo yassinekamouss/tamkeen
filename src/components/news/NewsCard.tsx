@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { NewsItem } from "../../services/newsService";
 
 export interface NewsCardProps {
@@ -8,16 +9,16 @@ export interface NewsCardProps {
   featured?: boolean;
 }
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string, lang: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString("fr-FR", {
+  return date.toLocaleDateString(lang === "ar" ? "ar-EG" : "fr-FR", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 };
 
-const categoryColor = (category: string) => {
+const categoryColor = (categoryFr: string) => {
   const colors: Record<string, string> = {
     "Subventions Européennes": "bg-blue-100 text-blue-800",
     "Subventions Nationales": "bg-green-100 text-green-800",
@@ -30,56 +31,68 @@ const categoryColor = (category: string) => {
     "Export & International": "bg-cyan-100 text-cyan-800",
     "Alertes Financement": "bg-red-100 text-red-800",
   };
-  return colors[category] || "bg-gray-100 text-gray-800";
+  return colors[categoryFr] || "bg-gray-100 text-gray-800";
 };
 
 const NewsCard: React.FC<NewsCardProps> = ({ item, to, featured }) => {
+  const { i18n } = useTranslation();
+  const lang = i18n.language as "fr" | "ar";
+
   const { title, excerpt, image, category, author, publishedAt } = item;
 
   return (
     <Link
       to={to}
       className="group flex flex-col h-full bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
-      aria-label={`Lire l'actualité: ${title}`}>
+      aria-label={title[lang] || title["fr"]}
+    >
       <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
         {image ? (
           <img
             src={`${import.meta.env.VITE_PREFIX_URL}/news/${image}`}
-            alt={title}
+            alt={title[lang] || title["fr"]}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200" />
         )}
+
         <div className="absolute top-3 left-3">
           <span
             className={`px-3 py-1 rounded-full text-xs font-medium ${categoryColor(
-              category
-            )}`}>
-            {category}
+              category.fr
+            )}`}
+          >
+            {category[lang] || category["fr"]}
           </span>
         </div>
+
         {featured && (
           <div className="absolute top-3 right-3">
             <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold border border-yellow-200">
-              En vedette
+              {lang === "ar" ? "مميز" : "En vedette"}
             </span>
           </div>
         )}
       </div>
+
       <div className="p-4 flex flex-col flex-grow">
         <div className="flex items-center text-xs text-gray-500 mb-2">
           <span className="font-medium">{author}</span>
           <span className="mx-2">•</span>
           <time dateTime={new Date(publishedAt).toISOString()}>
-            {formatDate(publishedAt)}
+            {formatDate(publishedAt, lang)}
           </time>
         </div>
+
         <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors min-h-[3.5rem]">
-          {title}
+          {title[lang] || title["fr"]}
         </h3>
-        <p className="text-sm text-gray-600 line-clamp-3 min-h-[4.5rem]">{excerpt}</p>
+
+        <p className="text-sm text-gray-600 line-clamp-3 min-h-[4.5rem]">
+          {excerpt[lang] || excerpt["fr"]}
+        </p>
       </div>
     </Link>
   );
