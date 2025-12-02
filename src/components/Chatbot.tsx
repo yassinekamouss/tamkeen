@@ -24,9 +24,6 @@ const Chatbot: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const chatService = useRef(TamkeenChatService.getInstance());
 
-  // Réponses contextuelles remplacées par l'intégration OpenAI
-  // No manual scroll anchor needed; the messages list is self-contained
-
   const handleSendMessage = async () => {
     if (inputValue.trim() === "") return;
 
@@ -42,9 +39,7 @@ const Chatbot: React.FC = () => {
     setIsTyping(true);
 
     try {
-      // Envoi du message via le service OpenAI
       const response = await chatService.current.sendMessage(inputValue);
-
       const sanitized = sanitizeBotText(response);
 
       const botMessage: Message = {
@@ -88,7 +83,6 @@ const Chatbot: React.FC = () => {
     setIsTyping(true);
 
     try {
-      // Mapping des actions vers les clés internes
       const actionMapping: { [key: string]: string } = {
         "Je souhaite avoir des informations sur Tamkeen": "info_tamkeen",
         "Quels sont les programmes de subventions disponibles ?":
@@ -103,8 +97,6 @@ const Chatbot: React.FC = () => {
         mappedAction
       );
       const sanitized = sanitizeBotText(response);
-
-      // Plus besoin de contexte - ChatGPT gère tout automatiquement
 
       const botMessage: Message = {
         id: Date.now() + 1,
@@ -147,7 +139,6 @@ const Chatbot: React.FC = () => {
     },
   ];
 
-  // Post-traitement : neutraliser anciennes formulations de propriété
   function sanitizeBotText(text: string): string {
     if (!text) return text;
     const replacements: { pattern: RegExp; replacement: string }[] = [
@@ -199,9 +190,13 @@ const Chatbot: React.FC = () => {
         onToggle={() => setIsOpen(!isOpen)}
       />
 
-      {/* Interface du chat - Responsive avec style authentique Tamkeen */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[95vw] max-w-[420px] h-[95vh] sm:h-[750px] bg-white/95 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl z-50 overflow-hidden border border-white/20 animate-in slide-in-from-right-8 duration-500 flex flex-col">
+        <div
+          className="fixed z-50 overflow-hidden bg-white/95 backdrop-blur-lg shadow-2xl border border-white/20 animate-in slide-in-from-right-8 duration-500 flex flex-col
+          /* Layout Mobile: ancré à gauche et à droite avec marges, hauteur limitée */
+          bottom-4 left-4 right-4 h-[85vh] rounded-2xl
+          /* Layout Desktop: largeur fixe, ancré à droite uniquement */
+          sm:left-auto sm:bottom-6 sm:right-6 sm:w-[400px] sm:max-w-[420px] sm:h-[750px] sm:max-h-[calc(100vh-100px)] sm:rounded-3xl">
           <Header
             imageSrc={imageLogo}
             onReset={resetConversation}

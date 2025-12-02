@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import type { Message } from "./types";
 import MarkdownRenderer from "./MarkdownRenderer";
 
@@ -15,6 +15,16 @@ const MessagesList: React.FC<Props> = ({
   imageSrc,
   locale,
 }) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
   return (
     <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-gradient-to-b from-gray-50 to-blue-50/30 min-h-0 scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
       <div className="space-y-3 sm:space-y-4">
@@ -87,8 +97,8 @@ const MessagesList: React.FC<Props> = ({
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
-      <div />
     </div>
   );
 };
