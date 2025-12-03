@@ -45,9 +45,9 @@ const DisponiblePrograms: React.FC = () => {
   const lang = i18n.language as "fr" | "ar";
 
   const defaultImages = [
-    `${import.meta.env.VITE_PREFIX_URL}/programs/default1.png`,
-    `${import.meta.env.VITE_PREFIX_URL}/programs/default2.png`,
-    `${import.meta.env.VITE_PREFIX_URL}/programs/default3.png`,
+    `${import.meta.env.VITE_PREFIX_URL}/programs/default1.webp`,
+    `${import.meta.env.VITE_PREFIX_URL}/programs/default2.webp`,
+    `${import.meta.env.VITE_PREFIX_URL}/programs/default3.webp`,
   ];
 
   const getDefaultImage = (index: number) => {
@@ -169,11 +169,14 @@ const DisponiblePrograms: React.FC = () => {
                 className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
               >
                 <div className="relative h-48 bg-gray-100">
-                  <img
-                    src={program.hero?.image || getDefaultImage(index)}
-                    alt={name}
-                    className="w-full h-full object-cover"
-                  />
+              <img
+                src={`${import.meta.env.VITE_PREFIX_URL}/programs/${program.hero?.image}`}
+                alt={name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = getDefaultImage(index);
+                }}
+              />
                 </div>
 
                 <div className="p-5 flex flex-col flex-grow">
