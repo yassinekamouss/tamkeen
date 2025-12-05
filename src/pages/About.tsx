@@ -116,8 +116,8 @@ const About: React.FC = () => {
       {!error && (
         <div className="p-8 bg-gray-50 overflow-hidden relative">
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
-            Nos Partenaires
-          </h2>
+  {            t("about.partnersTitle")
+}          </h2>
           {loading && (
             <div className="flex justify-center items-center mt-8 space-x-2">
               <span className="w-3 h-3 bg-gray-900 rounded-full animate-bounce"></span>
