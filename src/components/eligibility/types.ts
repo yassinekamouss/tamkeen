@@ -44,8 +44,12 @@ export interface FormErrors {
   statutJuridique?: string;
 }
 
+export interface bilingue {
+  ar: string , fr:string ;
+}
+
 export interface programsNamesAndLinks {
-  name: string;
+  name: bilingue;
   link: string;
 }
 export interface EligibilityResult {

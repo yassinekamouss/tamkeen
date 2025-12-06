@@ -103,7 +103,7 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
                             rel="noopener"
                             className="text-blue-600 hover:underline font-semibold"
                           >
-                            {program.name}
+                            {program.name.fr}
                           </a>
                         );
                       })}
