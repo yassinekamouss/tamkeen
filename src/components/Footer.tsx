@@ -82,7 +82,7 @@ const Footer: React.FC = () => {
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
                 <a
-                  href="mailto:contact@subvention.ma"
+                  href="mailto:contact@masubvention.ma"
                   className="text-gray-300 hover:text-white transition-colors duration-300 text-xs sm:text-sm">
                   {t('footer.email')}
                 </a>
