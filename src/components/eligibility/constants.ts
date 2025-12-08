@@ -224,8 +224,20 @@ export const MONTANT_INVESTISSEMENT_OPTIONS = [
     key: "eligibility.montantInvestissementOptions.moins1M",
   },
   {
-    value: "1M-50M",
-    key: "eligibility.montantInvestissementOptions.entre1M50M",
+  value: "1M-10M",
+  key: "eligibility.montantInvestissementOptions.entre1M-10M",
+  },
+  {
+  value: "10M-20M",
+  key: "eligibility.montantInvestissementOptions.entre10M-20M",
+  },
+    {
+  value: "20M-30M",
+  key: "eligibility.montantInvestissementOptions.entre20M-30M",
+  },
+  {
+    value: "30M-50M",
+    key: "eligibility.montantInvestissementOptions.entre30M-50M",
   },
   {
     value: "plus-50M",

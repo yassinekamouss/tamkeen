@@ -77,9 +77,12 @@
     },
     "montantInvestissementOptions": {
       "moins1M": "أقل من 1.000.000 درهم",
-      "entre1M50M": "بين 1.000.000 و 50.000.000 درهم",
       "plus50M": "أكثر من 50.000.000 درهم",
-      "aucunMinimum": "لا يوجد حد أدنى مطلوب"
+      "aucunMinimum": "لا يوجد حد أدنى مطلوب",
+      "entre1M-10M": "بين 1 مليون و 10 ملايين",
+      "entre10M-20M": "بين 10 ملايين و 20 مليونًا",
+      "entre20M-30M": "بين 20 مليونًا و 30 مليونًا",
+      "entre30M-50M": "بين 30 مليونًا و 50 مليونًا"
     },
     "anneeCreationOptions": {
       "avant2022": "قبل 2022"
@@ -109,7 +112,7 @@
       "Artisanat": "الحرف",
       "ArtisanatActivitesAssimilees": "الحرف التقليدية والأنشطة المماثلة",
       "ActivitesEconomiquesArtCulture": "الأنشطة الاقتصادية المرتبطة بالفن والثقافة",
-      "IndustriesCreaticesCulturelles": "الصناعات الإبداعية والثقافية",
+      "IndustriesCreativesCulturelles": "الصناعات الإبداعية والثقافية",
       "ActivitesEconomiquesSport": "الأنشطة الاقتصادية المرتبطة بالرياضة",
       "ActiviteTouristique": "النشاط السياحي (التنشيط السياحي، المطاعم، وكيل السفر من نوع منظم-موزع الرحلات، الأنشطة الملحقة)",
       "ServicesPersonnes": "خدمات الأشخاص",

@@ -172,8 +172,20 @@ export const MONTANT_INVESTISSEMENT_OPTIONS = [
     value: "moins-1M"
   },
   {
-    key: "Entre 1.000.000 MAD et 50.000.000 MAD",
-    value: "1M-50M"
+    key: "Entre 1.000.000 et 10.000.000 MAD",
+    value: "1M-10M"
+  },
+  {
+    key: "Entre 10.000.000 et 20.000.000 MAD",
+    value: "10M-20M"
+  },
+  {
+    key: "Entre 20.000.000 et 30.000.000 MAD",
+    value: "20M-30M"
+  },
+  {
+    key: "Entre 30.000.000 et 50.000.000 MAD",
+    value: "30M-50M"
   },
   {
     key: "Plus de 50.000.000 MAD",
