@@ -8,6 +8,7 @@ import {
   STATUT_JURIDIQUE_OPTIONS,
   MONTANT_INVESTISSEMENT_OPTIONS,
   ANNEE_CREATION,
+  NUMBER_OF_EMPLOYEES,
 } from "../../components/eligibility/constants_for_adding_programs";
 import {
   QueryBuilder,
@@ -127,6 +128,10 @@ function useRqbFields() {
   const secteurs = SECTEURS_TRAVAIL as unknown as KV[];
   const statutOpts = STATUT_JURIDIQUE_OPTIONS as unknown as KV[];
   const investOpts = MONTANT_INVESTISSEMENT_OPTIONS as unknown as KV[];
+  const numberOfEmployeesValues = NUMBER_OF_EMPLOYEES.map((e) => ({
+    name: e,
+    label: e,
+  }));
 
   const secteurValues = secteurs.map((s) => ({ name: s.value, label: s.key }));
   const regionValues = (REGIONS as string[]).map((r) => ({
@@ -210,6 +215,13 @@ function useRqbFields() {
       valueEditorType: "select",
       operators: customOperators,
       values: investissementValues,
+    },
+    {
+      name: "numberOfEmployees",
+      label: "Nombre d'employés",
+      valueEditorType: "select",
+      operators: customOperators,
+      values: numberOfEmployeesValues,
     },
   ];
 
@@ -408,7 +420,7 @@ const ImprovedMultiSelect: React.FC<{
                 </button>
               </span>
             ))
-          )}
+         ) }
         </div>
       </button>
 
