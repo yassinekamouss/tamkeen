@@ -65,6 +65,7 @@
     "anneeCreation": "Année de création",
     "chiffreAffaire": "Chiffre d'affaire",
     "montantInvestissement": "Montant prévisionnel de l'investissement",
+    "numberOfEmployees": "Nombre d'employés prévus",
     "selectPlaceholder": "Sélectionner une option",
     "sexe": {
       "homme": "Homme",
@@ -84,6 +85,12 @@
       "entre20M-30M": "Entre 20.000.000 et 30.000.000 MAD",
       "entre30M-50M": "Entre 30.000.000 et 50.000.000 MAD"
     },
+    "numberOfEmployeesOptions": {
+      "1-3": "Entre 1 et 3 employés",
+      "4-5": "Entre 4 et 5 employés",
+      "5-10": "Entre 5 et 10 employés",
+      "plus-10": "Plus de 10 employés"
+    },
     "anneeCreationOptions": {
       "avant2022": "Avant 2022"
     },
@@ -99,13 +106,14 @@
       "societeSas": "SAS",
       "aucuneFormeJuridique": "Aucune forme juridique",
       "enCoursCreation": "En cours de création",
-      "societeAnonyme": "SA"
+      "societeAnonyme": "SA",
+      "coopérative" : "Coopérative",
+      "cpu": "Coopérative à propriété unique (CPU)"
     },
   "secteursTravail": {
   "EconomieRurale": "Économie rurale (agriculture, élevage, valorisation de produits de la ferme...)",
   "ExploitationForestiere": "Exploitation forestière",
   "PecheMaritime": "Pêche maritime",
-  "PecheCotiere": "Pêche côtière",
   "IndustriesExtractives": "Industries extractives",
   "IndustriesTransformation": "Industries de transformation",
   "EnergieElectriciteGaz": "Production et distribution d’électricité, de gaz, de vapeur et d’air conditionné",
@@ -129,10 +137,7 @@
   "ServicesEntreprises": "Services aux entreprises (prestataires, installateurs, réparateurs...)",
   "AutresServices": "Autres activités de services",
   "EfficaciteEnergetique": "Efficacité énergétique",
-  "PromotionImmobiliere": "Promotion immobilière"
-},
-"branch": "Branche d'activité",
-   "branchesFR": {
+  "PromotionImmobiliere": "Promotion immobilière",
   "AquacultureMarine": "Aquaculture en eau marine et zones côtières",
   "AquacultureEauDouce": "Aquaculture en eau douce",
   "ValorisationProduitsAquatiques": "Transformation et valorisation des produits aquatiques",
@@ -177,8 +182,7 @@
   "ServicesPostaux": "Activités des services postaux",
   "HebergementTouristique": "Établissements d’hébergement touristique classés",
   "RestaurantsTouristiques": "Restaurants touristiques",
-  "Artisanat": "Artisanat de production artistique et utilitaire",
-  "Telecom": "Installation d’infrastructures de télécommunications",
+ "Telecom": "Installation d’infrastructures de télécommunications",
   "Informatique": "Logiciels, conseil en informatique et autres activités informatiques",
   "ServicesInfo": "Services d’information (IA, centres de données, externalisation…)",
   "ProductionAudiovisuelle": "Production de films cinématographiques et vidéo, programmes télévisés, enregistrements sonores et publication de matériel musical",

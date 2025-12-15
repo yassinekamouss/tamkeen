@@ -65,6 +65,7 @@
     "anneeCreation": "سنة التأسيس",
     "chiffreAffaire": "رقم المعاملات",
     "montantInvestissement": "المبلغ التقديري للاستثمار",
+    "numberOfEmployees": "عدد الموظفين المتوقعين",
     "selectPlaceholder": "اختر خيارًا",
     "chiffreAffaireOptions": {
       "option1": "بين 0 و 1 مليون درهم",
@@ -74,6 +75,12 @@
     "sexe": {
       "homme": "ذكر",
       "femme": "أنثى"
+    },
+    "numberOfEmployeesOptions": {
+      "1-3": "بين 1 و 3 موظفين",
+      "4-5": "بين 4 و 5 موظفين",
+      "5-10": "بين 5 و 10 موظفين",
+      "plus-10": "أكثر من 10 موظفين"
     },
     "montantInvestissementOptions": {
       "moins1M": "أقل من 1.000.000 درهم",
@@ -99,7 +106,9 @@
       "societeSas": "شركة مساهمة مبسطة",
       "aucuneFormeJuridique": "بدون شكل قانوني",
       "enCoursCreation": "في طور الإنشاء",
-      "societeAnonyme": "شركة مساهمة"
+      "societeAnonyme": "شركة مساهمة",
+      "coopérative" : "تعاونية",
+      "cpu": "تعاونية ذات ملكية فردية (CPU)"
     },
     "secteursTravail": {
       "EconomieRurale": "الاقتصاد الريفي (الزراعة، تربية الماشية، تثمين منتجات المزرعة...)",
@@ -120,11 +129,8 @@
       "EfficaciteEnergetique": "الكفاءة الطاقوية",
       "PromotionImmobiliere": "الترويج العقاري",
       "PecheMaritime": "الصيد البحري",
-      "PecheForiere": "الصيد الساحلي"
-    },
-    "branch": "القطاع الفرعي للنشاط",
-    "branchesAR" : {
-  "AquacultureMarine": "تربية الأحياء المائية في البحر والمناطق الساحلية",
+      "PecheForiere": "الصيد الساحلي",
+    "AquacultureMarine": "تربية الأحياء المائية في البحر والمناطق الساحلية",
   "AquacultureEauDouce": "تربية الأحياء المائية في المياه العذبة",
   "ValorisationProduitsAquatiques": "معالجة واستغلال المنتجات المائية",
   "ExploitationForet": "استغلال الغابات",
@@ -168,7 +174,6 @@
   "ServicesPostaux": "أنشطة الخدمات البريدية",
   "HebergementTouristique": "مؤسسات الإقامة السياحية المصنفة",
   "RestaurantsTouristiques": "المطاعم السياحية",
-  "Artisanat": "الحرف اليدوية الإنتاجية والفنية",
   "Telecom": "تركيب بنية تحتية للاتصالات",
   "Informatique": "البرمجيات، استشارات المعلوماتية والأنشطة الأخرى في مجال الحاسوب",
   "ServicesInfo": "خدمات المعلومات (الذكاء الاصطناعي، مراكز البيانات، الاستعانة بمصادر خارجية…)",
@@ -181,7 +186,6 @@
   "ActivitesRecreatives": "الأنشطة الترفيهية",
   "ReparationServices": "إصلاح أجهزة الكمبيوتر والمعدات والأدوات المنزلية"
 },
-
     "regions": {
       "Rabat-Salé-Kénitra": "الرباط-سلا-القنيطرة",
       "Casablanca-Settat": "الدار البيضاء-سطات",

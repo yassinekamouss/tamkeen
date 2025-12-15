@@ -20,6 +20,7 @@ export interface TestItem {
     chiffreAffaire2024?: number | null;
   };
   montantInvestissement?: string | number | null;
+  numberOfEmployees?: string | null;
   programmesEligibles: string[];
   personne: PersonneLite;
   wannaBeContacted?: boolean;

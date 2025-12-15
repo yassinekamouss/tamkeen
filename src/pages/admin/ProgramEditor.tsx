@@ -8,7 +8,6 @@ import {
   STATUT_JURIDIQUE_OPTIONS,
   MONTANT_INVESTISSEMENT_OPTIONS,
   ANNEE_CREATION,
-  BRANCHES_PAR_SECTEUR,
 } from "../../components/eligibility/constants_for_adding_programs";
 import {
   QueryBuilder,
@@ -126,14 +125,10 @@ const customOperators = [
 function useRqbFields() {
   type KV = { key: string; value: string };
   const secteurs = SECTEURS_TRAVAIL as unknown as KV[];
-  const branchesMap = BRANCHES_PAR_SECTEUR as unknown as Record<string, KV[]>;
   const statutOpts = STATUT_JURIDIQUE_OPTIONS as unknown as KV[];
   const investOpts = MONTANT_INVESTISSEMENT_OPTIONS as unknown as KV[];
 
   const secteurValues = secteurs.map((s) => ({ name: s.value, label: s.key }));
-  const brancheValues = Object.values(branchesMap)
-    .flat()
-    .map((b) => ({ name: b.value, label: b.key }));
   const regionValues = (REGIONS as string[]).map((r) => ({
     name: r,
     label: r,
@@ -181,13 +176,6 @@ function useRqbFields() {
       valueEditorType: "select",
       operators: customOperators,
       values: secteurValues,
-    },
-    {
-      name: "branche",
-      label: "Branche",
-      valueEditorType: "select",
-      operators: customOperators,
-      values: brancheValues,
     },
     {
       name: "region",

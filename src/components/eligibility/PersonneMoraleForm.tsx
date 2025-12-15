@@ -6,7 +6,6 @@ import {
   REGIONS,
   STATUT_JURIDIQUE_PERSONNE_MORALE_OPTIONS,
   ANNEE_CREATION_OPTIONS,
-  BRANCHES_PAR_SECTEUR,
 } from "./constants";
 import api from "../../api/axios";
 
@@ -23,12 +22,10 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
   errors,
   onInputChange,
 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [availablePhones, setAvailablePhones] = useState<string[]>([]);
   const [phoneMode, setPhoneMode] = useState<"select" | "new">("new");
 
-  const sectorKey = (formData.secteurTravail || "") as keyof typeof BRANCHES_PAR_SECTEUR;
-  const branchesForSector = sectorKey ? BRANCHES_PAR_SECTEUR[sectorKey] || [] : [];
 
   useEffect(() => {
     const email = formData.email;
@@ -214,33 +211,7 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
         </div>
       </div>
 
-      {/* Branche dépendante du secteur (affiché après la sélection du secteur) */}
-      {branchesForSector.length > 0 && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t("eligibility.branch") || "Branche"} *
-          </label>
-          <select
-            name="branche"
-            value={formData.branche || ""}
-            onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.branche ? "border-red-500" : "border-gray-300"
-            }`}>
-            <option value="">{t("eligibility.selectPlaceholder")}</option>
-            {branchesForSector.map((b) => (
-              <option key={b.value} value={b.value}>
-                {i18n.language && i18n.language.startsWith("ar")
-                  ? t(`eligibility.branchesAR.${b.value}`)
-                  : t(`eligibility.branchesFR.${b.value}`)}
-              </option>
-            ))}
-          </select>
-          {errors.branche && (
-            <p className="text-red-500 text-xs mt-1">{errors.branche}</p>
-          )}
-        </div>
-      )}
+    
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>

@@ -25,6 +25,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     applicantType: "physique",
     email: "",
     montantInvestissement: "",
+    numberOfEmployees: "",
     acceptPrivacyPolicy: false,
     statutJuridique: "",
   });
@@ -158,6 +159,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
       applicantType: "physique",
       email: "",
       montantInvestissement: "",
+      numberOfEmployees: "",
       acceptPrivacyPolicy: false,
       statutJuridique: "",
     });

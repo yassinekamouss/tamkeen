@@ -246,6 +246,14 @@ const TestCard: React.FC<{
                 </dt>
                 <dd className="text-sm text-slate-900">{montantLabel}</dd>
               </div>
+              <div>
+                <dt className="text-xs font-medium text-slate-500 mb-1">
+                  Nombre d'employés
+                </dt>
+                <dd className="text-sm text-slate-900">
+                  {test.numberOfEmployees || "Non spécifié"}
+                </dd>
+              </div>
             </div>
           </div>
 

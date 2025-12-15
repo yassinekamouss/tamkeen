@@ -179,7 +179,11 @@ const Tests: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {tests.map((t, i) => (
-            <TestCard key={t._id} test={t} index={(page - 1) * limit + i} />
+            <TestCard
+              key={`${t._id}-${i}`}
+              test={t}
+              index={(page - 1) * limit + i}
+            />
           ))}
         </div>
       )}

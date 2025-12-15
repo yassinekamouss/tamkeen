@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import type { FormData, FormErrors } from "./types";
 import { MONTANT_INVESTISSEMENT_OPTIONS } from "./constants";
 import { getYearsForCA } from "./utils";
-
+import { NUMBER_OF_EMPLOYEES } from "./constants";
 interface CommonFieldsProps {
   formData: FormData;
   errors: FormErrors;
@@ -78,31 +78,58 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t("eligibility.montantInvestissement")} *
-          </label>
-          <select
-            name="montantInvestissement"
-            value={formData.montantInvestissement}
-            onChange={onInputChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-              errors.montantInvestissement
-                ? "border-red-500"
-                : "border-gray-300"
-            }`}>
-            <option value="">{t("eligibility.selectPlaceholder")}</option>
-            {MONTANT_INVESTISSEMENT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {t(option.key)}
-              </option>
-            ))}
-          </select>
-          {errors.montantInvestissement && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.montantInvestissement}
-            </p>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t("eligibility.montantInvestissement")} *
+            </label>
+            <select
+              name="montantInvestissement"
+              value={formData.montantInvestissement}
+              onChange={onInputChange}
+              className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                errors.montantInvestissement
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}>
+              <option value="">{t("eligibility.selectPlaceholder")}</option>
+              {MONTANT_INVESTISSEMENT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {t(option.key)}
+                </option>
+              ))}
+            </select>
+            {errors.montantInvestissement && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.montantInvestissement}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t("eligibility.numberOfEmployees")} *
+            </label>
+            <select
+              name="numberOfEmployees"
+              value={formData.numberOfEmployees}
+              onChange={onInputChange}
+              className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                errors.numberOfEmployees ? "border-red-500" : "border-gray-300"
+              }`}>
+              <option value="">{t("eligibility.selectPlaceholder")}</option>
+              {NUMBER_OF_EMPLOYEES.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {t(option.key)}
+                </option>
+              ))}
+            </select>
+            {errors.numberOfEmployees && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.numberOfEmployees}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 

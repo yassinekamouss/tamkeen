@@ -3,8 +3,19 @@ export const SECTEURS_TRAVAIL = [
     "key": "Agriculture - Économie rurale",
     "value": "EconomieRurale"
   },
+  { 
+    "key": "Aquaculture en eau marine et zones côtières",
+    "value": "AquacultureMarine"
+ },
+  { 
+    "key": "Aquaculture en eau douce", 
+    "value": "AquacultureEauDouce" 
+  },
+  { "key": "Transformation et valorisation des produits aquatiques",
+    "value": "ValorisationProduitsAquatiques"
+  },
   {
-    "key":"Artisanat",
+    "key":"Artisanat de production artistique et utilitaire",
     "value":"Artisanat"
   },
   {
@@ -23,18 +34,128 @@ export const SECTEURS_TRAVAIL = [
     "key": "Industries extractives",
     "value": "IndustriesExtractives"
   },
+   { 
+    "key": "Extraction de minerais",
+     "value": "ExtractionMinerais"
+     },
+    {
+       "key": "Services de soutien aux activités extractives", 
+       "value": "SoutienExtractives"
+       },
+    {
+       "key": "Valorisation et transformation des produits minéraux", 
+       "value": "ValorisationMineraux"
+    },
+
   {
     "key": "Industries de transformation",
     "value": "IndustriesTransformation"
   },
+
+    { "key": "Industries alimentaires",
+      "value": "IndustrieAlimentaire"
+     },
+    { "key": "Industrie des boissons",
+      "value": "IndustrieBoissons"
+     },
+    { "key": "Industrie des produits du tabac", 
+      "value": "IndustrieTabac" 
+    },
+    { "key": "Industrie textile", 
+      "value": "IndustrieTextile"
+     },
+    { "key": "Industrie de l’habillement",
+       "value": "IndustrieHabillement"
+       },
+    { "key": "Industrie du cuir et de la chaussure", 
+      "value": "IndustrieCuirChaussure"
+     },
+    { "key": "Menuiserie et fabrication de produits en bois, liège, osier ou rotin", 
+      "value": "MenuiserieBois"
+     },
+    { "key": "Fabrication de papier et de carton", 
+    "value": "PapierCarton"
+   },
+    { "key": "Impression et reproduction d’enregistrements",
+      "value": "ImpressionReproduction"
+     },
+    { "key": "Industrie chimique",
+      "value": "IndustrieChimique"
+     },
+    { "key": "Industrie pharmaceutique",
+      "value": "IndustriePharmaceutique" 
+    },
+    { "key": "Industrie des dispositifs médicaux et équipements biomédicaux",
+       "value": "DispositifsMedicaux"
+       },
+    { "key": "Fabrication de produits en caoutchouc et en plastique",
+       "value": "CaoutchoucPlastique" 
+  },
+    { "key": "Fabrication d’autres produits non métalliques", 
+      "value": "ProduitsNonMetalliques"
+     },
+    { "key": "Fabrication de produits métalliques à l’exception des machines et équipements", 
+    "value": "ProduitsMetalliques"
+   },
+    { "key": "Fabrication d’équipements informatiques et de produits électroniques et optiques",
+       "value": "EquipementsElectroniques"
+   },
+    { "key": "Fabrication de matériels et appareils électriques", 
+      "value": "MaterielsElectriques"
+     },
+    { "key": "Fabrication de machines et équipements non classés ailleurs", 
+      "value": "MachinesNonClassés"
+     },
+    { "key": "Industrie automobile",
+       "value": "IndustrieAutomobile"
+       },
+    { "key": "Fabrication d’autres moyens de transport", 
+      "value": "AutresTransports"
+     },
+    { "key": "Fabrication de meubles", 
+      "value": "FabricationMeubles"
+     },
+    { "key": "Autres industries de transformation", 
+      "value": "AutresIndustriesTransformation"
+     },
+    { "key": "Réparation et installation de machines et équipements", 
+      "value": "ReparationMachines" 
+    },
+    { "key": "Industrie des énergies renouvelables", 
+      "value": "EnergiesRenouvelables" 
+    },
+    { "key": "Ingénierie et services techniques liés à l’industrie",
+       "value": "ServicesTechniquesIndustrie"
+       },
+    { "key": "Services de soutien aux activités industrielles",
+       "value": "SoutienIndustriel" 
+      },
+
   {
     "key": "Production et distribution d’électricité, de gaz, de vapeur et d’air conditionné",
     "value": "EnergieElectriciteGaz"
+  },
+   { 
+    "key": "Production d’électricité à partir de sources renouvelables", 
+    "value": "ElectriciteRenouvelable" 
   },
   {
     "key": "Production et distribution d’eau, assainissement et gestion des déchets",
     "value": "EauAssainissementDechets"
   },
+  { 
+      "key": "Collecte, traitement et élimination des déchets dangereux",
+       "value": "DechetsDangereux" 
+  },
+  {
+   "key": "Recyclage, transformation et valorisation des déchets non dangereux",
+   "value": "DechetsNonDangereux"
+     },
+    { 
+      "key": "Dépollution et autres services de gestion des déchets non domestiques",
+       "value": "Depollution" 
+      },
+
   {
     "key": "Transport et stockage - Logistique",
     "value": "TransportLogistique"
@@ -67,6 +188,14 @@ export const SECTEURS_TRAVAIL = [
     "key": "Education",
     "value": "Education"
   },
+
+     {
+       "key": "Stockage et services annexes au transport", 
+       "value": "StockageTransport"
+       },
+    { "key": "Activités des services postaux",
+       "value": "ServicesPostaux"
+        },
   {
     "key": "Santé humaine et action sociale",
     "value": "SanteActionSociale"
@@ -110,8 +239,40 @@ export const SECTEURS_TRAVAIL = [
   {
     "key": "Promotion immobilière",
     "value": "PromotionImmobiliere"
-  }
+  },
+      { 
+        "key": "Établissements d’hébergement touristique classés", 
+        "value": "HebergementTouristique" 
+      },
+    { "key": "Restaurants touristiques", 
+      "value": "RestaurantsTouristiques"
+     },
+    {
+       "key": "Production de films cinématographiques et vidéo, programmes télévisés, enregistrements sonores et publication de matériel musical", 
+       "value": "ProductionAudiovisuelle"
+       },
+    { "key": "Activités de programmation et diffusion", 
+      "value": "Diffusion"
+     },
+    { "key": "Installation d’infrastructures de télécommunications",
+       "value": "Telecom"
+       },
+    { "key": "Logiciels, conseil en informatique et autres activités informatiques",
+       "value": "Informatique" 
+      },
+    { "key": "Services d’information (externalisation, centres d’appels…)", 
+      "value": "ServicesInfo"
+     },
+   { "key": "Activités de contrôle et d’analyse technique", "value": "ControleTechnique" },
+   { "key": "Formation professionnelle", "value": "FormationPro" },
+   { "key": "Activités de soins de santé humaine", "value": "Sante" },
+   { "key": "Activités de création artistique et de spectacle", "value": "CreationArtistique" },
+   { "key": "Activités récréatives", "value": "ActivitesRecreatives" },
+   { "key": "Réparation d’ordinateurs, équipements et articles domestiques", "value": "ReparationServices" }
+ 
 ];
+
+
 
 
 
@@ -147,6 +308,14 @@ export const STATUT_JURIDIQUE_OPTIONS = [
   {
     key: "Auto-entrepreneur",
     value: "auto-entrepreneur"
+  },
+  {
+    key: "Coopérative à propriété unique (CPU)",
+    value: "CPU"
+  },
+  {
+    key: "Coopérative",
+    value: "coopérative"
   }
 ];
 
@@ -206,121 +375,10 @@ export const ANNEE_CREATION = [
 ];
 
 
-export const BRANCHES_PAR_SECTEUR = {
-  EconomieRurale: [
-    { key: "Aquaculture en eau marine et zones côtières", value: "AquacultureMarine" },
-    { key: "Aquaculture en eau douce", value: "AquacultureEauDouce" },
-    { key: "Transformation et valorisation des produits aquatiques", value: "ValorisationProduitsAquatiques" }
-  ],
+export const NUMBER_OF_EMPLOYEES = [
+  "entre 1 et 3 employés",
+  "entre 4 et 5 employés",
+  "entre 5 et 10 employés",
+  "plus de 10 employés"
+]
 
-  ExploitationForestiere: [
-
-  ],
-
-  PecheMaritime: [
- 
-  ],
-
-  PecheCotiere: [
-  ],
-
-  IndustriesExtractives: [
-    { key: "Extraction de minerais", value: "ExtractionMinerais" },
-    { key: "Services de soutien aux activités extractives", value: "SoutienExtractives" },
-    { key: "Valorisation et transformation des produits minéraux", value: "ValorisationMineraux" }
-  ],
-
-  IndustriesTransformation: [
-    { key: "Industries alimentaires", value: "IndustrieAlimentaire" },
-    { key: "Industrie des boissons", value: "IndustrieBoissons" },
-    { key: "Industrie des produits du tabac", value: "IndustrieTabac" },
-    { key: "Industrie textile", value: "IndustrieTextile" },
-    { key: "Industrie de l’habillement", value: "IndustrieHabillement" },
-    { key: "Industrie du cuir et de la chaussure", value: "IndustrieCuirChaussure" },
-    { key: "Menuiserie et fabrication de produits en bois, liège, osier ou rotin", value: "MenuiserieBois" },
-    { key: "Fabrication de papier et de carton", value: "PapierCarton" },
-    { key: "Impression et reproduction d’enregistrements", value: "ImpressionReproduction" },
-    { key: "Industrie chimique", value: "IndustrieChimique" },
-    { key: "Industrie pharmaceutique", value: "IndustriePharmaceutique" },
-    { key: "Industrie des dispositifs médicaux et équipements biomédicaux", value: "DispositifsMedicaux" },
-    { key: "Fabrication de produits en caoutchouc et en plastique", value: "CaoutchoucPlastique" },
-    { key: "Fabrication d’autres produits non métalliques", value: "ProduitsNonMetalliques" },
-    { key: "Fabrication de produits métalliques à l’exception des machines et équipements", value: "ProduitsMetalliques" },
-    { key: "Fabrication d’équipements informatiques et de produits électroniques et optiques", value: "EquipementsElectroniques" },
-    { key: "Fabrication de matériels et appareils électriques", value: "MaterielsElectriques" },
-    { key: "Fabrication de machines et équipements non classés ailleurs", value: "MachinesAutres" },
-    { key: "Industrie automobile", value: "IndustrieAutomobile" },
-    { key: "Fabrication d’autres moyens de transport", value: "AutresTransports" },
-    { key: "Fabrication de meubles", value: "FabricationMeubles" },
-    { key: "Autres industries de transformation", value: "AutresIndustriesTransformation" },
-    { key: "Réparation et installation de machines et équipements", value: "ReparationMachines" },
-    { key: "Industrie des énergies renouvelables", value: "EnergiesRenouvelables" },
-    { key: "Ingénierie et services techniques liés à l’industrie", value: "ServicesTechniquesIndustrie" },
-    { key: "Services de soutien aux activités industrielles", value: "SoutienIndustriel" }
-  ],
-
-  EnergieElectriciteGaz: [
-    { key: "Production d’électricité à partir de sources renouvelables", value: "ElectriciteRenouvelable" }
-  ],
-
-  EauAssainissementDechets: [
-    { key: "Collecte, traitement et élimination des déchets dangereux", value: "DechetsDangereux" },
-    { key: "Recyclage, transformation et valorisation des déchets non dangereux", value: "DechetsNonDangereux" },
-    { key: "Dépollution et autres services de gestion des déchets non domestiques", value: "Depollution" }
-  ],
-
-  TransportLogistique: [
-    { key: "Stockage et services annexes au transport", value: "StockageTransport" },
-    { key: "Activités des services postaux", value: "ServicesPostaux" }
-  ],
-
-  HebergementRestauration: [
-    { key: "Établissements d’hébergement touristique classés", value: "HebergementTouristique" },
-    { key: "Restaurants touristiques", value: "RestaurantsTouristiques" }
-  ],
-
-  Artisanat: [
-    { key: "Artisanat de production artistique et utilitaire", value: "Artisanat" }
-  ],
-
-  SolutionsDigitalesNTIC: [
-
-  ],
-
-  MediasCommunication: [
-    { key: "Production de films cinématographiques et vidéo, programmes télévisés, enregistrements sonores et publication de matériel musical", value: "ProductionAudiovisuelle" },
-    { key: "Activités de programmation et diffusion", value: "Diffusion" },
-    { key: "Installation d’infrastructures de télécommunications", value: "Telecom" },
-    { key: "Logiciels, conseil en informatique et autres activités informatiques", value: "Informatique" },
-    { key: "Services d’information (externalisation, centres d’appels…)", value: "ServicesInfo" }
-  ],
-
-  ActivitesScientifiquesTechniques: [
-    { key: "Activités de contrôle et d’analyse technique", value: "ControleTechnique" }
-  ],
-
-  Education: [
-    { key: "Formation professionnelle", value: "FormationPro" }
-  ],
-
-  SanteActionSociale: [
-    { key: "Activités de soins de santé humaine", value: "Sante" }
-  ],
-
-  ArtsDivertissementSpectacles: [
-    { key: "Activités de création artistique et de spectacle", value: "CreationArtistique" },
-    { key: "Activités récréatives", value: "ActivitesRecreatives" }
-  ],
-
-  ActivitesArtCulture: [],
-  IndustriesCreativesCulturelles: [],
-  ActivitesSport: [],
-  ActiviteTouristique: [],
-  ServicesPersonnes: [],
-  ServicesEntreprises: [],
-  AutresServices: [
-    { key: "Réparation d’ordinateurs, équipements et articles domestiques", value: "ReparationServices" }
-  ],
-  EfficaciteEnergetique: [],
-  PromotionImmobiliere: []
-};

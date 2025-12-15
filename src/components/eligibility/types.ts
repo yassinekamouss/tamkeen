@@ -8,7 +8,6 @@ export interface FormData {
   email: string;
   telephone?: string;
   secteurTravail?: string;
-  branche?: string;
   anneeCreation?: string;
   // Personne morale
   nomEntreprise?: string;
@@ -19,6 +18,7 @@ export interface FormData {
   chiffreAffaire2023?: string;
   chiffreAffaire2022?: string;
   montantInvestissement: string;
+  numberOfEmployees:string;
   acceptPrivacyPolicy: boolean;
   statutJuridique: string;
 }
@@ -32,7 +32,6 @@ export interface FormErrors {
   email?: string;
   telephone?: string;
   secteurTravail?: string;
-  branche?: string;
   region?: string;
   nomEntreprise?: string;
   anneeCreation?: string;
@@ -40,6 +39,7 @@ export interface FormErrors {
   chiffreAffaire2023?: string;
   chiffreAffaire2022?: string;
   montantInvestissement?: string;
+  numberOfEmployees?:string;
   acceptPrivacyPolicy?: string;
   statutJuridique?: string;
 }
