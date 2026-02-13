@@ -1,7 +1,7 @@
 import React from "react";
 import { Header, Hero, Footer } from "../components";
 import { EligibilityForm } from "../components/eligibility";
-import Chatbot from "../components/Chatbot";
+/*import Chatbot from "../components/Chatbot";*/
 import { Helmet } from "react-helmet-async";
 import SeoAlternates from "../components/SeoAlternates";
 
@@ -65,7 +65,6 @@ const Home: React.FC = () => {
       </div>
       <Footer />
 
-      <Chatbot />
     </div>
   );
 };
