@@ -71,7 +71,7 @@
     "email": "Email",
     "emailPlaceholder": "votre.email@example.com",
     "anneeCreation": "Année de création",
-    "chiffreAffaire": "Chiffre d'affaire",
+    "chiffreAffaire": "Chiffre d'affaires",
     "montantInvestissement": "Montant prévisionnel de l'investissement",
     "numberOfEmployees": "Nombre d'employés prévus",
     "selectPlaceholder": "Sélectionner une option",
@@ -82,7 +82,7 @@
     "chiffreAffaireOptions": {
       "option1": "Entre 0 et 1 MDH",
       "option2": "Supérieur à 1 MDH",
-      "option3": "Sans chiffre d'affaire en 2025"
+      "option3": "Sans chiffre d'affaires en 2025"
     },
     "montantInvestissementOptions": {
       "moins1M": "Moins de 1.000.000 MAD",
@@ -234,7 +234,7 @@
       "regionRequired": "La région est obligatoire",
       "secteurActiviteRequired": "Le secteur d'activité est obligatoire",
       "anneeCreationRequired": "L'année de création est obligatoire",
-      "chiffreAffaireRequired": "Le chiffre d'affaire est obligatoire",
+      "chiffreAffaireRequired": "Le chiffre d'affaires est obligatoire",
       "montantInvestissementRequired": "Le montant d'investissement est obligatoire",
       "acceptPrivacyPolicyRequired": "Vous devez accepter la politique de confidentialité",
       "statutJuridiqueRequired": "Le statut juridique est obligatoire",
@@ -276,7 +276,7 @@
         },
         {
           "title": "Obtenez votre résultat",
-          "description": "Vous saurez instantanément si vous êtes potentiellement éligible à une ou plusieurs subvention."
+          "description": "Vous saurez instantanément si vous êtes potentiellement éligible à une ou plusieurs subventions."
         }
       ]
     },
@@ -287,17 +287,17 @@
     "title": "Questions Fréquemment Posées",
     "subtitle": "Trouvez les réponses aux questions les plus courantes sur Tamkeen",
     "q1": "Qui est Tamkeen ?",
-    "a1": "Le Centre Tamkeen est une organisation privée de soutien et  accompagnement des entrepreneurs. Elle rassemble une sélection de consultants et formateurs expérimentés et rodés aux pratiques du terrain.",
+    "a1": "Le Centre Tamkeen est une organisation privée de soutien et d'accompagnement des entrepreneurs. Il rassemble une sélection de consultants et formateurs expérimentés et rodés aux pratiques du terrain.",
     "q2": "Que se passe-t-il après avoir rempli mon test ?",
-    "a2": "Une fois le test de pré-éligibilité fini, l’entrepreneur peut entamer ses démarches directement auprès de l’organisme concerné - nous fournisssons le lien vers leur site-, ou bien opter pour un accompagnement personnalisé par un conseiller Tamkeen.",
-    "q3": "Qu'est ce qu'une subvention ?",
-    "a3": "Une subvention ou prime à l’investissement est un appui financier octroyé aux entrepreneurs qui investissent dans des projets générateurs d’emploi et de revenus ou d’impact positif sur l’environnement",
+    "a2": "Une fois le test de pré-éligibilité terminé, l’entrepreneur peut entamer ses démarches directement auprès de l’organisme concerné - nous fournissons le lien vers leur site -, ou bien opter pour un accompagnement personnalisé par un conseiller Tamkeen.",
+    "q3": "Qu'est-ce qu'une subvention ?",
+    "a3": "Une subvention ou prime à l’investissement est un appui financier octroyé aux entrepreneurs qui investissent dans des projets générateurs d’emploi et de revenus ou d’impact positif sur l’environnement.",
     "q4": "Combien de temps prend l'évaluation ?",
     "a4": "L'évaluation initiale est instantanée. Vous recevrez immédiatement une liste des subventions potentiellement adaptées à votre profil.",
     "q5": "Les subventions proposées sont elles garanties ?",
-    "a5": "⁠Le resultat du test de pré éligibilité donne une indication forte sur la recevabilité du projet aux programme d’appui concerné. L’obtention de la subvention reste conditionnée par la préparation, montage et dépôt d’un dossier solide et conforme aux critères d’éligibilité du programme. Chaque programme a des critères de sélection qui lui sont spécifiques",
+    "a5": "Le résultat du test de pré-éligibilité donne une indication forte sur la recevabilité du projet au programme d’appui concerné. L’obtention de la subvention reste conditionnée par la préparation, le montage et le dépôt d’un dossier solide et conforme aux critères d’éligibilité du programme. Chaque programme a des critères de sélection qui lui sont spécifiques.",
     "q6": "Le test est-il gratuit ?",
-    "a6": "Le test de pré éligibilité offert par le centre Tamkeen est gratuit et le restera pour toujours. Le montage du dossier et l’accompagnement jusqu’à l’obtention de l’accord de subvention est rémunéré selon la nature du projet et du programme concerné",
+    "a6": "Le test de pré-éligibilité offert par le centre Tamkeen est gratuit et le restera pour toujours. Le montage du dossier et l’accompagnement jusqu’à l’obtention de l’accord de subvention sont rémunérés selon la nature du projet et du programme concerné.",
     "moreQuestionsTitle": "Avez-vous d'autres questions ?",
     "moreQuestionsSubtitle": "N'hésitez pas à nous contacter pour plus d'informations",
     "contactButton": "Nous contacter"
@@ -411,7 +411,7 @@
     "message": {
       "eligible": "Félicitations ! Votre profil correspond aux critères d'éligibilité pour le(s) programme(s) suivant(s) :",
       "notEligible": "D'après vos réponses, vous ne remplissez pas les critères d'éligibilité actuels. Cependant, notre équipe peut vous orienter vers d'autres solutions de financement adaptées à votre situation.",
-      "eligibleEnd": "Si vous souhaitez que notre consultant en subventions vous contacte pour vous assister à monter votre dossier de candidature, veuillez cliquer sur le bouton si-dessous."
+      "eligibleEnd": "Si vous souhaitez que notre consultant en subventions vous contacte pour vous assister à monter votre dossier de candidature, veuillez cliquer sur le bouton ci-dessous."
     },
     "contactInfo": "Pour plus d'informations : contact@masubvention.ma ",
     "newTestButton": "Faire un nouveau test",

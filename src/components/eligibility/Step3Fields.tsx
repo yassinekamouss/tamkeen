@@ -158,8 +158,10 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
               <option value="__new__">+ Nouveau numéro…</option>
             </select>
           ) : (
-            <div className="flex">
-              <span className="inline-flex items-center px-4 border border-r-0 bg-[#FFFFFF] border-[#E4E4E7] text-[#1F2937]/60 text-xs font-mono rounded-none">
+            <div className={`flex border rounded-none bg-white transition-colors duration-200 focus-within:border-[#1E5ED8] focus-within:ring-0 ${
+              errors.telephone ? "border-red-500" : "border-[#E4E4E7]"
+            }`}>
+              <span className="inline-flex items-center px-4 bg-[#FFFFFF] border-e border-[#E4E4E7] text-[#1F2937]/60 text-xs font-mono rounded-none">
                 +212
               </span>
               <input
@@ -168,9 +170,7 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                 value={formData.telephone || ""}
                 onChange={handleInputChange}
                 maxLength={9}
-                className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white border-l-0 ${
-                  errors.telephone ? "border-red-500" : "border-[#E4E4E7]"
-                }`}
+                className="w-full px-4 py-3 focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-transparent border-0"
                 placeholder={t("eligibility.physique.telephonePlaceholder")}
               />
             </div>

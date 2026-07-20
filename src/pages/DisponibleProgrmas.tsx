@@ -6,6 +6,8 @@ import Pagination from "../components/Pagination";
 import { Footer } from "../components";
 import { useTranslation } from "react-i18next";
 
+import { sanitizeFrenchText } from "../utils/sanitize";
+
 interface BilingualText {
   fr: string;
   ar: string;
@@ -147,7 +149,7 @@ const DisponiblePrograms: React.FC = () => {
           <p className="text-sm sm:text-base text-[#FFFFFF]/75 mb-10 max-w-2xl mx-auto leading-relaxed">
             {lang === "fr"
               ? "Découvrez notre sélection de programmes de formation conçus pour développer vos compétences et atteindre vos objectifs professionnels."
-              : "اكتشف مجموعتنا من البرامج التدريبية المصممة لتطوير مهاراتك وتحقيق أهدافك المهنية."}
+              : "اكتشف مجموعتنا من البرامج التدريبية المصmمة لتطوير مهاراتك وتحقيق أهدافك المهنية."}
           </p>
 
           <div className="grid grid-cols-3 divide-x divide-white/10 max-w-xl mx-auto border-t border-b border-white/10 py-6">
@@ -179,8 +181,10 @@ const DisponiblePrograms: React.FC = () => {
       <div className="container mx-auto px-4 py-16 sm:py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {currentPrograms.map((program, index) => {
-            const name = program.name[lang];
-            const desc = program.description[lang];
+            const rawName = program.name[lang];
+            const rawDesc = program.description[lang];
+            const name = lang === "fr" ? sanitizeFrenchText(rawName) : rawName;
+            const desc = lang === "fr" ? sanitizeFrenchText(rawDesc) : rawDesc;
 
             const isTitleExpanded = expandedTitle === program.id;
             const isDescExpanded = expandedDesc === program.id;
