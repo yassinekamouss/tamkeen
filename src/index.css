@@ -1,16 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --color-primary: #1E5ED8;
+  --color-secondary: #F97316;
+  --color-background: #FFFFFF;
+  --color-text: #1F2937;
+  --color-text-secondary: #71717A;
+  --color-border: #E4E4E7;
+  --color-border-dark: #A1A1AA;
+
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color: #213547;
-  background-color: #ffffff;
+  color: var(--color-text);
+  background-color: var(--color-background);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Custom design font utilities */
+.font-display {
+  font-family: 'Outfit', sans-serif;
+}
+
+[dir="rtl"], [lang="ar"] {
+  font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+}
+
+[dir="rtl"] .font-display, [lang="ar"] .font-display {
+  font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+}
+
+/* Custom background & text colors */
+.bg-primary { background-color: var(--color-primary); }
+.text-primary { color: var(--color-primary); }
+.border-primary { border-color: var(--color-primary); }
+
+.bg-secondary { background-color: var(--color-secondary); }
+.text-secondary { color: var(--color-secondary); }
+.border-secondary { border-color: var(--color-secondary); }
+
+.bg-background { background-color: var(--color-background); }
+.text-details { color: var(--color-text-secondary); }
+.border-custom { border-color: var(--color-border); }
 
 /* Styles personnalisés pour la scrollbar du chatbot */
 .scrollbar-thin {

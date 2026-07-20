@@ -28,16 +28,29 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
   const [programs, setPrograms] = useState<HeroProgram[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const didRequestRef = useRef(false);
 
   const lang = i18n.language === "ar" ? "Ar" : "Fr";
   const hasData = programs.length > 0;
 
+  const defaultProgram: HeroProgram = {
+    _id: "default-hero",
+    hero: {
+      image: "default-hero.webp",
+      titleFr: "Trouvez les subventions et aides publiques adaptées à votre projet",
+      titleAr: "ابحث عن الدعم والمنح العمومية المناسبة لمشروعك",
+      subtitleFr: "Plateforme Nationale d'Éligibilité",
+      subtitleAr: "المنصة الوطنية للأهلية",
+      descriptionFr: "Analysez instantanément votre profil et découvrez toutes les opportunités de financement et d'accompagnement proposées par l'État marocain.",
+      descriptionAr: "قم بتحليل ملفك الشخصي فوراً واكتشف جميع فرص التمويل والمواكبة التي تقدمها الدولة المغربية.",
+    }
+  };
+
   // Helpers
-  const preloadImage = (src: string) =>
-    new Promise<void>((resolve) => {
+  const preloadImage = (src: string) => {
+    if (src === "default-hero.webp") return Promise.resolve();
+    return new Promise<void>((resolve) => {
       const img = new Image();
       img.onload = () => resolve();
       img.onerror = () => resolve();
@@ -45,6 +58,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
       // Give browser a hint to decode asynchronously
       img.decoding = "async";
     });
+  };
 
   const cacheSet = (data: HeroProgram[]) => {
     try {
@@ -76,9 +90,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
       setPrograms(fromCache);
       setLoading(false);
       // Preload first image then show content fade-in
-      preloadImage(fromCache[0].hero.image).then(() =>
-        setFirstImageLoaded(true)
-      );
+      preloadImage(fromCache[0].hero.image).catch(() => void 0);
       // Stale-while-revalidate fetch in background
       api
         .get("/programs/hero")
@@ -87,9 +99,9 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
             setPrograms(res.data);
             cacheSet(res.data);
             // Preload first of fresh set too
-            preloadImage(res.data[0].hero.image).then(() =>
-              setFirstImageLoaded(true)
-            );
+            preloadImage(res.data[0].hero.image).catch(() => void 0);
+          } else {
+            setPrograms([defaultProgram]);
           }
         })
         .catch(() => void 0);
@@ -100,16 +112,19 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
     api
       .get("/programs/hero")
       .then((res) => {
-        const list: HeroProgram[] = Array.isArray(res.data) ? res.data : [];
-        setPrograms(list);
-        cacheSet(list);
+        const list: HeroProgram[] = Array.isArray(res.data) && res.data.length ? res.data : [];
         if (list.length) {
-          return preloadImage(list[0].hero.image).then(() =>
-            setFirstImageLoaded(true)
-          );
+          setPrograms(list);
+          cacheSet(list);
+          preloadImage(list[0].hero.image).catch(() => void 0);
+        } else {
+          setPrograms([defaultProgram]);
         }
       })
-      .catch((e) => setError(e?.message || "Failed to load hero"))
+      .catch((e) => {
+        setError(e?.message || "Failed to load hero");
+        setPrograms([defaultProgram]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -126,20 +141,26 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
   const currentProgram = hasData ? programs[currentSlide] : null;
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % programs.length);
+    if (programs.length > 1) {
+      setCurrentSlide((prev) => (prev + 1) % programs.length);
+    }
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + programs.length) % programs.length);
+    if (programs.length > 1) {
+      setCurrentSlide((prev) => (prev - 1 + programs.length) % programs.length);
+    }
   };
 
   // Preload all slide images (after initial data) for smooth transitions
   useEffect(() => {
     if (!hasData) return;
     programs.forEach((p) => {
-      const img = new Image();
-      img.src = p.hero.image;
-      img.decoding = "async";
+      if (p.hero.image !== "default-hero.webp") {
+        const img = new Image();
+        img.src = p.hero.image;
+        img.decoding = "async";
+      }
     });
   }, [hasData, programs]);
 
@@ -164,170 +185,156 @@ const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
 
   return (
     <section
-      className="relative h-screen w-full flex items-center overflow-hidden"
+      className="relative w-full grid grid-cols-1 lg:grid-cols-12 border-b border-[#E4E4E7] min-h-[80vh] lg:min-h-[85vh]"
       aria-busy={loading}
       aria-live="polite">
-      {/* Background Slides */}
-      <div className="absolute inset-0 backdrop-blur-sm">
-        {/* Content backgrounds when data is ready */}
-        {hasData &&
-          programs.map((program, index) => (
-            <div
-              key={program._id}
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                index === currentSlide && firstImageLoaded
-                  ? "opacity-100"
-                  : "opacity-0"
-              }`}>
-              <img
-                src={`${import.meta.env.VITE_PREFIX_URL}/programs/${program.hero.image}`}
-                alt={`Slide ${index + 1}`}
-                className="w-full h-full object-cover"
-                loading={index === 0 ? "eager" : "lazy"}
-                decoding="async"
-              />
-              <div className="absolute inset-0 bg-black opacity-60"></div>
-            </div>
-          ))}
+      
+      {/* Left Column: Dark Editorial Brand Panel */}
+      <div className="lg:col-span-7 bg-[#1E5ED8] text-white p-6 sm:p-12 md:p-16 flex flex-col justify-between relative overflow-hidden">
+        {/* Decorative Geometric Background Pattern */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-[#F97316]/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        {/* Skeleton background when loading/no data */}
-        {!hasData && (
-          <div className="absolute inset-0">
-            <div className="w-full h-full bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700" />
-            <div className="absolute inset-0 bg-black/40" />
-          </div>
-        )}
+        {/* Top Tagline */}
+        <div className="relative z-10 mb-8 lg:mb-0">
+          <span className="inline-block bg-[#F97316] text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-sm font-display">
+            {currentProgram ? currentProgram.hero[`subtitle${lang}` as keyof typeof currentProgram.hero] : t("hero.subtitle")}
+          </span>
+        </div>
 
-        {/* Overlay gradient keeps visual consistency */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/50 via-blue-800/30 to-blue-700/50"></div>
-      </div>
+        {/* Hero Title & Description */}
+        <div className="relative z-10 my-auto py-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-display leading-[1.1] mb-6">
+            {currentProgram ? currentProgram.hero[`title${lang}` as keyof typeof currentProgram.hero] : t("hero.title")}
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg text-[#FFFFFF]/80 leading-relaxed max-w-2xl font-light mb-8">
+            {currentProgram ? currentProgram.hero[`description${lang}` as keyof typeof currentProgram.hero] : t("hero.description")}
+          </p>
 
-      {/* Flèche gauche */}
-      <button
-        onClick={prevSlide}
-        className={`absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 sm:p-3 rounded-full transition-all duration-300 backdrop-blur-sm ${
-          hasData ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-        aria-label="Previous slide">
-        <svg
-          className="w-4 h-4 sm:w-6 sm:h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-
-      {/* Flèche droite */}
-      <button
-        onClick={nextSlide}
-        className={`absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 sm:p-3 rounded-full transition-all duration-300 backdrop-blur-sm ${
-          hasData ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-        aria-label="Next slide">
-        <svg
-          className="w-4 h-4 sm:w-6 sm:h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </button>
-
-      {/* Contenu */}
-      <div className="relative z-10 w-full px-4 sm:px-8 text-center">
-        {/* Skeleton text layout while loading */}
-        {!hasData && (
-          <div className="max-w-5xl mx-auto animate-pulse" aria-hidden="true">
-            <div className="h-4 sm:h-6 bg-white/30 rounded w-2/3 sm:w-1/2 mx-auto mb-6 sm:mb-8"></div>
-            <div className="h-8 sm:h-12 bg-white/40 rounded w-5/6 sm:w-2/3 mx-auto mb-4 sm:mb-6"></div>
-            <div className="h-4 sm:h-6 bg-white/30 rounded w-4/5 sm:w-1/2 mx-auto mb-6"></div>
-            <div className="flex justify-center mt-6">
-              <div className="h-10 sm:h-12 bg-white/70 rounded-lg w-40 sm:w-48"></div>
-            </div>
-            <span className="sr-only">{t("loading") || "Loading hero"}</span>
-          </div>
-        )}
-
-        {/* Real content fades in after first image is ready */}
-        {hasData && currentProgram && (
-          <div
-            className={`transition-opacity duration-500 ${
-              firstImageLoaded ? "opacity-100" : "opacity-0"
-            }`}>
-            <p className="text-white/90 text-sm sm:text-lg mb-6 sm:mb-8 font-light">
-              {
-                currentProgram.hero[
-                  `subtitle${lang}` as keyof typeof currentProgram.hero
-                ]
-              }
-            </p>
-            <h1 className="text-white text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6">
-              {
-                currentProgram.hero[
-                  `title${lang}` as keyof typeof currentProgram.hero
-                ]
-              }
-            </h1>
-            <p className="text-white/95 text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed">
-              {
-                currentProgram.hero[
-                  `description${lang}` as keyof typeof currentProgram.hero
-                ]
-              }
-            </p>
-            <div className="flex justify-center mt-6">
-              <button
-                onClick={onNavigateToForm}
-                className="bg-white text-blue-700 font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 text-base sm:text-lg">
-                {t("hero.button")}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Indicateurs */}
-      <div
-        className={`absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2 sm:space-x-3 ${
-          hasData ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}>
-        {programs.map((_, index) => (
           <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-              index === currentSlide
-                ? "bg-white scale-125"
-                : "bg-white/50 hover:bg-white/75"
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
+            onClick={onNavigateToForm}
+            className="group inline-flex items-center justify-center bg-[#F97316] hover:bg-[#EA580C] text-white font-display font-semibold tracking-wider text-xs uppercase px-8 py-4 transition-all duration-300 shadow-md">
+            {t("hero.button")}
+            <svg
+              className={`w-4 h-4 ml-2 rtl:mr-2 rtl:rotate-180 transition-transform duration-200 group-hover:translate-x-1`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Slide indicators / progress */}
+        {programs.length > 1 && (
+          <div className="relative z-10 flex items-center space-x-3 mt-4">
+            <span className="text-xs font-mono text-[#FFFFFF]/50">
+              {String(currentSlide + 1).padStart(2, "0")}
+            </span>
+            <div className="w-24 h-[1px] bg-white/20 relative">
+              <div
+                className="absolute top-0 left-0 h-full bg-[#F97316] transition-all duration-500"
+                style={{ width: `${((currentSlide + 1) / programs.length) * 100}%` }}
+              />
+            </div>
+            <span className="text-xs font-mono text-[#FFFFFF]/50">
+              {String(programs.length).padStart(2, "0")}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Décorations */}
-      <div className="absolute top-20 left-4 sm:left-10 opacity-20 z-10 hidden sm:block">
-        <div className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-white rotate-45"></div>
-      </div>
-      <div className="absolute top-40 right-8 sm:right-20 opacity-15 z-10 hidden sm:block">
-        <div className="w-8 h-8 sm:w-12 sm:h-12 bg-white/20 rounded-full"></div>
-      </div>
-      <div className="absolute bottom-40 left-8 sm:left-20 opacity-10 z-10 hidden sm:block">
-        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/30 transform rotate-45"></div>
+      {/* Right Column: Information Board / Live Aid Ticker */}
+      <div className="lg:col-span-5 bg-[#FFFFFF] p-6 sm:p-12 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-[#E4E4E7]">
+        
+        {/* Upper metadata details */}
+        <div>
+          <div className="flex items-center justify-between border-b border-[#E4E4E7] pb-4 mb-6">
+            <span className="text-[10px] font-bold tracking-widest uppercase text-[#1F2937]/60 font-display">
+              {lang === "Ar" ? "فرص التمويل النشطة" : "Opportunités Actives"}
+            </span>
+            <span className="text-xs font-mono text-green-700 bg-green-50 px-2 py-0.5 border border-green-200 rounded-sm">
+              ● Live
+            </span>
+          </div>
+
+          {currentProgram && (
+            <div className="space-y-6">
+              {/* Program Thumbnail Container */}
+              <div className="border border-[#E4E4E7] p-1.5 bg-white shadow-sm">
+                <div className="relative aspect-[16/10] bg-gray-50 overflow-hidden">
+                  {currentProgram.hero.image === "default-hero.webp" ? (
+                    <div className="w-full h-full bg-gradient-to-br from-[#1E5ED8] to-[#1F2937] flex items-center justify-center text-white/30 font-display uppercase tracking-widest text-[10px]">
+                      {lang === "Ar" ? "تمكين للاستشارات" : "Tamkeen Consulting"}
+                    </div>
+                  ) : (
+                    <img
+                      src={`${import.meta.env.VITE_PREFIX_URL}/programs/${currentProgram.hero.image}`}
+                      alt="Program illustration"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Monospace Metadata Table */}
+              <div className="border border-[#E4E4E7] divide-y divide-[#E4E4E7] bg-white text-xs font-mono">
+                <div className="grid grid-cols-2 p-3">
+                  <span className="text-[#1F2937]/60">{lang === "Ar" ? "نوع المستفيد" : "Bénéficiaires"}</span>
+                  <span className="text-right text-[#1F2937] font-medium">{lang === "Ar" ? "شركات، تعاونيات، مقاولين" : "Coopératives, PME, Auto-entrepreneurs"}</span>
+                </div>
+                <div className="grid grid-cols-2 p-3">
+                  <span className="text-[#1F2937]/60">{lang === "Ar" ? "نسبة الدعم" : "Taux de subvention"}</span>
+                  <span className="text-right text-[#1F2937] font-medium">{lang === "Ar" ? "حتى 100٪" : "Jusqu'à 100%"}</span>
+                </div>
+                <div className="grid grid-cols-2 p-3">
+                  <span className="text-[#1F2937]/60">{lang === "Ar" ? "تغطية النطاق" : "Zone Géographique"}</span>
+                  <span className="text-right text-[#1F2937] font-medium">{lang === "Ar" ? "وطني (المغرب)" : "National (Maroc)"}</span>
+                </div>
+                <div className="grid grid-cols-2 p-3">
+                  <span className="text-[#1F2937]/60">{lang === "Ar" ? "الوضع الحالي" : "Statut"}</span>
+                  <span className="text-right text-emerald-700 font-bold">{lang === "Ar" ? "مفتوح للتقديم" : "Ouvert"}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Carousel controls & counters */}
+        <div className="flex items-center justify-between border-t border-[#E4E4E7] pt-6 mt-8">
+          <div className="flex space-x-2">
+            <button
+              onClick={prevSlide}
+              disabled={programs.length <= 1}
+              className="border border-[#E4E4E7] hover:bg-white text-[#1F2937] p-2.5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+              aria-label="Previous slide">
+              <svg className="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={nextSlide}
+              disabled={programs.length <= 1}
+              className="border border-[#E4E4E7] hover:bg-white text-[#1F2937] p-2.5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+              aria-label="Next slide">
+              <svg className="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="text-right">
+            <span className="text-[10px] font-bold tracking-wider uppercase text-[#1F2937]/60 block font-display">
+              {lang === "Ar" ? "إجمالي البرامج" : "Total Programmes"}
+            </span>
+            <span className="text-base font-mono font-bold text-[#1E5ED8]">
+              {programs.length} Active Aids
+            </span>
+          </div>
+        </div>
+
       </div>
 
-      {/* If error and no data, keep skeleton but expose screen-reader friendly message */}
       {error && !hasData && (
         <p className="sr-only" role="status">
           {error}

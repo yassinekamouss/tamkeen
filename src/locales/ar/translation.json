@@ -29,6 +29,14 @@
     "button": "اختبر أهليتك هنا"
   },
   "eligibility": {
+    "steps": {
+      "step1": "الملف الشخصي",
+      "step1Sub": "الهوية",
+      "step2": "النشاط",
+      "step2Sub": "الهيكلة",
+      "step3": "التمويل",
+      "step3Sub": "التقييم"
+    },
     "title": "اختبار الأهلية",
     "subtitle": "تحقق من أهليتك للحصول على منح تمكين",
     "backButton": "العودة إلى الصفحة الرئيسية",
@@ -221,11 +229,15 @@
       "chiffreAffaireRequired": "رقم المعاملات مطلوب",
       "montantInvestissementRequired": "مبلغ الاستثمار مطلوب",
       "acceptPrivacyPolicyRequired": "يجب عليك قبول سياسة الخصوصية",
-      "statutJuridiqueRequired": "الوضع القانوني مطلوب"
+      "statutJuridiqueRequired": "الوضع القانوني مطلوب",
+      "nomEntrepriseRequired": "اسم الشركة مطلوب",
+      "ageRequired": "العمر مطلوب",
+      "sexeRequired": "الجنس مطلوب",
+      "numberOfEmployeesRequired": "عدد الموظفين المتوقعين مطلوب"
     }
   },
   "footer": {
-    "brand": "subvention.ma",
+    "brand": "masubvention.ma",
     "description": "نحن نساعد أصحاب المشاريع والشركات والتعاونيات على معرفة ما إذا كانوا يستوفون معايير الوصول إلى الإعانات الحكومية المتاحة في المغرب بسرعة.",
     "navigation": "الملاحة",
     "contact": "اتصل بنا",

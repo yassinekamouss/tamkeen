@@ -24,6 +24,7 @@ export { validateEligibilityForm } from "./validation";
 export { default as ApplicantTypeSelector } from "./ApplicantTypeSelector";
 export { default as PersonnePhysiqueForm } from "./PersonnePhysiqueForm";
 export { default as PersonneMoraleForm } from "./PersonneMoraleForm";
-export { default as CommonFields } from "./CommonFields";
+export { default as Step2Fields } from "./Step2Fields";
+export { default as Step3Fields } from "./Step3Fields";
 export { default as EligibilityResultComponent } from "./EligibilityResult";
 export { default as EligibilityForm } from "./EligibilityFormNew";

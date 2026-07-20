@@ -37,7 +37,7 @@ const Header: React.FC = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 transition-all duration-300 bg-white shadow-sm">
+    <header className="sticky top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#FFFFFF] border-b border-[#E4E4E7]">
       <div className="w-full px-4 sm:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           {/* Logo */}
@@ -45,7 +45,7 @@ const Header: React.FC = () => {
             <div className="flex-shrink-0">
               <Link to="/">
                 <img
-                  className="h-8 sm:h-12 w-auto"
+                  className="h-8 sm:h-10 w-auto"
                   src={logo}
                   alt="Tamkeen Center"
                 />
@@ -54,86 +54,102 @@ const Header: React.FC = () => {
           </div>
 
           {/* Navigation Menu */}
-          <nav className="hidden lg:flex space-x-6 xl:space-x-8">
+          <nav className="hidden lg:flex space-x-6 xl:space-x-8 h-full items-center font-display">
             <Link
               to="/"
-              className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+              className={`px-1 py-4 text-xs font-semibold uppercase tracking-wider transition-all duration-200 border-b-2 ${
                 isActiveLink("/")
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
+                  ? "text-[#1E5ED8] border-[#1E5ED8]"
+                  : "text-[#1F2937]/75 border-transparent hover:text-[#1E5ED8] hover:border-[#1E5ED8]/30"
               }`}>
               {t("header.home")}
             </Link>
             <Link
               to="/about"
-              className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+              className={`px-1 py-4 text-xs font-semibold uppercase tracking-wider transition-all duration-200 border-b-2 ${
                 isActiveLink("/about")
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
+                  ? "text-[#1E5ED8] border-[#1E5ED8]"
+                  : "text-[#1F2937]/75 border-transparent hover:text-[#1E5ED8] hover:border-[#1E5ED8]/30"
               }`}>
               {t("header.about")}
             </Link>
             <Link
               to="/news"
-              className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+              className={`px-1 py-4 text-xs font-semibold uppercase tracking-wider transition-all duration-200 border-b-2 ${
                 isActiveLink("/news")
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
+                  ? "text-[#1E5ED8] border-[#1E5ED8]"
+                  : "text-[#1F2937]/75 border-transparent hover:text-[#1E5ED8] hover:border-[#1E5ED8]/30"
               }`}>
               {t("header.news")}
             </Link>
             <Link
               to="/faq"
-              className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+              className={`px-1 py-4 text-xs font-semibold uppercase tracking-wider transition-all duration-200 border-b-2 ${
                 isActiveLink("/faq")
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
+                  ? "text-[#1E5ED8] border-[#1E5ED8]"
+                  : "text-[#1F2937]/75 border-transparent hover:text-[#1E5ED8] hover:border-[#1E5ED8]/30"
               }`}>
               {t("header.faq")}
             </Link>
-               <Link
+            <Link
               to="/programs"
-              className={`px-3 py-2 text-sm font-medium transition duration-300 ${
+              className={`px-1 py-4 text-xs font-semibold uppercase tracking-wider transition-all duration-200 border-b-2 ${
                 isActiveLink("/programs")
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
+                  ? "text-[#1E5ED8] border-[#1E5ED8]"
+                  : "text-[#1F2937]/75 border-transparent hover:text-[#1E5ED8] hover:border-[#1E5ED8]/30"
               }`}>
               {t("header.programs")}
             </Link>
             <div ref={dropdownRef} className="relative">
               <button
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="px-3 py-2 text-sm font-medium transition duration-300 flex items-center text-gray-700 hover:text-blue-600">
-                {t("header.language")}
+                className="px-2 py-1 text-md font-semibold uppercase tracking-wider transition duration-300 flex items-center border border-[#E4E4E7] bg-white text-[#1F2937]/75 hover:text-[#1E5ED8] hover:border-[#1E5ED8]/50">
+                
                 <svg
-                  className={`ml-1 h-4 w-4 transition-transform duration-200 ${
-                    isLanguageOpen ? "rotate-180" : ""
-                  }`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="mx-auto"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                 </svg>
+
               </button>
 
               {isLanguageOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                <div className="absolute right-0 mt-2 w-40 bg-[#FFFFFF] border border-[#E4E4E7] shadow-sm z-50">
                   <div className="py-1">
                     <button
                       onClick={() => changeLanguage("ar")}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
-                      <span className="mr-3 text-lg">🇲🇦</span>
+                      className={`flex items-center w-full px-4 py-2 text-xs font-semibold rounded-none transition-colors duration-150 ${
+                        i18n.language === "ar"
+                          ? "bg-[#1E5ED8] text-white"
+                          : "text-[#1F2937]/75 hover:bg-[#E4E4E7] hover:text-[#1E5ED8]"
+                      }`}
+                    >
+                      <span className="mr-2 text-sm">🇲🇦</span>
                       العربية
                     </button>
+
                     <button
                       onClick={() => changeLanguage("fr")}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 bg-blue-50 text-blue-600">
-                      <span className="mr-3 text-lg">🇫🇷</span>
+                      className={`flex items-center w-full px-4 py-2 text-xs font-semibold rounded-none transition-colors duration-150 ${
+                        i18n.language === "fr"
+                          ? "bg-[#1E5ED8] text-white"
+                          : "text-[#1F2937]/75 hover:bg-[#E4E4E7] hover:text-[#1E5ED8]"
+                      }`}
+                    >
+
+                      <span className="mr-2 text-sm">🇫🇷</span>
                       Français
                     </button>
                   </div>
@@ -170,7 +186,7 @@ const Header: React.FC = () => {
               <Link
                 to="/"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-3 py-2 text-sm font-medium rounded-md transition duration-300 ${
+                className={`block px-3 py-2 text-sm font-medium transition duration-300 ${
                   isActiveLink("/")
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
@@ -180,7 +196,7 @@ const Header: React.FC = () => {
               <Link
                 to="/about"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-3 py-2 text-sm font-medium rounded-md transition duration-300 ${
+                className={`block px-3 py-2 text-sm font-medium transition duration-300 ${
                   isActiveLink("/about")
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
@@ -190,7 +206,7 @@ const Header: React.FC = () => {
               <Link
                 to="/news"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-3 py-2 text-sm font-medium rounded-md transition duration-300 ${
+                className={`block px-3 py-2 text-sm font-medium transition duration-300 ${
                   isActiveLink("/news")
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
@@ -200,7 +216,7 @@ const Header: React.FC = () => {
               <Link
                 to="/faq"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-3 py-2 text-sm font-medium rounded-md transition duration-300 ${
+                className={`block px-3 py-2 text-sm font-medium transition duration-300 ${
                   isActiveLink("/faq")
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
@@ -217,7 +233,7 @@ const Header: React.FC = () => {
                       changeLanguage("ar");
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center w-full px-2 py-1 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">
+                    className="flex items-center w-full px-2 py-1 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
                     <span className="mr-2 text-base">🇲🇦</span>
                     العربية
                   </button>
@@ -226,7 +242,7 @@ const Header: React.FC = () => {
                       changeLanguage("fr");
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center w-full px-2 py-1 text-sm text-blue-600 bg-blue-50 rounded">
+                    className="flex items-center w-full px-2 py-1 text-sm text-blue-600 bg-blue-50">
                     <span className="mr-2 text-base">🇫🇷</span>
                     Français
                   </button>

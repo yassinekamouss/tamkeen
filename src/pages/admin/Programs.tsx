@@ -1,216 +1,45 @@
 // src/pages/admin/Programs.tsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import axios, { ADMIN_FRONT_PREFIX } from "../../api/axios";
-import {
-  Target,
-  Plus,
-  Search,
-  Edit,
-  Trash2,
-  CheckCircle,
-  Calendar,
-  Eye,
-  BarChart3,
-  Grid3X3,
-  AlertCircle,
-  User,
-  FileX,
-  Share,
-} from "lucide-react";
+import { Target, Plus, AlertCircle, FileX } from "lucide-react";
+import { ADMIN_FRONT_PREFIX } from "../../api/axios";
 import PublishProgamModal from "../../components/admin/programs/PublishProgramModal";
-// Modal de création/édition remplacé par une page dédiée
 import ProgramDetailsModal from "../../components/admin/programs/ProgramDetailsModal";
+import { usePrograms } from "../../hooks/admin/usePrograms";
+import {
+  ProgramCard,
+  ProgramFilters,
+  ProgramStats,
+} from "../../components/admin/programs";
 
-type RuleLite = {
-  id?: string;
-  field: string;
-  operator: string;
-  value: unknown;
-  valueSource?: string;
-};
-type RuleGroupLite = {
-  id?: string;
-  rules: RuleLite[];
-  combinator?: string;
-};
-
-interface BilingualText{
-  fr: string;
-  ar: string;
-}
-
-
-interface Program {
-  _id: string;
-  name: BilingualText;
-  description: BilingualText;
-  isActive: boolean;
-  DateDebut: string;
-  DateFin: string;
-  link: string;
-  hero?: {
-    isHero: boolean;
-    image: string;
-    titleFr: string;
-    titleAr: string;
-    subtitleFr: string;
-    subtitleAr: string;
-    descriptionFr: string;
-    descriptionAr: string;
-  };
-  criteres: RuleGroupLite;
-}
-
-// Ancien type de formulaire retiré au profit d'un builder logique
 const Programs: React.FC = () => {
-  const [programs, setPrograms] = useState<Program[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
-  const adminProfile = JSON.parse(
-    localStorage.getItem("adminProfile") || "null"
-  );
-  const isAdministrator = adminProfile?.role === "Administrateur";
-
-  const [showPublishModal, setShowPublishModal] = useState(false);
-  const [publishingProgram, setPublishingProgram] = useState<Program | null>(
-    null
-  );
-
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
-
-  // Plus de formulaire local ici; la page dédiée gère la création/édition
-
-  useEffect(() => {
-    fetchPrograms();
-  }, []);
-
-  const fetchPrograms = async () => {
-    try {
-      const response = await axios.get("/programs");
-      setPrograms(response.data);
-    } catch {
-      setError("Erreur lors du chargement des programmes.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Création/édition gérées par ProgramEditor
-
-  const handleEdit = (program: Program) => {
-    navigate(`${ADMIN_FRONT_PREFIX}/programs/${program._id}/edit`);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce programme ?")) {
-      try {
-        await axios.delete(`/programs/${id}`);
-        await fetchPrograms();
-      } catch {
-        setError("Erreur lors de la suppression du programme.");
-      }
-    }
-  };
-
-  const toggleActive = async (id: string, isActive: boolean) => {
-    try {
-      await axios.patch(`/programs/${id}/toggle`, { isActive: !isActive });
-      await fetchPrograms();
-    } catch {
-      setError("Erreur lors de la modification du statut.");
-    }
-  };
-
-  // plus de reset local
-
-  const handlePublish = (program: Program) => {
-    setPublishingProgram(program);
-    setShowPublishModal(true);
-  };
-
-  const handlePublishSubmit = async (heroData: FormData) => {
-    if (!publishingProgram) return;
-
-    try {
-      await axios.put(`/programs/${publishingProgram._id}/hero`, heroData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      await fetchPrograms();
-      setShowPublishModal(false);
-      setPublishingProgram(null);
-    } catch {
-      setError("Erreur lors de la publication du programme.");
-    }
-  };
-
-  const handleViewDetails = (program: Program) => {
-    setSelectedProgram(program);
-    setShowDetailsModal(true);
-  };
-
-  const [remainingDays, setRemainingDays] = useState<number | null>(null);
-  const [filterDate, setFilterDate] = useState<string>("");
-
-  const filteredPrograms = programs.filter((program) => {
-    // Filtre recherche
-    const matchesSearch =
-      program.name.fr.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      program.description.fr.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const hasDate = Boolean(filterDate);
-    const hasMaxDays = remainingDays !== null;
-
-    const startDate = program.DateDebut ? new Date(program.DateDebut) : null;
-    const endDate = program.DateFin ? new Date(program.DateFin) : null;
-    const toStartOfDay = (d: Date) =>
-      new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    const dayMs = 1000 * 60 * 60 * 24;
-    const today = toStartOfDay(new Date());
-
-    let matchesFilters = true;
-    // 1) Filtre par plage [aujourd'hui, date sélectionnée]
-    if (hasDate) {
-      if (!endDate || Number.isNaN(endDate.getTime())) {
-        matchesFilters = false;
-      } else {
-        const programStart =
-          startDate && !Number.isNaN(startDate.getTime())
-            ? toStartOfDay(startDate)
-            : null;
-        const programEnd = toStartOfDay(endDate);
-        const selected = toStartOfDay(new Date(filterDate));
-        const rangeEnd = selected < today ? today : selected; // si date passée, on considère aujourd'hui
-        const overlap =
-          programEnd >= today &&
-          (programStart ? programStart <= rangeEnd : true);
-        if (!overlap) matchesFilters = false;
-      }
-    }
-
-    // 2) Filtre par nombre de jours restants (depuis aujourd'hui)
-    if (matchesFilters && hasMaxDays) {
-      if (!endDate || Number.isNaN(endDate.getTime())) {
-        matchesFilters = false;
-      } else {
-        const diffDays = Math.ceil(
-          (toStartOfDay(endDate).getTime() - today.getTime()) / dayMs
-        );
-        if (!(diffDays >= 0 && diffDays <= (remainingDays as number))) {
-          matchesFilters = false;
-        }
-      }
-    }
-
-    return matchesSearch && matchesFilters;
-  });
-  const filteredCount = filteredPrograms.length;
+  const {
+    programs,
+    filteredPrograms,
+    loading,
+    error,
+    searchTerm,
+    remainingDays,
+    filterDate,
+    showPublishModal,
+    publishingProgram,
+    showDetailsModal,
+    selectedProgram,
+    isAdministrator,
+    setSearchTerm,
+    setRemainingDays,
+    setFilterDate,
+    setShowPublishModal,
+    setPublishingProgram,
+    setShowDetailsModal,
+    setSelectedProgram,
+    handleDelete,
+    toggleActive,
+    handlePublish,
+    handlePublishSubmit,
+    handleViewDetails,
+  } = usePrograms();
 
   if (loading) {
     return (
@@ -219,6 +48,17 @@ const Programs: React.FC = () => {
       </div>
     );
   }
+
+  const handleEdit = (program: any) => {
+    navigate(`${ADMIN_FRONT_PREFIX}/programs/${program._id}/edit`);
+  };
+
+  const handleClearFilters = () => {
+    setRemainingDays(null);
+    setFilterDate("");
+  };
+
+  const activeCount = programs.filter((p) => p.isActive).length;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -246,160 +86,23 @@ const Programs: React.FC = () => {
         </div>
       </div>
 
-      {/* Search & Filter */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Search */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-3">
-            <label className="flex items-center text-sm font-medium text-gray-700">
-              <Search className="w-4 h-4 mr-2 text-gray-500" />
-              Rechercher un programme
-            </label>
-            <button
-              onClick={() => setSearchTerm("")}
-              className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm transition-colors"
-              title="Réinitialiser la recherche">
-              Effacer
-            </button>
-          </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Nom ou description..."
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          {searchTerm && (
-            <p className="text-xs text-gray-500 mt-1">
-              Appuyez sur "Effacer" pour réinitialiser la recherche
-            </p>
-          )}
-        </div>
-
-        {/* Filter by Duration */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-3">
-            <label className="flex items-center text-sm font-medium text-gray-700">
-              <Calendar className="w-4 h-4 mr-2 text-gray-500" />
-              Filtrer par durée maximale (jours restants)
-            </label>
-            <button
-              onClick={() => {
-                setRemainingDays(null);
-                setFilterDate("");
-              }}
-              className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm transition-colors"
-              title="Réinitialiser le filtre">
-              Effacer
-            </button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 select-none">
-                  ≤
-                </span>
-                <input
-                  type="number"
-                  placeholder="Nombre de jours"
-                  min={1}
-                  className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={remainingDays ?? ""}
-                  onChange={(e) =>
-                    setRemainingDays(
-                      e.target.value ? parseInt(e.target.value) : null
-                    )
-                  }
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Nombre maximum de jours restants
-              </p>
-            </div>
-            <div>
-              <input
-                type="date"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Date de référence (aujourd'hui si vide)
-              </p>
-            </div>
-          </div>
-          {(remainingDays !== null || filterDate) && (
-            <p className="text-sm text-gray-600 mt-3">
-              {filterDate && remainingDays !== null ? (
-                <>
-                  Actifs entre aujourd'hui et le{" "}
-                  <span className="font-semibold">
-                    {new Date(filterDate).toLocaleDateString()}
-                  </span>{" "}
-                  et avec ≤{" "}
-                  <span className="font-semibold">{remainingDays}</span> jours
-                  restants
-                </>
-              ) : filterDate ? (
-                <>
-                  Actifs entre aujourd'hui et le{" "}
-                  <span className="font-semibold">
-                    {new Date(filterDate).toLocaleDateString()}
-                  </span>
-                </>
-              ) : (
-                <>
-                  Avec ≤ <span className="font-semibold">{remainingDays}</span>{" "}
-                  jours restants (depuis aujourd'hui)
-                </>
-              )}
-            </p>
-          )}
-        </div>
-      </div>
+      {/* Search & Filters */}
+      <ProgramFilters
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        remainingDays={remainingDays}
+        onRemainingDaysChange={setRemainingDays}
+        filterDate={filterDate}
+        onFilterDateChange={setFilterDate}
+        onClearFilters={handleClearFilters}
+      />
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Total programmes */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 flex items-center">
-          <div className="bg-gray-100 rounded-lg p-3">
-            <BarChart3 className="w-6 h-6 text-gray-600" />
-          </div>
-          <div className="ml-4">
-            <p className="text-2xl font-bold text-gray-900">
-              {programs.length}
-            </p>
-            <p className="text-gray-600 text-sm">Total programmes</p>
-          </div>
-        </div>
-
-        {/* Actifs */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 flex items-center">
-          <div className="bg-gray-100 rounded-lg p-3">
-            <CheckCircle className="w-6 h-6 text-gray-600" />
-          </div>
-          <div className="ml-4">
-            <p className="text-2xl font-bold text-gray-900">
-              {programs.filter((p) => p.isActive).length}
-            </p>
-            <p className="text-gray-600 text-sm">Programmes actifs</p>
-          </div>
-        </div>
-
-        {/* Filtrés */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 flex items-center">
-          <div className="bg-gray-100 rounded-lg p-3">
-            <Grid3X3 className="w-6 h-6 text-gray-600" />
-          </div>
-          <div className="ml-4">
-            <p className="text-2xl font-bold text-gray-900">{filteredCount}</p>
-            <p className="text-gray-600 text-sm">Programmes filtrés</p>
-          </div>
-        </div>
-      </div>
+      <ProgramStats
+        totalCount={programs.length}
+        activeCount={activeCount}
+        filteredCount={filteredPrograms.length}
+      />
       <br />
 
       {/* Error Message */}
@@ -418,155 +121,20 @@ const Programs: React.FC = () => {
       {/* Programs Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
         {filteredPrograms.map((program) => (
-          <div
+          <ProgramCard
             key={program._id}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-300">
-            {/* Card Header */}
-            <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4 rounded-xl shadow-md">
-              <div className="flex justify-between items-center">
-                {/* Titre + Badges */}
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-1">
-                    {program.name.fr}
-                  </h3>
-                  {/* Badges en dessous du titre */}
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                        program.isActive
-                          ? "bg-green-100 text-green-700 border border-green-200"
-                          : "bg-red-100 text-red-700 border border-red-200"
-                      }`}>
-                      {program.isActive ? "Actif" : "Inactif"}
-                    </span>
-                    {program.hero?.isHero && (
-                      <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
-                        Publié
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Toggle Simple - Seulement pour Administrateur */}
-                {isAdministrator && (
-                  <div className="relative group">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={program.isActive}
-                        onChange={() =>
-                          toggleActive(program._id, program.isActive)
-                        }
-                      />
-                      <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                    </label>
-
-                    {/* Tooltip simple au hover */}
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                      <div className="bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-                        {program.isActive ? "Désactiver" : "Activer"}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Card Body */}
-            <div className="p-6">
-              <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                {program.description.fr}
-              </p>
-
-              {/* Criteria Summary (supports logical builder) */}
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center text-sm">
-                  <User className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    {(() => {
-                      type RuleGroupLite =
-                        | { rules?: unknown[]; combinator?: string }
-                        | null
-                        | undefined;
-                      const rg = program.criteres as RuleGroupLite;
-                      if (rg && Array.isArray(rg.rules)) {
-                        return `Critères: ${rg.rules.length} règle(s) • ${
-                          rg.combinator || "AND"
-                        }`;
-                      }
-                      return "Critères: —";
-                    })()}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Début:{" "}
-                    {program.DateDebut
-                      ? new Date(program.DateDebut).toLocaleDateString("fr-FR")
-                      : "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <Calendar className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-gray-600">
-                    Fin:{" "}
-                    {program.DateFin
-                      ? new Date(program.DateFin).toLocaleDateString("fr-FR")
-                      : "N/A"}
-                  </span>
-                </div>
-              </div>
-
-              {/* ✅ Actions - Seulement pour les Administrateurs */}
-              {isAdministrator && (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(program)}
-                    className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
-                    <Edit className="w-4 h-4 mr-2" />
-                    Modifier
-                  </button>
-                  <button
-                    onClick={() => handlePublish(program)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
-                      program.hero?.isHero
-                        ? "bg-yellow-50 hover:bg-yellow-100 text-yellow-700"
-                        : "bg-blue-50 hover:bg-blue-100 text-blue-700"
-                    }`}
-                    title={
-                      program.hero?.isHero
-                        ? "Modifier la publication"
-                        : "Publier le programme"
-                    }>
-                    <Share className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(program._id)}
-                    className="bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
-              {!isAdministrator && (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleViewDetails(program)}
-                    className="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center">
-                    <Eye className="w-4 h-4 mr-2" />
-                    Voir détails
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+            program={program}
+            isAdministrator={isAdministrator}
+            onEdit={handleEdit}
+            onPublish={handlePublish}
+            onDelete={handleDelete}
+            onToggleActive={toggleActive}
+            onViewDetails={handleViewDetails}
+          />
         ))}
       </div>
 
+      {/* Empty State */}
       {filteredPrograms.length === 0 && (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
           <FileX className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -588,9 +156,8 @@ const Programs: React.FC = () => {
           )}
         </div>
       )}
-      {/* Édition/Création via ProgramEditor (page dédiée) */}
 
-      {/* Modal de publication */}
+      {/* Publish Modal */}
       {showPublishModal && (
         <PublishProgamModal
           show={showPublishModal}
@@ -603,6 +170,7 @@ const Programs: React.FC = () => {
         />
       )}
 
+      {/* Details Modal */}
       <ProgramDetailsModal
         isOpen={showDetailsModal}
         onClose={() => {

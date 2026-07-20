@@ -29,6 +29,14 @@
     "button": "Testez votre éligibilité ici"
   },
   "eligibility": {
+    "steps": {
+      "step1": "Profil",
+      "step1Sub": "Identité",
+      "step2": "Activité",
+      "step2Sub": "Structure",
+      "step3": "Financement",
+      "step3Sub": "Évaluation"
+    },
     "title": "Test d'Éligibilité",
     "subtitle": "Vérifiez votre éligibilité aux différentes subventions",
     "backButton": "Retour à l'accueil",
@@ -229,11 +237,15 @@
       "chiffreAffaireRequired": "Le chiffre d'affaire est obligatoire",
       "montantInvestissementRequired": "Le montant d'investissement est obligatoire",
       "acceptPrivacyPolicyRequired": "Vous devez accepter la politique de confidentialité",
-      "statutJuridiqueRequired": "Le statut juridique est obligatoire"
+      "statutJuridiqueRequired": "Le statut juridique est obligatoire",
+      "nomEntrepriseRequired": "La dénomination de l'entreprise est obligatoire",
+      "ageRequired": "L'âge est obligatoire",
+      "sexeRequired": "Le sexe est obligatoire",
+      "numberOfEmployeesRequired": "Le nombre d'employés est obligatoire"
     }
   },
   "footer": {
-    "brand": "subvention.ma",
+    "brand": "masubvention.ma",
     "description": "Nous aidons les porteurs de projets, les entreprises et les coopératives à savoir rapidement s'ils répondent aux critères d'accès aux aides publiques disponibles au Maroc.",
     "navigation": "Navigation",
     "contact": "Contact",
