@@ -1,134 +1,221 @@
 import React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  className?: string;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
   onPageChange,
+  className = "",
 }) => {
   const { i18n } = useTranslation();
-  const lang = i18n.language as "fr" | "ar";
+
+  const isRTL = i18n.language.startsWith("ar");
 
   if (totalPages <= 1) return null;
 
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = [];
-    const maxVisible = 5;
-
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      if (currentPage <= 3) {
-        for (let i = 1; i <= 4; i++) pages.push(i);
-        pages.push("...");
-        pages.push(totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        pages.push(1);
-        pages.push("...");
-        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
-      } else {
-        pages.push(1);
-        pages.push("...");
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
-        pages.push("...");
-        pages.push(totalPages);
-      }
+  const getPageNumbers = (): (number | "ellipsis")[] => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
 
-    return pages;
+    if (currentPage <= 3) {
+      return [1, 2, 3, 4, "ellipsis", totalPages];
+    }
+
+    if (currentPage >= totalPages - 2) {
+      return [
+        1,
+        "ellipsis",
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
+    }
+
+    return [
+      1,
+      "ellipsis",
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      "ellipsis",
+      totalPages,
+    ];
   };
 
   const pageNumbers = getPageNumbers();
 
-  // Textes selon la langue
-  const prevLabel = lang === "ar" ? "السابق" : "Précédent";
-  const nextLabel = lang === "ar" ? "التالي" : "Suivant";
+  const previousLabel = isRTL ? "السابق" : "Preview";
+  const nextLabel = isRTL ? "التالي" : "Next";
 
-  // RTL => inversion des flèches
-  const isRTL = lang === "ar";
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      onPageChange(page);
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center mt-8 gap-2" dir={isRTL ? "rtl" : "ltr"}>
-      
-      {/* Bouton Précédent */}
-      <button
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-          currentPage === 1
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-            : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 shadow-sm"
-        }`}
-        disabled={currentPage === 1}
-        onClick={() => onPageChange(currentPage - 1)}
-      >
-        {isRTL ? (
-          <>
-            <ChevronRight className="w-4 h-4" />
-            <span className="hidden sm:inline">{prevLabel}</span>
-          </>
-        ) : (
-          <>
-            <ChevronLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">{prevLabel}</span>
-          </>
-        )}
-      </button>
+    <nav
+      aria-label={isRTL ? "التنقل بين الصفحات" : "Pagination"}
+      dir={isRTL ? "rtl" : "ltr"}
+      className={`flex w-full justify-center ${className}`}
+    >
+      <div className="flex items-center gap-7">
 
-      {/* Numéros de page */}
-      <div className="flex items-center gap-1">
-        {pageNumbers.map((page, index) =>
-          page === "..." ? (
-            <span
-              key={`ellipsis-${index}`}
-              className="px-3 py-2 text-gray-400 font-medium"
-            >
-              ...
-            </span>
+        {/* Previous */}
+        <button
+          type="button"
+          disabled={currentPage === 1}
+          onClick={() => goToPage(currentPage - 1)}
+          className="
+            group
+            flex items-center gap-2
+            text-[13px] font-medium
+            text-gray-900
+            transition-colors
+            hover:text-gray-500
+            disabled:pointer-events-none
+            disabled:opacity-40
+          "
+        >
+          {isRTL ? (
+            <ChevronRight
+              className="
+                h-4 w-4
+                stroke-[1.5]
+                transition-transform
+                group-hover:translate-x-0.5
+              "
+            />
           ) : (
-            <button
-              key={page}
-              className={`min-w-[40px] h-10 rounded-lg font-medium transition-all duration-200 ${
-                page === currentPage
-                  ? "bg-gray-800 text-white shadow-md scale-105"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm"
-              }`}
-              onClick={() => onPageChange(page as number)}
-            >
-              {page}
-            </button>
-          )
-        )}
-      </div>
+            <ChevronLeft
+              className="
+                h-4 w-4
+                stroke-[1.5]
+                transition-transform
+                group-hover:-translate-x-0.5
+              "
+            />
+          )}
 
-      {/* Bouton Suivant */}
-      <button
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-          currentPage === totalPages
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-            : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 shadow-sm"
-        }`}
-        disabled={currentPage === totalPages}
-        onClick={() => onPageChange(currentPage + 1)}
-      >
-        {isRTL ? (
-          <>
-            <span className="hidden sm:inline">{nextLabel}</span>
-            <ChevronLeft className="w-4 h-4" />
-          </>
-        ) : (
-          <>
-            <span className="hidden sm:inline">{nextLabel}</span>
-            <ChevronRight className="w-4 h-4" />
-          </>
-        )}
-      </button>
-    </div>
+          <span className="hidden sm:inline">
+            {previousLabel}
+          </span>
+        </button>
+
+        {/* Pages */}
+        <div className="flex items-center gap-1">
+          {pageNumbers.map((page, index) => {
+            if (page === "ellipsis") {
+              return (
+                <span
+                  key={`ellipsis-${index}`}
+                  className="
+                    flex h-9 w-9
+                    items-center justify-center
+                    text-gray-900
+                  "
+                >
+                  <MoreHorizontal
+                    className="h-4 w-4 stroke-[1.5]"
+                  />
+                </span>
+              );
+            }
+
+            const isActive = page === currentPage;
+
+            return (
+              <button
+                key={page}
+                type="button"
+                onClick={() => goToPage(page)}
+                aria-current={isActive ? "page" : undefined}
+                className={`
+                  flex h-9 w-9
+                  items-center justify-center
+                  rounded-lg
+                  text-[13px] font-medium
+                  transition-all duration-200
+
+                  ${
+                    isActive
+                      ? `
+                        border border-gray-200
+                        bg-white
+                        text-gray-900
+                        shadow-[0_2px_6px_rgba(0,0,0,0.08)]
+                      `
+                      : `
+                        text-gray-500
+                        hover:bg-gray-50
+                        hover:text-gray-900
+                      `
+                  }
+                `}
+              >
+                {page}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Next */}
+        <button
+          type="button"
+          disabled={currentPage === totalPages}
+          onClick={() => goToPage(currentPage + 1)}
+          className="
+            group
+            flex items-center gap-2
+            text-[13px] font-medium
+            text-gray-900
+            transition-colors
+            hover:text-gray-500
+            disabled:pointer-events-none
+            disabled:opacity-40
+          "
+        >
+          <span className="hidden sm:inline">
+            {nextLabel}
+          </span>
+
+          {isRTL ? (
+            <ChevronLeft
+              className="
+                h-4 w-4
+                stroke-[1.5]
+                transition-transform
+                group-hover:-translate-x-0.5
+              "
+            />
+          ) : (
+            <ChevronRight
+              className="
+                h-4 w-4
+                stroke-[1.5]
+                transition-transform
+                group-hover:translate-x-0.5
+              "
+            />
+          )}
+        </button>
+
+      </div>
+    </nav>
   );
 };
 
