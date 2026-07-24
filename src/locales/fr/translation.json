@@ -377,34 +377,6 @@
     "emailLabel": "Email",
     "close_button": "Fermer"
   },
-  "chatbot": {
-    "initialMessage": "Bonjour ! Je suis Tamkeen, votre assistant pour les subventions au Maroc. Comment puis-je vous accompagner dans votre projet ?",
-    "assistantOnline": "Assistant Tamkeen en ligne",
-    "invitationMessage": "Des questions sur les subventions ? Je suis là pour vous aider ! 🚀",
-    "tamkeenAssistant": "Tamkeen Assistant",
-    "specialistOnline": "Spécialiste subventions • En ligne",
-    "quickActionsLabel": "Actions rapides :",
-    "quickActions": [
-      {
-        "text": "🔍 Vérifier mon éligibilité",
-        "action": "Testez votre éligibilité ici"
-      },
-      {
-        "text": "📋 Types de subventions",
-        "action": "Quels sont les programmes disponibles ?"
-      },
-      {
-        "text": "⏱️ Délais de traitement",
-        "action": "Combien de temps pour une réponse ?"
-      },
-      {
-        "text": "📞 Contact expert",
-        "action": "Je souhaite être rappelé par un expert"
-      }
-    ],
-    "inputPlaceholder": "Posez votre question sur les subventions...",
-    "sendHint": "Appuyez sur Entrée pour envoyer"
-  },
   "eligibilityResult": {
     "eligible": "Éligible",
     "notEligible": "Non éligible",
