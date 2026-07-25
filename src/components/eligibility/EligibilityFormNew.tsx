@@ -264,6 +264,42 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     });
   };
 
+  const handleSimulate = async (fieldToAdjust?: string, suggestedValue?: string) => {
+    // Build the patched form data synchronously to avoid stale closure
+    const updatedFormData: FormData = fieldToAdjust
+      ? { ...formData, [fieldToAdjust]: suggestedValue !== undefined ? suggestedValue : (formData[fieldToAdjust as keyof FormData] || "") }
+      : { ...formData };
+
+    // Update state and close current result
+    setFormData(updatedFormData);
+    setShowResult(false);
+    setErrors({});
+
+    // Auto re-launch the eligibility check with the simulated values
+    setShowLoadingModal(true);
+    try {
+      const eligibilityResult = await checkEligibility(updatedFormData);
+      setShowLoadingModal(false);
+
+      if (eligibilityResult.errorMessage) {
+        setServerError(eligibilityResult.errorMessage);
+        setShowServerErrorModal(true);
+        return;
+      }
+
+      setServerError(null);
+      setIsEligible(eligibilityResult.isEligible);
+      setEligibleProgram(eligibilityResult.programs || []);
+      setTestId(eligibilityResult.testId || null);
+      setShowResult(true);
+    } catch (error) {
+      setShowLoadingModal(false);
+      console.error("Erreur simulation :", error);
+      setServerError("Une erreur inattendue s'est produite. Veuillez réessayer.");
+      setShowServerErrorModal(true);
+    }
+  };
+
   // Affichage du résultat
   if (showResult) {
     return (
@@ -272,6 +308,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         eligibleProgram={eligibleProgram}
         formData={formData}
         onNewTest={handleNewTest}
+        onSimulate={handleSimulate}
         testId={testId}
       />
     );

@@ -5,19 +5,24 @@ import axios from "../../api/axios";
 import Modal from "./Modals/Modal";
 import { sanitizeFrenchText } from "../../utils/sanitize";
 
+import AgentChat from "./agent/AgentChat";
+
 interface EligibilityResultProps {
   isEligible: boolean;
   eligibleProgram: programsNamesAndLinks[];
   formData: FormData;
   onNewTest: () => void;
+  onSimulate?: (fieldToAdjust?: string, suggestedValue?: string) => void;
   testId?: string | null;
 }
 
 const EligibilityResult: React.FC<EligibilityResultProps> = ({
   isEligible,
   eligibleProgram,
+  formData,
   onNewTest,
-  testId
+  onSimulate,
+  testId,
 }) => {
   const { t, i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,7 +46,10 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirmContact = async () => {
-    if (!testId) return;
+    if (!testId) {
+      setIsModalOpen(true);
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -59,12 +67,58 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
     setIsModalOpen(false);
   };
 
+  // --- NOT ELIGIBLE: Render AI Remediation Agent ---
+  if (!isEligible) {
+    return (
+      <div className="min-h-screen bg-white py-12 px-4 flex items-center justify-center">
+        <div ref={cardRef} className="w-full max-w-3xl mx-auto">
+          <AgentChat
+            formData={formData}
+            testId={testId}
+            onNewTest={onNewTest}
+            onContactAdvisor={handleConfirmContact}
+            onSimulate={onSimulate}
+          />
+
+          {/* Contact confirmation modal */}
+          <Modal 
+            isOpen={isModalOpen} 
+            onClose={handleCloseModal}
+            title={lang === "ar" ? "تم إرسال الطلب" : "Demande transmise"}
+            size="md"
+          >
+            <div className="text-center py-6">
+              <div className="w-16 h-16 mx-auto mb-4 bg-emerald-50 border border-emerald-100 rounded-none flex items-center justify-center">
+                <div className="w-10 h-10 bg-emerald-500 rounded-none flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-[#1F2937]/75 text-sm sm:text-base leading-relaxed mb-6 font-light">
+                {lang === "ar" 
+                  ? "تم إرسال طلب المساعدة الخاص بك بنجاح. سنتصل بك في غضون 48 ساعة على البريد الإلكتروني الذي قدمته."
+                  : "Votre demande d'assistance a été transmise avec succès. Nous vous contacterons sous 48 h sur le mail que vous avez fourni."}
+              </p>
+              <button
+                onClick={handleCloseModal}
+                className="w-full bg-[#1E5ED8] hover:bg-[#111827] text-white font-display font-bold text-xs uppercase tracking-wider py-4 px-6 rounded-none transition-colors duration-200"
+              >
+                {lang === "ar" ? "مفهوم" : "Compris"}
+              </button>
+            </div>
+          </Modal>
+        </div>
+      </div>
+    );
+  }
+
+  // --- ELIGIBLE: Original Card ---
   return (
     <>
       <div className="min-h-screen bg-white py-12 px-4 flex items-center justify-center">
         <div ref={cardRef} className="w-full max-w-lg mx-auto">
-          {isEligible ? (
-            <div className="bg-white border border-[#E4E4E7] p-8 sm:p-10 text-center rounded-none shadow-none">
+          <div className="bg-white border border-[#E4E4E7] p-8 sm:p-10 text-center rounded-none shadow-none">
               {/* Success Icon */}
               <div className="w-20 h-20 mx-auto mb-6 bg-emerald-50 border border-emerald-100 rounded-none flex items-center justify-center">
                 <div className="w-12 h-12 bg-emerald-650 rounded-none flex items-center justify-center">
@@ -191,121 +245,10 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
                 >
                   {t("eligibilityResult.newTestButton")}
                 </button>
-              </div>
             </div>
-          ) : (
-            <div className="bg-white border border-[#E4E4E7] p-8 sm:p-10 text-center rounded-none shadow-none">
-              {/* Info Icon */}
-              <div className="w-20 h-20 mx-auto mb-6 bg-amber-50 border border-amber-100 rounded-none flex items-center justify-center">
-                <div className="w-12 h-12 bg-amber-500 rounded-none flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Title */}
-              <h2 className="text-2xl font-bold font-display text-amber-700 mb-4 uppercase tracking-wide">
-                {t("eligibilityResult.notEligible")}
-              </h2>
-
-              {/* Message */}
-              <p className="text-[#1F2937]/75 text-sm sm:text-base leading-relaxed mb-8 font-light">
-                {t("eligibilityResult.message.notEligible")}
-              </p>
-
-              {/* Contact Info Block */}
-              <div className="bg-amber-50/50 border border-amber-100 p-5 mb-8 rounded-none">
-                <div className="flex items-center justify-center text-xs font-mono text-amber-800 uppercase tracking-wider">
-                  <svg
-                    className="w-4 h-4 mr-2 rtl:ml-2 rtl:mr-0 text-amber-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  {t("eligibilityResult.contactInfo")}
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="space-y-4">
-                <button
-                  onClick={handleConfirmContact}
-                  disabled={isLoading}
-                  type="button"
-                  className="w-full bg-[#F97316] hover:bg-[#EA580C] text-white font-display font-semibold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-250 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? (
-                    <>
-                      <svg
-                        className="w-5 h-5 animate-spin text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      {lang === "ar" ? "جاري التحميل..." : "Chargement..."}
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-4 h-4 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      {t("eligibilityResult.confirmationOfContactButton")}
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={onNewTest}
-                  className="w-full bg-white hover:bg-gray-50 text-[#1F2937] border border-[#E4E4E7] font-display font-semibold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-200"
-                >
-                  {t("eligibilityResult.newTestButton")}
-                </button>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
-
-      {/* Confirmation Modal */}
       <Modal 
         isOpen={isModalOpen} 
         onClose={handleCloseModal}
@@ -346,6 +289,7 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
           </button>
         </div>
       </Modal>
+      
     </>
   );
 };

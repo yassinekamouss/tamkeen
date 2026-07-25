@@ -1,4 +1,4 @@
-import type { FormData, EligibilityResult } from "./types";
+import type { FormData, EligibilityResult, AgentApiResponse } from "./types";
 
 import api from "../../api/axios";
 /**
@@ -53,4 +53,49 @@ export const checkEligibility = async (data: FormData): Promise<EligibilityResul
     return { isEligible: false, errorMessage: message };
   }
   
+};
+
+export const callAgent = async (params: {
+  formData: FormData;
+  lang?: string;
+  testId?: string | null;
+  sessionId?: string | null;
+  userMessage?: string | null;
+}): Promise<AgentApiResponse> => {
+  try {
+    const response = await api.post("/test/eligibilite/agent", params);
+    return response.data;
+  } catch (error: any) {
+    console.error("Agent API Call Error:", error);
+    // Return graceful frontend fallback
+    return {
+      success: false,
+      fallbackUsed: true,
+      data: {
+        agentMessage:
+          params.lang === "ar"
+            ? "نحن هنا لمساعدتك. يبدو أن هناك صعوبة مؤقتة في التحليل التلقائي. يمكنك طلب التواصل مع مستشارنا البشري."
+            : "Nous sommes là pour vous aider. Une difficulté temporaire est survenue lors de l'analyse. Vous pouvez demander un appel gratuit avec un conseiller Tamkeen.",
+        analysis: {
+          closestPrograms: [],
+          profileStrengths: [],
+          generalAdvice:
+            params.lang === "ar"
+              ? "تواصل مع مستشارنا لتوجيهك."
+              : "Prenez contact avec notre équipe pour étudier les options sur mesure.",
+        },
+        suggestedActions: [
+          {
+            actionType: "CONTACT_ADVISOR",
+            label: params.lang === "ar" ? "طلب اتصال من مستشار" : "Parler à un conseiller Tamkeen",
+          },
+          {
+            actionType: "NEW_TEST",
+            label: params.lang === "ar" ? "إعادة إجرائ الاختبار" : "Refaire une évaluation",
+          },
+        ],
+        escalate: true,
+      },
+    };
+  }
 };
