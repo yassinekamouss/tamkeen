@@ -3,20 +3,23 @@ import { Header, Hero, Footer } from "../components";
 import { EligibilityForm } from "../components/eligibility";
 import { Helmet } from "react-helmet-async";
 import SeoAlternates from "../components/SeoAlternates";
+import ProgramsSection from "../components/ProgramsSection";
+import NewsSection from "../components/NewsSection";
+import ProcessSection from "../components/ProcessSection";
+import FaqSection from "../components/FaqSection";
 
 const Home: React.FC = () => {
   const scrollToForm = () => {
     const formElement = document.getElementById("eligibility-form");
-    if (formElement) formElement.scrollIntoView({ behavior: "smooth" });
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   return (
     <div className="w-full">
       <Helmet>
-        {/* Métadonnées alignées avec index.html (MaSubvention) */}
-        <title>
-          MaSubvention | Tamkeen – Subventions et aides publiques au Maroc
-        </title>
+        <title>MaSubvention | Tamkeen – Subventions et aides publiques au Maroc</title>
         <meta
           name="description"
           content="Plateforme marocaine pour trouver et vérifier votre éligibilité aux subventions et aides publiques. Tamkeen accompagne les entrepreneurs, entreprises et coopératives dans leurs démarches de financement."
@@ -34,10 +37,7 @@ const Home: React.FC = () => {
           property="og:description"
           content="Plateforme marocaine pour trouver et vérifier votre éligibilité aux subventions et aides publiques. Tamkeen accompagne les entrepreneurs, entreprises et coopératives dans leurs démarches de financement."
         />
-        <meta
-          property="og:image"
-          content="https://masubvention.ma/image_logo.webp"
-        />
+        <meta property="og:image" content="https://masubvention.ma/image_logo.webp" />
         <meta property="og:locale" content="fr_FR" />
 
         {/* Twitter Card */}
@@ -50,20 +50,35 @@ const Home: React.FC = () => {
           name="twitter:description"
           content="Plateforme marocaine pour trouver et vérifier votre éligibilité aux subventions et aides publiques au Maroc."
         />
-        <meta
-          name="twitter:image"
-          content="https://masubvention.ma/image_logo.webp"
-        />
+        <meta name="twitter:image" content="https://masubvention.ma/image_logo.webp" />
       </Helmet>
       <SeoAlternates />
 
+      {/* Sticky Navigation */}
       <Header />
-      <Hero onNavigateToForm={scrollToForm} />
-      <div id="eligibility-form">
-        <EligibilityForm />
-      </div>
-      <Footer />
 
+      {/* ── HERO ── */}
+      <Hero onNavigateToForm={scrollToForm} />
+
+      {/* ── ELIGIBILITY FORM ── */}
+      <section id="eligibility-form" className="w-full">
+        <EligibilityForm />
+      </section>
+
+      {/* ── PROCESS / HOW IT WORKS ── */}
+      <ProcessSection onNavigateToForm={scrollToForm} />
+
+      {/* ── PROGRAMS ── */}
+      <ProgramsSection />
+
+      {/* ── ACTUALITY / NEWS ── */}
+      <NewsSection />
+
+      {/* ── FAQ ── */}
+      <FaqSection />
+
+      {/* ── FOOTER ── */}
+      <Footer />
     </div>
   );
 };

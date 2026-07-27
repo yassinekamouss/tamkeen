@@ -9,6 +9,17 @@
     "language": "Langue"
   },
   "hero": {
+    "badge": "Plateforme Nationale d'Éligibilité",
+    "title": "Vérifiez votre éligibilité aux subventions et aides d'État au Maroc",
+    "description": "Renseignez votre profil en 2 minutes. Notre système analyse vos critères et vous indique immédiatement les programmes de financement public auxquels vous êtes potentiellement éligible.",
+    "cta": "Tester mon éligibilité",
+    "metric1_value": "100%",
+    "metric1_label": "Gratuit & Confidentiel",
+    "metric2_value": "2 min",
+    "metric2_label": "Diagnostic IA",
+    "metric3_value": "2026",
+    "metric3_label": "Données officielles",
+    "legal": "Résultats indicatifs. L'obtention définitive dépend du dossier soumis aux organismes concernés.",
     "slides": [
       {
         "subtitle": "Simplifiez votre accès aux subventions",
@@ -388,5 +399,128 @@
     "contactInfo": "Pour plus d'informations : contact@masubvention.ma ",
     "newTestButton": "Faire un nouveau test",
     "confirmationOfContactButton": "Confirmer la demande de contact"
+  },
+  "process": {
+    "badge": "Comment ça marche",
+    "title": "3 étapes pour connaître vos aides",
+    "subtitle": "Un diagnostic rapide, transparent, et sans engagement. Vous saurez en 2 minutes si votre profil ouvre droit à des subventions publiques.",
+    "cta": "Démarrer le diagnostic",
+    "step1_title": "1. Renseignez votre profil",
+    "step1_desc": "Complétez les informations sur votre structure : type de demandeur, secteur d'activité, région, situation financière.",
+    "step2_title": "2. Analyse instantanée",
+    "step2_desc": "Notre système croise vos données avec les critères officiels de chaque programme d'appui public actif au Maroc.",
+    "step3_title": "3. Résultats & Orientation",
+    "step3_desc": "Vous recevez immédiatement la liste des programmes éligibles avec les liens officiels et la possibilité d'être accompagné par un conseiller.",
+    "trust1": "Test 100% gratuit",
+    "trust2": "Données traitées de manière confidentielle",
+    "trust3": "Résultats immédiats",
+    "trust4": "Aucun engagement"
+  },
+  "programs_section": {
+    "badge": "Subventions & Aides",
+    "title": "Programmes disponibles",
+    "subtitle": "Sélection actualisée des programmes d'appui public actifs au Maroc.",
+    "start": "Début",
+    "end": "Fin",
+    "undefined": "Non défini",
+    "active": "Actif",
+    "more": "En savoir plus",
+    "viewAll": "Voir tous les programmes",
+    "empty": "Aucun programme disponible pour le moment.",
+    "loading": "Chargement des programmes...",
+    "collapse": "Réduire",
+    "read_more": "Lire plus",
+    "search_placeholder": "Rechercher par nom, organisme...",
+    "all_categories": "Tous",
+    "view_details": "Voir détails",
+    "no_results": "Aucun programme ne correspond à votre recherche",
+    "modal_sector": "Secteur :",
+    "modal_target": "Cible :",
+    "modal_financial": "Aide Financière :",
+    "modal_description": "Description & Objectifs :",
+    "modal_test_btn": "Tester mon éligibilité",
+    "modal_close": "Fermer"
+  },
+  "news_section": {
+    "badge": "Actualités & Opportunités",
+    "title": "Dernières actualités",
+    "subtitle": "Suivez les nouvelles subventions, appels à projets et annonces officielles.",
+    "readMore": "Lire l'article",
+    "viewAll": "Toutes les actualités",
+    "featured": "En vedette",
+    "empty": "Aucune actualité disponible pour le moment.",
+    "loading": "Chargement..."
+  },
+  "faq_section": {
+    "badge": "Questions Fréquentes",
+    "title": "Tout ce que vous devez savoir",
+    "subtitle": "Réponses aux questions les plus courantes sur la plateforme et les subventions publiques au Maroc.",
+    "contact": "Une autre question ?",
+    "contactLink": "Contactez-nous"
+  },
+  "news_page": {
+    "seo_title": "Actualités & Opportunités | Tamkeen",
+    "seo_desc": "Restez informé des dernières subventions, formations et success stories pour développer votre entreprise",
+    "hero_badge": "Centre d'Actualités",
+    "hero_title": "Actualités & Opportunités",
+    "hero_subtitle": "Restez informé des dernières subventions, formations et success stories pour développer votre entreprise",
+    "filter_all": "Tout",
+    "latest_news": "Dernières Actualités",
+    "articles_count_one": "article",
+    "articles_count_many": "articles",
+    "updated_daily": "Mis à jour quotidiennement",
+    "load_error": "Impossible de charger cette actualité.",
+    "not_found": "Actualité introuvable.",
+    "back_to_news": "Retour aux actualités",
+    "breadcrumbs_news": "Actualités",
+    "view_source": "Consulter la source"
+  },
+  "privacy_page": {
+    "legal_badge": "Cadre Légal & Sécurité"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "aria_label": "Navigation entre les pages"
+  },
+  "access_denied": {
+    "title": "Accès refusé",
+    "message": "Vous n'avez pas les permissions nécessaires pour accéder à cette page. Contactez un administrateur si vous pensez qu'il s'agit d'une erreur.",
+    "back_to_dashboard": "Retour au tableau de bord"
+  },
+  "eligibility_extra": {
+    "prev_button": "Précédent",
+    "next_button": "Suivant",
+    "year_label": "Année",
+    "recent_company_notice": "Entreprise récente : Aucun chiffre d'affaires historique requis",
+    "new_phone_option": "+ Nouveau numéro…"
+  },
+  "agent": {
+    "request_error": "Une erreur est survenue lors de l'analyse. Vous pouvez contacter directement un conseiller Tamkeen.",
+    "talk_to_advisor": "Parler à un conseiller Tamkeen",
+    "retake_evaluation": "Refaire une évaluation",
+    "service_badge": "Service d'Orientation Intelligent",
+    "diagnostic_title": "Diagnostic & Voies de Remédiation",
+    "active_agent": "Agent Actif",
+    "retake_test": "← Refaire un test d'éligibilité",
+    "footer_tagline": "Plateforme Tamkeen - Accompagnement aux financements",
+    "loading_title": "Analyse personnalisée de votre projet en cours...",
+    "loading_subtitle": "L'Agent Consultant Tamkeen examine les critères de l'ensemble des programmes pour identifier les ajustements ou alternatives possibles.",
+    "expert_title": "Conseiller Expert Tamkeen",
+    "expert_sub": "Analyse d'éligibilité & Recommandations",
+    "closest_programs": "Programmes les plus proches de votre profil",
+    "view_program": "↗ Voir le programme",
+    "match_high": "Match Élevé (~80%)",
+    "match_medium": "Match Moyen (~50%)",
+    "match_alt": "Alternative",
+    "blocking_point": "Point de blocage à ajuster :",
+    "recommended_solution": "Piste de solution recommandée :",
+    "profile_strengths": "Points forts de votre dossier",
+    "strategic_advice": "Conseil stratégique",
+    "modal_request_sent_title": "Demande transmise",
+    "modal_request_sent_text": "Votre demande d'assistance a été transmise avec succès. Nous vous contacterons sous 48 h sur le mail que vous avez fourni.",
+    "modal_understood": "Compris",
+    "loading": "Chargement...",
+    "generic_error": "Une erreur est survenue. Réessayez plus tard."
   }
 }

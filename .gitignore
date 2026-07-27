@@ -27,3 +27,8 @@ dist-ssr
 .claude/
 AGENTS.md
 skills-lock.json
+
+.codex/
+.impeccable/
+DESIGN.md
+PRODUCT.md

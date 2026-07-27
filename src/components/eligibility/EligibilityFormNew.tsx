@@ -332,7 +332,6 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
       />
 
       <section
-        id="eligibility-form"
         className="min-h-screen py-12 sm:py-20 px-4 bg-[#FFFFFF] font-sans"
       >
         <div className="max-w-4xl mx-auto">
