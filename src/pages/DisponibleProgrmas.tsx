@@ -7,6 +7,7 @@ import { Footer } from "../components";
 import { useTranslation } from "react-i18next";
 
 import { sanitizeFrenchText } from "../utils/sanitize";
+import SeoHead from "../components/SeoHead";
 
 interface BilingualText {
   fr: string;
@@ -132,8 +133,39 @@ const DisponiblePrograms: React.FC = () => {
     );
   }
 
+  const programsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": t("disponible_programs.title"),
+    "description": t("disponible_programs.subtitle"),
+    "numberOfItems": programs.length,
+    "itemListElement": programs.map((prog, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "item": {
+        "@type": "GovernmentService",
+        "name": prog.name[lang] || prog.name["fr"],
+        "description": prog.description[lang] || prog.description["fr"],
+        "provider": {
+          "@type": "Organization",
+          "name": "Tamkeen",
+          "url": "https://masubvention.ma",
+        },
+        "serviceArea": {
+          "@type": "AdministrativeArea",
+          "name": "Maroc",
+        },
+      },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-[#FFFFFF] font-sans">
+      <SeoHead
+        title={t("disponible_programs.title")}
+        description={t("disponible_programs.subtitle")}
+        jsonLd={programsJsonLd}
+      />
       <Header />
 
       {/* HERO PANEL */}
@@ -176,7 +208,7 @@ const DisponiblePrograms: React.FC = () => {
       </div>
 
       {/* PROGRAMS LIST */}
-      <div className="container mx-auto px-4 py-16 sm:py-24">
+      <main className="container mx-auto px-4 py-16 sm:py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {currentPrograms.map((program, index) => {
             const rawName = program.name[lang];
@@ -194,14 +226,14 @@ const DisponiblePrograms: React.FC = () => {
             const needsDescExpansion = desc.length > 120;
 
             return (
-              <div
+              <article
                 key={program.id}
                 className="bg-white border border-[#E4E4E7] group transition-all duration-300 hover:border-[#1E5ED8] flex flex-col h-full"
               >
                 <div className="relative h-48 bg-[#FFFFFF] overflow-hidden">
                   <img
                     src={`${import.meta.env.VITE_PREFIX_URL}/programs/${program.hero?.image}`}
-                    alt={name}
+                    alt={name || t("disponible_programs.title")}
                     className="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                     onError={(e) => {
                       e.currentTarget.src = getDefaultImage(index);
@@ -216,13 +248,14 @@ const DisponiblePrograms: React.FC = () => {
                   {/* TITLE */}
                   <div className="mb-4">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-base font-bold text-[#1F2937] font-display flex-grow leading-snug">
+                      <h2 className="text-base font-bold text-[#1F2937] font-display flex-grow leading-snug">
                         {displayTitle}
-                      </h3>
+                      </h2>
 
                       {needsTitleExpansion && (
                         <button
                           onClick={() => toggleTitleExpansion(program.id)}
+                          aria-label={isTitleExpanded ? "Réduire le titre" : "Développer le titre"}
                           className="text-[#1F2937]/50 hover:text-[#1E5ED8] transition-colors flex-shrink-0 mt-0.5"
                         >
                           {isTitleExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -241,6 +274,7 @@ const DisponiblePrograms: React.FC = () => {
                       {needsDescExpansion && (
                         <button
                           onClick={() => toggleDescExpansion(program.id)}
+                          aria-label={isDescExpanded ? "Réduire la description" : "Développer la description"}
                           className="text-[#1F2937]/50 hover:text-[#1E5ED8] transition-colors flex-shrink-0 mt-0.5"
                         >
                           {isDescExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -273,13 +307,16 @@ const DisponiblePrograms: React.FC = () => {
                   {/* LINK */}
                   <a
                     href={program.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${t("disponible_programs.more")} : ${name}`}
                     className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] transition-colors duration-255 mt-auto group/link"
                   >
                     <span>{t("disponible_programs.more")}</span>
                     <ArrowRight size={14} className="transition-transform group-hover/link:translate-x-1 rtl:group-hover/link:-translate-x-1" />
                   </a>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>
@@ -292,7 +329,7 @@ const DisponiblePrograms: React.FC = () => {
             onPageChange={handlePageChange}
           />
         </div>
-      </div>
+      </main>
 
       <Footer />
     </div>

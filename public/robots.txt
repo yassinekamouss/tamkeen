@@ -2,4 +2,10 @@
 User-agent: *
 Allow: /
 
+# Admin protection
+Disallow: /x9zTAMkeen-secure-dashboard-77-center
+Disallow: /api/admin
+Disallow: /x9zTAMkeen-secure-dashboard-77-center/*
+
+# Sitemap
 Sitemap: https://masubvention.ma/sitemap.xml

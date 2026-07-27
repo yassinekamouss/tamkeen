@@ -3,8 +3,7 @@ import { Header, Footer } from "../components";
 import { type MultilingualField, newsService, type NewsItem } from "../services/newsService";
 import Spinner from "../components/Spinner";
 import NewsCard from "../components/news/NewsCard";
-import { Helmet } from "react-helmet-async";
-import SeoAlternates from "../components/SeoAlternates";
+import SeoHead from "../components/SeoHead";
 import { useTranslation } from "react-i18next";
 
 const News: React.FC = () => {
@@ -83,22 +82,10 @@ const News: React.FC = () => {
 
   return (
     <div className="w-full bg-[#FFFFFF] font-sans text-[#1F2937]">
-      <Helmet>
-        <title>{t("news_page.seo_title")}</title>
-        <meta
-          name="description"
-          content={t("news_page.seo_desc")}
-        />
-        <meta
-          property="og:title"
-          content={t("news_page.seo_title")}
-        />
-        <meta
-          property="og:description"
-          content={t("news_page.seo_desc")}
-        />
-      </Helmet>
-      <SeoAlternates />
+      <SeoHead
+        title={t("news_page.seo_title")}
+        description={t("news_page.seo_desc")}
+      />
 
       <Header />
 

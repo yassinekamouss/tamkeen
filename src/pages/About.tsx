@@ -4,8 +4,7 @@ import { useTranslation } from "react-i18next";
 import logo from "../assets/logo.webp";
 import backgroundImage from "../assets/image2.webp";
 import axios from "../api/axios";
-import { Helmet } from "react-helmet-async";
-import SeoAlternates from "../components/SeoAlternates";
+import SeoHead from "../components/SeoHead";
 
 interface Partenaire {
   _id: string;
@@ -56,14 +55,11 @@ const About: React.FC = () => {
 
   return (
     <div className="w-full bg-[#FFFFFF] font-sans text-[#1F2937]">
-      <Helmet>
-        <title>{`${t("about.title")} | Tamkeen`}</title>
-        <meta name="description" content={t("about.description")} />
-        <meta property="og:title" content={`${t("about.title")} | Tamkeen`} />
-        <meta property="og:description" content={t("about.description")} />
-        <meta property="og:image" content={backgroundImage} />
-      </Helmet>
-      <SeoAlternates />
+      <SeoHead
+        title={t("about.title")}
+        description={t("about.description")}
+        image={backgroundImage}
+      />
       <Header />
 
       {/* Hero Section with Background */}

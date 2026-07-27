@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Header, Footer } from "../components";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet-async";
-import SeoAlternates from "../components/SeoAlternates";
+import SeoHead from "../components/SeoHead";
 
 const FAQ: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -19,19 +18,30 @@ const FAQ: React.FC = () => {
     { question: t("faq.q6"), answer: t("faq.a6") },
   ];
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqData.map((item) => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer,
+      },
+    })),
+  };
+
   const toggleIndex = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
     <div className="w-full bg-[#FFFFFF] font-sans text-[#1F2937]">
-      <Helmet>
-        <title>{`${t("faq.title")} | Tamkeen`}</title>
-        <meta name="description" content={t("faq.subtitle")} />
-        <meta property="og:title" content={`${t("faq.title")} | Tamkeen`} />
-        <meta property="og:description" content={t("faq.subtitle")} />
-      </Helmet>
-      <SeoAlternates />
+      <SeoHead
+        title={t("faq.title")}
+        description={t("faq.subtitle")}
+        jsonLd={faqJsonLd}
+      />
 
       <Header />
       <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8">

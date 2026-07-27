@@ -1,21 +1,17 @@
 import React from "react";
 import { Header, Footer } from "../components";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet-async";
-import SeoAlternates from "../components/SeoAlternates";
+import SeoHead from "../components/SeoHead";
 
 const Privacy: React.FC = () => {
   const { t } = useTranslation();
 
   return (
     <div className="w-full bg-white text-[#1F2937] font-sans">
-      <Helmet>
-        <title>{`${t("privacy_modal.title")} | Tamkeen`}</title>
-        <meta name="description" content={t("privacy_modal.intro")} />
-        <meta property="og:title" content={`${t("privacy_modal.title")} | Tamkeen`} />
-        <meta property="og:description" content={t("privacy_modal.intro")} />
-      </Helmet>
-      <SeoAlternates />
+      <SeoHead
+        title={t("privacy_modal.title")}
+        description={t("privacy_modal.intro")}
+      />
 
       <Header />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 mt-16">
