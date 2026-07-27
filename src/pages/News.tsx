@@ -8,7 +8,7 @@ import SeoAlternates from "../components/SeoAlternates";
 import { useTranslation } from "react-i18next";
 
 const News: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language as "fr" | "ar";
 
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -84,26 +84,18 @@ const News: React.FC = () => {
   return (
     <div className="w-full bg-[#FFFFFF] font-sans text-[#1F2937]">
       <Helmet>
-        <title>{lang === "fr" ? "Actualités & Opportunités | Tamkeen" : "الأخبار والفرص | تمكين"}</title>
+        <title>{t("news_page.seo_title")}</title>
         <meta
           name="description"
-          content={
-            lang === "fr"
-              ? "Restez informé des dernières subventions, formations et success stories pour développer votre entreprise"
-              : "ابق على اطلاع بأحدث المنح والتدريبات وقصص النجاح لتطوير عملك"
-          }
+          content={t("news_page.seo_desc")}
         />
         <meta
           property="og:title"
-          content={lang === "fr" ? "Actualités & Opportunités | Tamkeen" : "الأخبار والفرص | تمكين"}
+          content={t("news_page.seo_title")}
         />
         <meta
           property="og:description"
-          content={
-            lang === "fr"
-              ? "Restez informé des dernières subventions, formations et success stories pour développer votre entreprise"
-              : "ابق على اطلاع بأحدث المنح والتدريبات وقصص النجاح لتطوير عملك"
-          }
+          content={t("news_page.seo_desc")}
         />
       </Helmet>
       <SeoAlternates />
@@ -115,16 +107,14 @@ const News: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#F97316]">
-              {lang === "fr" ? "Centre d'Actualités" : "مركز الأخبار"}
+              {t("news_page.hero_badge")}
             </span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold font-display tracking-tight text-white mb-6">
-            {lang === "fr" ? "Actualités & Opportunités" : "الأخبار والفرص"}
+            {t("news_page.hero_title")}
           </h1>
           <p className="text-sm sm:text-base text-[#FFFFFF]/75 max-w-3xl leading-relaxed">
-            {lang === "fr"
-              ? "Restez informé des dernières subventions, formations et success stories pour développer votre entreprise"
-              : "ابق على اطلاع بأحدث المنح والتدريبات وقصص النجاح لتطوير عملك"}
+            {t("news_page.hero_subtitle")}
           </p>
         </div>
       </section>
@@ -141,7 +131,7 @@ const News: React.FC = () => {
                   : "border-transparent text-[#1F2937]/60 hover:text-[#1F2937]"
               }`}
             >
-              {lang === "fr" ? "Tout" : "الكل"}
+              {t("news_page.filter_all")}
             </button>
             {categories.map((category) => (
               <button
@@ -168,13 +158,11 @@ const News: React.FC = () => {
             <div>
               <h2 className="text-xl font-bold font-display text-[#1F2937]">
                 {selectedCategory === "all"
-                  ? lang === "fr"
-                    ? "Dernières Actualités"
-                    : "آخر الأخبار"
+                  ? t("news_page.latest_news")
                   : selectedCategory}
               </h2>
               <p className="text-xs text-[#1F2937]/50 font-mono uppercase tracking-wider mt-1.5">
-                {news.length} {news.length > 1 ? (lang === "fr" ? "articles" : "مقالات") : lang === "fr" ? "article" : "مقالة"}
+                {news.length} {news.length > 1 ? t("news_page.articles_count_many") : t("news_page.articles_count_one")}
               </p>
             </div>
             <div className="hidden md:flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-[#1F2937]/50">
@@ -191,7 +179,7 @@ const News: React.FC = () => {
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>{lang === "fr" ? "Mis à jour quotidiennement" : "يتم التحديث يوميًا"}</span>
+              <span>{t("news_page.updated_daily")}</span>
             </div>
           </div>
 

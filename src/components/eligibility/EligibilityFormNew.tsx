@@ -234,9 +234,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     } catch (error) {
       setShowLoadingModal(false);
       console.error("Erreur lors de la soumission :", error);
-      setServerError(
-        "Une erreur inattendue s'est produite. Veuillez réessayer."
-      );
+      setServerError(t("eligibility.unexpectedError"));
       setShowServerErrorModal(true);
     }
   };
@@ -295,7 +293,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     } catch (error) {
       setShowLoadingModal(false);
       console.error("Erreur simulation :", error);
-      setServerError("Une erreur inattendue s'est produite. Veuillez réessayer.");
+      setServerError(t("eligibility.unexpectedError"));
       setShowServerErrorModal(true);
     }
   };
@@ -315,232 +313,222 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   }
 
   return (
-    <>
-      {/* Modal pour afficher les erreurs serveur */}
-      <ErrorModal
-        isOpen={showServerErrorModal}
-        onClose={() => setShowServerErrorModal(false)}
-        message={serverError || ""}
-        showRetryButton={false}
-        onRetry={submitForm}
-        closeText="Annuler"
-      />
+  <>
+    {/* Modal pour afficher les erreurs serveur */}
+    <ErrorModal
+      isOpen={showServerErrorModal}
+      onClose={() => setShowServerErrorModal(false)}
+      message={serverError || ""}
+      showRetryButton={false}
+      onRetry={submitForm}
+      closeText={t("eligibility.cancel")}
+    />
 
-      <LoadingModal
-        isOpen={showLoadingModal}
-        title="Vérification en cours..."
-      />
+    <LoadingModal isOpen={showLoadingModal} title={t("eligibility.loadingModalTitle")} />
 
-      <section
-        className="min-h-screen py-12 sm:py-20 px-4 bg-[#FFFFFF] font-sans"
-      >
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12 sm:mb-16">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1F2937] tracking-tight font-display mb-4">
+    <section className="min-h-screen py-12 sm:py-20 px-4 bg-[#FFFFFF] font-body">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
+
+          {/* ---------- Colonne gauche : contexte ---------- */}
+          <div className="lg:col-span-2 lg:sticky lg:top-24">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#1E5ED8] mb-4 font-body">
+              {t("eligibility.eyebrow")}
+            </p>
+
+            <h1 className="section-h2 text-3xl sm:text-4xl font-bold text-[#1F2937] tracking-tight mb-4">
               {t("eligibility.title")}
             </h1>
-            <p className="text-sm sm:text-base text-[#1F2937]/65 max-w-xl mx-auto leading-relaxed">
+
+            <p className="text-sm sm:text-base text-[#5B6472] leading-relaxed font-body mb-8">
               {t("eligibility.subtitle")}
             </p>
-          </div>
 
-          <div className="bg-white p-6 sm:p-12">
-            {/* Bouton de retour */}
-            {onNavigateBack && (
-              <button
-                onClick={onNavigateBack}
-                className="group flex items-center text-[#1E5ED8] hover:text-[#F97316] font-mono text-[11px] uppercase tracking-wider mb-8 transition-colors duration-200"
-              >
-                <svg
-                  className={`w-4 h-4 mr-2 rtl:ml-2 rtl:rotate-180 transition-transform duration-200 group-hover:-translate-x-0.5`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-                {t("eligibility.backButton")}
-              </button>
-            )}
-
-            {/* Stepper Progress Bar */}
-            <div className="mb-12 border-b border-[#E4E4E7] pb-10">
-              <div className="flex items-center justify-between max-w-xl mx-auto relative px-2">
-                {/* Background Line */}
-                <div className="absolute left-6 right-6 top-5 h-[1px] bg-[#E4E4E7] -translate-y-1/2 z-0" />
-                <div
-                  className="absolute left-6 top-5 h-[1.5px] bg-[#1E5ED8] -translate-y-1/2 z-0 transition-all duration-500"
-                  style={{
-                    width: step === 1 ? "0%" : step === 2 ? "50%" : "100%",
-                    right: isRTL ? "auto" : undefined,
-                  }}
-                />
-
-                {[1, 2, 3].map((s) => (
-                  <div key={s} className="flex flex-col items-center relative z-10">
-                    <div
-                      className={`w-10 h-10 rounded-none flex items-center justify-center font-mono text-xs transition-all duration-300 ${
-                        step > s
-                          ? "bg-[#1E5ED8] text-white border border-[#1E5ED8]"
-                          : step === s
-                          ? "bg-[#F97316] text-white border border-[#F97316]"
-                          : "bg-white border border-[#E4E4E7] text-[#1F2937]/40"
-                      }`}
+            {/* Ce qu'il vous faut pour commencer */}
+            <div className="border-t border-[#E4E4E7] pt-6 mb-8">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#1F2937]/60 mb-4 font-body">
+                {t("eligibility.requirements.label")}
+              </p>
+              <ul className="space-y-3">
+                {["applicantType", "sector", "financialSituation", "region"].map((key) => (
+                  <li key={key} className="flex items-start gap-3 text-sm text-[#1F2937] font-body">
+                    <svg
+                      className="w-4 h-4 mt-0.5 shrink-0 text-[#1E5ED8]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      {step > s ? (
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      ) : (
-                        String(s).padStart(2, "0")
-                      )}
-                    </div>
-                    <span
-                      className={`text-[10px] mt-3 font-bold tracking-wider uppercase font-display transition-colors ${
-                        step === s ? "text-[#1E5ED8]" : "text-[#1F2937]/50"
-                      }`}
-                    >
-                      {t(`eligibility.steps.step${s}`)}
-                    </span>
-                    <span className="text-[9px] text-[#1F2937]/40 font-mono mt-0.5 hidden sm:block">
-                      {t(`eligibility.steps.step${s}Sub`)}
-                    </span>
-                  </div>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {t(`eligibility.requirements.${key}`)}
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Step 1: Identité */}
-              {step === 1 && (
-                <div className="space-y-8 animate-fadeIn">
-                  <ApplicantTypeSelector
-                    formData={formData}
-                    onApplicantTypeSelect={handleApplicantTypeSelect}
-                    errors={errors}
+            {/* Bande de réassurance */}
+            <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-[#E4E4E7] pt-6">
+              {["free", "confidential", "instant", "official"].map((key) => (
+                <span key={key} className="text-xs font-medium text-[#5B6472] flex items-center gap-1.5 font-body">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1E5ED8]" />
+                  {t(`eligibility.trust.${key}`)}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* ---------- Colonne droite : formulaire ---------- */}
+          <div className="lg:col-span-3">
+            <div className="bg-white p-6 sm:p-12">
+              {/* Bouton de retour */}
+              {onNavigateBack && (
+                <button
+                  onClick={onNavigateBack}
+                  className="group flex items-center text-[#1E5ED8] hover:text-[#174BAE] font-body text-xs font-semibold uppercase tracking-wider mb-8 transition-colors duration-200"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2 rtl:ml-2 rtl:rotate-180 transition-transform duration-200 group-hover:-translate-x-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  {t("eligibility.backButton")}
+                </button>
+              )}
+
+              {/* Stepper Progress Bar */}
+              <div className="mb-12 border-b border-[#E4E4E7] pb-10">
+                <div className="flex items-center justify-between max-w-xl mx-auto relative px-2">
+                  <div className="absolute left-6 right-6 top-5 h-[1px] bg-[#E4E4E7] -translate-y-1/2 z-0" />
+                  <div
+                    className="absolute left-6 top-5 h-[1.5px] bg-[#1E5ED8] -translate-y-1/2 z-0 transition-all duration-500"
+                    style={{
+                      width: step === 1 ? "0%" : step === 2 ? "50%" : "100%",
+                      right: isRTL ? "auto" : undefined,
+                    }}
                   />
 
-                  {formData.applicantType === "physique" && (
-                    <PersonnePhysiqueForm
+                  {[1, 2, 3].map((s) => (
+                    <div key={s} className="flex flex-col items-center relative z-10">
+                      <div
+                        className={`w-10 h-10 rounded-[4px] flex items-center justify-center font-body font-semibold text-xs transition-all duration-300 ${
+                          step >= s
+                            ? "bg-[#1E5ED8] text-white border border-[#1E5ED8]"
+                            : "bg-white border border-[#E4E4E7] text-[#1F2937]/40"
+                        }`}
+                      >
+                        {step > s ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : (
+                          String(s).padStart(2, "0")
+                        )}
+                      </div>
+                      <span
+                        className={`text-xs mt-3 font-semibold tracking-wider uppercase font-body transition-colors ${
+                          step === s ? "text-[#1E5ED8]" : "text-[#1F2937]/50"
+                        }`}
+                      >
+                        {t(`eligibility.steps.step${s}`)}
+                      </span>
+                      <span className="text-[10px] text-[#1F2937]/40 font-body mt-0.5 hidden sm:block">
+                        {t(`eligibility.steps.step${s}Sub`)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-8 font-body">
+                {/* Step 1: Identité */}
+                {step === 1 && (
+                  <div className="space-y-8 animate-fadeIn">
+                    <ApplicantTypeSelector
                       formData={formData}
+                      onApplicantTypeSelect={handleApplicantTypeSelect}
                       errors={errors}
-                      handleInputChange={handleInputChange}
                     />
+
+                    {formData.applicantType === "physique" && (
+                      <PersonnePhysiqueForm
+                        formData={formData}
+                        errors={errors}
+                        handleInputChange={handleInputChange}
+                      />
+                    )}
+
+                    {formData.applicantType === "morale" && (
+                      <PersonneMoraleForm
+                        formData={formData}
+                        errors={errors}
+                        handleInputChange={handleInputChange}
+                      />
+                    )}
+                  </div>
+                )}
+
+                {/* Step 2: Activité et structure */}
+                {step === 2 && (
+                  <Step2Fields
+                    formData={formData}
+                    errors={errors}
+                    handleInputChange={handleInputChange}
+                  />
+                )}
+
+                {/* Step 3: Évaluation et contact */}
+                {step === 3 && (
+                  <Step3Fields
+                    formData={formData}
+                    errors={errors}
+                    years={years}
+                    phoneMode={phoneMode}
+                    availablePhones={availablePhones}
+                    setPhoneMode={setPhoneMode}
+                    setFormData={setFormData}
+                    handleInputChange={handleInputChange}
+                    handleCheckboxChange={handleCheckboxChange}
+                  />
+                )}
+
+                {/* Navigation Actions */}
+                <div className="flex items-center justify-between pt-8 border-t border-[#E4E4E7]">
+                  {step > 1 ? (
+                    <button type="button" onClick={handlePrevStep} className="btn-secondary">
+                      <svg className="w-4 h-4 mr-2 rtl:ml-2 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                      {t("pagination.previous")}
+                    </button>
+                  ) : (
+                    <div />
                   )}
 
-                  {formData.applicantType === "morale" && (
-                    <PersonneMoraleForm
-                      formData={formData}
-                      errors={errors}
-                      handleInputChange={handleInputChange}
-                    />
+                  {step < 3 ? (
+                    <button type="button" onClick={handleNextStep} className="btn-primary">
+                      {t("pagination.next")}
+                      <svg className="w-4 h-4 ml-2 rtl:mr-2 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button type="submit" className="btn-primary">
+                      {t("eligibility.submitButton")}
+                    </button>
                   )}
                 </div>
-              )}
-
-              {/* Step 2: Activité et structure */}
-              {step === 2 && (
-                <Step2Fields
-                  formData={formData}
-                  errors={errors}
-                  handleInputChange={handleInputChange}
-                />
-              )}
-
-              {/* Step 3: Évaluation et contact */}
-              {step === 3 && (
-                <Step3Fields
-                  formData={formData}
-                  errors={errors}
-                  years={years}
-                  phoneMode={phoneMode}
-                  availablePhones={availablePhones}
-                  setPhoneMode={setPhoneMode}
-                  setFormData={setFormData}
-                  handleInputChange={handleInputChange}
-                  handleCheckboxChange={handleCheckboxChange}
-                />
-              )}
-
-              {/* Navigation Actions */}
-              <div className="flex items-center justify-between pt-8 border-t border-[#E4E4E7]">
-                {step > 1 ? (
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="px-6 py-3.5 rounded-none border border-[#E4E4E7] text-[#1F2937] font-mono text-xs uppercase tracking-wider hover:bg-[#FFFFFF] transition-colors duration-200 flex items-center"
-                  >
-                    <svg
-                      className={`w-4 h-4 mr-2 rtl:ml-2 rtl:rotate-180`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                    Précédent
-                  </button>
-                ) : (
-                  <div /> // spacer
-                )}
-
-                {step < 3 ? (
-                  <button
-                    type="button"
-                    onClick={handleNextStep}
-                    className="px-6 py-3.5 bg-[#1E5ED8] hover:bg-[#1F2937] text-white font-mono text-xs uppercase tracking-wider transition-all duration-200 flex items-center"
-                  >
-                    Suivant
-                    <svg
-                      className={`w-4 h-4 ml-2 rtl:mr-2 rtl:rotate-180`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    className="px-8 py-3.5 bg-[#F97316] hover:bg-[#EA580C] text-white font-mono text-xs uppercase tracking-wider transition-all duration-200 flex items-center"
-                  >
-                    {t("eligibility.submitButton")}
-                  </button>
-                )}
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
+
         </div>
-      </section>
-    </>
-  );
+      </div>
+    </section>
+  </>
+);
 };
 
 export default EligibilityForm;

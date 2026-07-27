@@ -1,15 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,700..900;1,8..60,700..900&display=swap');
 
 :root {
+  --font-display: 'Source Serif 4', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
   --color-primary: #1E5ED8;
+  --color-primary-hover: #174BAE;
   --color-secondary: #F97316;
+  --color-secondary-hover: #EA580C;
   --color-background: #FFFFFF;
   --color-text: #1F2937;
-  --color-text-secondary: #71717A;
+  --color-text-secondary: #5B6472;
   --color-border: #E4E4E7;
   --color-border-dark: #A1A1AA;
 
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
 
@@ -27,17 +32,58 @@
   color: #FFFFFF;
 }
 
-/* Custom design font utilities */
-.font-display {
-  font-family: 'Outfit', sans-serif;
-}
-
+/* RTL / Arabic overrides for display & body fonts */
 [dir="rtl"], [lang="ar"] {
+  --font-display: 'IBM Plex Sans Arabic', sans-serif;
+  --font-body: 'IBM Plex Sans Arabic', sans-serif;
   font-family: 'IBM Plex Sans Arabic', sans-serif !important;
 }
 
 [dir="rtl"] .font-display, [lang="ar"] .font-display {
   font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+}
+
+/* Custom design font utilities */
+.font-display {
+  font-family: var(--font-display) !important;
+}
+
+.font-body, .font-sans {
+  font-family: var(--font-body) !important;
+}
+
+/* Standardized Typography Utility Classes */
+.hero-h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  font-size: clamp(2.1rem, 4.5vw, 4.1rem);
+  line-height: 1.08;
+  color: #111827;
+}
+
+.section-h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+  line-height: 1.15;
+}
+
+.section-eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+}
+
+.body-desc {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
 }
 
 /* Custom background & text colors */
@@ -52,8 +98,6 @@
 .bg-background { background-color: var(--color-background); }
 .text-details { color: var(--color-text-secondary); }
 .border-custom { border-color: var(--color-border); }
-
-
 
 .scrollbar-thumb-blue-300::-webkit-scrollbar-track {
   background: #dbeafe;
@@ -71,11 +115,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-primary);
   text-decoration: inherit;
 }
 a:hover {
-  color: #747bff;
+  color: var(--color-primary-hover);
 }
 
 * {
@@ -107,11 +151,34 @@ section[id] {
   scroll-margin-top: 64px;
 }
 
+/* ── Hero ── */
+#hero {
+  scroll-margin-top: 0;
+}
+
+#hero .hero-accent-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #0A0A0A;
+}
+
+[dir="rtl"] #hero .hero-accent-bar {
+  left: auto;
+  right: 0;
+}
+
+#hero button:active {
+  transform: scale(0.98);
+}
+
 /* Single page section dividers */
 .section-separator {
   width: 48px;
   height: 2px;
-  background-color: var(--color-secondary);
+  background-color: var(--color-primary);
   margin-bottom: 1.5rem;
 }
 
@@ -123,41 +190,42 @@ section[id] {
   background: rgba(30, 94, 216, 0.08);
   border: 1px solid rgba(30, 94, 216, 0.2);
   color: var(--color-primary);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   padding: 6px 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-body);
+  border-radius: 4px;
 }
 
-/* CTA primary button */
+/* CTA primary button (Blue) */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--color-secondary);
+  background-color: var(--color-primary);
   color: #ffffff;
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 16px 32px;
-  border: none;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  padding: 14px 28px;
+  border-radius: 4px;
+  border: 1px solid var(--color-primary);
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 .btn-primary:hover {
-  background-color: #EA580C;
-  border-color: transparent;
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 .btn-primary:active {
   transform: scale(0.98);
 }
 
-/* CTA secondary button */
+/* CTA secondary button (Outline) */
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -165,20 +233,45 @@ section[id] {
   gap: 8px;
   background-color: transparent;
   color: var(--color-primary);
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 15px 31px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  padding: 14px 28px;
+  border-radius: 4px;
   border: 1px solid var(--color-primary);
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 .btn-secondary:hover {
   background-color: var(--color-primary);
   color: #ffffff;
-  border-color: transparent;
+}
+
+/* CTA orange accent button (Orange high-conversion actions) */
+.btn-orange {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-secondary);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  padding: 14px 28px;
+  border-radius: 4px;
+  border: 1px solid var(--color-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.btn-orange:hover {
+  background-color: var(--color-secondary-hover);
+  border-color: var(--color-secondary-hover);
+}
+.btn-orange:active {
+  transform: scale(0.98);
 }
 
 h1 {

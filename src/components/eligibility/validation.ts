@@ -85,7 +85,7 @@ export const validateStep = (
         }
       }
       if (!hasValidCA && formData.applicantType === "morale") {
-        newErrors.chiffreAffaire2024 = "Veuillez renseigner au moins un chiffre d'affaires valide";
+        newErrors.chiffreAffaire2024 = t("eligibility.errors.atLeastOneCARequired");
       }
     }
 

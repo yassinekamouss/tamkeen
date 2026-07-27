@@ -6,7 +6,12 @@
     "faq": "FAQ",
     "programs": "Programmes disponibles",
     "privacy": "Politique de confidentialité",
-    "language": "Langue"
+    "language": "Langue",
+    "home_aria": "Tamkeen – Accueil",
+    "main_nav": "Navigation principale",
+    "mobile_nav": "Navigation mobile",
+    "menu": "Menu",
+    "test_short": "Tester"
   },
   "hero": {
     "badge": "Plateforme Nationale d'Éligibilité",
@@ -37,9 +42,54 @@
         "description": "grâce à notre expertise en subventions et accompagnement personnalisé."
       }
     ],
-    "button": "Testez votre éligibilité ici"
+    "button": "Testez votre éligibilité ici",
+    "trusted_platform": "Plateforme de confiance",
+    "cta_primary": "Tester mon éligibilité",
+    "cta_secondary": "Explorer les programmes",
+    "programs_cta": "Explorer les programmes"
   },
   "eligibility": {
+    "eyebrow": "Outil d'Évaluation en ligne",
+    "requirements": {
+      "label": "Ce qu'il vous faut pour commencer",
+      "applicantType": "Votre type de profil (Physique ou Morale)",
+      "sector": "Votre secteur d'activité principal",
+      "financialSituation": "Vos informations financières prévisionnelles",
+      "region": "Votre région d'implantation au Maroc"
+    },
+    "trust": {
+      "free": "100% Gratuit",
+      "confidential": "Confidentiel",
+      "instant": "Résultat Instantané",
+      "official": "Données Officielles"
+    },
+    "cancel": "Annuler",
+    "loadingModalTitle": "Vérification en cours...",
+    "unexpectedError": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+    "yearLabel": "Année {{year}}",
+    "caPlaceholder": "Ex: 1500000",
+    "recentCompanyNotice": "Entreprise récente : Aucun chiffre d'affaires historique requis",
+    "newPhoneOption": "+ Nouveau numéro…",
+    "modals": {
+      "errorTitle": "Une erreur s'est produite",
+      "retryText": "Réessayer",
+      "closeText": "Fermer",
+      "loadingTitle": "Traitement en cours",
+      "loadingMessage": "Veuillez patienter..."
+    },
+    "agent": {
+      "errorLoading": "Une erreur est survenue lors de l'analyse. Vous pouvez contacter directement un conseiller Tamkeen.",
+      "speakAdvisor": "Parler à un conseiller Tamkeen",
+      "redoEvaluation": "Refaire une évaluation",
+      "smartService": "Service d'Orientation Intelligent",
+      "diagnosticTitle": "Diagnostic & Voies de Remédiation",
+      "activeAgent": "Agent Actif",
+      "redoTestLink": "← Refaire un test d'éligibilité",
+      "platformSubtext": "Plateforme Tamkeen - Accompagnement aux financements",
+      "requestTransmitted": "Demande transmise",
+      "requestSuccess": "Votre demande d'assistance a été transmise avec succès. Nous vous contacterons sous 48 h sur le mail que vous avez fourni.",
+      "understood": "Compris"
+    },
     "steps": {
       "step1": "Profil",
       "step1Sub": "Identité",
@@ -252,7 +302,8 @@
       "nomEntrepriseRequired": "La dénomination de l'entreprise est obligatoire",
       "ageRequired": "L'âge est obligatoire",
       "sexeRequired": "Le sexe est obligatoire",
-      "numberOfEmployeesRequired": "Le nombre d'employés est obligatoire"
+      "numberOfEmployeesRequired": "Le nombre d'employés est obligatoire",
+      "atLeastOneCARequired": "Veuillez renseigner au moins un chiffre d'affaires valide"
     }
   },
   "footer": {
@@ -273,6 +324,8 @@
     "subtitle": "",
     "description": "Nous aidons les porteurs de projets, les entreprises et les coopératives à savoir en un clic s'ils répondent aux critères d'accès aux aides publiques disponibles au Maroc.",
     "partnersTitle": "Nos Partenaires",
+    "methodology": "Méthodologie",
+    "error_loading_partners": "Erreur lors du chargement des partenaires.",
     "howItWorks": {
       "title": "Comment Ça Marche ?",
       "subtitle": "Vous entrez vos critères, nous trouvons vos subventions.",
@@ -398,7 +451,9 @@
     },
     "contactInfo": "Pour plus d'informations : contact@masubvention.ma ",
     "newTestButton": "Faire un nouveau test",
-    "confirmationOfContactButton": "Confirmer la demande de contact"
+    "confirmationOfContactButton": "Confirmer la demande de contact",
+    "loading": "Chargement...",
+    "errorMessage": "Une erreur est survenue. Réessayez plus tard."
   },
   "process": {
     "badge": "Comment ça marche",
@@ -440,6 +495,21 @@
     "modal_description": "Description & Objectifs :",
     "modal_test_btn": "Tester mon éligibilité",
     "modal_close": "Fermer"
+  },
+  "disponible_programs": {
+    "badge": "Subventions & Aides",
+    "title": "Les Programmes Disponibles",
+    "subtitle": "Découvrez notre sélection de programmes de formation conçus pour développer vos compétences et atteindre vos objectifs professionnels.",
+    "programs_count": "Programmes",
+    "online": "En ligne",
+    "accessible": "Accessible",
+    "active": "Actif",
+    "start": "Début",
+    "end": "Fin",
+    "undefined": "Non défini",
+    "more": "En savoir plus",
+    "loading": "Chargement...",
+    "error_loading": "Échec du chargement des programmes. Veuillez réessayer plus tard."
   },
   "news_section": {
     "badge": "Actualités & Opportunités",

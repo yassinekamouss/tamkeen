@@ -1,6 +1,7 @@
 import React from "react";
 import Modal from "./Modal";
 import { AlertTriangle, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ErrorModalProps {
   isOpen: boolean;
@@ -16,13 +17,17 @@ interface ErrorModalProps {
 const ErrorModal: React.FC<ErrorModalProps> = ({ 
   isOpen,
   onClose,
-  title = "Une erreur s'est produite",
+  title,
   message,
   showRetryButton = false,
   onRetry,
-  retryText = "Réessayer",
-  closeText = "Fermer"
+  retryText,
+  closeText
 }) => {
+  const { t } = useTranslation();
+  const displayTitle = title || t("eligibility.modals.errorTitle");
+  const displayRetryText = retryText || t("eligibility.modals.retryText");
+  const displayCloseText = closeText || t("eligibility.modals.closeText");
   return (
     <Modal 
       isOpen={isOpen} 
@@ -38,7 +43,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
         
         {/* Titre */}
         <h3 className="text-xl font-semibold text-slate-800 mb-4">
-          {title}
+          {displayTitle}
         </h3>
         
         {/* Message d'erreur */}
@@ -63,7 +68,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
                 shadow-sm hover:shadow-md
               "
             >
-              {retryText}
+              {displayRetryText}
             </button>
           )}
           
@@ -76,7 +81,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
               shadow-sm hover:shadow-md
             "
           >
-            {closeText}
+            {displayCloseText}
           </button>
         </div>
         
@@ -89,7 +94,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
             focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2
             hover:scale-105 active:scale-95
           "
-          aria-label="Fermer"
+          aria-label={displayCloseText}
         >
           <X size={18} />
         </button>

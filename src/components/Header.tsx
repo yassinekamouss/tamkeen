@@ -62,18 +62,18 @@ const Header: React.FC = () => {
       className="sticky top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#FFFFFF] border-b border-[#E4E4E7]"
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
 
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link to="/" aria-label="Tamkeen – Accueil">
+            <Link to="/" aria-label={t("header.home_aria")}>
               <img className="h-8 sm:h-10 w-auto" src={logo} alt="Tamkeen Center" />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center h-full font-display" aria-label="Navigation principale">
+          <nav className="hidden lg:flex items-center h-full font-body" aria-label={t("header.main_nav")}>
             {/* Home / Anchor link */}
             {isHome ? (
               <button
@@ -143,10 +143,10 @@ const Header: React.FC = () => {
                   window.location.href = "/#eligibility-form";
                 }
               }}
-              className="ml-4 rtl:ml-0 rtl:mr-4 px-4 py-2 bg-[#F97316] hover:bg-[#EA580C] text-white text-[10px] font-bold uppercase tracking-wider font-display transition-colors duration-200 cursor-pointer border-none"
-              aria-label={lang === "fr" ? "Tester mon éligibilité" : "اختبر أهليتي"}
+              className="ml-4 rtl:ml-0 rtl:mr-4 px-4 py-2 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-semibold uppercase tracking-wider font-body rounded-[4px] transition-colors duration-200 cursor-pointer border-none"
+              aria-label={t("hero.cta")}
             >
-              {lang === "fr" ? "Tester mon éligibilité" : "اختبر أهليتي"}
+              {t("hero.cta")}
             </button>
 
             {/* Language Switcher */}
@@ -154,7 +154,7 @@ const Header: React.FC = () => {
               <button
                 id="language-switcher-btn"
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition duration-300 flex items-center border border-[#E4E4E7] bg-white text-[#1F2937]/75 hover:text-[#1E5ED8] hover:border-[#1E5ED8]/50"
+                className="px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition duration-300 flex items-center border border-[#E4E4E7] bg-white text-[#1F2937]/75 hover:text-[#1E5ED8] hover:border-[#1E5ED8]/50 rounded-[4px]"
                 aria-haspopup="listbox"
                 aria-expanded={isLanguageOpen}
                 aria-label={t("header.language")}
@@ -173,13 +173,13 @@ const Header: React.FC = () => {
                 >
                   <circle cx="12" cy="12" r="10" />
                   <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z" />
                 </svg>
               </button>
 
               {isLanguageOpen && (
                 <div
-                  className="absolute right-0 rtl:right-auto rtl:left-0 mt-2 w-36 bg-[#FFFFFF] border border-[#E4E4E7] shadow-sm z-50"
+                  className="absolute right-0 rtl:right-auto rtl:left-0 mt-2 w-36 bg-[#FFFFFF] border border-[#E4E4E7] shadow-sm z-50 rounded-[4px]"
                   role="listbox"
                   aria-label={t("header.language")}
                   tabIndex={-1}
@@ -221,7 +221,6 @@ const Header: React.FC = () => {
 
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center gap-3">
-            {/* Mobile CTA */}
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
@@ -231,16 +230,16 @@ const Header: React.FC = () => {
                   window.location.href = "/#eligibility-form";
                 }
               }}
-              className="px-3 py-1.5 bg-[#F97316] text-white text-[9px] font-bold uppercase tracking-wider border-none cursor-pointer"
-              aria-label={lang === "fr" ? "Tester mon éligibilité" : "اختبر أهليتي"}
+              className="px-3 py-1.5 bg-[#F97316] hover:bg-[#EA580C] text-white text-[10px] font-semibold uppercase tracking-wider rounded-[4px] border-none cursor-pointer"
+              aria-label={t("hero.cta")}
             >
-              {lang === "fr" ? "Tester" : "اختبر"}
+              {t("header.test_short")}
             </button>
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="focus:outline-none text-[#1F2937]/70 hover:text-[#1E5ED8] transition-colors"
-              aria-label="Menu"
+              aria-label={t("header.menu")}
               aria-expanded={isMobileMenuOpen}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -257,7 +256,7 @@ const Header: React.FC = () => {
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-[#E4E4E7] bg-white py-2 pb-4">
-            <nav className="flex flex-col" aria-label="Navigation mobile">
+            <nav className="flex flex-col" aria-label={t("header.mobile_nav")}>
               {isHome ? (
                 <button onClick={() => scrollTo("hero")} className={`${mobileNavItemClass(isActiveLink("/"))} text-left`}>
                   {t("header.home")}

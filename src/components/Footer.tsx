@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <footer className="bg-[#1E5ED8] text-[#FFFFFF] border-t border-white/10 font-sans">
+    <footer className="bg-[#1E5ED8] text-[#FFFFFF] border-t border-white/10 font-body">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
         {/* Section principale avec 3 colonnes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
               </span>
             </div>
             <div className="mb-4">
-              <p className="text-[#FFFFFF]/75 leading-relaxed text-xs sm:text-sm text-start max-w-sm">
+              <p className="text-[#FFFFFF]/75 leading-relaxed text-xs sm:text-sm text-start max-w-sm font-body">
                 {t('footer.description')}
               </p>
             </div>
@@ -32,35 +32,35 @@ const Footer: React.FC = () => {
 
           {/* Colonne 2: Navigation */}
           <div className="lg:col-span-1">
-            <h3 className="text-xs sm:text-sm font-semibold tracking-widest uppercase mb-4 text-[#F97316] font-display">
+            <h3 className="text-xs sm:text-sm font-bold tracking-wider uppercase mb-4 text-[#F97316] font-display">
               {t('footer.navigation')}
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-2 font-body">
               <li>
                 <Link
                   to="/"
-                  className="text-[#FFFFFF]/75 hover:text-white transition-colors duration-200 text-xs sm:text-sm">
+                  className="text-[#FFFFFF]/80 hover:text-[#F97316] transition-colors duration-200 text-xs sm:text-sm">
                   {t('header.home')}
                 </Link>
               </li>
               <li>
                 <Link
                   to="/about"
-                  className="text-[#FFFFFF]/75 hover:text-white transition-colors duration-200 text-xs sm:text-sm">
+                  className="text-[#FFFFFF]/80 hover:text-[#F97316] transition-colors duration-200 text-xs sm:text-sm">
                   {t('header.about')}
                 </Link>
               </li>
               <li>
                 <Link
                   to="/faq"
-                  className="text-[#FFFFFF]/75 hover:text-white transition-colors duration-200 text-xs sm:text-sm">
+                  className="text-[#FFFFFF]/80 hover:text-[#F97316] transition-colors duration-200 text-xs sm:text-sm">
                   {t('header.faq')}
                 </Link>
               </li>
               <li>
                 <Link
                   to="/privacy"
-                  className="text-[#FFFFFF]/75 hover:text-white transition-colors duration-200 text-xs sm:text-sm">
+                  className="text-[#FFFFFF]/80 hover:text-[#F97316] transition-colors duration-200 text-xs sm:text-sm">
                   {t('header.privacy')}
                 </Link>
               </li>
@@ -69,10 +69,10 @@ const Footer: React.FC = () => {
 
           {/* Colonne 3: Contact et réseaux sociaux */}
           <div className="lg:col-span-1">
-            <h3 className="text-xs sm:text-sm font-semibold tracking-widest uppercase mb-4 text-[#F97316] font-display text-start">
+            <h3 className="text-xs sm:text-sm font-bold tracking-wider uppercase mb-4 text-[#F97316] font-display text-start">
               {t('footer.contact')}
             </h3>
-            <div className="space-y-2 mb-6">
+            <div className="space-y-2 mb-6 font-body">
               <div className="flex items-center">
                 <svg
                   className="w-4 h-4 mr-2 text-[#F97316] flex-shrink-0"
@@ -83,7 +83,7 @@ const Footer: React.FC = () => {
                 </svg>
                 <a
                   href="mailto:contact@masubvention.ma"
-                  className="text-[#FFFFFF]/75 hover:text-white transition-colors duration-200 text-xs sm:text-sm">
+                  className="text-[#FFFFFF]/80 hover:text-[#F97316] transition-colors duration-200 text-xs sm:text-sm">
                   {t('footer.email')}
                 </a>
               </div>
@@ -98,7 +98,7 @@ const Footer: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="text-[#FFFFFF]/75 text-xs sm:text-sm">
+                <span className="text-[#FFFFFF]/80 text-xs sm:text-sm">
                   {t('footer.address')}
                 </span>
               </div>
@@ -106,13 +106,13 @@ const Footer: React.FC = () => {
 
             {/* Réseaux sociaux */}
             <div>
-              <h4 className="text-xs font-semibold tracking-wider text-[#FFFFFF]/50 mb-3 text-start uppercase">
+              <h4 className="text-xs font-bold tracking-wider text-[#F97316] mb-3 text-start uppercase font-body">
                 {t('footer.followUs')}
               </h4>
               <div className="flex space-x-3">
                 <a
                   href="https://www.facebook.com/share/16W7DLrytf/?mibextid=wwXIfr"
-                  className="text-[#FFFFFF]/50 hover:text-white transition-colors duration-200"
+                  className="text-[#FFFFFF]/80 hover:text-[#F97316] transition-colors duration-200"
                   aria-label="Facebook"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -126,7 +126,7 @@ const Footer: React.FC = () => {
                 </a>
                 <a
                   href="https://www.linkedin.com/company/tamkeen-center/"
-                  className="text-[#FFFFFF]/50 hover:text-white transition-colors duration-200"
+                  className="text-[#FFFFFF]/80 hover:text-[#F97316] transition-colors duration-200"
                   aria-label="LinkedIn"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -140,7 +140,7 @@ const Footer: React.FC = () => {
                 </a>
                 <a
                   href="https://www.instagram.com/tamkeen_center_consulting?igsh=NjllczJzNDRsdWRq"
-                  className="text-[#FFFFFF]/50 hover:text-white transition-colors duration-200"
+                  className="text-[#FFFFFF]/80 hover:text-[#F97316] transition-colors duration-200"
                   aria-label="Instagram"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -159,7 +159,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Ligne de séparation et copyright */}
-        <div className="border-t border-white/10 mt-8 pt-8">
+        <div className="border-t border-white/10 mt-8 pt-8 font-body">
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <p className="text-[#FFFFFF]/50 text-xs sm:text-sm mb-4 sm:mb-0">
               {t('footer.rights')}

@@ -6,7 +6,12 @@
     "faq": "الأسئلة الشائعة",
     "programs": "البرامج المتاحة",
     "privacy": "سياسة الخصوصية",
-    "language": "اللغة"
+    "language": "اللغة",
+    "home_aria": "تمكين – الرئيسية",
+    "main_nav": "التنقل الرئيسي",
+    "mobile_nav": "التنقل عبر الهاتف",
+    "menu": "القائمة",
+    "test_short": "اختبر"
   },
   "hero": {
     "badge": "المنصة الوطنية للأهلية",
@@ -37,9 +42,52 @@
         "description": "بفضل خبرتنا في المنح والمرافقة الشخصية."
       }
     ],
-    "button": "اختبر أهليتك هنا"
+    "button": "اختبر أهليتك هنا",
+    "trusted_platform": "منصة موثوقة",
+    "programs_cta": "استكشاف البرامج"
   },
   "eligibility": {
+    "eyebrow": "أداة التقييم عبر الإنترنت",
+    "requirements": {
+      "label": "ما تحتاجه للبدء",
+      "applicantType": "نوع ملفك الشخصي (شخص ذاتي أو معنوي)",
+      "sector": "قطاع نشاطك الرئيسي",
+      "financialSituation": "معلوماتك المالية المتوقعة",
+      "region": "جهة استقرارك في المغرب"
+    },
+    "trust": {
+      "free": "100٪ مجاني",
+      "confidential": "سري",
+      "instant": "نتيجة فورية",
+      "official": "بيانات رسمية"
+    },
+    "cancel": "إلغاء",
+    "loadingModalTitle": "جاري التحقق...",
+    "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+    "yearLabel": "سنة {{year}}",
+    "caPlaceholder": "مثال: 1500000",
+    "recentCompanyNotice": "شركة حديثة: لا يلزم وجود رقم معاملات سابق",
+    "newPhoneOption": "+ رقم جديد…",
+    "modals": {
+      "errorTitle": "حدث خطأ",
+      "retryText": "إعادة المحاولة",
+      "closeText": "إغلاق",
+      "loadingTitle": "جاري المعالجة",
+      "loadingMessage": "يرجى الانتظار..."
+    },
+    "agent": {
+      "errorLoading": "حدث خطأ أثناء تحميل النصائح. يمكنك التواصل مباشرة مع مستشارنا.",
+      "speakAdvisor": "طلب اتصال من مستشار",
+      "redoEvaluation": "إعادة إجراء الاختبار",
+      "smartService": "خدمة الاستشارة الذكية",
+      "diagnosticTitle": "تشخيص وإمكانية التكييف",
+      "activeAgent": "مستشار نشط",
+      "redoTestLink": "← إجراء اختبار جديد",
+      "platformSubtext": "منصة تمكين - استشارات التمويل بالمغرب",
+      "requestTransmitted": "تم إرسال الطلب",
+      "requestSuccess": "تم إرسال طلب المساعدة الخاص بك بنجاح. سنتصل بك في غضون 48 ساعة على البريد الإلكتروني الذي قدمته.",
+      "understood": "مفهوم"
+    },
     "steps": {
       "step1": "الملف الشخصي",
       "step1Sub": "الهوية",
@@ -244,7 +292,8 @@
       "nomEntrepriseRequired": "اسم الشركة مطلوب",
       "ageRequired": "العمر مطلوب",
       "sexeRequired": "الجنس مطلوب",
-      "numberOfEmployeesRequired": "عدد الموظفين المتوقعين مطلوب"
+      "numberOfEmployeesRequired": "عدد الموظفين المتوقعين مطلوب",
+      "atLeastOneCARequired": "يرجى إدخال رقم معاملات واحد صالحة على الأقل"
     }
   },
   "footer": {
@@ -265,6 +314,8 @@
     "subtitle": "أداتك للأهلية المسبقة",
     "description": "نساعد حاملي المشاريع والشركات والتعاونيات على معرفة ما إذا كانوا يستوفون معايير الوصول إلى المساعدات العامة المتاحة في المغرب بسرعة.",
     "partnersTitle": "شركاؤنا",
+    "methodology": "المنهجية",
+    "error_loading_partners": "حدث خطأ أثناء تحميل الشركاء.",
     "howItWorks": {
       "title": "كيف يعمل؟",
       "subtitle": "أدخل وضعك ونشاطك ومنطقتك والمعلومات الرئيسية حول هيكلك.",
@@ -390,7 +441,9 @@
     },
     "contactInfo": "contact@masubvention.ma : للمزيد من المعلومات",
     "newTestButton": "إجراء اختبار جديد",
-    "confirmationOfContactButton": "تأكيد طلب التواصل"
+    "confirmationOfContactButton": "تأكيد طلب التواصل",
+    "loading": "جاري التحميل...",
+    "errorMessage": "حدث خطأ ما. يرجى المحاولة لاحقاً."
   },
   "process": {
     "badge": "كيف يعمل",
@@ -432,6 +485,21 @@
     "modal_description": "الوصف والأهداف:",
     "modal_test_btn": "اختبار أهليتي",
     "modal_close": "إغلاق"
+  },
+  "disponible_programs": {
+    "badge": "الدعم والمنح الحكومية",
+    "title": "البرامج المتاحة",
+    "subtitle": "اكتشف مجموعتنا من البرامج التدريبية المصممة لتطوير مهاراتك وتحقيق أهدافك المهنية.",
+    "programs_count": "برامج",
+    "online": "عبر الإنترنت",
+    "accessible": "متاح دائمًا",
+    "active": "نشط",
+    "start": "البداية",
+    "end": "النهاية",
+    "undefined": "غير محدد",
+    "more": "المزيد",
+    "loading": "جاري التحميل...",
+    "error_loading": "فشل تحميل البرامج. يرجى المحاولة مرة أخرى لاحقاً."
   },
   "news_section": {
     "badge": "الأخبار والفرص",

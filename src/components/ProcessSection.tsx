@@ -39,19 +39,19 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ onNavigateToForm }) => 
     <section
       id="process"
       dir={isRTL ? "rtl" : "ltr"}
-      className="w-full bg-[#1E5ED8] py-20 sm:py-28 border-b border-[#1E5ED8]"
+      className="w-full bg-[#1E5ED8] py-20 sm:py-28 border-b border-[#1E5ED8] font-body"
       aria-label={t("process.badge")}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         {/* Header */}
         <div className="mb-16">
-          <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-[#F97316] font-display mb-3">
+          <span className="section-eyebrow text-[#F97316] mb-3 block font-semibold">
             {t("process.badge")}
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white font-display tracking-tight leading-tight mb-4 max-w-xl">
+          <h2 className="section-h2 text-white max-w-xl mb-4">
             {t("process.title")}
           </h2>
-          <p className="text-white/65 text-sm sm:text-base leading-relaxed max-w-2xl">
+          <p className="text-white/75 text-sm sm:text-base leading-relaxed max-w-2xl font-body">
             {t("process.subtitle")}
           </p>
         </div>
@@ -61,15 +61,15 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ onNavigateToForm }) => 
           {steps.map((step, i) => (
             <div key={i} className="bg-[#1E5ED8] p-8 group hover:bg-[#1A52C2] transition-colors duration-200">
               {/* Number */}
-              <span className="block text-[2.5rem] font-bold font-mono text-white/15 leading-none mb-6 group-hover:text-white/25 transition-colors">
+              <span className="block text-[2.5rem] font-bold font-mono text-[#F97316]/50 leading-none mb-6 group-hover:text-[#F97316]/80 transition-colors">
                 {step.num}
               </span>
               {/* Title */}
-              <h3 className="text-base font-bold text-white font-display mb-3 leading-snug">
+              <h3 className="text-base sm:text-lg font-bold text-white font-display mb-3 leading-snug">
                 {step.title}
               </h3>
               {/* Description */}
-              <p className="text-sm text-white/65 leading-relaxed">
+              <p className="text-sm text-white/70 leading-relaxed font-body">
                 {step.desc}
               </p>
             </div>
@@ -80,7 +80,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ onNavigateToForm }) => 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-8">
           <button
             onClick={onNavigateToForm}
-            className="btn-primary self-start sm:self-auto"
+            className="btn-orange self-start sm:self-auto"
             aria-label={t("process.cta")}
           >
             {t("process.cta")}
@@ -100,9 +100,9 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ onNavigateToForm }) => 
             {trust.map((label, i) => (
               <span
                 key={i}
-                className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-white/55"
+                className="flex items-center gap-2 text-xs font-body tracking-wider text-white/90"
               >
-                <svg className="w-3 h-3 text-[#F97316] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <svg className="w-3.5 h-3.5 text-[#F97316] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
                 {label}

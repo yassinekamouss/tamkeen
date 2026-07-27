@@ -39,7 +39,7 @@ const FAQ: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#F97316] mb-3 block">
-              {lang === "fr" ? "Questions fréquentes" : "الأسئلة الشائعة"}
+              {t("faq_section.badge")}
             </span>
             <h1 className="text-3xl sm:text-5xl font-bold font-display text-[#1F2937] tracking-tight mb-4">
               {t("faq.title")}

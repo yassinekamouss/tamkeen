@@ -5,8 +5,7 @@ import { Helmet } from "react-helmet-async";
 import SeoAlternates from "../components/SeoAlternates";
 
 const Privacy: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language as "fr" | "ar";
+  const { t } = useTranslation();
 
   return (
     <div className="w-full bg-white text-[#1F2937] font-sans">
@@ -22,7 +21,7 @@ const Privacy: React.FC = () => {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 mt-16">
         <div className="text-center mb-16 border-b border-[#E4E4E7] pb-10">
           <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#F97316] mb-3 block">
-            {lang === "fr" ? "Cadre Légal & Sécurité" : "الإطار القانوني والحماية"}
+            {t("privacy_page.legal_badge")}
           </span>
           <h1 className="text-3xl sm:text-4xl font-bold font-display text-[#1F2937] tracking-tight leading-tight mb-4">
             {t("privacy_modal.title")}

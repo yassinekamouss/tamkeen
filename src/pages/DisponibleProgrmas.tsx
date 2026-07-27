@@ -34,7 +34,7 @@ interface Program {
 }
 
 const DisponiblePrograms: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,13 +61,13 @@ const DisponiblePrograms: React.FC = () => {
         const response = await api.get("/programs/active");
         setPrograms(response.data);
       } catch (err) {
-        setError("Échec du chargement des programmes. Veuillez réessayer plus tard.");
+        setError(t("disponible_programs.error_loading"));
       } finally {
         setLoading(false);
       }
     };
     fetchPrograms();
-  }, []);
+  }, [t]);
 
   const truncateText = (text: string, maxLength: number) => {
     if (!text) return "";
@@ -110,7 +110,7 @@ const DisponiblePrograms: React.FC = () => {
         <Header />
         <div className="flex-grow flex items-center justify-center">
           <div className="text-center font-mono text-xs uppercase tracking-wider text-[#1F2937]/60">
-            Chargement...
+            {t("disponible_programs.loading")}
           </div>
         </div>
         <Footer />
@@ -140,37 +140,35 @@ const DisponiblePrograms: React.FC = () => {
       <div className="bg-[#1E5ED8] border-b border-[#E4E4E7] text-white py-16 sm:py-24">
         <div className="container mx-auto px-4 max-w-5xl text-center">
           <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#F97316] mb-4 block">
-            {lang === "fr" ? "Subventions & Aides" : "الدعم والمنح الحكومية"}
+            {t("disponible_programs.badge")}
           </span>
           <h1 className="text-3xl sm:text-5xl font-bold font-display tracking-tight text-white mb-6">
-            {lang === "fr" ? "Les Programmes Disponibles" : "البرامج المتاحة"}
+            {t("disponible_programs.title")}
           </h1>
 
           <p className="text-sm sm:text-base text-[#FFFFFF]/75 mb-10 max-w-2xl mx-auto leading-relaxed">
-            {lang === "fr"
-              ? "Découvrez notre sélection de programmes de formation conçus pour développer vos compétences et atteindre vos objectifs professionnels."
-              : "اكتشف مجموعتنا من البرامج التدريبية المصmمة لتطوير مهاراتك وتحقيق أهدافك المهنية."}
+            {t("disponible_programs.subtitle")}
           </p>
 
           <div className="grid grid-cols-3 divide-x divide-white/10 max-w-xl mx-auto border-t border-b border-white/10 py-6">
             <div className="flex flex-col items-center">
               <span className="text-2xl sm:text-3xl font-bold font-mono text-[#F97316]">{programs.length}</span>
               <span className="text-[9px] font-mono uppercase tracking-wider text-white/50 mt-1">
-                {lang === "fr" ? "Programmes" : "برامج"}
+                {t("disponible_programs.programs_count")}
               </span>
             </div>
 
             <div className="flex flex-col items-center">
               <span className="text-2xl sm:text-3xl font-bold font-mono text-[#F97316]">100%</span>
               <span className="text-[9px] font-mono uppercase tracking-wider text-white/50 mt-1">
-                {lang === "fr" ? "En ligne" : "عبر الإنترنت"}
+                {t("disponible_programs.online")}
               </span>
             </div>
 
             <div className="flex flex-col items-center">
               <span className="text-2xl sm:text-3xl font-bold font-mono text-[#F97316]">24/7</span>
               <span className="text-[9px] font-mono uppercase tracking-wider text-white/50 mt-1">
-                {lang === "fr" ? "Accessible" : "متاح دائمًا"}
+                {t("disponible_programs.accessible")}
               </span>
             </div>
           </div>
@@ -210,7 +208,7 @@ const DisponiblePrograms: React.FC = () => {
                     }}
                   />
                   <div className="absolute top-4 left-4 bg-[#1E5ED8] text-white text-[9px] font-mono uppercase tracking-wider px-2 py-1">
-                    {lang === "fr" ? "Actif" : "نشط"}
+                    {t("disponible_programs.active")}
                   </div>
                 </div>
 
@@ -255,21 +253,19 @@ const DisponiblePrograms: React.FC = () => {
                   <div className="border-t border-[#E4E4E7] pt-4 mb-6 text-[10px] font-mono uppercase tracking-wider text-[#1F2937]/50 grid grid-cols-2 gap-4">
                     <div>
                       <span className="block text-[9px] font-bold text-[#1F2937]/40 mb-1">
-                        {lang === "fr" ? "Début" : "البداية"}
+                        {t("disponible_programs.start")}
                       </span>
                       <span className="text-[#1F2937]">{formatDate(program.DateDebut)}</span>
                     </div>
 
                     <div>
                       <span className="block text-[9px] font-bold text-[#1F2937]/40 mb-1">
-                        {lang === "fr" ? "Fin" : "النهاية"}
+                        {t("disponible_programs.end")}
                       </span>
                       <span className="text-[#1F2937]">
                         {program.DateFin
                           ? formatDate(program.DateFin)
-                          : lang === "fr"
-                          ? "Non défini"
-                          : "غير محدد"}
+                          : t("disponible_programs.undefined")}
                       </span>
                     </div>
                   </div>
@@ -279,7 +275,7 @@ const DisponiblePrograms: React.FC = () => {
                     href={program.link}
                     className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] transition-colors duration-255 mt-auto group/link"
                   >
-                    <span>{lang === "fr" ? "En savoir plus" : "المزيد"}</span>
+                    <span>{t("disponible_programs.more")}</span>
                     <ArrowRight size={14} className="transition-transform group-hover/link:translate-x-1 rtl:group-hover/link:-translate-x-1" />
                   </a>
                 </div>

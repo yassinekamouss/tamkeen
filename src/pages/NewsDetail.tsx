@@ -20,7 +20,7 @@ const NewsDetail: React.FC = () => {
   const [item, setItem] = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language as "fr" | "ar";
 
   useEffect(() => {
@@ -32,17 +32,13 @@ const NewsDetail: React.FC = () => {
         const res = await newsService.getBySlugOrId(slugOrId);
         setItem(res.data);
       } catch {
-        setError(
-          lang === "ar"
-            ? "تعذر تحميل الخبر."
-            : "Impossible de charger cette actualité."
-        );
+        setError(t("news_page.load_error"));
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [slugOrId, lang]);
+  }, [slugOrId, t]);
 
   if (loading) {
     return (
@@ -62,16 +58,13 @@ const NewsDetail: React.FC = () => {
         <Header />
         <div className="max-w-2xl mx-auto px-4 py-24 text-center">
           <p className="text-sm font-mono text-red-600 mb-6">
-            {error ||
-              (lang === "ar"
-                ? "الخبر غير موجود."
-                : "Actualité introuvable.")}
+            {error || t("news_page.not_found")}
           </p>
           <Link
             to="/news"
             className="inline-flex items-center gap-2 border border-[#E4E4E7] px-6 py-3 text-xs font-mono uppercase tracking-wider text-[#1F2937] hover:bg-white transition-colors duration-200"
           >
-            {lang === "ar" ? "العودة إلى الأخبار" : "Retour aux actualités"}
+            {t("news_page.back_to_news")}
           </Link>
         </div>
         <Footer />
@@ -86,7 +79,7 @@ const NewsDetail: React.FC = () => {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <nav className="mb-8 text-[10px] font-mono uppercase tracking-wider text-[#1F2937]/50 flex items-center gap-2 flex-wrap">
           <Link to="/news" className="text-[#1E5ED8] hover:underline font-semibold">
-            {lang === "ar" ? "الأخبار" : "Actualités"}
+            {t("news_page.breadcrumbs_news")}
           </Link>
           <span>/</span>
           <span className="text-[#1F2937]/70 line-clamp-1">
@@ -136,7 +129,7 @@ const NewsDetail: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-[#1E5ED8] hover:bg-[#1F2937] text-white px-6 py-3.5 text-xs font-mono uppercase tracking-wider transition-colors duration-200"
             >
-              <span>{lang === "ar" ? "عرض المصدر" : "Consulter la source"}</span>
+              <span>{t("news_page.view_source")}</span>
               <svg
                 className="w-4 h-4 ml-1 rtl:mr-1 rtl:rotate-180"
                 fill="none"

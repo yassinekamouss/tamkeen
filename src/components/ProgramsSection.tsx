@@ -72,19 +72,19 @@ const ProgramsSection: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         {/* Section Header */}
         <div className="mb-14">
-          <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-[#F97316] font-display mb-3">
+          <span className="section-eyebrow mb-3 block">
             {t("programs_section.badge")}
           </span>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#1F2937] font-display tracking-tight leading-tight mb-2">
+              <h2 className="section-h2 text-[#1F2937] mb-2">
                 {t("programs_section.title")}
               </h2>
-              <p className="text-sm text-[#1F2937]/55 max-w-lg leading-relaxed">{t("programs_section.subtitle")}</p>
+              <p className="text-sm text-[#5B6472] max-w-lg leading-relaxed font-body">{t("programs_section.subtitle")}</p>
             </div>
             <Link
               to="/programs"
-              className="flex-shrink-0 text-[11px] font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] flex items-center gap-2 transition-colors duration-200 group"
+              className="flex-shrink-0 text-xs font-semibold uppercase tracking-wider text-[#1E5ED8] hover:text-[#174BAE] flex items-center gap-2 transition-colors duration-200 group font-body"
             >
               {t("programs_section.viewAll")}
               <ArrowRight

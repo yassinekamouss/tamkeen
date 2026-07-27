@@ -15,19 +15,17 @@ interface Partenaire {
 }
 
 const About: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [partenaires, setPartenaires] = useState<Partenaire[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const lang = i18n.language as "fr" | "ar";
 
   const fetchPartenaires = async () => {
     try {
       const response = await axios.get("/partenaires");
       setPartenaires(response.data);
     } catch {
-      setError("Erreur lors du chargement des partenaires.");
+      setError(t("about.error_loading_partners"));
     } finally {
       setLoading(false);
     }
@@ -182,7 +180,7 @@ const About: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#F97316] mb-3 block">
-              {lang === "fr" ? "Méthodologie" : "المنهجية"}
+              {t("about.methodology")}
             </span>
             <h2 className="text-2xl sm:text-4xl font-bold font-display text-[#1F2937] mb-4">
               {t("about.howItWorks.title")}

@@ -43,7 +43,7 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
             {years.map((year) => (
               <div key={year}>
                 <label className="block text-[10px] font-bold text-[#1F2937]/50 uppercase tracking-wider mb-1.5 font-mono">
-                  Année {year}
+                  {t("eligibility.yearLabel", { year })}
                 </label>
                 <input
                   type="number"
@@ -53,7 +53,7 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                   }
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-[#E4E4E7] rounded-none focus:border-[#1E5ED8] focus:ring-0 bg-white transition-colors duration-200 outline-none text-sm font-sans"
-                  placeholder="Ex: 1500000"
+                  placeholder={t("eligibility.caPlaceholder")}
                   min="0"
                 />
               </div>
@@ -69,7 +69,7 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                   clipRule="evenodd"
                 />
               </svg>
-              Entreprise récente : Aucun chiffre d'affaires historique requis
+              {t("eligibility.recentCompanyNotice")}
             </p>
           </div>
         )}
@@ -155,7 +155,7 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                   {ph}
                 </option>
               ))}
-              <option value="__new__">+ Nouveau numéro…</option>
+              <option value="__new__">{t("eligibility.newPhoneOption")}</option>
             </select>
           ) : (
             <div className={`flex border rounded-none bg-white transition-colors duration-200 focus-within:border-[#1E5ED8] focus-within:ring-0 ${

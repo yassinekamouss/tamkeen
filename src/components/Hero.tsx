@@ -3,95 +3,120 @@ import { useTranslation } from "react-i18next";
 
 interface HeroProps {
   onNavigateToForm: () => void;
+  onNavigateToPrograms?: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ onNavigateToForm }) => {
+const Hero: React.FC<HeroProps> = ({
+  onNavigateToForm,
+  onNavigateToPrograms,
+}) => {
   const { t, i18n } = useTranslation();
+
   const lang = i18n.language as "fr" | "ar";
   const isRTL = lang === "ar";
-
-  const metrics = [
-    { value: t("hero.metric1_value"), label: t("hero.metric1_label") },
-    { value: t("hero.metric2_value"), label: t("hero.metric2_label") },
-    { value: t("hero.metric3_value"), label: t("hero.metric3_label") },
-  ];
 
   return (
     <section
       id="hero"
       dir={isRTL ? "rtl" : "ltr"}
-      className="relative w-full overflow-hidden pt-20 pb-12 border-b border-slate-200/80"
+      className="relative min-h-[calc(100vh-80px)] bg-white flex items-center font-body"
       aria-label={t("hero.badge")}
     >
-
-      {/* Background Grid */}
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
-        {/* Trust Badge */}
-        <div className="mb-6 inline-flex items-center">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-[#1E5ED8]/10 text-[#1E5ED8] border border-[#1E5ED8]/20 backdrop-blur-sm shadow-sm font-display">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping motion-reduce:animate-none absolute inline-flex h-full w-full rounded-full bg-[#1E5ED8] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1E5ED8]"></span>
-            </span>
-            {t("hero.badge")}
-          </span>
-        </div>
-
-        {/* Main Title */}
-        <h1
-          className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-[1.12] tracking-tight mb-6 max-w-5xl"
-          style={{ fontFamily: isRTL ? "'IBM Plex Sans Arabic', sans-serif" : "'Outfit', 'Inter', sans-serif" }}
+      <div className="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-24 lg:py-32">
+        <div
+          className={`max-w-5xl ${
+            isRTL ? "mr-0 ml-auto text-right" : "ml-0 mr-auto text-left"
+          }`}
         >
-          {t("hero.title")}
-        </h1>
-
-        {/* Subtitle / Description */}
-        <p className="text-slate-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mb-9 font-normal">
-          {t("hero.description")}
-        </p>
-
-        {/* Primary CTA Button */}
-        <div className="mb-14 flex items-center justify-center">
-          <button
-            id="hero-cta-btn"
-            onClick={onNavigateToForm}
-            className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-[#F97316] hover:bg-[#ea580c] text-white text-xs sm:text-sm font-bold uppercase tracking-widest rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 font-display cursor-pointer"
-            aria-label={t("hero.cta")}
+          {/* Eyebrow */}
+          <div
+            className={`flex items-center gap-4 mb-8 ${
+              isRTL ? "flex-row-reverse justify-end" : ""
+            }`}
           >
-            <span>{t("hero.cta")}</span>
-            <svg
-              className={`w-4 h-4 transition-transform duration-200 group-hover:translate-x-1 ${isRTL ? "rotate-180 group-hover:-translate-x-1 group-hover:translate-x-0" : ""
-                }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Trust Metrics Bar */}
-        <div className="w-full max-w-2xl border-t border-slate-200/80 pt-8 pb-4">
-          <div className="grid grid-cols-3 divide-x divide-slate-200">
-            {metrics.map((metric, i) => (
-              <div key={i} className="flex flex-col items-center text-center px-3 sm:px-6">
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1E5ED8] leading-tight mb-1 font-mono tracking-tight">
-                  {metric.value}
-                </span>
-                <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 font-display">
-                  {metric.label}
-                </span>
-              </div>
-            ))}
+            <span className="w-10 h-[2px] bg-[#F97316]" />
+            <span className="section-eyebrow">
+              {t("hero.badge")}
+            </span>
           </div>
 
-          {/* Legal Disclaimer */}
-          <p className="text-[11px] text-slate-400 font-mono mt-6 text-center">
-            {t("hero.legal")}
+          {/* Main heading */}
+          <h1 className="hero-h1 max-w-4xl text-[clamp(2.1rem,4.5vw,4.1rem)] leading-[1.08] font-bold tracking-tight text-[#111827]">
+            {t("hero.title")}
+          </h1>
+
+          {/* Description */}
+          <p
+            className={`max-w-4xl mt-8 text-lg sm:text-xl leading-relaxed text-[#5B6472] font-body ${
+              isRTL ? "ml-auto" : ""
+            }`}
+          >
+            {t("hero.description")}
           </p>
+
+          {/* CTA actions */}
+          <div
+            className={`flex flex-col sm:flex-row gap-4 mt-12 ${
+              isRTL ? "sm:flex-row-reverse justify-end" : ""
+            }`}
+          >
+            {/* Primary CTA */}
+            <button
+              onClick={onNavigateToForm}
+              className="btn-orange"
+            >
+              <span>{t("hero.cta")}</span>
+
+              <svg
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  isRTL
+                    ? "rotate-180 group-hover:-translate-x-1"
+                    : "group-hover:translate-x-1"
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+              </svg>
+            </button>
+
+            {/* Secondary CTA */}
+            <button
+              onClick={onNavigateToPrograms}
+              className="btn-secondary"
+            >
+              {t("hero.programs_cta")}
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom institutional information */}
+        <div className="mt-24 lg:mt-32 pt-6 border-t border-[#E5E7EB]">
+          <div
+            className={`flex flex-col sm:flex-row gap-4 sm:items-center justify-between ${
+              isRTL ? "sm:flex-row-reverse" : ""
+            }`}
+          >
+            <p className="text-sm text-[#6B7280] font-body">
+              {t("hero.legal")}
+            </p>
+
+            <div
+              className={`flex items-center gap-2 text-xs font-medium text-[#9CA3AF] font-body ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-[#1E5ED8]" />
+              <span>{t("hero.trusted_platform")}</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

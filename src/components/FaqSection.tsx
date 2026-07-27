@@ -31,13 +31,13 @@ const FaqSection: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-8">
         {/* Header */}
         <div className="mb-14">
-          <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-[#F97316] font-display mb-3">
+          <span className="section-eyebrow mb-3 block">
             {t("faq_section.badge")}
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#1F2937] font-display tracking-tight leading-tight mb-3">
+          <h2 className="section-h2 text-[#1F2937] mb-3">
             {t("faq_section.title")}
           </h2>
-          <p className="text-sm text-[#1F2937]/55 max-w-lg leading-relaxed">{t("faq_section.subtitle")}</p>
+          <p className="text-sm text-[#5B6472] max-w-lg leading-relaxed font-body">{t("faq_section.subtitle")}</p>
           <div className="mt-6 h-[1px] bg-[#E4E4E7]" />
         </div>
 
@@ -55,7 +55,7 @@ const FaqSection: React.FC = () => {
                   className="w-full flex items-start justify-between gap-6 py-5 text-left bg-transparent border-none cursor-pointer group"
                 >
                   <span
-                    className={`text-sm font-semibold font-display leading-snug transition-colors ${isOpen ? "text-[#1E5ED8]" : "text-[#1F2937] group-hover:text-[#1E5ED8]"}`}
+                    className={`text-base font-bold font-display leading-snug transition-colors ${isOpen ? "text-[#1E5ED8]" : "text-[#1F2937] group-hover:text-[#1E5ED8]"}`}
                   >
                     {item.q}
                   </span>
@@ -80,7 +80,7 @@ const FaqSection: React.FC = () => {
                   aria-labelledby={`faq-btn-${i}`}
                   className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-[600px] opacity-100 pb-5" : "max-h-0 opacity-0"}`}
                 >
-                  <p className="text-sm text-[#1F2937]/65 leading-relaxed">{item.a}</p>
+                  <p className="text-sm text-[#5B6472] leading-relaxed font-body">{item.a}</p>
                 </div>
               </div>
             );

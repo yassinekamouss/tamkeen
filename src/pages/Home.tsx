@@ -16,6 +16,13 @@ const Home: React.FC = () => {
     }
   };
 
+  const scrollToPrograms = () => {
+    const programsElement = document.getElementById("programs");
+    if (programsElement) {
+      programsElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <div className="w-full">
       <Helmet>
@@ -58,7 +65,7 @@ const Home: React.FC = () => {
       <Header />
 
       {/* ── HERO ── */}
-      <Hero onNavigateToForm={scrollToForm} />
+      <Hero onNavigateToForm={scrollToForm} onNavigateToPrograms={scrollToPrograms} />
 
       {/* ── ELIGIBILITY FORM ── */}
       <section id="eligibility-form" className="w-full">
