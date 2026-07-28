@@ -104,98 +104,206 @@ const ProgramsSection: React.FC = () => {
         ) : programs.length === 0 ? (
           <p className="text-sm text-[#1F2937]/50 py-12">{t("programs_section.empty")}</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[#E4E4E7]">
-            {visiblePrograms.map((program, index) => {
-              const rawName = program.name[lang];
-              const rawDesc = program.description[lang];
-              const name = lang === "fr" ? sanitizeFrenchText(rawName) : rawName;
-              const desc = lang === "fr" ? sanitizeFrenchText(rawDesc) : rawDesc;
-              const isOpen = expanded === program.id;
+          <>
+            {/* Desktop View (screens > 768px) */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-[#E4E4E7]">
+              {visiblePrograms.map((program, index) => {
+                const rawName = program.name[lang];
+                const rawDesc = program.description[lang];
+                const name = lang === "fr" ? sanitizeFrenchText(rawName) : rawName;
+                const desc = lang === "fr" ? sanitizeFrenchText(rawDesc) : rawDesc;
+                const isOpen = expanded === program.id;
 
-              return (
-                <div
-                  key={program.id}
-                  className="bg-white group flex flex-col transition-all duration-200 hover:bg-[#FAFCFF]"
-                >
-                  {/* Image area */}
-                  <div className="relative h-44 bg-[#F4F4F5] overflow-hidden flex items-center justify-center">
-                    <img
-                      src={`${import.meta.env.VITE_PREFIX_URL}/programs/${program.hero?.image}`}
-                      alt={name}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                      onError={(e) => {
-                        e.currentTarget.classList.add("hidden");
-                        const fallback = e.currentTarget.parentElement?.querySelector(".img-fallback");
-                        if (fallback) fallback.classList.remove("hidden");
-                      }}
-                      loading="lazy"
-                    />
-                    <div className="img-fallback hidden flex-col items-center justify-center p-4 text-center text-[#1F2937]/30 font-mono text-xs">
-                      <span>Tamkeen</span>
-                    </div>
-                    {/* Active badge */}
-                    <span className="absolute top-3 left-3 rtl:left-auto rtl:right-3 bg-[#1E5ED8] text-white text-[9px] font-mono uppercase tracking-wider px-2 py-1">
-                      {t("programs_section.active")}
-                    </span>
-                    {/* Index counter */}
-                    <span className="absolute bottom-3 right-3 rtl:right-auto rtl:left-3 text-[10px] font-mono text-white/60">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-
-                  {/* Body */}
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-sm font-bold text-[#1F2937] font-display leading-snug mb-3 group-hover:text-[#1E5ED8] transition-colors">
-                      {name}
-                    </h3>
-
-                    {/* Description toggle */}
-                    <div className="flex-grow mb-5">
-                      <p className={`text-xs text-[#1F2937]/60 leading-relaxed ${isOpen ? "" : "line-clamp-3"}`}>
-                        {desc}
-                      </p>
-                      {desc.length > 120 && (
-                        <button
-                          onClick={() => setExpanded(isOpen ? null : program.id)}
-                          className="mt-1.5 text-[10px] font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] transition-colors bg-transparent border-none p-0 cursor-pointer"
-                        >
-                          {isOpen ? t("programs_section.collapse") : t("programs_section.read_more")}
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Dates */}
-                    <div className="grid grid-cols-2 gap-3 border-t border-[#E4E4E7] pt-4 mb-5 text-[10px] font-mono text-[#1F2937]/50 uppercase tracking-wider">
-                      <div>
-                        <span className="block text-[9px] font-bold text-[#1F2937]/30 mb-1">{t("programs_section.start")}</span>
-                        <span className="text-[#1F2937]/70">{formatDate(program.DateDebut)}</span>
+                return (
+                  <div
+                    key={program.id}
+                    className="bg-white group flex flex-col transition-all duration-200 hover:bg-[#FAFCFF]"
+                  >
+                    {/* Image area */}
+                    <div className="relative h-44 bg-[#F4F4F5] overflow-hidden flex items-center justify-center">
+                      <img
+                        src={`${import.meta.env.VITE_PREFIX_URL}/programs/${program.hero?.image}`}
+                        alt={name}
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                        onError={(e) => {
+                          e.currentTarget.classList.add("hidden");
+                          const fallback = e.currentTarget.parentElement?.querySelector(".img-fallback");
+                          if (fallback) fallback.classList.remove("hidden");
+                        }}
+                        loading="lazy"
+                      />
+                      <div className="img-fallback hidden flex-col items-center justify-center p-4 text-center text-[#1F2937]/30 font-mono text-xs">
+                        <span>Tamkeen</span>
                       </div>
-                      <div>
-                        <span className="block text-[9px] font-bold text-[#1F2937]/30 mb-1">{t("programs_section.end")}</span>
-                        <span className="text-[#1F2937]/70">
-                          {program.DateFin ? formatDate(program.DateFin) : t("programs_section.undefined")}
+                      {/* Active badge */}
+                      <span className="absolute top-3 left-3 rtl:left-auto rtl:right-3 bg-[#1E5ED8] text-white text-[9px] font-mono uppercase tracking-wider px-2 py-1">
+                        {t("programs_section.active")}
+                      </span>
+                      {/* Index counter */}
+                      <span className="absolute bottom-3 right-3 rtl:right-auto rtl:left-3 text-[10px] font-mono text-white/60">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+
+                    {/* Body */}
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="text-sm font-bold text-[#1F2937] font-display leading-snug mb-3 group-hover:text-[#1E5ED8] transition-colors">
+                        {name}
+                      </h3>
+
+                      {/* Description toggle */}
+                      <div className="flex-grow mb-5">
+                        <p className={`text-xs text-[#1F2937]/60 leading-relaxed ${isOpen ? "" : "line-clamp-3"}`}>
+                          {desc}
+                        </p>
+                        {desc.length > 120 && (
+                          <button
+                            onClick={() => setExpanded(isOpen ? null : program.id)}
+                            className="mt-1.5 text-[10px] font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] transition-colors bg-transparent border-none p-0 cursor-pointer"
+                          >
+                            {isOpen ? t("programs_section.collapse") : t("programs_section.read_more")}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Dates */}
+                      <div className="grid grid-cols-2 gap-3 border-t border-[#E4E4E7] pt-4 mb-5 text-[10px] font-mono text-[#1F2937]/50 uppercase tracking-wider">
+                        <div>
+                          <span className="block text-[9px] font-bold text-[#1F2937]/30 mb-1">{t("programs_section.start")}</span>
+                          <span className="text-[#1F2937]/70">{formatDate(program.DateDebut)}</span>
+                        </div>
+                        <div>
+                          <span className="block text-[9px] font-bold text-[#1F2937]/30 mb-1">{t("programs_section.end")}</span>
+                          <span className="text-[#1F2937]/70">
+                            {program.DateFin ? formatDate(program.DateFin) : t("programs_section.undefined")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Link */}
+                      <a
+                        href={program.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-auto inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] transition-colors duration-200 group/link"
+                      >
+                        {t("programs_section.more")}
+                        <ArrowRight
+                          size={12}
+                          className={`transition-transform group-hover/link:translate-x-1 ${isRTL ? "rotate-180 group-hover/link:-translate-x-1 group-hover/link:translate-x-0" : ""}`}
+                        />
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Mobile Horizontal Swipeable Carousel (screens <= 768px) */}
+            <div className="md:hidden">
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 px-4 -mx-4 no-scrollbar scroll-smooth">
+                {visiblePrograms.map((program, index) => {
+                  const rawName = program.name[lang];
+                  const rawDesc = program.description[lang];
+                  const name = lang === "fr" ? sanitizeFrenchText(rawName) : rawName;
+                  const desc = lang === "fr" ? sanitizeFrenchText(rawDesc) : rawDesc;
+                  const isOpen = expanded === program.id;
+
+                  return (
+                    <div
+                      key={program.id}
+                      className="w-[84vw] max-w-[340px] flex-shrink-0 snap-start snap-always bg-white border border-[#E4E4E7] flex flex-col justify-between shadow-sm rounded-[4px] overflow-hidden"
+                    >
+                      {/* Image area */}
+                      <div className="relative h-40 bg-[#F4F4F5] overflow-hidden flex items-center justify-center">
+                        <img
+                          src={`${import.meta.env.VITE_PREFIX_URL}/programs/${program.hero?.image}`}
+                          alt={name}
+                          className="w-full h-full object-cover transition-all duration-500"
+                          onError={(e) => {
+                            e.currentTarget.classList.add("hidden");
+                            const fallback = e.currentTarget.parentElement?.querySelector(".img-fallback");
+                            if (fallback) fallback.classList.remove("hidden");
+                          }}
+                          loading="lazy"
+                        />
+                        <div className="img-fallback hidden flex-col items-center justify-center p-4 text-center text-[#1F2937]/30 font-mono text-xs">
+                          <span>Tamkeen</span>
+                        </div>
+                        {/* Active badge */}
+                        <span className="absolute top-3 left-3 rtl:left-auto rtl:right-3 bg-[#1E5ED8] text-white text-[9px] font-mono uppercase tracking-wider px-2 py-1">
+                          {t("programs_section.active")}
+                        </span>
+                        {/* Index counter */}
+                        <span className="absolute bottom-3 right-3 rtl:right-auto rtl:left-3 text-[10px] font-mono text-white/60">
+                          {String(index + 1).padStart(2, "0")}
                         </span>
                       </div>
-                    </div>
 
-                    {/* Link */}
-                    <a
-                      href={program.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-auto inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] transition-colors duration-200 group/link"
-                    >
-                      {t("programs_section.more")}
-                      <ArrowRight
-                        size={12}
-                        className={`transition-transform group-hover/link:translate-x-1 ${isRTL ? "rotate-180 group-hover/link:-translate-x-1 group-hover/link:translate-x-0" : ""}`}
-                      />
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                      {/* Body */}
+                      <div className="p-5 flex flex-col flex-grow justify-between">
+                        <div>
+                          <h3 className="text-sm font-bold text-[#1F2937] font-display leading-snug mb-2.5">
+                            {name}
+                          </h3>
+
+                          {/* Description toggle */}
+                          <div className="mb-4">
+                            <p className={`text-xs text-[#1F2937]/60 leading-relaxed ${isOpen ? "" : "line-clamp-3"}`}>
+                              {desc}
+                            </p>
+                            {desc.length > 120 && (
+                              <button
+                                onClick={() => setExpanded(isOpen ? null : program.id)}
+                                className="mt-1 text-[10px] font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] transition-colors bg-transparent border-none p-0 cursor-pointer"
+                              >
+                                {isOpen ? t("programs_section.collapse") : t("programs_section.read_more")}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          {/* Dates */}
+                          <div className="grid grid-cols-2 gap-2 border-t border-[#E4E4E7] pt-3 mb-4 text-[10px] font-mono text-[#1F2937]/50 uppercase tracking-wider">
+                            <div>
+                              <span className="block text-[9px] font-bold text-[#1F2937]/30 mb-0.5">{t("programs_section.start")}</span>
+                              <span className="text-[#1F2937]/70">{formatDate(program.DateDebut)}</span>
+                            </div>
+                            <div>
+                              <span className="block text-[9px] font-bold text-[#1F2937]/30 mb-0.5">{t("programs_section.end")}</span>
+                              <span className="text-[#1F2937]/70">
+                                {program.DateFin ? formatDate(program.DateFin) : t("programs_section.undefined")}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Link */}
+                          <a
+                            href={program.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-[#1E5ED8] hover:text-[#F97316] transition-colors duration-200"
+                          >
+                            {t("programs_section.more")}
+                            <ArrowRight
+                              size={12}
+                              className={`transition-transform ${isRTL ? "rotate-180" : ""}`}
+                            />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Visual swipe hint */}
+              <div className="flex items-center justify-center gap-1.5 mt-3 text-[10px] font-mono uppercase tracking-wider text-[#1F2937]/40">
+                <span>{isRTL ? "← اسحب للاستكشاف →" : "← Glissez pour explorer →"}</span>
+              </div>
+            </div>
+          </>
         )}
 
         {/* View all CTA */}

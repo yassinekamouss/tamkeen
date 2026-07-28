@@ -50,11 +50,25 @@ const Header: React.FC = () => {
         : "text-[#1F2937]/75 border-transparent hover:text-[#1E5ED8] hover:border-[#1E5ED8]/30"
     }`;
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
   const mobileNavItemClass = (active: boolean) =>
-    `block px-4 py-3 text-xs font-semibold uppercase tracking-wider transition-colors duration-200 border-l-2 ${
+    `block w-full px-4 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors duration-200 border-l-2 rtl:border-l-0 rtl:border-r-2 ${
+      isRTL ? "text-right" : "text-left"
+    } ${
       active
         ? "text-[#1E5ED8] border-[#1E5ED8] bg-[#EEF4FF]"
-        : "text-[#1F2937]/70 border-transparent hover:text-[#1E5ED8] hover:bg-[#F9FAFB]"
+        : "text-[#1F2937]/80 border-transparent hover:text-[#1E5ED8] hover:bg-[#F9FAFB]"
     }`;
 
   return (
@@ -219,8 +233,8 @@ const Header: React.FC = () => {
             </div>
           </nav>
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center gap-3">
+          {/* Mobile menu button & quick test button */}
+          <div className="lg:hidden flex items-center gap-2">
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
@@ -230,7 +244,7 @@ const Header: React.FC = () => {
                   window.location.href = "/#eligibility-form";
                 }
               }}
-              className="px-3 py-1.5 bg-[#F97316] hover:bg-[#EA580C] text-white text-[10px] font-semibold uppercase tracking-wider rounded-[4px] border-none cursor-pointer"
+              className="px-3 py-2 bg-[#F97316] hover:bg-[#EA580C] active:scale-[0.98] text-white text-[11px] font-bold uppercase tracking-wider rounded-[4px] border-none cursor-pointer min-h-[38px] flex items-center justify-center"
               aria-label={t("hero.cta")}
             >
               {t("header.test_short")}
@@ -238,11 +252,11 @@ const Header: React.FC = () => {
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="focus:outline-none text-[#1F2937]/70 hover:text-[#1E5ED8] transition-colors"
+              className="p-2 min-h-[42px] min-w-[42px] flex items-center justify-center focus:outline-none text-[#1F2937] hover:text-[#1E5ED8] transition-colors rounded-[4px] border border-[#E4E4E7]"
               aria-label={t("header.menu")}
               aria-expanded={isMobileMenuOpen}
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 {isMobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -252,13 +266,18 @@ const Header: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Navigation Menu */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#E4E4E7] bg-white py-2 pb-4">
-            <nav className="flex flex-col" aria-label={t("header.mobile_nav")}>
+      {/* Mobile Navigation Drawer with Overlay */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 top-[56px] z-40 bg-black/40 backdrop-blur-sm animate-drawerFadeIn flex flex-col justify-start">
+          <div 
+            className="bg-white border-b border-[#E4E4E7] shadow-xl py-3 px-4 max-h-[85vh] overflow-y-auto animate-slideDownMenu"
+            dir={isRTL ? "rtl" : "ltr"}
+          >
+            <nav className="flex flex-col space-y-1" aria-label={t("header.mobile_nav")}>
               {isHome ? (
-                <button onClick={() => scrollTo("hero")} className={`${mobileNavItemClass(isActiveLink("/"))} text-left`}>
+                <button onClick={() => scrollTo("hero")} className={mobileNavItemClass(isActiveLink("/"))}>
                   {t("header.home")}
                 </button>
               ) : (
@@ -272,7 +291,7 @@ const Header: React.FC = () => {
               </Link>
 
               {isHome ? (
-                <button onClick={() => scrollTo("programs")} className={`${mobileNavItemClass(false)} text-left`}>
+                <button onClick={() => scrollTo("programs")} className={mobileNavItemClass(false)}>
                   {t("header.programs")}
                 </button>
               ) : (
@@ -282,7 +301,7 @@ const Header: React.FC = () => {
               )}
 
               {isHome ? (
-                <button onClick={() => scrollTo("actuality")} className={`${mobileNavItemClass(false)} text-left`}>
+                <button onClick={() => scrollTo("actuality")} className={mobileNavItemClass(false)}>
                   {t("header.news")}
                 </button>
               ) : (
@@ -292,7 +311,7 @@ const Header: React.FC = () => {
               )}
 
               {isHome ? (
-                <button onClick={() => scrollTo("faq")} className={`${mobileNavItemClass(false)} text-left`}>
+                <button onClick={() => scrollTo("faq")} className={mobileNavItemClass(false)}>
                   {t("header.faq")}
                 </button>
               ) : (
@@ -302,37 +321,43 @@ const Header: React.FC = () => {
               )}
 
               {/* Language switcher mobile */}
-              <div className="px-4 pt-4 mt-2 border-t border-[#E4E4E7] flex items-center gap-3">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-[#1F2937]/40">
+              <div className="pt-4 mt-3 border-t border-[#E4E4E7] flex items-center justify-between px-2">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#1F2937]/50">
                   {t("header.language")}
                 </span>
-                {[
-                  { code: "ar", flag: "🇲🇦", label: "ع" },
-                  { code: "fr", flag: "🇫🇷", label: "Fr" },
-                ].map(({ code, flag, label }) => (
-                  <button
-                    key={code}
-                    onClick={() => {
-                      changeLanguage(code);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide border transition-colors ${
-                      i18n.language === code
-                        ? "bg-[#1E5ED8] text-white border-[#1E5ED8]"
-                        : "bg-white text-[#1F2937]/60 border-[#E4E4E7] hover:border-[#1E5ED8] hover:text-[#1E5ED8]"
-                    }`}
-                  >
-                    <span className="text-sm">{flag}</span>
-                    {label}
-                  </button>
-                ))}
+                <div className="flex items-center gap-2">
+                  {[
+                    { code: "ar", flag: "🇲🇦", label: "العربية" },
+                    { code: "fr", flag: "🇫🇷", label: "Français" },
+                  ].map(({ code, flag, label }) => (
+                    <button
+                      key={code}
+                      onClick={() => {
+                        changeLanguage(code);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wide border transition-colors rounded-[4px] min-h-[38px] ${
+                        i18n.language === code
+                          ? "bg-[#1E5ED8] text-white border-[#1E5ED8]"
+                          : "bg-white text-[#1F2937]/70 border-[#E4E4E7] hover:border-[#1E5ED8] hover:text-[#1E5ED8]"
+                      }`}
+                    >
+                      <span>{flag}</span>
+                      <span>{label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </nav>
           </div>
-        )}
-      </div>
+
+          {/* Touch backdrop area to close menu */}
+          <div className="flex-1" onClick={() => setIsMobileMenuOpen(false)} />
+        </div>
+      )}
     </header>
   );
 };
 
 export default Header;
+

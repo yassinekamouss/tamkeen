@@ -19,10 +19,10 @@ const Hero: React.FC<HeroProps> = ({
     <section
       id="hero"
       dir={isRTL ? "rtl" : "ltr"}
-      className="relative min-h-[calc(100vh-80px)] bg-white flex items-center font-body"
+      className="relative min-h-[100dvh] bg-white flex items-center font-body"
       aria-label={t("hero.badge")}
     >
-      <div className="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-24 lg:py-32">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-20 lg:py-28 flex flex-col justify-between">
         <div
           className={`max-w-5xl ${
             isRTL ? "mr-0 ml-auto text-right" : "ml-0 mr-auto text-left"
@@ -30,24 +30,24 @@ const Hero: React.FC<HeroProps> = ({
         >
           {/* Eyebrow */}
           <div
-            className={`flex items-center gap-4 mb-8 ${
+            className={`flex items-center gap-3 mb-4 sm:mb-6 ${
               isRTL ? "flex-row-reverse justify-end" : ""
             }`}
           >
-            <span className="w-10 h-[2px] bg-[#F97316]" />
-            <span className="section-eyebrow">
+            <span className="w-8 sm:w-10 h-[2px] bg-[#F97316]" />
+            <span className="section-eyebrow text-[11px] sm:text-xs">
               {t("hero.badge")}
             </span>
           </div>
 
           {/* Main heading */}
-          <h1 className="hero-h1 max-w-4xl text-[clamp(2.1rem,4.5vw,4.1rem)] leading-[1.08] font-bold tracking-tight text-[#111827]">
+          <h1 className="hero-h1 max-w-4xl tracking-tight text-[#111827]">
             {t("hero.title")}
           </h1>
 
           {/* Description */}
           <p
-            className={`max-w-4xl mt-8 text-lg sm:text-xl leading-relaxed text-[#5B6472] font-body ${
+            className={`max-w-4xl mt-4 sm:mt-8 text-base sm:text-lg lg:text-xl leading-relaxed text-[#5B6472] font-body ${
               isRTL ? "ml-auto" : ""
             }`}
           >
@@ -56,14 +56,14 @@ const Hero: React.FC<HeroProps> = ({
 
           {/* CTA actions */}
           <div
-            className={`flex flex-col sm:flex-row gap-4 mt-12 ${
+            className={`flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-12 ${
               isRTL ? "sm:flex-row-reverse justify-end" : ""
             }`}
           >
             {/* Primary CTA */}
             <button
               onClick={onNavigateToForm}
-              className="btn-orange"
+              className="btn-orange w-full sm:w-auto min-h-[48px] justify-center"
             >
               <span>{t("hero.cta")}</span>
 
@@ -90,7 +90,7 @@ const Hero: React.FC<HeroProps> = ({
             {/* Secondary CTA */}
             <button
               onClick={onNavigateToPrograms}
-              className="btn-secondary"
+              className="btn-secondary w-full sm:w-auto min-h-[48px] justify-center"
             >
               {t("hero.programs_cta")}
             </button>
@@ -98,13 +98,13 @@ const Hero: React.FC<HeroProps> = ({
         </div>
 
         {/* Bottom institutional information */}
-        <div className="mt-24 lg:mt-32 pt-6 border-t border-[#E5E7EB]">
+        <div className="mt-12 sm:mt-20 lg:mt-24 pt-6 border-t border-[#E5E7EB]">
           <div
-            className={`flex flex-col sm:flex-row gap-4 sm:items-center justify-between ${
+            className={`flex flex-col sm:flex-row gap-3 sm:items-center justify-between ${
               isRTL ? "sm:flex-row-reverse" : ""
             }`}
           >
-            <p className="text-sm text-[#6B7280] font-body">
+            <p className="text-xs sm:text-sm text-[#6B7280] font-body">
               {t("hero.legal")}
             </p>
 

@@ -660,3 +660,82 @@ button:focus-visible {
     align-self: flex-end;
   }
 }
+
+/* ============================
+   MOBILE-FIRST ENHANCEMENTS
+   (320px - 768px Viewports)
+============================ */
+@media (max-width: 768px) {
+  /* Prevent iOS Safari auto-zoom on form inputs by ensuring 16px min font-size */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="search"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Ensure comfortable touch targets (min 44px height) */
+  button, 
+  a.btn-primary, 
+  a.btn-secondary, 
+  a.btn-orange,
+  .touch-target {
+    min-height: 44px;
+  }
+
+  /* Responsive header container spacing */
+  .hero-h1 {
+    font-size: clamp(1.85rem, 7vw, 2.75rem);
+    line-height: 1.12;
+  }
+
+  .section-h2 {
+    font-size: clamp(1.5rem, 5.5vw, 2.1rem);
+    line-height: 1.18;
+  }
+}
+
+/* Mobile drawer backdrop blur animation */
+@keyframes drawerFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+.animate-drawerFadeIn {
+  animation: drawerFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered slide down animation for mobile menu items */
+@keyframes slideDownMenu {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDownMenu {
+  animation: slideDownMenu 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scrollbar hide utility for swipeable mobile carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
