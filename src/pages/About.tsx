@@ -156,21 +156,6 @@ const About: React.FC = () => {
         </div>
       )}
 
-      {/* Animation Style */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes scroll {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-33.3333%); }
-            }
-            .animate-scroll {
-              animation: scroll 25s linear infinite;
-            }
-          `,
-        }}
-      />
-
       {/* How It Works Section */}
       <section className="py-24 bg-[#FFFFFF]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
