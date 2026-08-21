@@ -104,7 +104,7 @@ const News: React.FC = () => {
           property="og:description"
           content={
             lang === "fr"
-              ? " tRestez informé des dernières subventions, formations et success stories pour développer votre entreprise"
+              ? "Restez informé des dernières subventions, formations et success stories pour développer votre entreprise"
               : "ابق على اطلاع بأحدث المنح والتدريبات وقصص النجاح لتطوير عملك"
           }
         />
