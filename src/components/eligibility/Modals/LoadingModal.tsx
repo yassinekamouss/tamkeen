@@ -1,5 +1,6 @@
 import React from "react";
 import Modal from "./Modal";
+import { useTranslation } from "react-i18next";
 
 interface LoadingModalProps {
   isOpen: boolean;
@@ -9,14 +10,18 @@ interface LoadingModalProps {
 
 const LoadingModal: React.FC<LoadingModalProps> = ({ 
   isOpen, 
-  title = "Traitement en cours",
-  message = "Veuillez patienter..." 
+  title,
+  message 
 }) => {
+  const { t } = useTranslation();
+  const displayTitle = title || t("eligibility.modals.loadingTitle");
+  const displayMessage = message || t("eligibility.modals.loadingMessage");
+
   return (
     <Modal 
       isOpen={isOpen} 
       onClose={() => {}} 
-      title={title}
+      title={displayTitle}
       size="sm"
       showCloseButton={false}
     >
@@ -32,9 +37,9 @@ const LoadingModal: React.FC<LoadingModalProps> = ({
         </div>
         
         {/* Message avec style amélioré */}
-        {message && (
+        {displayMessage && (
           <p className="text-slate-600 text-center font-medium text-lg mb-6 tracking-wide">
-            {message}
+            {displayMessage}
           </p>
         )}
         

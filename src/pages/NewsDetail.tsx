@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Header, Footer } from "../components";
 import Spinner from "../components/Spinner";
 import { newsService, type NewsItem } from "../services/newsService";
-import SeoAlternates from "../components/SeoAlternates";
+import SeoHead from "../components/SeoHead";
 import { useTranslation } from "react-i18next";
 
 const formatDate = (dateString: string, lang: string) => {
@@ -20,7 +20,7 @@ const NewsDetail: React.FC = () => {
   const [item, setItem] = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language as "fr" | "ar";
 
   useEffect(() => {
@@ -32,23 +32,19 @@ const NewsDetail: React.FC = () => {
         const res = await newsService.getBySlugOrId(slugOrId);
         setItem(res.data);
       } catch {
-        setError(
-          lang === "ar"
-            ? "تعذر تحميل الخبر."
-            : "Impossible de charger cette actualité."
-        );
+        setError(t("news_page.load_error"));
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [slugOrId, lang]);
+  }, [slugOrId, t]);
 
   if (loading) {
     return (
-      <div className="w-full">
+      <div className="w-full bg-[#FFFFFF] flex flex-col justify-between min-h-screen">
         <Header />
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="flex-grow flex items-center justify-center">
           <Spinner />
         </div>
         <Footer />
@@ -58,17 +54,17 @@ const NewsDetail: React.FC = () => {
 
   if (error || !item) {
     return (
-      <div className="w-full bg-gray-50 min-h-screen">
+      <div className="w-full bg-[#FFFFFF] min-h-screen flex flex-col justify-between">
         <Header />
-        <div className="max-w-3xl mx-auto px-4 py-16">
-          <p className="text-gray-700 mb-6">
-            {error ||
-              (lang === "ar"
-                ? "الخبر غير موجود."
-                : "Actualité introuvable.")}
+        <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+          <p className="text-sm font-mono text-red-600 mb-6">
+            {error || t("news_page.not_found")}
           </p>
-          <Link to="/news" className="text-blue-600 hover:underline">
-            {lang === "ar" ? "العودة إلى الأخبار" : "Retour aux actualités"}
+          <Link
+            to="/news"
+            className="inline-flex items-center gap-2 border border-[#E4E4E7] px-6 py-3 text-xs font-mono uppercase tracking-wider text-[#1F2937] hover:bg-white transition-colors duration-200"
+          >
+            {t("news_page.back_to_news")}
           </Link>
         </div>
         <Footer />
@@ -76,65 +72,109 @@ const NewsDetail: React.FC = () => {
     );
   }
 
+  const articleTitle = item.title[lang] || item.title["fr"];
+  const articleContent = item.content[lang] || item.content["fr"];
+  const articleExcerpt = item.excerpt[lang] || item.excerpt["fr"] || articleContent.substring(0, 160);
+  const articleImg = item.image
+    ? `${import.meta.env.VITE_PREFIX_URL}/news/${item.image}`
+    : "https://masubvention.ma/image_logo.webp";
+
+  const newsArticleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": articleTitle,
+    "image": [articleImg],
+    "datePublished": item.publishedAt,
+    "dateModified": item.updatedAt || item.publishedAt,
+    "author": [
+      {
+        "@type": "Person",
+        "name": item.author || "Tamkeen",
+      },
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Tamkeen",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://masubvention.ma/image_logo.webp",
+      },
+    },
+    "description": articleExcerpt,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://masubvention.ma/news/${item.slug || item.id}`,
+    },
+  };
+
   return (
-    <div className="w-full bg-gray-50">
-      <SeoAlternates />
+    <div className="w-full bg-[#FFFFFF] font-sans text-[#1F2937]">
+      <SeoHead
+        title={articleTitle}
+        description={articleExcerpt}
+        image={articleImg}
+        type="article"
+        publishedTime={new Date(item.publishedAt).toISOString()}
+        author={item.author}
+        jsonLd={newsArticleJsonLd}
+      />
       <Header />
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <nav className="mb-6 text-sm">
-          <Link to="/news" className="text-blue-600 hover:underline">
-            {lang === "ar" ? "الأخبار" : "Actualités"}
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <nav className="mb-8 text-[10px] font-mono uppercase tracking-wider text-[#1F2937]/50 flex items-center gap-2 flex-wrap">
+          <Link to="/news" className="text-[#1E5ED8] hover:underline font-semibold">
+            {t("news_page.breadcrumbs_news")}
           </Link>
-          <span className="mx-2 text-gray-400">/</span>
-          <span className="text-gray-700 line-clamp-1">
+          <span>/</span>
+          <span className="text-[#1F2937]/70 line-clamp-1">
             {item.title[lang] || item.title["fr"]}
           </span>
         </nav>
 
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+        <h1 className="text-2xl sm:text-4xl font-bold font-display text-[#1F2937] tracking-tight leading-tight mb-4">
           {item.title[lang] || item.title["fr"]}
         </h1>
-        <div className="text-sm text-gray-500 mb-6">
-          <span className="font-medium">{item.author}</span>
-          <span className="mx-2">•</span>
+
+        <div className="text-[10px] font-mono uppercase tracking-wider text-[#1F2937]/60 pb-6 mb-8 border-b border-[#E4E4E7] flex items-center gap-2 flex-wrap">
+          <span className="font-semibold text-[#1F2937]/70">{item.author}</span>
+          <span>•</span>
           <time dateTime={new Date(item.publishedAt).toISOString()}>
             {formatDate(item.publishedAt, lang)}
           </time>
           {item.category && (
             <>
-              <span className="mx-2">•</span>
-              <span>{item.category[lang] || item.category["fr"]}</span>
+              <span>•</span>
+              <span className="text-[#F97316] font-semibold">{item.category[lang] || item.category["fr"]}</span>
             </>
           )}
         </div>
 
         {item.image && (
-          <div className="rounded-xl overflow-hidden mb-8 bg-gray-100">
+          <div className="border border-[#E4E4E7] p-1 bg-white mb-10">
             <img
               src={`${import.meta.env.VITE_PREFIX_URL}/news/${item.image}`}
               alt={item.title[lang] || item.title["fr"]}
-              className="w-full h-auto object-cover"
+              className="w-full h-auto object-cover grayscale opacity-95 hover:grayscale-0 transition-all duration-500"
             />
           </div>
         )}
 
-        <article className="prose prose-gray max-w-none">
-          <p className="whitespace-pre-line text-gray-800 leading-relaxed">
+        <article className="prose max-w-none">
+          <p className="whitespace-pre-line text-[#1F2937]/75 text-sm leading-relaxed font-sans">
             {item.content[lang] || item.content["fr"]}
           </p>
         </article>
 
         {item.externalUrl && (
-          <div className="mt-10">
+          <div className="mt-12 pt-8 border-t border-[#E4E4E7]">
             <a
               href={item.externalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700"
+              className="inline-flex items-center gap-2 bg-[#1E5ED8] hover:bg-[#1F2937] text-white px-6 py-3.5 text-xs font-mono uppercase tracking-wider transition-colors duration-200"
             >
-              {lang === "ar" ? "عرض المصدر" : "Consulter la source"}
+              <span>{t("news_page.view_source")}</span>
               <svg
-                className="ml-2 w-5 h-5"
+                className="w-4 h-4 ml-1 rtl:mr-1 rtl:rotate-180"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

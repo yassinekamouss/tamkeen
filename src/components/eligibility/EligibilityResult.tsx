@@ -2,45 +2,53 @@ import React, { useState, useEffect, useRef } from "react";
 import type { FormData, programsNamesAndLinks } from "./types";
 import { useTranslation } from "react-i18next";
 import axios from "../../api/axios";
-import Modal from "./Modals/Modal"; // Ajustez le chemin selon votre structure
+import Modal from "./Modals/Modal";
+import { sanitizeFrenchText } from "../../utils/sanitize";
+import { CheckCircle2 } from "lucide-react";
+import AgentChat from "./agent/AgentChat";
 
 interface EligibilityResultProps {
   isEligible: boolean;
   eligibleProgram: programsNamesAndLinks[];
   formData: FormData;
   onNewTest: () => void;
+  onSimulate?: (fieldToAdjust?: string, suggestedValue?: string) => void;
   testId?: string | null;
 }
 
 const EligibilityResult: React.FC<EligibilityResultProps> = ({
   isEligible,
   eligibleProgram,
+  formData,
   onNewTest,
-  testId
+  onSimulate,
+  testId,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language as "fr" | "ar";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  // Scroll the result card into view when this component mounts
   useEffect(() => {
-    // Wait for the browser to layout, then scroll the card into view centered
     requestAnimationFrame(() => {
       if (cardRef.current) {
         try {
           cardRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
         } catch (e) {
-          // Fallback for older browsers
           const top = cardRef.current.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2 + cardRef.current.clientHeight / 2;
           window.scrollTo({ top, left: 0, behavior: "smooth" });
         }
       }
     });
   }, []);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirmContact = async () => {
-    if (!testId) return;
+    if (!testId) {
+      setIsModalOpen(true);
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -48,7 +56,7 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
       setIsModalOpen(true);
     } catch (error) {
       console.error(error);
-      alert("Une erreur est survenue. Réessayez plus tard.");
+      alert(t("eligibilityResult.errorMessage"));
     } finally {
       setIsLoading(false);
     }
@@ -58,272 +66,181 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
     setIsModalOpen(false);
   };
 
-  return (
-    <>
-      <div className="min-h-screen bg-gray-50 py-12 px-4 flex items-center justify-center">
-        <div ref={cardRef} className="max-w-lg mx-auto">
-          {isEligible ? (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-              {/* Icône de succès */}
-              <div className="w-20 h-20 mx-auto mb-6 bg-green-50 rounded-full flex items-center justify-center">
-                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
+  // --- NOT ELIGIBLE: Render AI Remediation Agent ---
+  if (!isEligible) {
+    return (
+      <div className="min-h-screen bg-white py-12 px-4 flex items-center justify-center font-body">
+        <div ref={cardRef} className="w-full max-w-3xl mx-auto">
+          <AgentChat
+            formData={formData}
+            testId={testId}
+            onNewTest={onNewTest}
+            onContactAdvisor={handleConfirmContact}
+            onSimulate={onSimulate}
+          />
+
+          {/* Contact confirmation modal */}
+          <Modal 
+            isOpen={isModalOpen} 
+            onClose={handleCloseModal}
+            title={t("eligibility.agent.requestTransmitted")}
+            size="md"
+          >
+            <div className="text-center py-6">
+              <div className="w-16 h-16 mx-auto mb-4 bg-emerald-50 border border-emerald-100 rounded-none flex items-center justify-center">
+                <div className="w-10 h-10 bg-emerald-500 rounded-none flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
               </div>
-
-              {/* Titre */}
-              <h2 className="text-2xl font-semibold text-green-700 mb-3">
-               {t("eligibilityResult.eligible")} 
-              </h2>
-
-              {/* Message principal */}
-              <div className="text-gray-600 text-base leading-relaxed mb-6">
-                  <p>{t("eligibilityResult.message.eligible")}</p>
-
-                  <div className="center font-semibold text-blue-600">
-                    <div className="flex flex-col items-center space-y-2">
-                      {eligibleProgram.map((program, index) => {
-                        const link = program.link.startsWith("http")
-                          ? program.link
-                          : `https://${program.link}`;
-                        return (
-                          <a
-                            key={index}
-                            href={link}
-                            target="_blank"
-                            rel="noopener"
-                            className="text-blue-600 hover:underline font-semibold"
-                          >
-                            {program.name.fr}
-                          </a>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <p>{t("eligibilityResult.message.eligibleEnd")}</p>
-                </div>
-
-              {/* Informations de contact */}
-              <div className="bg-gray-50 rounded-xl p-4 mb-8">
-                <div className="flex items-center justify-center text-sm text-gray-600">
-                  <svg
-                    className="w-4 h-4 mr-2 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-                    />
-                  </svg>
-                   {t("eligibilityResult.contactInfo")}
-                </div>
-              </div>  
-
-              {/* Actions */}
-               <div className="space-y-3">
-                  <button
-                    onClick={handleConfirmContact}
-                    disabled={isLoading}
-                    type="button"
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-xl 
-                              shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 
-                              transition-all duration-300 flex items-center justify-center gap-3 transform hover:-translate-y-0.5
-                              disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  >
-                    {isLoading ? (
-                      <>
-                        <svg
-                          className="w-5 h-5 animate-spin text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                        Chargement...
-                      </>
-                    ) : (
-                      <>
-                        {/* Icône plus claire et centrée */}
-                        <svg
-                          className="w-5 h-5 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2.2}
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        {t("eligibilityResult.confirmationOfContactButton")}
-                      </>
-                    )}
-                  </button>
-                <button
-                  onClick={onNewTest}
-                  className="w-full bg-gray-900 text-white font-medium py-3 px-6 rounded-xl hover:bg-gray-800 transition-colors duration-200">
-                  {t("eligibilityResult.newTestButton")}
-                </button>
-               </div>
-            </div>
-          ) : (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-              {/* Icône d'information */}
-              <div className="w-20 h-20 mx-auto mb-6 bg-orange-50 rounded-full flex items-center justify-center">
-                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Titre */}
-              <h2 className="text-2xl font-semibold text-orange-700 mb-3">
-                 {t("eligibilityResult.notEligible")}
-              </h2>
-
-              {/* Message principal */}
-              <p className="text-gray-700 text-base leading-relaxed mb-6 font-medium">
-               
-                {t("eligibilityResult.message.notEligible")}
-
+              <p className="text-[#1F2937]/75 text-sm sm:text-base leading-relaxed mb-6 font-light">
+                {t("eligibility.agent.requestSuccess")}
               </p>
-
-              {/* Informations de contact */}
-              <div className="bg-orange-50 rounded-xl p-4 mb-8 border border-orange-100">
-                <div className="flex items-center justify-center text-sm text-orange-700">
-                  <svg
-                    className="w-4 h-4 mr-2 text-orange-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-               {t("eligibilityResult.contactInfo")}
-                
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="space-y-3">
-               <button
-                    onClick={handleConfirmContact}
-                    disabled={isLoading}
-                    type="button"
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-xl 
-                              shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 
-                              transition-all duration-300 flex items-center justify-center gap-3 transform hover:-translate-y-0.5
-                              disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  >
-                    {isLoading ? (
-                      <>
-                        <svg
-                          className="w-5 h-5 animate-spin text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                        Chargement...
-                      </>
-                    ) : (
-                      <>
-                        {/* Icône plus claire et centrée */}
-                        <svg
-                          className="w-5 h-5 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2.2}
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        {t("eligibilityResult.confirmationOfContactButton")}
-                      </>
-                    )}
-                  </button>
-                <button
-                  onClick={onNewTest}
-                  className="w-full bg-gray-900 text-white font-medium py-3 px-6 rounded-xl hover:bg-gray-800 transition-colors duration-200">
-                  {t("eligibilityResult.newTestButton")}
-                </button>
-             
-              </div>
+              <button
+                onClick={handleCloseModal}
+                className="w-full bg-[#1E5ED8] hover:bg-[#111827] text-white font-display font-bold text-xs uppercase tracking-wider py-4 px-6 rounded-none transition-colors duration-200 cursor-pointer"
+              >
+                {t("eligibility.agent.understood")}
+              </button>
             </div>
-          )}
+          </Modal>
         </div>
       </div>
+    );
+  }
 
-      {/* Modal de confirmation */}
+  // --- ELIGIBLE ---
+  return (
+    <>
+      <div className="min-h-screen bg-[#FFFFFF] py-12 sm:py-20 px-4 font-body">
+        <div className="max-w-3xl mx-auto">
+          <div
+            ref={cardRef}
+            className="bg-[#FFFFFF] border border-[#E4E4E7] shadow-sm p-6 sm:p-10 space-y-8"
+          >
+            <div className="border-b border-[#E4E4E7] pb-6 space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#1E5ED8]/10 text-[#1E5ED8] border border-[#1E5ED8]/20 text-[11px] font-mono font-semibold uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#1E5ED8]" />
+                {t("eligibility.title")}
+              </div>
+              
+              <div className="flex items-center gap-3 pt-2">
+                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-display font-bold text-[#1F2937] tracking-tight">
+                    {t("eligibilityResult.eligible")}
+                  </h2>
+                  <p className="text-[#1F2937]/60 text-xs sm:text-sm font-sans mt-0.5">
+                    {t("eligibilityResult.message.eligible")}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {eligibleProgram.length > 0 ? (
+              <div className="space-y-4">
+                {eligibleProgram.map((program) => {
+                  const link = program.link.startsWith("http")
+                    ? program.link
+                    : `https://${program.link}`;
+                  const rawName = program.name?.[lang] || program.name?.fr || "";
+                  const displayName = lang === "fr" ? sanitizeFrenchText(rawName) : rawName;
+
+                  return (
+                    <div
+                      key={program.id || program.link}
+                      className="border border-[#E4E4E7] p-5 sm:p-6 bg-white hover:border-[#1E5ED8] transition-colors duration-200"
+                    >
+                      <div className="flex justify-between items-start gap-4 mb-3">
+                        <a
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-display font-bold text-base sm:text-lg text-[#1E5ED8] hover:text-[#F97316] underline transition-colors"
+                        >
+                          {displayName}
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+
+            <div className="bg-[#F9FAFB] border border-[#E4E4E7] p-4 text-xs text-[#1F2937]/70 font-sans leading-relaxed">
+              {t("eligibilityResult.message.eligibleEnd")}
+            </div>
+
+            <div className="pt-4 border-t border-[#E4E4E7] space-y-3">
+              <button
+                onClick={handleConfirmContact}
+                disabled={isLoading}
+                className="w-full bg-[#1E5ED8] hover:bg-[#111827] text-white font-display font-bold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    {t("eligibilityResult.loading")}
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {t("eligibilityResult.confirmationOfContactButton")}
+                  </>
+                )}
+              </button>
+              <button
+                onClick={onNewTest}
+                className="w-full bg-white hover:bg-gray-50 text-[#1F2937] border border-[#E4E4E7] font-display font-semibold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-200 cursor-pointer"
+              >
+                {t("eligibilityResult.newTestButton")}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       <Modal 
         isOpen={isModalOpen} 
         onClose={handleCloseModal}
-        title="Demande transmise"
+        title={t("eligibility.agent.requestTransmitted")}
         size="md"
       >
         <div className="text-center py-6">
-          {/* Icône de succès */}
-          <div className="w-16 h-16 mx-auto mb-4 bg-green-50 rounded-full flex items-center justify-center">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-emerald-50 border border-emerald-100 rounded-none flex items-center justify-center">
+            <div className="w-10 h-10 bg-emerald-500 rounded-none flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-white"
                 fill="currentColor"
@@ -337,18 +254,14 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
               </svg>
             </div>
           </div>
-
-          {/* Message de confirmation */}
-          <p className="text-gray-700 text-base leading-relaxed mb-6">
-            Votre demande d'assistance a été transmise avec succès. Nous vous contacterons sous 48 h sur le mail que vous avez fourni.
+          <p className="text-[#1F2937]/75 text-sm sm:text-base leading-relaxed mb-6 font-light font-sans">
+            {t("eligibility.agent.requestSuccess")}
           </p>
-
-          {/* Bouton de fermeture */}
           <button
             onClick={handleCloseModal}
-            className="w-full bg-green-600 text-white font-medium py-3 px-6 rounded-xl hover:bg-green-700 transition-colors duration-200"
+            className="w-full bg-[#1E5ED8] hover:bg-[#111827] text-white font-display font-bold text-xs uppercase tracking-wider py-4 px-6 rounded-none transition-colors duration-200 cursor-pointer"
           >
-            Compris
+            {t("eligibility.agent.understood")}
           </button>
         </div>
       </Modal>

@@ -13,6 +13,7 @@ export interface NewsItem {
   externalUrl?: string; // Lien vers le site externe
   slug?: string;
   published?: boolean;
+  updatedAt?: string;
 }
 
 export interface MultilingualField {

@@ -26,4 +26,13 @@ dist-ssr
 .agents/
 .claude/
 AGENTS.md
+<<<<<<< HEAD
 skills-lock.json
+=======
+skills-lock.json
+
+.codex/
+.impeccable/
+DESIGN.md
+PRODUCT.md
+>>>>>>> origin/refactor
