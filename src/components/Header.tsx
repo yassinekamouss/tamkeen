@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo.webp";
 import { useTranslation } from "react-i18next";
+import { useClientAuth } from "../contexts/ClientAuthContext";
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { client } = useClientAuth();
   const location = useLocation();
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -145,6 +147,16 @@ const Header: React.FC = () => {
             ) : (
               <Link to="/faq" className={`${navItemClass(isActiveLink("/faq"))} mx-3`}>
                 {t("header.faq")}
+              </Link>
+            )}
+
+            {client ? (
+              <Link to="/dashboard" className={`${navItemClass(isActiveLink("/dashboard"))} mx-3`}>
+                Mon Espace
+              </Link>
+            ) : (
+              <Link to="/login" className={`${navItemClass(isActiveLink("/login"))} mx-3`}>
+                Espace Client
               </Link>
             )}
 
@@ -317,6 +329,16 @@ const Header: React.FC = () => {
               ) : (
                 <Link to="/faq" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavItemClass(isActiveLink("/faq"))}>
                   {t("header.faq")}
+                </Link>
+              )}
+
+              {client ? (
+                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavItemClass(isActiveLink("/dashboard"))}>
+                  Mon Espace
+                </Link>
+              ) : (
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavItemClass(isActiveLink("/login"))}>
+                  Espace Client
                 </Link>
               )}
 

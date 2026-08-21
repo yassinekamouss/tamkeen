@@ -37,10 +37,17 @@ const ProgramEditor = lazy(() => import("./pages/admin/ProgramEditor"));
 
 const AdminsGestion = lazy(() => import("./pages/admin/AdminsGestion.tsx"));
 
+// Client routes
+const SetupPassword = lazy(() => import("./pages/client/SetupPassword"));
+const ClientLogin = lazy(() => import("./pages/client/ClientLogin"));
+const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
+import { ClientAuthProvider } from "./contexts/ClientAuthContext";
+
 function App() {
   return (
-    <Router>
-      <div className="w-full">
+    <ClientAuthProvider>
+      <Router>
+        <div className="w-full">
         <ScrollToTop />
         <Suspense fallback={<Loader />}>
           <Routes>
@@ -108,6 +115,25 @@ function App() {
           }
         />
 
+        <Route
+          path="/setup-password"
+          element={
+            <SetupPassword />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <ClientLogin />
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ClientDashboard />
+          }
+        />
+
             <Route path={`${ADMIN_FRONT_PREFIX}/login`} element={<Login />} />
 
             {/* Localized routes with language prefix (fr/ar) */}
@@ -157,6 +183,7 @@ function App() {
         </Suspense>
       </div>
     </Router>
+    </ClientAuthProvider>
   );
 }
 
