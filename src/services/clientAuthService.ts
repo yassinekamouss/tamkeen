@@ -9,6 +9,8 @@ export interface ClientProfile {
   etat: "En traitement" | "En attente" | "Terminé";
   telephones: string[];
   applicantType: "physique" | "morale";
+  age?: number;
+  sexe?: string;
 }
 
 export const clientAuthService = {

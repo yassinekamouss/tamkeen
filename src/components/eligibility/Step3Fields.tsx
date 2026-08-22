@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { FormData, FormErrors } from "./types";
 import { MONTANT_INVESTISSEMENT_OPTIONS } from "./constants";
+import { useClientAuth } from "../../contexts/ClientAuthContext";
 
 interface Step3FieldsProps {
   formData: FormData;
@@ -30,6 +31,8 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
   handleCheckboxChange,
 }) => {
   const { t } = useTranslation();
+  const { client } = useClientAuth();
+  const isDisabled = !!client;
 
   return (
     <div className="space-y-6 bg-[#FFFFFF] p-6 border border-[#E4E4E7] animate-fadeIn font-sans">
@@ -120,7 +123,8 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
+            disabled={isDisabled}
+            className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
               errors.email ? "border-red-500" : "border-[#E4E4E7]"
             }`}
             placeholder={t("eligibility.emailPlaceholder")}
@@ -146,7 +150,8 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                   handleInputChange(e);
                 }
               }}
-              className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
+              disabled={isDisabled}
+              className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
                 errors.telephone ? "border-red-500" : "border-[#E4E4E7]"
               }`}
             >
@@ -158,7 +163,7 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
               <option value="__new__">{t("eligibility.newPhoneOption")}</option>
             </select>
           ) : (
-            <div className={`flex border rounded-none bg-white transition-colors duration-200 focus-within:border-[#1E5ED8] focus-within:ring-0 ${
+            <div className={`flex border rounded-none ${isDisabled ? "bg-gray-100" : "bg-white"} transition-colors duration-200 focus-within:border-[#1E5ED8] focus-within:ring-0 ${
               errors.telephone ? "border-red-500" : "border-[#E4E4E7]"
             }`}>
               <span className="inline-flex items-center px-4 bg-[#FFFFFF] border-e border-[#E4E4E7] text-[#1F2937]/60 text-xs font-mono rounded-none">
@@ -169,8 +174,9 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                 name="telephone"
                 value={formData.telephone || ""}
                 onChange={handleInputChange}
+                disabled={isDisabled}
                 maxLength={9}
-                className="w-full px-4 py-3 focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-transparent border-0"
+                className={`w-full px-4 py-3 focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-transparent border-0 ${isDisabled ? "cursor-not-allowed text-gray-500" : ""}`}
                 placeholder={t("eligibility.physique.telephonePlaceholder")}
               />
             </div>

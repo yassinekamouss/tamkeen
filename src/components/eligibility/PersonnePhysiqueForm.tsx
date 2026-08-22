@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import type { FormData, FormErrors } from "./types";
 import { sexe } from "./constants";
+import { useClientAuth } from "../../contexts/ClientAuthContext";
 
 interface PersonnePhysiqueFormProps {
   formData: FormData;
@@ -17,6 +18,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
   handleInputChange,
 }) => {
   const { t } = useTranslation();
+  const { client } = useClientAuth();
+  const isDisabled = !!client;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FFFFFF] p-6 border border-[#E4E4E7] animate-fadeIn">
@@ -29,7 +32,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           name="nom"
           value={formData.nom || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
+          disabled={isDisabled}
+          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
             errors.nom ? "border-red-500" : "border-[#E4E4E7]"
           }`}
           placeholder={t("eligibility.physique.nomPlaceholder")}
@@ -48,7 +52,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           name="prenom"
           value={formData.prenom || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
+          disabled={isDisabled}
+          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
             errors.prenom ? "border-red-500" : "border-[#E4E4E7]"
           }`}
           placeholder={t("eligibility.physique.prenomPlaceholder")}
@@ -69,7 +74,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           max={100}
           value={formData.age || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
+          disabled={isDisabled}
+          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
             errors.age ? "border-red-500" : "border-[#E4E4E7]"
           }`}
           placeholder={t("eligibility.physique.agePlaceholder")}
@@ -87,7 +93,8 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           name="sexe"
           value={formData.sexe || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
+          disabled={isDisabled}
+          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
             errors.sexe ? "border-red-500" : "border-[#E4E4E7]"
           }`}
         >

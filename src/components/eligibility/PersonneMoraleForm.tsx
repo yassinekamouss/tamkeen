@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import type { FormData, FormErrors } from "./types";
+import { useClientAuth } from "../../contexts/ClientAuthContext";
 
 interface PersonneMoraleFormProps {
   formData: FormData;
@@ -16,6 +17,8 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
   handleInputChange,
 }) => {
   const { t } = useTranslation();
+  const { client } = useClientAuth();
+  const isDisabled = !!client;
 
   return (
     <div className="bg-[#FFFFFF] p-6 border border-[#E4E4E7] animate-fadeIn">
@@ -28,7 +31,8 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
           name="nomEntreprise"
           value={formData.nomEntreprise || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
+          disabled={isDisabled}
+          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
             errors.nomEntreprise ? "border-red-500" : "border-[#E4E4E7]"
           }`}
           placeholder={t("eligibility.morale.nomEntreprisePlaceholder")}

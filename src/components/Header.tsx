@@ -20,6 +20,7 @@ const Header: React.FC = () => {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    localStorage.setItem('appLanguage', lng);
     setIsLanguageOpen(false);
   };
 
@@ -152,11 +153,11 @@ const Header: React.FC = () => {
 
             {client ? (
               <Link to="/dashboard" className={`${navItemClass(isActiveLink("/dashboard"))} mx-3`}>
-                Mon Espace
+                {t("header.my_space")}
               </Link>
             ) : (
               <Link to="/login" className={`${navItemClass(isActiveLink("/login"))} mx-3`}>
-                Espace Client
+                {t("header.client_area")}
               </Link>
             )}
 
@@ -334,11 +335,11 @@ const Header: React.FC = () => {
 
               {client ? (
                 <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavItemClass(isActiveLink("/dashboard"))}>
-                  Mon Espace
+                  {t("header.my_space")}
                 </Link>
               ) : (
                 <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavItemClass(isActiveLink("/login"))}>
-                  Espace Client
+                  {t("header.client_area")}
                 </Link>
               )}
 
