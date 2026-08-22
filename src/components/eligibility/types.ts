@@ -3,7 +3,7 @@ export interface FormData {
   // Personne physique
   nom?: string;
   prenom?: string;
-  age?: number;
+  age?: string;
   sexe?: string;
   email: string;
   telephone?: string;

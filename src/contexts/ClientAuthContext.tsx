@@ -3,8 +3,9 @@ import { clientAuthService, type ClientProfile } from "../services/clientAuthSer
 
 interface ClientAuthContextType {
   client: ClientProfile | null;
+  tests: any[];
   loading: boolean;
-  login: (token: string, clientData: ClientProfile) => void;
+  login: (token: string, clientData: ClientProfile, testsData?: any[]) => void;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -13,14 +14,17 @@ const ClientAuthContext = createContext<ClientAuthContextType | undefined>(undef
 
 export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
   const [client, setClient] = useState<ClientProfile | null>(null);
+  const [tests, setTests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
     try {
       const data = await clientAuthService.getMe();
       setClient(data.client);
+      setTests(data.tests || []);
     } catch (error) {
       setClient(null);
+      setTests([]);
     } finally {
       setLoading(false);
     }
@@ -30,8 +34,9 @@ export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuth();
   }, []);
 
-  const login = (_token: string, clientData: ClientProfile) => {
+  const login = (_token: string, clientData: ClientProfile, testsData?: any[]) => {
     setClient(clientData);
+    setTests(testsData || []);
   };
 
   const logout = async () => {
@@ -41,11 +46,12 @@ export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
       // ignore
     }
     setClient(null);
+    setTests([]);
     // Usually we can redirect to home here, or handle it in the component
   };
 
   return (
-    <ClientAuthContext.Provider value={{ client, loading, login, logout, checkAuth }}>
+    <ClientAuthContext.Provider value={{ client, tests, loading, login, logout, checkAuth }}>
       {children}
     </ClientAuthContext.Provider>
   );

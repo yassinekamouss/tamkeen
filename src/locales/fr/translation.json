@@ -620,6 +620,9 @@
       "errorLength": "Le mot de passe doit contenir au moins 6 caractères.",
       "errorDefault": "Erreur lors de la configuration du mot de passe.",
       "invalidLink": "Lien invalide ou manquant."
+    },
+    "warning": {
+      "clientAccount": "Votre compte est actuellement défini comme <strong>{{type}}</strong>. Si vous souhaitez changer de statut (ex: passer en personne morale), vous devez vous déconnecter et utiliser une autre adresse e-mail."
     }
   },
   "clientDashboard": {
@@ -644,6 +647,17 @@
     "dossierStatusDesc": "L'état de votre dossier est mis à jour par nos consultants au fur et à mesure de son avancement. Les prochaines étapes vous seront communiquées ici.",
     "welcome": "Bienvenue,",
     "logout": "Déconnexion",
-    "client": "Client"
+    "client": "Client",
+    "processMyFile": "Traiter / Suivre mon dossier",
+    "close": "Fermer",
+    "latestSubsidy": "Dernière demande éligible :",
+    "status": "Statut de la demande :",
+    "tabDashboard": "Tableau de bord",
+    "tabSubventions": "Mes subventions",
+    "mySubventions": "Historique de mes subventions",
+    "noSubventions": "Vous n'avez aucune demande de subvention pour le moment.",
+    "eligible": "Éligible",
+    "notEligible": "Non éligible",
+    "noPrograms": "Aucun programme correspondant à votre profil."
   }
 }
