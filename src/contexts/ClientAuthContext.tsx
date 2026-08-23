@@ -1,29 +1,45 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { clientAuthService, type ClientProfile } from "../services/clientAuthService";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+import { authService } from "../services/authService";
+import type { User, Dossier, TestElegibiliteData, AuthResponse } from "../types/auth";
 
 interface ClientAuthContextType {
-  client: ClientProfile | null;
-  tests: any[];
+  user: User | null;
+  client: User | null; // Alias pour rétrocompatibilité
+  dossiers: Dossier[];
+  tests: TestElegibiliteData[];
   loading: boolean;
-  login: (token: string, clientData: ClientProfile, testsData?: any[]) => void;
-  logout: () => void;
+  login: (authData: AuthResponse) => void;
+  logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
 
-const ClientAuthContext = createContext<ClientAuthContextType | undefined>(undefined);
+const ClientAuthContext = createContext<ClientAuthContextType | undefined>(
+  undefined
+);
 
 export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
-  const [client, setClient] = useState<ClientProfile | null>(null);
-  const [tests, setTests] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [dossiers, setDossiers] = useState<Dossier[]>([]);
+  const [tests, setTests] = useState<TestElegibiliteData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const checkAuth = async () => {
     try {
-      const data = await clientAuthService.getMe();
-      setClient(data.client);
+      setLoading(true);
+      const data = await authService.getMe();
+      const currentUser = data.user || data.client || null;
+      setUser(currentUser);
+      setDossiers(data.dossiers || []);
       setTests(data.tests || []);
     } catch (error) {
-      setClient(null);
+      setUser(null);
+      setDossiers([]);
       setTests([]);
     } finally {
       setLoading(false);
@@ -32,26 +48,53 @@ export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     checkAuth();
+
+    // Directive 1 : Écouteur pour la réinitialisation sur erreur 401 déclenchée par l'intercepteur Axios
+    const handleUnauthorized = () => {
+      setUser(null);
+      setDossiers([]);
+      setTests([]);
+      setLoading(false);
+    };
+
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
+    return () => {
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+    };
   }, []);
 
-  const login = (_token: string, clientData: ClientProfile, testsData?: any[]) => {
-    setClient(clientData);
-    setTests(testsData || []);
+  const login = (authData: AuthResponse) => {
+    const currentUser = authData.user || authData.client || null;
+    setUser(currentUser);
+    setDossiers(authData.dossiers || []);
+    setTests(authData.tests || []);
   };
 
   const logout = async () => {
     try {
-      await clientAuthService.logout();
+      await authService.logout();
     } catch (e) {
-      // ignore
+      // Ignorer les erreurs de réseau lors du logout
+    } finally {
+      setUser(null);
+      setDossiers([]);
+      setTests([]);
     }
-    setClient(null);
-    setTests([]);
-    // Usually we can redirect to home here, or handle it in the component
   };
 
   return (
-    <ClientAuthContext.Provider value={{ client, tests, loading, login, logout, checkAuth }}>
+    <ClientAuthContext.Provider
+      value={{
+        user,
+        client: user,
+        dossiers,
+        tests,
+        loading,
+        login,
+        logout,
+        checkAuth,
+      }}
+    >
       {children}
     </ClientAuthContext.Provider>
   );

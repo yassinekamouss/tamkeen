@@ -37,10 +37,13 @@ const ProgramEditor = lazy(() => import("./pages/admin/ProgramEditor"));
 
 const AdminsGestion = lazy(() => import("./pages/admin/AdminsGestion.tsx"));
 
-// Client routes
-const SetupPassword = lazy(() => import("./pages/client/SetupPassword"));
-const ClientLogin = lazy(() => import("./pages/client/ClientLogin"));
+// Client routes & protection
+const SetupPassword = lazy(() => import("./pages/auth/SetupPassword"));
+const ClientLogin = lazy(() => import("./pages/auth/Login"));
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
+const ClientProtectedRoute = lazy(
+  () => import("./components/ClientProtectedRoute")
+);
 import { ClientAuthProvider } from "./contexts/ClientAuthContext";
 
 function App() {
@@ -130,7 +133,17 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ClientDashboard />
+            <ClientProtectedRoute>
+              <ClientDashboard />
+            </ClientProtectedRoute>
+          }
+        />
+        <Route
+          path="/client/dashboard"
+          element={
+            <ClientProtectedRoute>
+              <ClientDashboard />
+            </ClientProtectedRoute>
           }
         />
 
