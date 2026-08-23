@@ -1,5 +1,7 @@
 import React from "react";
-import { Eye, Edit, FileX } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Eye, Edit, FileX, Sliders } from "lucide-react";
+import { ADMIN_FRONT_PREFIX } from "../../../api/axios";
 import type { User, Admin } from "../../../hooks/admin/useUsers";
 
 interface UsersTableProps {
@@ -66,6 +68,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               if (user.telephone && !numbers.includes(user.telephone)) {
                 numbers.push(user.telephone);
               }
+
+              const targetDossierId = user.dossierId || (user as any).dossier_id || user._id;
 
               return (
                 <div key={user._id} className="p-4 space-y-3 bg-white">
@@ -187,7 +191,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                     </div>
                   )}
 
-                  <div className="flex items-center justify-end gap-3 pt-2">
+                  <div className="flex items-center justify-end gap-2 pt-2">
                     <button
                       onClick={() => onViewDetails(user._id)}
                       className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded min-h-[36px]"
@@ -213,6 +217,14 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                       <Edit className="w-3.5 h-3.5" />
                       Éditer
                     </button>
+
+                    <Link
+                      to={`${ADMIN_FRONT_PREFIX}/dossiers/${targetDossierId}/studio`}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-blue-600 rounded min-h-[36px] transition-colors"
+                    >
+                      <Sliders className="w-3.5 h-3.5 text-blue-400" />
+                      Studio
+                    </Link>
                   </div>
                 </div>
               );
@@ -247,203 +259,218 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr
-                    key={user._id}
-                    className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div
-                            className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${
-                              user.applicantType === "physique"
-                                ? "bg-gray-500"
-                                : "bg-gray-400"
-                            }`}>
-                            {user.applicantType === "physique"
-                              ? `${(user.prenom || "").charAt(0)}${(
-                                  user.nom || ""
-                                ).charAt(0)}`
-                              : (user.nomEntreprise || "").charAt(0)}
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.applicantType === "physique"
-                              ? `${user.prenom} ${user.nom}`
-                              : user.nomEntreprise}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {user.email}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.applicantType === "physique"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-gray-200 text-gray-800"
-                        }`}>
-                        {user.applicantType === "physique"
-                          ? "Personne physique"
-                          : "Personne morale"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {(() => {
-                          let numbers: string[] = [];
+                {users.map((user) => {
+                  const targetDossierId = user.dossierId || (user as any).dossier_id || user._id;
 
-                          if (typeof user.telephones === "string") {
-                            try {
-                              const parsed = JSON.parse(user.telephones);
-                              if (Array.isArray(parsed)) {
-                                numbers = parsed.filter((t): t is string =>
-                                  Boolean(t)
-                                );
+                  return (
+                    <tr
+                      key={user._id}
+                      className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div
+                              className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-medium text-sm ${
+                                user.applicantType === "physique"
+                                  ? "bg-gray-500"
+                                  : "bg-gray-400"
+                              }`}>
+                              {user.applicantType === "physique"
+                                ? `${(user.prenom || "").charAt(0)}${(
+                                    user.nom || ""
+                                  ).charAt(0)}`
+                                : (user.nomEntreprise || "").charAt(0)}
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {user.applicantType === "physique"
+                                ? `${user.prenom} ${user.nom}`
+                                : user.nomEntreprise}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {user.email}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            user.applicantType === "physique"
+                              ? "bg-gray-100 text-gray-800"
+                              : "bg-gray-200 text-gray-800"
+                          }`}>
+                          {user.applicantType === "physique"
+                            ? "Personne physique"
+                            : "Personne morale"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {(() => {
+                            let numbers: string[] = [];
+
+                            if (typeof user.telephones === "string") {
+                              try {
+                                const parsed = JSON.parse(user.telephones);
+                                if (Array.isArray(parsed)) {
+                                  numbers = parsed.filter((t): t is string =>
+                                    Boolean(t)
+                                  );
+                                }
+                              } catch {
+                                numbers = [];
                               }
-                            } catch {
-                              numbers = [];
+                            } else if (Array.isArray(user.telephones)) {
+                              numbers = user.telephones.filter((t): t is string =>
+                                Boolean(t)
+                              );
                             }
-                          } else if (Array.isArray(user.telephones)) {
-                            numbers = user.telephones.filter((t): t is string =>
-                              Boolean(t)
+
+                            if (
+                              user.telephone &&
+                              !numbers.includes(user.telephone)
+                            ) {
+                              numbers.push(user.telephone);
+                            }
+
+                            return numbers.length > 0 ? (
+                              <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
+                                {numbers.map((num) => (
+                                  <option key={num} value={num}>
+                                    {num}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              "—"
                             );
-                          }
-
-                          if (
-                            user.telephone &&
-                            !numbers.includes(user.telephone)
-                          ) {
-                            numbers.push(user.telephone);
-                          }
-
-                          return numbers.length > 0 ? (
-                            <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
-                              {numbers.map((num) => (
-                                <option key={num} value={num}>
-                                  {num}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            "—"
-                          );
-                        })()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <select
-                          disabled={Boolean(
-                            user.consultantAssocie?._id &&
-                              user.consultantAssocie._id !== adminProfile._id
-                          )}
-                          title={
-                            user.consultantAssocie?._id &&
-                            user.consultantAssocie._id !== adminProfile._id
-                              ? "Un consultant est déjà associé à ce client"
-                              : ""
-                          }
-                          className={`border border-gray-300 rounded px-2 py-1 text-sm ${
-                            user.consultantAssocie?._id &&
-                            user.consultantAssocie._id !== adminProfile._id
-                              ? "cursor-not-allowed bg-gray-100"
-                              : ""
-                          }`}
-                          value={user.etat || ""}
-                          onChange={async (e) => {
-                            await onStatusChange(user, e.target.value);
-                          }}>
-                          <option value="En traitement">En traitement</option>
-                          <option value="En attente">En attente</option>
-                          <option value="Terminé">Terminé</option>
-                        </select>
-                      </div>
-                    </td>
-                    {adminProfile.role === "Administrateur" && (
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div
-                          className={
-                            user.consultantAssocie
-                              ? "text-sm text-gray-900"
-                              : "italic text-gray-400"
-                          }>
+                          })()}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
                           <select
-                            name="consultant"
-                            className={
-                              adminProfile.role === "Administrateur"
-                                ? ""
-                                : "cursor-not-allowed bg-gray-100"
-                            }
-                            disabled={adminProfile.role !== "Administrateur"}
-                            value={
-                              user.consultantAssocie
-                                ? JSON.stringify(user.consultantAssocie)
+                            disabled={Boolean(
+                              user.consultantAssocie?._id &&
+                                user.consultantAssocie._id !== adminProfile._id
+                            )}
+                            title={
+                              user.consultantAssocie?._id &&
+                              user.consultantAssocie._id !== adminProfile._id
+                                ? "Un consultant est déjà associé à ce client"
                                 : ""
                             }
-                            onChange={(e) => {
-                              const selectedValue = e.target.value;
-                              const adminObj = selectedValue
-                                ? JSON.parse(selectedValue)
-                                : null;
-                              onConsultantChange(user, adminObj);
+                            className={`border border-gray-300 rounded px-2 py-1 text-sm ${
+                              user.consultantAssocie?._id &&
+                              user.consultantAssocie._id !== adminProfile._id
+                                ? "cursor-not-allowed bg-gray-100"
+                                : ""
+                            }`}
+                            value={user.etat || ""}
+                            onChange={async (e) => {
+                              await onStatusChange(user, e.target.value);
                             }}>
-                            {!user.consultantAssocie && (
-                              <option value="" className="text-gray-400 italic">
-                                Aucun consultant associé
-                              </option>
-                            )}
-
-                            {user.consultantAssocie && (
-                              <option
-                                value={JSON.stringify(user.consultantAssocie)}>
-                                {user.consultantAssocie.username}
-                              </option>
-                            )}
-                            {admins
-                              .filter(
-                                (admin) =>
-                                  admin._id !== user.consultantAssocie?._id
-                              )
-                              .map((admin) => (
-                                <option
-                                  key={admin._id}
-                                  value={JSON.stringify(admin)}>
-                                  {admin.username}
-                                </option>
-                              ))}
+                            <option value="En traitement">En traitement</option>
+                            <option value="En attente">En attente</option>
+                            <option value="Terminé">Terminé</option>
                           </select>
                         </div>
                       </td>
-                    )}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => onViewDetails(user._id)}
-                        className="text-gray-600 hover:text-gray-900 mr-3 transition-colors duration-200">
-                        <Eye className="w-4 h-4" />
-                      </button>
+                      {adminProfile.role === "Administrateur" && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div
+                            className={
+                              user.consultantAssocie
+                                ? "text-sm text-gray-900"
+                                : "italic text-gray-400"
+                            }>
+                            <select
+                              name="consultant"
+                              className={
+                                adminProfile.role === "Administrateur"
+                                  ? ""
+                                  : "cursor-not-allowed bg-gray-100"
+                              }
+                              disabled={adminProfile.role !== "Administrateur"}
+                              value={
+                                user.consultantAssocie
+                                  ? JSON.stringify(user.consultantAssocie)
+                                  : ""
+                              }
+                              onChange={(e) => {
+                                const selectedValue = e.target.value;
+                                const adminObj = selectedValue
+                                  ? JSON.parse(selectedValue)
+                                  : null;
+                                onConsultantChange(user, adminObj);
+                              }}>
+                              {!user.consultantAssocie && (
+                                <option value="" className="text-gray-400 italic">
+                                  Aucun consultant associé
+                                </option>
+                              )}
 
-                      <button
-                        onClick={() => {
-                          const normUser: User = {
-                            ...user,
-                            telephone:
-                              (Array.isArray(user.telephones) &&
-                                user.telephones[0]) ||
-                              user.telephone ||
-                              "",
-                          };
-                          onEdit(normUser);
-                        }}
-                        className="text-gray-600 hover:text-gray-900 mr-3">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                              {user.consultantAssocie && (
+                                <option
+                                  value={JSON.stringify(user.consultantAssocie)}>
+                                  {user.consultantAssocie.username}
+                                </option>
+                              )}
+                              {admins
+                                .filter(
+                                  (admin) =>
+                                    admin._id !== user.consultantAssocie?._id
+                                )
+                                .map((admin) => (
+                                  <option
+                                    key={admin._id}
+                                    value={JSON.stringify(admin)}>
+                                    {admin.username}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                        </td>
+                      )}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-2">
+                        <button
+                          onClick={() => onViewDetails(user._id)}
+                          className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                          title="Voir détails">
+                          <Eye className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            const normUser: User = {
+                              ...user,
+                              telephone:
+                                (Array.isArray(user.telephones) &&
+                                  user.telephones[0]) ||
+                                user.telephone ||
+                                "",
+                            };
+                            onEdit(normUser);
+                          }}
+                          className="text-gray-600 hover:text-gray-900"
+                          title="Éditer">
+                          <Edit className="w-4 h-4" />
+                        </button>
+
+                        <Link
+                          to={`${ADMIN_FRONT_PREFIX}/dossiers/${targetDossierId}/studio`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-blue-600 rounded-lg transition-colors shadow-sm ml-2"
+                          title="Ouvrir le Studio Consultant"
+                        >
+                          <Sliders className="w-3.5 h-3.5 text-blue-400" />
+                          <span>Ouvrir Studio</span>
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

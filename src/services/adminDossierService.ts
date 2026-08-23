@@ -1,5 +1,5 @@
 import api, { ADMIN_API_PREFIX } from "../api/axios";
-import {
+import type {
   DossierDetail,
   CreateConsultantRequestPayload,
   ConsultantRequestItem,
