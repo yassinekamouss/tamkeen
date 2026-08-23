@@ -15,11 +15,16 @@ const Hero: React.FC<HeroProps> = ({
   const lang = i18n.language as "fr" | "ar";
   const isRTL = lang === "ar";
 
+  const bgImage = isRTL
+    ? "/hero_background_arab.webp"
+    : "/hero-background.webp";
+
   return (
     <section
       id="hero"
       dir={isRTL ? "rtl" : "ltr"}
-      className="relative min-h-[100dvh] bg-white flex items-center font-body overflow-hidden"
+      /* min-h-[calc(100dvh-4rem)] soustrait la hauteur du header (ex: 64px / 4rem ou 80px / 5rem) */
+      className="relative min-h-[calc(100dvh-4rem)] lg:min-h-[calc(100dvh-5rem)] bg-white flex items-center font-body overflow-hidden"
       aria-label={t("hero.badge")}
     >
       {/* =========================================================
@@ -36,36 +41,31 @@ const Hero: React.FC<HeroProps> = ({
           duration-500
         "
         style={{
-          backgroundImage: "url('/hero-background.webp')",
-
-          // Desktop:
-          // L'image conserve sa proportion et reste orientée vers la droite.
-          backgroundSize: "auto 100%",
-          backgroundPosition: "right center",
+          backgroundImage: `url('${bgImage}')`,
+          backgroundSize: "cover",
+          backgroundPosition: isRTL ? "left top" : "right top",
         }}
       />
 
       {/* =========================================================
           READABILITY OVERLAY
-          Keeps the left side extremely clean for the typography.
           ========================================================= */}
       <div
         aria-hidden="true"
-        className="
+        className={`
           absolute
           inset-0
           pointer-events-none
-          bg-gradient-to-r
-          from-white
-          via-white/95
-          to-white/10
-        "
+          ${
+            isRTL
+              ? "bg-gradient-to-l from-white via-white/95 to-white/10"
+              : "bg-gradient-to-r from-white via-white/95 to-white/10"
+          }
+        `}
       />
 
       {/* =========================================================
           MOBILE OVERLAY
-          On small screens the illustration moves down and becomes
-          much more subtle so it never competes with the content.
           ========================================================= */}
       <div
         aria-hidden="true"
@@ -86,17 +86,17 @@ const Hero: React.FC<HeroProps> = ({
       {/* =========================================================
           CONTENT
           ========================================================= */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-20 lg:py-28 flex flex-col justify-between">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-8 sm:py-16 lg:py-20 flex flex-col justify-between">
         <div
-          className={`max-w-5xl ${isRTL
-              ? "mr-0 ml-auto text-right"
-              : "ml-0 mr-auto text-left"
-            }`}
+          className={`max-w-5xl ${
+            isRTL ? "mr-0 ml-auto text-right" : "ml-0 mr-auto text-left"
+          }`}
         >
           {/* Eyebrow */}
           <div
-            className={`flex items-center gap-3 mb-4 sm:mb-6 ${isRTL ? "flex-row-reverse justify-end" : ""
-              }`}
+            className={`flex items-center gap-3 mb-4 sm:mb-6 ${
+              isRTL ? "flex-row-reverse justify-end" : ""
+            }`}
           >
             <span className="w-8 sm:w-10 h-[2px] bg-[#F97316]" />
 
@@ -154,9 +154,10 @@ const Hero: React.FC<HeroProps> = ({
                   h-4
                   transition-transform
                   duration-200
-                  ${isRTL
-                    ? "rotate-180 group-hover:-translate-x-1"
-                    : "group-hover:translate-x-1"
+                  ${
+                    isRTL
+                      ? "rotate-180 group-hover:-translate-x-1"
+                      : "group-hover:translate-x-1"
                   }
                 `}
                 fill="none"
