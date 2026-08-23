@@ -6,10 +6,11 @@ import { Header, Footer } from "../../components";
 import RequirementList from "../../components/client/RequirementList";
 import CustomUpload from "../../components/client/CustomUpload";
 import { dossierService } from "../../services/dossierService";
+import type { DocumentRequirement } from "../../types/dossier";
 import { useTranslation } from "react-i18next";
 
 const ClientDashboard: React.FC = () => {
-  const { user, dossiers, tests, logout, checkAuth } = useClientAuth();
+  const { user, dossiers, logout, checkAuth } = useClientAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
@@ -23,7 +24,7 @@ const ClientDashboard: React.FC = () => {
 
   const activeDossier = dossiers && dossiers.length > 0 ? dossiers[0] : null;
 
-  // Directive 1 : Intégration de TanStack Query v5 pour récupérer la checklist dynamique
+  // Récupération de la checklist via dossierService (qui extrait désormais l'array de manière robuste)
   const {
     data: requirementsData,
     isLoading: isLoadingRequirements,
@@ -34,10 +35,13 @@ const ClientDashboard: React.FC = () => {
     enabled: !!activeDossier?.id,
   });
 
-  const requirements = requirementsData?.data?.requirements || [];
+  // Type Guard et fallback sécurisé sous forme de tableau
+  const requirements: DocumentRequirement[] = Array.isArray(requirementsData)
+    ? requirementsData
+    : [];
 
-  // Statistiques de complétion
-  const requiredList = requirements.filter((r) => r.is_required);
+  // Statistiques de complétion avec filtrage stricts sur `is_required === true`
+  const requiredList = requirements.filter((r) => r.is_required === true);
   const requiredUploadedCount = requiredList.filter(
     (r) => r.status === "UPLOADED"
   ).length;
@@ -49,7 +53,7 @@ const ClientDashboard: React.FC = () => {
       ? Math.round((requiredUploadedCount / totalRequiredCount) * 100)
       : 0;
 
-  // Directive 1 & 2 : Mutation de soumission d'inputs et bascule AI_DRAFTING
+  // Mutation de soumission d'inputs et bascule AI_DRAFTING
   const submitInputsMutation = useMutation({
     mutationFn: async () => {
       if (!activeDossier?.id) throw new Error("Dossier introuvable.");
@@ -57,7 +61,6 @@ const ClientDashboard: React.FC = () => {
     },
     onSuccess: async () => {
       setSubmitError(null);
-      // Rafraîchir le context utilisateur pour répercuter le statut AI_DRAFTING
       await checkAuth();
     },
     onError: (err: any) => {
@@ -225,7 +228,7 @@ const ClientDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Toast / Alerte Erreur de Soumission (Directive 2 - 400 Bad Request handling) */}
+                {/* Toast / Alerte Erreur de Soumission */}
                 {submitError && (
                   <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-medium flex items-start space-x-3 rtl:space-x-reverse shadow-sm">
                     <svg
@@ -396,7 +399,7 @@ const ClientDashboard: React.FC = () => {
                 </div>
               </div>
             ) : currentStatus === "AI_DRAFTING" ? (
-              /* VUE 2 : Statut AI_DRAFTING (Génération / Analyse IA en cours) */
+              /* VUE 2 : Statut AI_DRAFTING */
               <div className="p-8 md:p-12 text-center space-y-6">
                 <div className="w-20 h-20 mx-auto rounded-full bg-blue-100/80 text-[#1E5ED8] flex items-center justify-center animate-pulse shadow-inner">
                   <svg
@@ -423,7 +426,6 @@ const ClientDashboard: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Étape visuelle IA */}
                 <div className="max-w-md mx-auto bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-3 text-left rtl:text-right">
                   <div className="flex items-center space-x-3 rtl:space-x-reverse text-sm font-medium text-slate-800">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>

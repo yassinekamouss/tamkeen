@@ -17,11 +17,14 @@ const RequirementList: React.FC<RequirementListProps> = ({
   const isRTL = i18n.language === "ar";
   const queryClient = useQueryClient();
 
+  // Type Guard pour garantir que requirements est toujours un tableau
+  const safeRequirements = Array.isArray(requirements) ? requirements : [];
+
   const [activeReqId, setActiveReqId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Directive 1 & 2 : Mutation d'upload avec réinitialisation dynamique TanStack Query
+  // Mutation d'upload avec réinitialisation dynamique TanStack Query
   const uploadMutation = useMutation({
     mutationFn: async ({
       file,
@@ -30,7 +33,6 @@ const RequirementList: React.FC<RequirementListProps> = ({
       file: File;
       requirementId: number;
     }) => {
-      // Validation côté client de la taille (Max 10 Mo)
       if (file.size > 10 * 1024 * 1024) {
         throw new Error(
           t(
@@ -44,9 +46,12 @@ const RequirementList: React.FC<RequirementListProps> = ({
     onSuccess: () => {
       setErrorMsg(null);
       setActiveReqId(null);
-      // Invalidation de la clé TanStack Query v5
+      // Invalidation de la clé TanStack Query v5 (Spécifique & Générique)
       queryClient.invalidateQueries({
         queryKey: ["dossierRequirements", dossierId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["dossierRequirements"],
       });
     },
     onError: (err: any) => {
@@ -119,7 +124,7 @@ const RequirementList: React.FC<RequirementListProps> = ({
       )}
 
       <div className="divide-y divide-slate-100 bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
-        {requirements.map((req) => {
+        {safeRequirements.map((req) => {
           const isUploaded = req.status === "UPLOADED";
           const isLoadingThis =
             uploadMutation.isPending && activeReqId === req.id;

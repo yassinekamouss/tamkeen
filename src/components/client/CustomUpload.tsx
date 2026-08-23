@@ -18,7 +18,6 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Directive 1 & 2 : Mutation TanStack Query v5 pour l'upload d'un document personnalisé libres
   const customUploadMutation = useMutation({
     mutationFn: async () => {
       if (!customLabel.trim()) {
@@ -65,6 +64,9 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
       setSelectedFile(null);
       queryClient.invalidateQueries({
         queryKey: ["dossierRequirements", dossierId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["dossierRequirements"],
       });
       setTimeout(() => setSuccessMsg(null), 4000);
     },
