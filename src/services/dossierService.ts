@@ -65,6 +65,13 @@ export const dossierService = {
     return response.data;
   },
 
+  deleteDocument: async (
+    dossierId: number,
+    documentId: number
+  ): Promise<void> => {
+    await api.delete(`/dossiers/${dossierId}/documents/${documentId}`);
+  },
+
   submitInputs: async (dossierId: number): Promise<SubmitInputsResponse> => {
     const response = await api.post<SubmitInputsResponse>(
       `/dossiers/${dossierId}/submit-inputs`
