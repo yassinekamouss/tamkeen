@@ -19,22 +19,87 @@ const Hero: React.FC<HeroProps> = ({
     <section
       id="hero"
       dir={isRTL ? "rtl" : "ltr"}
-      className="relative min-h-[100dvh] bg-white flex items-center font-body"
+      className="relative min-h-[100dvh] bg-white flex items-center font-body overflow-hidden"
       aria-label={t("hero.badge")}
     >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-20 lg:py-28 flex flex-col justify-between">
+      {/* =========================================================
+          BACKGROUND IMAGE
+          ========================================================= */}
+      <div
+        aria-hidden="true"
+        className="
+          absolute
+          inset-0
+          pointer-events-none
+          bg-no-repeat
+          transition-all
+          duration-500
+        "
+        style={{
+          backgroundImage: "url('/hero-background.webp')",
+
+          // Desktop:
+          // L'image conserve sa proportion et reste orientée vers la droite.
+          backgroundSize: "auto 100%",
+          backgroundPosition: "right center",
+        }}
+      />
+
+      {/* =========================================================
+          READABILITY OVERLAY
+          Keeps the left side extremely clean for the typography.
+          ========================================================= */}
+      <div
+        aria-hidden="true"
+        className="
+          absolute
+          inset-0
+          pointer-events-none
+          bg-gradient-to-r
+          from-white
+          via-white/95
+          to-white/10
+        "
+      />
+
+      {/* =========================================================
+          MOBILE OVERLAY
+          On small screens the illustration moves down and becomes
+          much more subtle so it never competes with the content.
+          ========================================================= */}
+      <div
+        aria-hidden="true"
+        className="
+          absolute
+          inset-x-0
+          bottom-0
+          h-[38%]
+          pointer-events-none
+          bg-gradient-to-t
+          from-white/80
+          via-white/40
+          to-transparent
+          lg:hidden
+        "
+      />
+
+      {/* =========================================================
+          CONTENT
+          ========================================================= */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-10 sm:py-20 lg:py-28 flex flex-col justify-between">
         <div
-          className={`max-w-5xl ${
-            isRTL ? "mr-0 ml-auto text-right" : "ml-0 mr-auto text-left"
-          }`}
+          className={`max-w-5xl ${isRTL
+              ? "mr-0 ml-auto text-right"
+              : "ml-0 mr-auto text-left"
+            }`}
         >
           {/* Eyebrow */}
           <div
-            className={`flex items-center gap-3 mb-4 sm:mb-6 ${
-              isRTL ? "flex-row-reverse justify-end" : ""
-            }`}
+            className={`flex items-center gap-3 mb-4 sm:mb-6 ${isRTL ? "flex-row-reverse justify-end" : ""
+              }`}
           >
             <span className="w-8 sm:w-10 h-[2px] bg-[#F97316]" />
+
             <span className="section-eyebrow text-[11px] sm:text-xs">
               {t("hero.badge")}
             </span>
@@ -47,18 +112,34 @@ const Hero: React.FC<HeroProps> = ({
 
           {/* Description */}
           <p
-            className={`max-w-4xl mt-4 sm:mt-8 text-base sm:text-lg lg:text-xl leading-relaxed text-[#5B6472] font-body ${
-              isRTL ? "ml-auto" : ""
-            }`}
+            className={`
+              max-w-4xl
+              mt-4
+              sm:mt-8
+              text-base
+              sm:text-lg
+              lg:text-xl
+              leading-relaxed
+              text-[#5B6472]
+              font-body
+              ${isRTL ? "ml-auto" : ""}
+            `}
           >
             {t("hero.description")}
           </p>
 
           {/* CTA actions */}
           <div
-            className={`flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-12 ${
-              isRTL ? "sm:flex-row-reverse justify-end" : ""
-            }`}
+            className={`
+              flex
+              flex-col
+              sm:flex-row
+              gap-3
+              sm:gap-4
+              mt-8
+              sm:mt-12
+              ${isRTL ? "sm:flex-row-reverse justify-end" : ""}
+            `}
           >
             {/* Primary CTA */}
             <button
@@ -68,11 +149,16 @@ const Hero: React.FC<HeroProps> = ({
               <span>{t("hero.cta")}</span>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-200 ${
-                  isRTL
+                className={`
+                  w-4
+                  h-4
+                  transition-transform
+                  duration-200
+                  ${isRTL
                     ? "rotate-180 group-hover:-translate-x-1"
                     : "group-hover:translate-x-1"
-                }`}
+                  }
+                `}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -94,28 +180,6 @@ const Hero: React.FC<HeroProps> = ({
             >
               {t("hero.programs_cta")}
             </button>
-          </div>
-        </div>
-
-        {/* Bottom institutional information */}
-        <div className="mt-12 sm:mt-20 lg:mt-24 pt-6 border-t border-[#E5E7EB]">
-          <div
-            className={`flex flex-col sm:flex-row gap-3 sm:items-center justify-between ${
-              isRTL ? "sm:flex-row-reverse" : ""
-            }`}
-          >
-            <p className="text-xs sm:text-sm text-[#6B7280] font-body">
-              {t("hero.legal")}
-            </p>
-
-            <div
-              className={`flex items-center gap-2 text-xs font-medium text-[#9CA3AF] font-body ${
-                isRTL ? "flex-row-reverse" : ""
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-[#1E5ED8]" />
-              <span>{t("hero.trusted_platform")}</span>
-            </div>
           </div>
         </div>
       </div>

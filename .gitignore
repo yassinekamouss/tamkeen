@@ -33,3 +33,7 @@ skills-lock.json
 DESIGN.md
 PRODUCT.md
 .env
+
+.graphifyignore
+.graphify/
+graphify-out/

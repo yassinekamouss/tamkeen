@@ -26,7 +26,6 @@
     "metric2_label": "Diagnostic IA",
     "metric3_value": "2026",
     "metric3_label": "Données officielles",
-    "legal": "Résultats indicatifs. L'obtention définitive dépend du dossier soumis aux organismes concernés.",
     "slides": [
       {
         "subtitle": "Simplifiez votre accès aux subventions",
@@ -45,7 +44,6 @@
       }
     ],
     "button": "Testez votre éligibilité ici",
-    "trusted_platform": "Plateforme de confiance",
     "cta_primary": "Tester mon éligibilité",
     "cta_secondary": "Explorer les programmes",
     "programs_cta": "Explorer les programmes"
@@ -90,7 +88,11 @@
       "platformSubtext": "Plateforme Tamkeen - Accompagnement aux financements",
       "requestTransmitted": "Demande transmise",
       "requestSuccess": "Votre demande d'assistance a été transmise avec succès. Nous vous contacterons sous 48 h sur le mail que vous avez fourni.",
-      "understood": "Compris"
+      "understood": "Compris",
+      "editAction": "Corriger les informations",
+      "confirmCorrection": "J'ai maintenant corrigé mes données",
+      "visitPrograms": "Visiter les programmes",
+      "noChangesMade": "Vous n'avez pas encore modifié vos informations. Veuillez d'abord ajuster les champs requis avant d'envoyer."
     },
     "steps": {
       "step1": "Profil",
@@ -454,6 +456,8 @@
     "contactInfo": "Pour plus d'informations : contact@masubvention.ma ",
     "newTestButton": "Faire un nouveau test",
     "confirmationOfContactButton": "Confirmer la demande de contact",
+    "createReportButton": "Créer mon rapport de projet d'investissement",
+    "fullServiceButton": "Accompagnement complet ('full service')",
     "loading": "Chargement...",
     "errorMessage": "Une erreur est survenue. Réessayez plus tard."
   },

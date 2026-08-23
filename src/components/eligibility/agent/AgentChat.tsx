@@ -12,6 +12,7 @@ interface AgentChatProps {
   onNewTest: () => void;
   onContactAdvisor: () => void;
   onSimulate?: (fieldToAdjust?: string, suggestedValue?: string) => void;
+  onEditForm?: (fieldsToClear?: string[]) => void;
 }
 
 const AgentChat: React.FC<AgentChatProps> = ({
@@ -20,6 +21,7 @@ const AgentChat: React.FC<AgentChatProps> = ({
   onNewTest,
   onContactAdvisor,
   onSimulate,
+  onEditForm,
 }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as "fr" | "ar";
@@ -68,11 +70,19 @@ const AgentChat: React.FC<AgentChatProps> = ({
         onNewTest();
         break;
 
+      case "EDIT_FORM":
+        if (onEditForm) {
+          onEditForm(action.metadata?.fieldsToClear);
+        } else {
+          onNewTest();
+        }
+        break;
+
       case "VISIT_PROGRAM":
         if (action.metadata?.programLink) {
           window.open(action.metadata.programLink, "_blank", "noopener,noreferrer");
         } else {
-          onNewTest();
+          window.location.href = "/#programs";
         }
         break;
 

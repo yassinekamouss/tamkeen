@@ -14,6 +14,8 @@ interface EligibilityResultProps {
   onNewTest: () => void;
   onSimulate?: (fieldToAdjust?: string, suggestedValue?: string) => void;
   testId?: string | null;
+  onEditForm?: (fieldsToClear?: string[]) => void;
+  isCorrectedFlow?: boolean;
 }
 
 const EligibilityResult: React.FC<EligibilityResultProps> = ({
@@ -23,6 +25,8 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
   onNewTest,
   onSimulate,
   testId,
+  onEditForm,
+  isCorrectedFlow = false,
 }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as "fr" | "ar";
@@ -77,6 +81,7 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
             onNewTest={onNewTest}
             onContactAdvisor={handleConfirmContact}
             onSimulate={onSimulate}
+            onEditForm={onEditForm}
           />
 
           {/* Contact confirmation modal */}
@@ -175,53 +180,76 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
             </div>
 
             <div className="pt-4 border-t border-[#E4E4E7] space-y-3">
-              <button
-                onClick={handleConfirmContact}
-                disabled={isLoading}
-                className="w-full bg-[#1E5ED8] hover:bg-[#111827] text-white font-display font-bold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-4 w-4 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
+              {isCorrectedFlow ? (
+                <>
+                  <button
+                    onClick={() => {}}
+                    className="w-full bg-[#1E5ED8] hover:bg-[#111827] text-white font-display font-bold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    {t("eligibilityResult.createReportButton")}
+                  </button>
+                  <button
+                    onClick={() => {}}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-display font-bold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    {t("eligibilityResult.fullServiceButton")}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleConfirmContact}
+                  disabled={isLoading}
+                  className="w-full bg-[#1E5ED8] hover:bg-[#111827] text-white font-display font-bold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      {t("eligibilityResult.loading")}
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
                         stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    {t("eligibilityResult.loading")}
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="w-4 h-4 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    {t("eligibilityResult.confirmationOfContactButton")}
-                  </>
-                )}
-              </button>
+                        strokeWidth={2.5}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      {t("eligibilityResult.confirmationOfContactButton")}
+                    </>
+                  )}
+                </button>
+              )}
               <button
                 onClick={onNewTest}
                 className="w-full bg-white hover:bg-gray-50 text-[#1F2937] border border-[#E4E4E7] font-display font-semibold tracking-wider text-xs uppercase py-4 px-6 rounded-none transition-colors duration-200 cursor-pointer"

@@ -68,10 +68,11 @@ export interface EligibilityFormProps {
 // --- Agent IA Remediation Interfaces ---
 
 export interface SuggestedAction {
-  actionType: "SIMULATE" | "CONTACT_ADVISOR" | "NEW_TEST" | "VISIT_PROGRAM";
+  actionType: "SIMULATE" | "CONTACT_ADVISOR" | "NEW_TEST" | "VISIT_PROGRAM" | "EDIT_FORM";
   label: string;
   metadata?: {
     fieldToAdjust?: string;
+    fieldsToClear?: string[];
     suggestedValue?: string;
     programLink?: string;
   };

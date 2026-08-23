@@ -71,6 +71,9 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [showServerErrorModal, setShowServerErrorModal] = useState(false);
 
+  // Remediation flow state
+  const [isCorrectedFlow, setIsCorrectedFlow] = useState(false);
+
   // Fetch phone numbers associated with the email
   const { availablePhones, phoneMode, setPhoneMode } = useEligibilityPhone(
     formData.email,
@@ -265,6 +268,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
   const handleNewTest = () => {
     setShowResult(false);
+    setIsCorrectedFlow(false);
     setFormData({
       applicantType: "physique",
       email: "",
@@ -274,6 +278,39 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
       statutJuridique: "",
     });
     setStep(1);
+    setErrors({});
+
+    requestAnimationFrame(() => {
+      const formEl = document.getElementById("eligibility-form");
+      if (formEl) {
+        formEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      }
+    });
+  };
+
+  const handleEditForm = (fieldsToClear?: string[]) => {
+    // Flag that user entered the correction flow
+    setIsCorrectedFlow(true);
+
+    // Clean specified fields or default target fields for fresh entry
+    const defaultFieldsToClear = ["montantInvestissement", "numberOfEmployees", "chiffreAffaire2022", "chiffreAffaire2023", "chiffreAffaire2024", "chiffreAffaire2025"];
+    const targets = fieldsToClear && fieldsToClear.length > 0 ? fieldsToClear : defaultFieldsToClear;
+
+    setFormData((prev) => {
+      const updated = { ...prev };
+      targets.forEach((field) => {
+        if (field in updated) {
+          (updated as Record<string, unknown>)[field] = "";
+        }
+      });
+      return updated;
+    });
+
+    // Hide result view and redirect back to form step 2 for user to correct and re-submit normally
+    setShowResult(false);
+    setStep(2);
     setErrors({});
 
     requestAnimationFrame(() => {
@@ -332,6 +369,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         onNewTest={handleNewTest}
         onSimulate={handleSimulate}
         testId={testId}
+        onEditForm={handleEditForm}
+        isCorrectedFlow={isCorrectedFlow}
       />
     );
   }
