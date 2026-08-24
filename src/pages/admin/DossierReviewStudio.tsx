@@ -705,16 +705,15 @@ export const DossierReviewStudio: React.FC = () => {
                           </div>
 
                           {/* Zone de réponse */}
-                          {req.status !== "RESOLVED" && (
-                            <form
-                              onSubmit={(e) => handleReplySubmit(e, req.id)}
-                              className="p-2 border-t border-gray-200 bg-gray-50 shrink-0 flex items-end gap-2"
-                            >
+                          <form
+                            onSubmit={(e) => handleReplySubmit(e, req.id)}
+                            className="p-2 border-t border-gray-200 bg-gray-50 shrink-0 flex items-end gap-2"
+                          >
                               <div className="flex-1 bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition-all">
                                 <textarea
                                   value={replyMessage}
                                   onChange={(e) => setReplyMessage(e.target.value)}
-                                  placeholder="Répondre..."
+                                  placeholder={req.status === "RESOLVED" ? "Répondre (Rouvrira la requête)..." : "Répondre..."}
                                   rows={1}
                                   className="w-full bg-transparent p-2.5 text-xs text-gray-900 outline-none resize-none max-h-24"
                                   onKeyDown={(e) => {
@@ -750,8 +749,7 @@ export const DossierReviewStudio: React.FC = () => {
                                   {replyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                                 </button>
                               </div>
-                            </form>
-                          )}
+                          </form>
                         </div>
                       );
                     })()
