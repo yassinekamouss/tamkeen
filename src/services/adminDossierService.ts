@@ -6,6 +6,12 @@ import type {
 } from "../types/adminDossier";
 
 export const adminDossierService = {
+  // Liste des dossiers
+  getDossiers: async (params?: { plan_type?: string; status?: string }): Promise<any[]> => {
+    const response = await api.get(`${ADMIN_API_PREFIX}/dossiers`, { params });
+    return response.data?.data || response.data;
+  },
+
   // 1. Vue 360° du dossier
   getDossierDetails: async (dossierId: number): Promise<DossierDetail> => {
     const response = await api.get(`${ADMIN_API_PREFIX}/dossiers/${dossierId}`);
@@ -18,6 +24,14 @@ export const adminDossierService = {
       `${ADMIN_API_PREFIX}/dossiers/${dossierId}/render-report`
     );
     return response.data?.data?.htmlContent || response.data?.htmlContent || "";
+  },
+
+  // Génération du PDF
+  generatePdf: async (dossierId: number): Promise<any> => {
+    const response = await api.post(
+      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/generate-pdf`
+    );
+    return response.data;
   },
 
   // 3. Édition manuelle du JSON structuré par le consultant
@@ -41,7 +55,37 @@ export const adminDossierService = {
       `${ADMIN_API_PREFIX}/dossiers/${dossierId}/requests`,
       payload
     );
-    return response.data?.data?.request || response.data?.data;
+    return response.data?.request || response.data?.data?.request || response.data?.data;
+  },
+
+  replyToRequest: async (
+    dossierId: number,
+    requestId: number,
+    message: string,
+    file: File | null
+  ): Promise<any> => {
+    const formData = new FormData();
+    if (message) formData.append("message", message);
+    if (file) formData.append("file", file);
+
+    const response = await api.post(
+      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/requests/${requestId}/reply`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+    return response.data;
+  },
+
+  resolveRequest: async (
+    dossierId: number,
+    requestId: number
+  ): Promise<any> => {
+    const response = await api.put(
+      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/requests/${requestId}/resolve`
+    );
+    return response.data;
   },
 
   // 5. Renvoyer au client (AWAITING_CLIENT_INFO)

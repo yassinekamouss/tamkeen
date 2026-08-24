@@ -1,7 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Eye, Edit, FileX, Sliders } from "lucide-react";
-import { ADMIN_FRONT_PREFIX } from "../../../api/axios";
+import { Eye, Edit, FileX } from "lucide-react";
 import type { User, Admin } from "../../../hooks/admin/useUsers";
 
 interface UsersTableProps {
@@ -63,8 +61,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               if (user.telephone && !numbers.includes(user.telephone)) {
                 numbers.push(user.telephone);
               }
-
-              const targetDossierId = user.dossierId || (user as any).dossier_id || user._id;
 
               return (
                 <div key={user._id} className="p-4 space-y-3 bg-white">
@@ -149,14 +145,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                       <Edit className="w-3.5 h-3.5" />
                       Éditer
                     </button>
-
-                    <Link
-                      to={`${ADMIN_FRONT_PREFIX}/dossiers/${targetDossierId}/studio`}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-blue-600 rounded min-h-[36px] transition-colors"
-                    >
-                      <Sliders className="w-3.5 h-3.5 text-blue-400" />
-                      Studio
-                    </Link>
                   </div>
                 </div>
               );
@@ -185,8 +173,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {users.map((user) => {
-                  const targetDossierId = user.dossierId || (user as any).dossier_id || user._id;
-
                   return (
                     <tr
                       key={user._id}
@@ -299,15 +285,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                           title="Éditer">
                           <Edit className="w-4 h-4" />
                         </button>
-
-                        <Link
-                          to={`${ADMIN_FRONT_PREFIX}/dossiers/${targetDossierId}/studio`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-blue-600 rounded-lg transition-colors shadow-sm ml-2"
-                          title="Ouvrir le Studio Consultant"
-                        >
-                          <Sliders className="w-3.5 h-3.5 text-blue-400" />
-                          <span>Ouvrir Studio</span>
-                        </Link>
                       </td>
                     </tr>
                   );

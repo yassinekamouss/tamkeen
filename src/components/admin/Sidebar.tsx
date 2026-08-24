@@ -10,6 +10,7 @@ import {
   LogOut,
   UserCircle,
   Handshake,
+  FolderOpen,
 } from "lucide-react";
 import api, { ADMIN_API_PREFIX, ADMIN_FRONT_PREFIX } from "../../api/axios";
 
@@ -94,6 +95,19 @@ const Sidebar = ({
           }>
           <Target className="w-5 h-5 mr-3" />
           Programmes
+        </NavLink>
+
+        <NavLink
+          to={`${ADMIN_FRONT_PREFIX}/dossiers`}
+          className={({ isActive }) =>
+            `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 ${
+              isActive
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            }`
+          }>
+          <FolderOpen className="w-5 h-5 mr-3" />
+          Dossiers
         </NavLink>
 
         {/* Tests */}

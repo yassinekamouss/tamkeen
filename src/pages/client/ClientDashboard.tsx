@@ -9,6 +9,7 @@ import { dossierService } from "../../services/dossierService";
 import type { DocumentRequirement } from "../../types/dossier";
 import { useTranslation } from "react-i18next";
 import PlanSelection from "./PlanSelection";
+import RequestsView from "./RequestsView";
 
 const ClientDashboard: React.FC = () => {
   const { user, dossiers, logout, checkAuth } = useClientAuth();
@@ -17,6 +18,7 @@ const ClientDashboard: React.FC = () => {
   const isRTL = i18n.language === "ar";
 
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"workspace" | "requests">("workspace");
 
   const handleLogout = async () => {
     await logout();
@@ -201,9 +203,38 @@ const ClientDashboard: React.FC = () => {
               <div>{getStatusBadge(currentStatus)}</div>
             </div>
 
+            {currentStatus !== "PLAN_SELECTION" && (
+              <div className="border-b border-slate-200 bg-white px-6">
+                <nav className="-mb-px flex space-x-8 rtl:space-x-reverse" aria-label="Tabs">
+                  <button
+                    onClick={() => setActiveTab("workspace")}
+                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                      activeTab === "workspace"
+                        ? "border-[#1E5ED8] text-[#1E5ED8]"
+                        : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                    }`}
+                  >
+                    Mon Espace de Travail
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("requests")}
+                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                      activeTab === "requests"
+                        ? "border-[#1E5ED8] text-[#1E5ED8]"
+                        : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                    }`}
+                  >
+                    Messagerie & Requêtes
+                  </button>
+                </nav>
+              </div>
+            )}
+
             {/* VUE 0 : Statut PLAN_SELECTION (Sélection du plan) */}
             {currentStatus === "PLAN_SELECTION" ? (
               <PlanSelection dossierId={activeDossier.id} onPlanSelected={checkAuth} />
+            ) : activeTab === "requests" ? (
+              <RequestsView dossierId={activeDossier.id} planType={activeDossier.plan_type} />
             ) : currentStatus === "AWAITING_INPUTS" ? (
               <div className="p-6 md:p-8 space-y-8">
                 {/* Barre de progression des documents obligatoires */}

@@ -35,6 +35,7 @@ const Reports = lazy(() => import("./pages/admin/Reports"));
 const AdminNews = lazy(() => import("./pages/admin/News.tsx"));
 const Partenaires = lazy(() => import("./pages/admin/Partenaires"));
 const ProgramEditor = lazy(() => import("./pages/admin/ProgramEditor"));
+const DossiersList = lazy(() => import("./pages/admin/DossiersList"));
 const AdminsGestion = lazy(() => import("./pages/admin/AdminsGestion.tsx"));
 const DossierReviewStudio = lazy(() => import("./pages/admin/DossierReviewStudio"));
 
@@ -168,12 +169,6 @@ function App() {
 
             {/* Protected admin routes */}
             <Route path={ADMIN_FRONT_PREFIX} element={<PrivateRoute />}>
-              {/* Studio de revue consultant en plein écran */}
-              <Route
-                path="dossiers/:dossierId/studio"
-                element={<DossierReviewStudio />}
-              />
-
               <Route element={<LayoutAdmin />}>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="users" element={<Users />} />
@@ -181,6 +176,8 @@ function App() {
                 <Route path="programs" element={<Programs />} />
                 <Route path="programs/new" element={<ProgramEditor />} />
                 <Route path="programs/:id/edit" element={<ProgramEditor />} />
+                <Route path="dossiers" element={<DossiersList />} />
+                <Route path="dossiers/:dossierId/studio" element={<DossierReviewStudio />} />
                 <Route path="tests" element={<Tests />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="news" element={<AdminNews />} />

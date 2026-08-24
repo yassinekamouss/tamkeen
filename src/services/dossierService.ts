@@ -86,4 +86,25 @@ export const dossierService = {
     );
     return response.data;
   },
+
+  getRequests: async (dossierId: number): Promise<any> => {
+    const response = await api.get(`/dossiers/${dossierId}/requests`);
+    return response.data;
+  },
+
+  createClientRequest: async (dossierId: number, message: string): Promise<any> => {
+    const response = await api.post(`/dossiers/${dossierId}/requests`, { message });
+    return response.data;
+  },
+
+  replyToRequest: async (dossierId: number, requestId: number, message: string, file: File | null): Promise<any> => {
+    const formData = new FormData();
+    if (message) formData.append("message", message);
+    if (file) formData.append("file", file);
+
+    const response = await api.post(`/dossiers/${dossierId}/requests/${requestId}/reply`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  },
 };

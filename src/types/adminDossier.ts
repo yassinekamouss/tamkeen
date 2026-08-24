@@ -41,13 +41,24 @@ export interface DossierDataInfo {
   updatedAt?: string;
 }
 
+export interface RequestMessageItem {
+  id: number;
+  request_id: number;
+  sender_type: "CLIENT" | "CONSULTANT";
+  message: string | null;
+  attachment_url: string | null;
+  createdAt: string;
+}
+
 export interface ConsultantRequestItem {
   id: number;
   dossier_id: number;
+  creator_type: "CLIENT" | "CONSULTANT";
   message: string;
   input_type: "FILE" | "TEXT";
-  status: "PENDING" | "FULFILLED";
+  status: "PENDING" | "FULFILLED" | "RESOLVED";
   response_data?: any;
+  messages: RequestMessageItem[];
   createdAt: string;
   updatedAt?: string;
 }
