@@ -19,6 +19,7 @@ export interface User {
 }
 
 export type DossierStatus =
+  | "PLAN_SELECTION"
   | "AWAITING_INPUTS"
   | "AI_DRAFTING"
   | "CONSULTANT_REVIEW"

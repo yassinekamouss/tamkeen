@@ -8,6 +8,7 @@ import CustomUpload from "../../components/client/CustomUpload";
 import { dossierService } from "../../services/dossierService";
 import type { DocumentRequirement } from "../../types/dossier";
 import { useTranslation } from "react-i18next";
+import PlanSelection from "./PlanSelection";
 
 const ClientDashboard: React.FC = () => {
   const { user, dossiers, logout, checkAuth } = useClientAuth();
@@ -84,6 +85,12 @@ const ClientDashboard: React.FC = () => {
 
   const getStatusBadge = (status?: string) => {
     switch (status) {
+      case "PLAN_SELECTION":
+        return (
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200">
+            Choix du Plan
+          </span>
+        );
       case "AWAITING_INPUTS":
         return (
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
@@ -194,8 +201,10 @@ const ClientDashboard: React.FC = () => {
               <div>{getStatusBadge(currentStatus)}</div>
             </div>
 
-            {/* VUE 1 : Statut AWAITING_INPUTS (Collecte documentaire) */}
-            {currentStatus === "AWAITING_INPUTS" ? (
+            {/* VUE 0 : Statut PLAN_SELECTION (Sélection du plan) */}
+            {currentStatus === "PLAN_SELECTION" ? (
+              <PlanSelection dossierId={activeDossier.id} onPlanSelected={checkAuth} />
+            ) : currentStatus === "AWAITING_INPUTS" ? (
               <div className="p-6 md:p-8 space-y-8">
                 {/* Barre de progression des documents obligatoires */}
                 <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200/80 space-y-4">

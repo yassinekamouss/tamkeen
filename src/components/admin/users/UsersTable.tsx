@@ -14,8 +14,7 @@ interface UsersTableProps {
 
 export const UsersTable: React.FC<UsersTableProps> = ({
   users,
-  admins,
-  adminProfile,
+  // Remove admins and adminProfile since they are unused
   onEdit,
   onViewDetails,
 }) => {

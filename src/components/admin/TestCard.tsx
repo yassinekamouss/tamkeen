@@ -1,5 +1,5 @@
 import React from "react";
-import { Building2, User2, Phone, Mail } from "lucide-react";
+import { Building2, User2, Mail } from "lucide-react";
 import type { TestItem } from "../../types/test";
 
 function formatRelativeDate(dateStr?: string) {

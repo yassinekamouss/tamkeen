@@ -78,4 +78,12 @@ export const dossierService = {
     );
     return response.data;
   },
+
+  selectPlan: async (dossierId: number, planType: "PLAN_1" | "PLAN_2"): Promise<any> => {
+    const response = await api.post(
+      `/dossiers/${dossierId}/select-plan`,
+      { plan_type: planType }
+    );
+    return response.data;
+  },
 };
