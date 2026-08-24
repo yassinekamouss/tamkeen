@@ -14,6 +14,10 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  Sparkles,
+  Layers,
+  UserCheck,
+  ExternalLink,
 } from "lucide-react";
 import { adminDossierService } from "../../services/adminDossierService";
 
@@ -30,10 +34,22 @@ const DossiersList: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case "PLAN_SELECTION":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-purple-50 text-purple-700 border border-purple-200">
+            <Layers className="w-4 h-4" /> Sélection du plan
+          </span>
+        );
       case "AWAITING_INPUTS":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-amber-50 text-amber-700 border border-amber-200">
-            <Clock className="w-4 h-4" /> En attente infos
+            <Clock className="w-4 h-4" /> En attente des données
+          </span>
+        );
+      case "AI_DRAFTING":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <Sparkles className="w-4 h-4" /> Rédaction IA
           </span>
         );
       case "CONSULTANT_REVIEW":
@@ -42,16 +58,34 @@ const DossiersList: React.FC = () => {
             <Search className="w-4 h-4" /> Révision Consultant
           </span>
         );
+      case "AWAITING_CLIENT_INFO":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-orange-50 text-orange-700 border border-orange-200">
+            <AlertCircle className="w-4 h-4" /> Infos client requises
+          </span>
+        );
       case "DELIVERED":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
             <CheckCircle2 className="w-4 h-4" /> Livré
           </span>
         );
-      case "REJECTED":
+      case "IN_PROGRESS":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-rose-50 text-rose-700 border border-rose-200">
-            <XCircle className="w-4 h-4" /> Rejeté
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-sky-50 text-sky-700 border border-sky-200">
+            <Clock className="w-4 h-4" /> En cours
+          </span>
+        );
+      case "CLIENT_APPROVAL_PENDING":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-teal-50 text-teal-700 border border-teal-200">
+            <UserCheck className="w-4 h-4" /> Approbation client
+          </span>
+        );
+      case "EXTERNAL_PROCESS":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
+            <ExternalLink className="w-4 h-4" /> Procédure externe
           </span>
         );
       default:
@@ -100,9 +134,15 @@ const DossiersList: React.FC = () => {
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5"
         >
           <option value="">Tous les statuts</option>
-          <option value="AWAITING_INPUTS">En attente infos</option>
-          <option value="CONSULTANT_REVIEW">Révision Consultant</option>
-          <option value="DELIVERED">Livré</option>
+          <option value="PLAN_SELECTION">Sélection du plan (PLAN_SELECTION)</option>
+          <option value="AWAITING_INPUTS">En attente des données (AWAITING_INPUTS)</option>
+          <option value="AI_DRAFTING">Rédaction IA (AI_DRAFTING)</option>
+          <option value="CONSULTANT_REVIEW">Révision Consultant (CONSULTANT_REVIEW)</option>
+          <option value="AWAITING_CLIENT_INFO">Infos client requises (AWAITING_CLIENT_INFO)</option>
+          <option value="DELIVERED">Livré (DELIVERED)</option>
+          <option value="IN_PROGRESS">En cours (IN_PROGRESS)</option>
+          <option value="CLIENT_APPROVAL_PENDING">Approbation client (CLIENT_APPROVAL_PENDING)</option>
+          <option value="EXTERNAL_PROCESS">Procédure externe (EXTERNAL_PROCESS)</option>
         </select>
       </div>
 
@@ -165,7 +205,7 @@ const DossiersList: React.FC = () => {
               <div className="ml-6">
                 <Link
                   to={`${ADMIN_FRONT_PREFIX}/dossiers/${dossier.id}/studio`}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-700 hover:bg-slate-800 text-white hover:text-white font-medium rounded-lg transition-colors"
                 >
                   Gérer
                   <ArrowRight className="w-4 h-4" />
