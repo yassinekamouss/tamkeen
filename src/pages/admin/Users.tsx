@@ -26,8 +26,6 @@ const Users: React.FC = () => {
     currentUsers,
     filteredUsers,
     updateUser,
-    handleConsultantChange,
-    handleStatusChange,
     setSearchTerm,
     setFilterType,
     setCurrentPage,
@@ -105,8 +103,6 @@ const Users: React.FC = () => {
         users={currentUsers}
         admins={admins}
         adminProfile={adminProfile}
-        onConsultantChange={handleConsultantChange}
-        onStatusChange={handleStatusChange}
         onEdit={handleEdit}
         onViewDetails={handleViewDetails}
       />

@@ -23,7 +23,10 @@ export type DossierStatus =
   | "AI_DRAFTING"
   | "CONSULTANT_REVIEW"
   | "AWAITING_CLIENT_INFO"
-  | "DELIVERED";
+  | "DELIVERED"
+  | "IN_PROGRESS"
+  | "CLIENT_APPROVAL_PENDING"
+  | "EXTERNAL_PROCESS";
 
 export type PlanType = "PLAN_1" | "PLAN_2";
 

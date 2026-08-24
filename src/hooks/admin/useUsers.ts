@@ -7,7 +7,6 @@ export interface User {
   applicantType: "physique" | "morale";
   nom?: string;
   prenom?: string;
-  etat?: string;
   nomEntreprise?: string;
   email: string;
   telephone?: string;
@@ -15,10 +14,6 @@ export interface User {
   dossierId?: string;
   dossier_id?: string;
   createdAt?: string;
-  consultantAssocie?: {
-    _id: string;
-    username: string;
-  };
 }
 
 export interface Admin {
@@ -28,8 +23,6 @@ export interface Admin {
 
 interface UserUpdatedPayload {
   _id: string;
-  etat?: string;
-  consultantAssocie?: { _id: string; username: string } | null;
 }
 
 export const useUsers = () => {
@@ -93,63 +86,7 @@ export const useUsers = () => {
     }
   }, [fetchUsers]);
 
-  // Handle Consultant Change
-  const handleConsultantChange = useCallback(async (user: User, consultant: Admin | null) => {
-    try {
-      await axios.put(`/users/${user._id}`, {
-        consultantAssocie: consultant || null,
-      });
-      setUsers((prev) =>
-        prev.map((u) =>
-          u._id === user._id
-            ? {
-                ...u,
-                consultantAssocie: consultant
-                  ? {
-                      _id: consultant._id,
-                      username: consultant.username,
-                    }
-                  : undefined,
-              }
-            : u
-        )
-      );
-    } catch (err) {
-      console.error("Erreur lors de la mise à jour du consultant associé :", err);
-      throw err;
-    }
-  }, []);
 
-  // Handle status update directly
-  const handleStatusChange = useCallback(async (user: User, newEtat: string) => {
-    try {
-      await axios.put(`/users/${user._id}`, {
-        etat: newEtat,
-        consultantAssocie: {
-          _id: adminProfile._id,
-          username: adminProfile.username,
-        },
-      });
-
-      setUsers((prev) =>
-        prev.map((u) =>
-          u._id === user._id
-            ? {
-                ...u,
-                etat: newEtat,
-                consultantAssocie: {
-                  _id: adminProfile._id,
-                  username: adminProfile.username,
-                },
-              }
-            : u
-        )
-      );
-    } catch (err) {
-      console.error("Erreur lors de la mise à jour de l'état :", err);
-      throw err;
-    }
-  }, [adminProfile]);
 
   useEffect(() => {
     fetchAdmins();
@@ -166,11 +103,6 @@ export const useUsers = () => {
           u._id === payload._id
             ? {
                 ...u,
-                etat: payload.etat ?? u.etat,
-                consultantAssocie:
-                  payload.consultantAssocie === null
-                    ? undefined
-                    : (payload.consultantAssocie ?? u.consultantAssocie),
               }
             : u
         )
@@ -237,8 +169,6 @@ export const useUsers = () => {
     filteredUsers,
     usersPerPage,
     updateUser,
-    handleConsultantChange,
-    handleStatusChange,
     setSearchTerm: handleSearchChange,
     setFilterType: handleFilterChange,
     setCurrentPage,

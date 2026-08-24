@@ -28,7 +28,6 @@ export interface TestItem {
   personne?: UserLite;
   user?: UserLite;
   client?: UserLite;
-  wannaBeContacted?: boolean;
   createdAt?: string;
 }
 
