@@ -13,7 +13,6 @@ import {
   Calendar,
   Clock,
   CheckCircle2,
-  XCircle,
   Sparkles,
   Layers,
   UserCheck,
@@ -102,7 +101,7 @@ const DossiersList: React.FC = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <FileText className="w-8 h-8 text-indigo-600" />
+            <FileText className="w-8 h-8 text-slate-700" />
             Gestion des Dossiers
           </h1>
           <p className="mt-2 text-gray-500">

@@ -13,7 +13,6 @@ import {
   AlertCircle,
   Loader2,
   Building2,
-  User as UserIcon,
   RefreshCw,
   Plus,
   Paperclip,
@@ -250,10 +249,10 @@ export const DossierReviewStudio: React.FC = () => {
 
   if (isDossierLoading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-gray-900 text-white">
+      <div className="h-screen w-full flex items-center justify-center bg-white text-gray-900">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-          <p className="text-sm font-medium text-gray-300">Chargement du Studio Consultant...</p>
+          <Loader2 className="w-10 h-10 animate-spin text-slate-700" />
+          <p className="text-sm font-medium text-gray-500">Chargement du Studio Consultant...</p>
         </div>
       </div>
     );
@@ -261,16 +260,16 @@ export const DossierReviewStudio: React.FC = () => {
 
   if (isDossierError || !dossier) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-gray-900 text-white p-6">
-        <div className="bg-gray-800 border border-red-500/30 rounded-xl p-8 max-w-md text-center">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold mb-2">Erreur de chargement</h2>
-          <p className="text-sm text-gray-400 mb-6">
+      <div className="h-screen w-full flex items-center justify-center bg-white text-gray-900 p-6">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 max-w-md text-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2 text-gray-900">Erreur de chargement</h2>
+          <p className="text-sm text-gray-500 mb-6">
             {(dossierFetchError as any)?.response?.data?.message || "Dossier introuvable ou accès refusé."}
           </p>
           <button
             onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/dashboard`)}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors"
+            className="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium text-sm transition-colors"
           >
             Retour au Dashboard
           </button>
@@ -280,140 +279,324 @@ export const DossierReviewStudio: React.FC = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] w-full flex flex-col bg-gray-50 text-gray-900 overflow-hidden font-sans">
+    <div className="min-h-screen w-full flex flex-col bg-gray-50 text-gray-900 overflow-hidden font-sans p-6">
       {/* HEADER STUDIO */}
-      <header className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between shrink-0 z-10 shadow-sm">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/dossiers`)}
-            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors"
-            title="Retour à la liste"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+      <header className="bg-white border border-gray-200 rounded-xl shadow-sm mb-4 px-6 py-4 shrink-0 z-10">
+        <div className="flex items-center justify-between gap-6">
 
-          <div className="h-6 w-px bg-gray-300" />
+          {/* =========================================================
+              LEFT SECTION
+          ========================================================= */}
+          <div className="flex items-center min-w-0 flex-1">
 
-          <div>
-            <div className="flex items-center space-x-3">
-              <h1 className="text-base font-bold text-gray-900 tracking-wide">
-                Studio Dossier #{dossier.id}
-              </h1>
-              <span
-                className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
-                  dossier.status === "DELIVERED"
-                    ? "bg-emerald-100 text-emerald-700 border-emerald-200"
-                    : dossier.status === "CONSULTANT_REVIEW"
-                    ? "bg-amber-100 text-amber-700 border-amber-200"
-                    : dossier.status === "AWAITING_CLIENT_INFO"
-                    ? "bg-purple-100 text-purple-700 border-purple-200"
-                    : "bg-gray-100 text-gray-700 border-gray-300"
-                }`}
-              >
-                {dossier.status}
-              </span>
-              <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200 font-medium">
-                {dossier.plan_type || "FAST_TRACK"}
-              </span>
-            </div>
-            <div className="flex items-center space-x-4 text-xs text-gray-500 mt-0.5">
-              <span className="flex items-center gap-1">
-                <UserIcon className="w-3.5 h-3.5" />
-                {dossier.client?.prenom} {dossier.client?.nom}
-              </span>
-              {dossier.client?.company_name && (
-                <span className="flex items-center gap-1">
-                  <Building2 className="w-3.5 h-3.5" />
-                  {dossier.client.company_name}
+            {/* Back button */}
+
+            <button
+              onClick={() => navigate(`${ADMIN_FRONT_PREFIX}/dossiers`)}
+              className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors shrink-0"
+              title="Retour à la liste"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+
+            {/* Vertical separator */}
+            <div className="mx-4 h-10 w-px bg-gray-200 shrink-0" />
+
+            {/* Dossier information */}
+            <div className="min-w-0 flex-1">
+
+              {/* Title + status + plan */}
+              <div className="flex items-center gap-2.5 flex-wrap">
+
+                <h1 className="text-[15px] font-bold text-slate-900 whitespace-nowrap">
+                  Studio Dossier #{dossier.id}
+                </h1>
+
+                {/* Status */}
+                <span
+                  className={`
+                    inline-flex items-center
+                    px-2.5 py-1
+                    rounded-full
+                    border
+                    text-[11px]
+                    font-semibold
+                    tracking-wide
+                    whitespace-nowrap
+                    ${
+                      dossier.status === "DELIVERED"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : dossier.status === "CONSULTANT_REVIEW"
+                        ? "bg-amber-50 text-amber-700 border-amber-200"
+                        : dossier.status === "AWAITING_CLIENT_INFO"
+                        ? "bg-slate-100 text-slate-700 border-slate-300"
+                        : "bg-gray-50 text-gray-600 border-gray-200"
+                    }
+                  `}
+                >
+                  {dossier.status}
                 </span>
+
+                {/* Plan */}
+                <span
+                  className="
+                    inline-flex items-center
+                    px-2.5 py-1
+                    rounded-md
+                    bg-slate-50
+                    border border-slate-200
+                    text-[11px]
+                    font-semibold
+                    text-slate-600
+                    whitespace-nowrap
+                  "
+                >
+                  {dossier.plan_type || "FAST_TRACK"}
+                </span>
+              </div>
+
+              {/* Client information */}
+              <div className="flex items-center gap-4 mt-1.5 text-xs text-slate-500">
+
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="font-medium text-slate-600">
+                    {dossier.client?.prenom} {dossier.client?.nom}
+                  </span>
+                </span>
+
+                {dossier.client?.company_name && (
+                  <>
+                    <span className="h-3 w-px bg-gray-200" />
+
+                    <span className="inline-flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{dossier.client.company_name}</span>
+                    </span>
+                  </>
+                )}
+              </div>
+
+              {/* Consultant assignment */}
+              {isAdmin && (
+                <div className="flex items-center gap-2 mt-2.5">
+
+                  <span className="text-xs font-semibold text-slate-600 whitespace-nowrap">
+                    Assigné à
+                  </span>
+
+                  <select
+                    value={dossier.consultant_id || ""}
+                    onChange={(e) =>
+                      assignMutation.mutate(
+                        e.target.value
+                          ? parseInt(e.target.value, 10)
+                          : null
+                      )
+                    }
+                    disabled={assignMutation.isPending}
+                    className="
+                      h-7
+                      min-w-[240px]
+                      px-2.5
+                      rounded-md
+                      border border-gray-300
+                      bg-white
+                      text-xs
+                      font-medium
+                      text-slate-700
+                      shadow-sm
+                      outline-none
+                      transition-all
+                      hover:border-slate-400
+                      focus:border-slate-500
+                      focus:ring-2
+                      focus:ring-slate-100
+                      disabled:bg-gray-50
+                      disabled:cursor-not-allowed
+                    "
+                  >
+                    <option value="">-- Aucun consultant --</option>
+
+                    {consultants.map((c: any) => (
+                      <option key={c._id} value={c._id}>
+                        {c.username} ({c.email})
+                      </option>
+                    ))}
+                  </select>
+
+                  {assignMutation.isPending && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-500" />
+                  )}
+                </div>
               )}
             </div>
-            
-            {isAdmin && (
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-xs font-semibold text-gray-700">Assigné à :</span>
-                <select
-                  value={dossier.consultant_id || ""}
-                  onChange={(e) => assignMutation.mutate(e.target.value ? parseInt(e.target.value, 10) : null)}
-                  disabled={assignMutation.isPending}
-                  className="text-xs bg-white border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                >
-                  <option value="">-- Aucun --</option>
-                  {consultants.map((c: any) => (
-                    <option key={c._id} value={c._id}>
-                      {c.username} ({c.email})
-                    </option>
-                  ))}
-                </select>
-                {assignMutation.isPending && <Loader2 className="w-3 h-3 animate-spin text-indigo-500" />}
+          </div>
+
+          {/* =========================================================
+              RIGHT SECTION
+          ========================================================= */}
+          <div className="flex items-center gap-3 shrink-0">
+
+            {/* Feedback */}
+            {feedback && (
+              <div
+                className={`
+                  hidden xl:flex
+                  items-center
+                  gap-2
+                  px-3
+                  py-2
+                  rounded-lg
+                  border
+                  text-xs
+                  font-medium
+                  whitespace-nowrap
+                  ${
+                    feedback.type === "success"
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : "bg-red-50 text-red-700 border-red-200"
+                  }
+                `}
+              >
+                {feedback.type === "success" ? (
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                )}
+
+                <span>{feedback.message}</span>
               </div>
             )}
+
+            {/* Action separator */}
+            <div className="hidden lg:block h-10 w-px bg-gray-200 mx-1" />
+
+            {/* Generate PDF */}
+            <button
+              onClick={() => generatePdfMutation.mutate()}
+              disabled={
+                generatePdfMutation.isPending ||
+                dossier.status === "DELIVERED"
+              }
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                h-10
+                px-4
+                rounded-lg
+                border border-gray-300
+                bg-white
+                text-sm
+                font-semibold
+                text-slate-700
+                shadow-sm
+                transition-all duration-200
+                hover:bg-slate-50
+                hover:border-slate-400
+                hover:text-slate-900
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+                whitespace-nowrap
+              "
+            >
+              {generatePdfMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <FileText className="w-4 h-4" />
+              )}
+
+              <span>Générer le PDF Final</span>
+            </button>
+
+            {/* Validate */}
+            <button
+              onClick={() => validateMutation.mutate()}
+              disabled={
+                validateMutation.isPending ||
+                dossier.status === "DELIVERED"
+              }
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                h-10
+                px-5
+                rounded-lg
+                bg-slate-700
+                text-sm
+                font-semibold
+                text-white
+                shadow-sm
+                transition-all duration-200
+                hover:bg-slate-800
+                hover:shadow-md
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+                whitespace-nowrap
+              "
+            >
+              {validateMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="w-4 h-4" />
+              )}
+
+              <span>
+                {dossier.status === "DELIVERED"
+                  ? "Dossier déjà livré"
+                  : "Valider"}
+              </span>
+            </button>
           </div>
         </div>
 
-        {/* Action Principale Header */}
-        <div className="flex items-center space-x-3">
-          {feedback && (
+        {/* =========================================================
+            RESPONSIVE FEEDBACK
+        ========================================================= */}
+        {feedback && (
+          <div className="xl:hidden mt-3 pt-3 border-t border-gray-100">
             <div
-              className={`text-xs px-3 py-1.5 rounded-md font-medium flex items-center gap-1.5 ${
-                feedback.type === "success"
-                  ? "bg-emerald-900/80 text-emerald-200 border border-emerald-700"
-                  : "bg-red-900/80 text-red-200 border border-red-700"
-              }`}
+              className={`
+                flex items-center gap-2
+                px-3 py-2
+                rounded-lg
+                border
+                text-xs
+                font-medium
+                ${
+                  feedback.type === "success"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : "bg-red-50 text-red-700 border-red-200"
+                }
+              `}
             >
               {feedback.type === "success" ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-red-400" />
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
               )}
-              {feedback.message}
-            </div>
-          )}
 
-          <button
-            onClick={() => generatePdfMutation.mutate()}
-            disabled={generatePdfMutation.isPending || dossier.status === "DELIVERED"}
-            className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg font-semibold text-sm transition-all shadow-md"
-          >
-            {generatePdfMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <FileText className="w-4 h-4" />
-            )}
-            <span>Générer le PDF Final</span>
-          </button>
-          
-          <button
-            onClick={() => validateMutation.mutate()}
-            disabled={validateMutation.isPending || dossier.status === "DELIVERED"}
-            className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-emerald-900/40"
-          >
-            {validateMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <CheckCircle2 className="w-4 h-4" />
-            )}
-            <span>
-              {dossier.status === "DELIVERED"
-                ? "Dossier déjà Livré"
-                : "Valider"}
-            </span>
-          </button>
-        </div>
+              <span>{feedback.message}</span>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* SPLIT-SCREEN MAIN CONTENT */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden rounded-xl">
         {/* COLONNE GAUCHE (50% - OUTILS & EDITEUR) */}
         <div className="w-1/2 flex flex-col border-r border-gray-200 bg-white">
           {/* BARRE D'ONGLETS */}
-          <div className="flex border-b border-gray-200 bg-gray-50 px-2 pt-2 gap-1 shrink-0">
+          <div className="flex border-b border-gray-200 bg-white px-2 pt-2 gap-1 shrink-0 py-2">
             <button
               onClick={() => setActiveTab("JSON")}
               className={`flex items-center space-x-2 px-4 py-2 rounded-t-lg text-xs font-semibold transition-colors ${
                 activeTab === "JSON"
-                  ? "bg-white text-indigo-600 border-t border-x border-gray-200"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
+                  ? "text-slate-700 border-t border-x border-gray-200"
+                  : "bg-white text-gray-500 hover:text-gray-900 hover:bg-white/50"
               }`}
             >
               <Code className="w-4 h-4" />
@@ -424,8 +607,8 @@ export const DossierReviewStudio: React.FC = () => {
               onClick={() => setActiveTab("DOCS")}
               className={`flex items-center space-x-2 px-4 py-2 rounded-t-lg text-xs font-semibold transition-colors ${
                 activeTab === "DOCS"
-                  ? "bg-white text-indigo-600 border-t border-x border-gray-200"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
+                  ? "text-slate-700 border-t border-x border-gray-200"
+                  : "bg-white text-gray-500 hover:text-gray-900 hover:bg-white/50"
               }`}
             >
               <FileText className="w-4 h-4" />
@@ -436,8 +619,8 @@ export const DossierReviewStudio: React.FC = () => {
               onClick={() => setActiveTab("REQUESTS")}
               className={`flex items-center space-x-2 px-4 py-2 rounded-t-lg text-xs font-semibold transition-colors ${
                 activeTab === "REQUESTS"
-                  ? "bg-white text-indigo-600 border-t border-x border-gray-200"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
+                  ? "text-slate-700 border-t border-x border-gray-200"
+                  : "bg-white text-gray-500 hover:text-gray-900 hover:bg-white/50"
               }`}
             >
               <MessageSquare className="w-4 h-4" />
@@ -456,7 +639,7 @@ export const DossierReviewStudio: React.FC = () => {
                       Édition directe de la structure extraite
                     </span>
                     {dossier.dossierData?.is_validated_by_consultant && (
-                      <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">
+                      <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-medium">
                         Validé par Consultant
                       </span>
                     )}
@@ -465,7 +648,7 @@ export const DossierReviewStudio: React.FC = () => {
                   <button
                     onClick={handleSaveJson}
                     disabled={updateDataMutation.isPending}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-md font-semibold text-xs transition-colors shadow-sm"
+                    className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-800 disabled:opacity-50 text-white rounded-md font-semibold text-xs transition-colors shadow-sm"
                   >
                     {updateDataMutation.isPending ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -477,9 +660,9 @@ export const DossierReviewStudio: React.FC = () => {
                 </div>
 
                 {jsonError && (
-                  <div className="p-3 bg-red-950/80 border border-red-800 rounded-lg text-red-200 text-xs font-mono shrink-0">
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs font-mono shrink-0">
                     <div className="flex items-center space-x-2 font-bold mb-1">
-                      <AlertCircle className="w-4 h-4 text-red-400" />
+                      <AlertCircle className="w-4 h-4 text-red-500" />
                       <span>Erreur de Syntaxe JSON</span>
                     </div>
                     {jsonError}
@@ -492,7 +675,7 @@ export const DossierReviewStudio: React.FC = () => {
                     setJsonText(e.target.value);
                     if (jsonError) setJsonError(null);
                   }}
-                  className="flex-1 w-full bg-gray-50 text-gray-900 border border-gray-300 rounded-lg p-3 font-mono text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none leading-relaxed"
+                  className="flex-1 w-full bg-gray-50 text-gray-900 border border-gray-300 rounded-lg p-3 font-mono text-xs focus:ring-1 focus:ring-slate-500 focus:border-slate-500 outline-none resize-none leading-relaxed"
                   placeholder="Collez ou modifiez la structure JSON ici..."
                   spellCheck={false}
                 />
@@ -518,7 +701,7 @@ export const DossierReviewStudio: React.FC = () => {
                             {req.label}
                           </span>
                           {req.is_required && (
-                            <span className="text-[10px] bg-red-950 text-red-400 border border-red-900 px-1.5 py-0.2 rounded font-medium">
+                            <span className="text-[10px] bg-red-50 text-red-700 border border-red-200 px-1.5 py-0.2 rounded font-medium">
                               Requis
                             </span>
                           )}
@@ -538,13 +721,13 @@ export const DossierReviewStudio: React.FC = () => {
                             href={`${import.meta.env.VITE_BACKEND_API_URL || ""}/${req.uploadedDocument.file_path}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center space-x-1 px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded text-xs transition-colors"
+                            className="flex items-center space-x-1 px-2.5 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded text-xs transition-colors"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>Télécharger</span>
                           </a>
                         ) : (
-                          <span className="text-xs text-amber-400 font-medium">En attente</span>
+                          <span className="text-xs text-amber-600 font-medium">En attente</span>
                         )}
                       </div>
                     </div>
@@ -562,7 +745,7 @@ export const DossierReviewStudio: React.FC = () => {
                     <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">Demandes</h4>
                     <button
                       onClick={() => setSelectedRequestId(null)}
-                      className="p-1 bg-indigo-100 text-indigo-600 hover:bg-indigo-200 rounded transition-colors"
+                      className="p-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded transition-colors"
                       title="Nouvelle demande"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -578,21 +761,26 @@ export const DossierReviewStudio: React.FC = () => {
                         onClick={() => setSelectedRequestId(req.id)}
                         className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
                           selectedRequestId === req.id
-                            ? "bg-indigo-50 border-indigo-200 text-indigo-900"
+                            ? "bg-slate-50 border-slate-200 text-slate-800"
                             : "bg-white border-gray-200 text-gray-600 hover:bg-gray-100"
                         }`}
                       >
                         <div className="flex justify-between items-start mb-1">
-                          <span className="font-semibold truncate max-w-[70%]">
-                            {req.input_type === "FILE" ? "📄 Document" : "💬 Message"}
+                          <span className="font-semibold truncate max-w-[70%] flex items-center gap-1.5">
+                            {req.input_type === "FILE" ? (
+                              <FileText className="w-3 h-3 shrink-0 text-gray-400" />
+                            ) : (
+                              <MessageSquare className="w-3 h-3 shrink-0 text-gray-400" />
+                            )}
+                            {req.input_type === "FILE" ? "Document" : "Message"}
                           </span>
                           <span
-                            className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
+                            className={`text-[9px] px-1.5 py-0.5 rounded font-medium border ${
                               req.status === "PENDING"
-                                ? "bg-amber-950 text-amber-400"
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
                                 : req.status === "RESOLVED"
-                                ? "bg-emerald-950 text-emerald-400"
-                                : "bg-purple-950 text-indigo-600"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-slate-100 text-slate-700 border-slate-200"
                             }`}
                           >
                             {req.status === "PENDING" ? "EN ATTENTE" : req.status === "RESOLVED" ? "RÉSOLU" : "RÉPONDU"}
@@ -613,7 +801,7 @@ export const DossierReviewStudio: React.FC = () => {
                         returnToClientMutation.isPending ||
                         !dossier.dossierRequests?.some((r: any) => r.status === "PENDING")
                       }
-                      className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg transition-colors flex items-center justify-center space-x-1.5"
+                      className="w-full py-2 bg-slate-700 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold text-xs rounded-lg transition-colors flex items-center justify-center space-x-1.5"
                     >
                       {returnToClientMutation.isPending ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -631,11 +819,11 @@ export const DossierReviewStudio: React.FC = () => {
                     // FORMULAIRE NOUVELLE DEMANDE
                     <div className="flex-1 flex flex-col p-4">
                       <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <Plus className="w-4 h-4 text-purple-400" />
+                        <Plus className="w-4 h-4 text-slate-500" />
                         Ouvrir une nouvelle requête
                       </h4>
                       {requestError && (
-                        <div className="text-xs text-red-400 bg-red-950/60 border border-red-900 p-2 rounded mb-3">
+                        <div className="text-xs text-red-700 bg-red-50 border border-red-200 p-2 rounded mb-3">
                           {requestError}
                         </div>
                       )}
@@ -647,7 +835,7 @@ export const DossierReviewStudio: React.FC = () => {
                           <select
                             value={requestInputType}
                             onChange={(e) => setRequestInputType(e.target.value as "FILE" | "TEXT")}
-                            className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-900 focus:ring-1 focus:ring-indigo-500 outline-none"
+                            className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-900 focus:ring-1 focus:ring-slate-600 outline-none"
                           >
                             <option value="FILE">Fichier / Justificatif (PDF, Docx...)</option>
                             <option value="TEXT">Explication texte / Information</option>
@@ -662,14 +850,14 @@ export const DossierReviewStudio: React.FC = () => {
                             onChange={(e) => setRequestMessage(e.target.value)}
                             rows={4}
                             placeholder="Ex: Bonjour, merci de nous fournir le document manquant..."
-                            className="w-full bg-white border border-gray-300 rounded-lg p-3 text-xs text-gray-900 focus:ring-1 focus:ring-indigo-500 outline-none resize-none"
+                            className="w-full bg-white border border-gray-300 rounded-lg p-3 text-xs text-gray-900 focus:ring-1 focus:ring-slate-600 outline-none resize-none"
                           />
                         </div>
                         <div className="flex justify-end pt-2">
                           <button
                             type="submit"
                             disabled={createRequestMutation.isPending}
-                            className="flex items-center space-x-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors shadow-md"
+                            className="flex items-center space-x-1.5 px-4 py-2 bg-slate-700 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
                           >
                             {createRequestMutation.isPending ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -703,7 +891,7 @@ export const DossierReviewStudio: React.FC = () => {
                               <button
                                 onClick={() => resolveMutation.mutate(req.id)}
                                 disabled={resolveMutation.isPending}
-                                className="px-2.5 py-1 bg-emerald-950/50 hover:bg-emerald-900 border border-emerald-800 text-emerald-400 text-[10px] font-bold rounded transition-colors flex items-center gap-1"
+                                className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 text-[10px] font-bold rounded transition-colors flex items-center gap-1"
                               >
                                 {resolveMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
                                 Clôturer
@@ -723,7 +911,7 @@ export const DossierReviewStudio: React.FC = () => {
                                   <div
                                     className={`max-w-[85%] rounded-xl p-2.5 text-xs ${
                                       isMe
-                                        ? "bg-indigo-600 text-white rounded-tr-sm"
+                                        ? "bg-slate-700 text-white rounded-tr-sm"
                                         : "bg-white text-gray-900 rounded-tl-sm border border-gray-200 shadow-sm"
                                     }`}
                                   >
@@ -734,7 +922,7 @@ export const DossierReviewStudio: React.FC = () => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className={`flex items-center gap-1.5 mt-2 p-1.5 rounded text-[10px] font-medium transition-colors ${
-                                          isMe ? "bg-indigo-500 hover:bg-indigo-400" : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                                          isMe ? "bg-slate-600 hover:bg-slate-500" : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                                         }`}
                                       >
                                         <FileText className="w-3.5 h-3.5" />
@@ -753,7 +941,7 @@ export const DossierReviewStudio: React.FC = () => {
                             onSubmit={(e) => handleReplySubmit(e, req.id)}
                             className="p-2 border-t border-gray-200 bg-gray-50 shrink-0 flex items-end gap-2"
                           >
-                              <div className="flex-1 bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition-all">
+                              <div className="flex-1 bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden focus-within:border-slate-600 focus-within:ring-1 focus-within:ring-slate-600 transition-all">
                                 <textarea
                                   value={replyMessage}
                                   onChange={(e) => setReplyMessage(e.target.value)}
@@ -777,7 +965,7 @@ export const DossierReviewStudio: React.FC = () => {
                                 )}
                               </div>
                               <div className="flex items-center gap-1 shrink-0 pb-1">
-                                <label className="p-1.5 text-gray-500 hover:text-purple-400 hover:bg-gray-800 rounded cursor-pointer transition-colors">
+                                <label className="p-1.5 text-gray-500 hover:text-slate-700 hover:bg-gray-100 rounded cursor-pointer transition-colors">
                                   <Paperclip className="w-4 h-4" />
                                   <input
                                     type="file"
@@ -788,7 +976,7 @@ export const DossierReviewStudio: React.FC = () => {
                                 <button
                                   type="submit"
                                   disabled={replyMutation.isPending || (!replyMessage.trim() && !replyFile)}
-                                  className="p-1.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded transition-colors"
+                                  className="p-1.5 bg-slate-700 hover:bg-slate-800 disabled:opacity-50 text-white rounded transition-colors"
                                 >
                                   {replyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                                 </button>
@@ -805,18 +993,18 @@ export const DossierReviewStudio: React.FC = () => {
         </div>
 
         {/* COLONNE DROITE (50% - PREVISUALISATION TEMPS REEL IFRAME) */}
-        <div className="w-1/2 flex flex-col bg-gray-50">
+        <div className="w-1/2 flex flex-col bg-white">
           {/* BARRE D'ENTETE DE PREVISUALISATION */}
-          <div className="h-10 border-b border-gray-200 bg-white px-4 flex items-center justify-between shrink-0">
+          <div className="h-10 border-b border-gray-200 bg-white px-4 flex items-center justify-between shrink-0 py-6">
             <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-blue-400" />
+              <FileText className="w-3.5 h-3.5 text-slate-400" />
               Aperçu Rapport d'Investissement (Handlebars HTML)
             </span>
 
             <button
               onClick={() => refetchReport()}
               disabled={isReportFetching}
-              className="p-1.5 hover:bg-gray-800 text-gray-500 hover:text-white rounded transition-colors"
+              className="p-1.5 hover:bg-gray-100 text-gray-500 hover:text-gray-900 rounded transition-colors"
               title="Rafraîchir la prévisualisation"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isReportFetching ? "animate-spin" : ""}`} />
@@ -826,9 +1014,9 @@ export const DossierReviewStudio: React.FC = () => {
           {/* CONTENEUR IFRAME PREVIEW */}
           <div className="flex-1 p-4 overflow-hidden relative">
             {isReportLoading ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded-lg">
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 border border-gray-200 rounded-lg">
                 <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                  <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
                   <span className="text-xs">Génération de l'aperçu du rapport...</span>
                 </div>
               </div>
@@ -836,10 +1024,10 @@ export const DossierReviewStudio: React.FC = () => {
               <iframe
                 srcDoc={reportHtml}
                 title="Aperçu du Rapport d'Investissement"
-                className="w-full h-full border border-gray-200 rounded-lg bg-white shadow-2xl"
+                className="w-full h-full border border-gray-200 rounded-lg bg-white shadow-sm"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded-lg text-gray-500 text-xs">
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 border border-gray-200 rounded-lg text-gray-400 text-xs">
                 Aucun aperçu disponible. Veuillez enregistrer le JSON pour générer le rapport.
               </div>
             )}
