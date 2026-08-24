@@ -73,7 +73,8 @@ export interface DossierDetail {
   documents: DocumentItem[];
   requirements: DocumentRequirementItem[];
   dossierData?: DossierDataInfo | null;
-  consultantRequests: ConsultantRequestItem[];
+  dossierRequests: ConsultantRequestItem[];
+  consultant_id?: number | null;
   createdAt: string;
   updatedAt: string;
 }

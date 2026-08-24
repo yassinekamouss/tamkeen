@@ -12,6 +12,19 @@ export const adminDossierService = {
     return response.data?.data || response.data;
   },
 
+  // Liste des consultants : table admins, role = "Consultant"
+  getConsultants: async (): Promise<any[]> => {
+    const response = await api.get(`${ADMIN_API_PREFIX}`);
+    return response.data || [];
+  },
+
+  assignConsultant: async (dossierId: number, consultantId: number | null): Promise<any> => {
+    const response = await api.put(`${ADMIN_API_PREFIX}/dossiers/${dossierId}/assign`, {
+      consultant_id: consultantId
+    });
+    return response.data;
+  },
+
   // 1. Vue 360° du dossier
   getDossierDetails: async (dossierId: number): Promise<DossierDetail> => {
     const response = await api.get(`${ADMIN_API_PREFIX}/dossiers/${dossierId}`);

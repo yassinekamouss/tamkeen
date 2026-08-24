@@ -72,6 +72,30 @@ export const DossierReviewStudio: React.FC = () => {
     enabled: dossierId > 0,
   });
 
+  const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "{}");
+  const isAdmin = adminProfile?.role === "Administrateur";
+
+  // Fetch consultants list if Admin (table admins, role = "Consultant")
+  const { data: consultantsList } = useQuery({
+    queryKey: ["consultantsList"],
+    queryFn: () => adminDossierService.getConsultants(),
+    enabled: isAdmin,
+  });
+
+  const consultants =
+    consultantsList?.filter((c: any) => c.role === "Consultant") || [];
+
+  const assignMutation = useMutation({
+    mutationFn: (consultantId: number | null) => adminDossierService.assignConsultant(dossierId, consultantId),
+    onSuccess: () => {
+      setFeedback({ type: "success", message: "Consultant assigné avec succès !" });
+      queryClient.invalidateQueries({ queryKey: ["adminDossier", dossierId] });
+    },
+    onError: (err: any) => {
+      setFeedback({ type: "error", message: err.response?.data?.message || "Erreur d'assignation." });
+    },
+  });
+
   // Synchroniser l'éditeur JSON lorsque les données du dossier sont récupérées
   useEffect(() => {
     if (dossier?.dossierData?.extracted_json) {
@@ -304,6 +328,26 @@ export const DossierReviewStudio: React.FC = () => {
                 </span>
               )}
             </div>
+            
+            {isAdmin && (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs font-semibold text-gray-700">Assigné à :</span>
+                <select
+                  value={dossier.consultant_id || ""}
+                  onChange={(e) => assignMutation.mutate(e.target.value ? parseInt(e.target.value, 10) : null)}
+                  disabled={assignMutation.isPending}
+                  className="text-xs bg-white border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+                  <option value="">-- Aucun --</option>
+                  {consultants.map((c: any) => (
+                    <option key={c._id} value={c._id}>
+                      {c.username} ({c.email})
+                    </option>
+                  ))}
+                </select>
+                {assignMutation.isPending && <Loader2 className="w-3 h-3 animate-spin text-indigo-500" />}
+              </div>
+            )}
           </div>
         </div>
 
@@ -397,7 +441,7 @@ export const DossierReviewStudio: React.FC = () => {
               }`}
             >
               <MessageSquare className="w-4 h-4" />
-              <span>Boucle Itérative ({dossier.consultantRequests?.length || 0})</span>
+              <span>Boucle Itérative ({dossier.dossierRequests?.length || 0})</span>
             </button>
           </div>
 
@@ -525,17 +569,17 @@ export const DossierReviewStudio: React.FC = () => {
                     </button>
                   </div>
                   <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                    {dossier.consultantRequests?.length === 0 && (
+                    {dossier.dossierRequests?.length === 0 && (
                       <p className="text-[10px] text-gray-500 text-center mt-4">Aucune demande.</p>
                     )}
-                    {dossier.consultantRequests?.map((req) => (
+                    {dossier.dossierRequests?.map((req: any) => (
                       <button
                         key={req.id}
                         onClick={() => setSelectedRequestId(req.id)}
                         className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
                           selectedRequestId === req.id
                             ? "bg-indigo-50 border-indigo-200 text-indigo-900"
-                            : "bg-transparent border-transparent text-gray-500 hover:bg-gray-900"
+                            : "bg-white border-gray-200 text-gray-600 hover:bg-gray-100"
                         }`}
                       >
                         <div className="flex justify-between items-start mb-1">
@@ -567,7 +611,7 @@ export const DossierReviewStudio: React.FC = () => {
                       onClick={() => returnToClientMutation.mutate()}
                       disabled={
                         returnToClientMutation.isPending ||
-                        !dossier.consultantRequests?.some((r) => r.status === "PENDING")
+                        !dossier.dossierRequests?.some((r: any) => r.status === "PENDING")
                       }
                       className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg transition-colors flex items-center justify-center space-x-1.5"
                     >
@@ -597,20 +641,20 @@ export const DossierReviewStudio: React.FC = () => {
                       )}
                       <form onSubmit={handleCreateRequest} className="space-y-4">
                         <div>
-                          <label className="block text-[11px] text-gray-500 font-medium mb-1">
+                          <label className="block text-[11px] text-gray-600 font-medium mb-1">
                             Type d'élément attendu
                           </label>
                           <select
                             value={requestInputType}
                             onChange={(e) => setRequestInputType(e.target.value as "FILE" | "TEXT")}
-                            className="w-full bg-gray-900 border border-gray-200 rounded-lg p-2 text-xs text-gray-900 focus:ring-1 focus:ring-indigo-500 outline-none"
+                            className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-900 focus:ring-1 focus:ring-indigo-500 outline-none"
                           >
                             <option value="FILE">Fichier / Justificatif (PDF, Docx...)</option>
                             <option value="TEXT">Explication texte / Information</option>
                           </select>
                         </div>
                         <div>
-                          <label className="block text-[11px] text-gray-500 font-medium mb-1">
+                          <label className="block text-[11px] text-gray-600 font-medium mb-1">
                             Message initial (Description de la demande)
                           </label>
                           <textarea
@@ -618,7 +662,7 @@ export const DossierReviewStudio: React.FC = () => {
                             onChange={(e) => setRequestMessage(e.target.value)}
                             rows={4}
                             placeholder="Ex: Bonjour, merci de nous fournir le document manquant..."
-                            className="w-full bg-gray-900 border border-gray-200 rounded-lg p-3 text-xs text-gray-900 focus:ring-1 focus:ring-indigo-500 outline-none resize-none"
+                            className="w-full bg-white border border-gray-300 rounded-lg p-3 text-xs text-gray-900 focus:ring-1 focus:ring-indigo-500 outline-none resize-none"
                           />
                         </div>
                         <div className="flex justify-end pt-2">
@@ -640,7 +684,7 @@ export const DossierReviewStudio: React.FC = () => {
                   ) : (
                     // AFFICHAGE DU THREAD (MESSAGES)
                     (() => {
-                      const req = dossier.consultantRequests?.find((r) => r.id === selectedRequestId);
+                      const req = dossier.dossierRequests?.find((r: any) => r.id === selectedRequestId);
                       if (!req) return null;
                       return (
                         <div className="flex-1 flex flex-col h-full">
@@ -669,7 +713,7 @@ export const DossierReviewStudio: React.FC = () => {
 
                           {/* Liste des messages */}
                           <div className="flex-1 p-3 overflow-y-auto bg-gray-50 space-y-3">
-                            {req.messages?.map((msg) => {
+                            {req.messages?.map((msg: any) => {
                               const isMe = msg.sender_type === "CONSULTANT";
                               return (
                                 <div key={msg.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
@@ -679,8 +723,8 @@ export const DossierReviewStudio: React.FC = () => {
                                   <div
                                     className={`max-w-[85%] rounded-xl p-2.5 text-xs ${
                                       isMe
-                                        ? "bg-purple-600 text-white rounded-tr-sm"
-                                        : "bg-gray-800 text-gray-900 rounded-tl-sm border border-gray-700"
+                                        ? "bg-indigo-600 text-white rounded-tr-sm"
+                                        : "bg-white text-gray-900 rounded-tl-sm border border-gray-200 shadow-sm"
                                     }`}
                                   >
                                     {msg.message && <p className="whitespace-pre-wrap leading-relaxed">{msg.message}</p>}
@@ -690,7 +734,7 @@ export const DossierReviewStudio: React.FC = () => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className={`flex items-center gap-1.5 mt-2 p-1.5 rounded text-[10px] font-medium transition-colors ${
-                                          isMe ? "bg-purple-500/50 hover:bg-purple-500" : "bg-gray-700 hover:bg-gray-600"
+                                          isMe ? "bg-indigo-500 hover:bg-indigo-400" : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                                         }`}
                                       >
                                         <FileText className="w-3.5 h-3.5" />
@@ -724,9 +768,9 @@ export const DossierReviewStudio: React.FC = () => {
                                   }}
                                 />
                                 {replyFile && (
-                                  <div className="px-2.5 py-1.5 bg-gray-800 border-t border-gray-700 flex justify-between items-center text-[10px]">
-                                    <span className="text-gray-300 truncate max-w-[80%]">{replyFile.name}</span>
-                                    <button type="button" onClick={() => setReplyFile(null)} className="text-red-400 hover:text-red-300">
+                                  <div className="px-2.5 py-1.5 bg-gray-100 border-t border-gray-200 flex justify-between items-center text-[10px]">
+                                    <span className="text-gray-700 truncate max-w-[80%]">{replyFile.name}</span>
+                                    <button type="button" onClick={() => setReplyFile(null)} className="text-red-500 hover:text-red-600">
                                       ✕
                                     </button>
                                   </div>
