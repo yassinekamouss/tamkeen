@@ -123,47 +123,48 @@ const TestCard: React.FC<{
           </div>
         </div>
 
-        {!hidePerson && (
-          <div className="mb-4 flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
-              {test.personne?.applicantType === "morale" ? (
-                <Building2 className="w-4 h-4 text-slate-600" />
-              ) : (
-                <User2 className="w-4 h-4 text-slate-600" />
+        {!hidePerson && (() => {
+          const userObj = test.user || test.personne || test.client;
+          return (
+            <div className="mb-4 flex items-center gap-3">
+              <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+                {userObj?.applicantType === "morale" ? (
+                  <Building2 className="w-4 h-4 text-slate-600" />
+                ) : (
+                  <User2 className="w-4 h-4 text-slate-600" />
+                )}
+              </div>
+              <div className="text-sm flex-1">
+                <div className="text-slate-900 font-medium">
+                  {userObj?.applicantType === "morale"
+                    ? userObj?.nomEntreprise
+                    : `${userObj?.nom ?? ""} ${
+                        userObj?.prenom ?? ""
+                      }`}
+                </div>
+                
+                <div className="text-slate-500 flex items-center gap-1">
+                  <button 
+                    onClick={(e) => handleEmailClick(e, userObj?.email || '')}
+                    className="hover:text-blue-600 hover:underline transition-colors duration-200 flex items-center gap-1 text-left"
+                    title="Envoyer un email"
+                  >
+                    {userObj?.email}
+                    <Mail className="w-3 h-3 opacity-60" />
+                  </button>
+                </div>
+              </div>
+              {test.wannaBeContacted && (
+                <div className="flex items-center gap-1 text-blue-600">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full relative">
+                    <div className="absolute inset-0 w-2 h-2 bg-blue-500 rounded-full animate-[pulse_2s_ease-in-out_infinite]"></div>
+                  </div>
+                  <span className="text-xs font-medium">Demande de contact</span>
+                </div>
               )}
             </div>
-            <div className="text-sm flex-1">
-              <div className="text-slate-900 font-medium">
-                {test.personne?.applicantType === "morale"
-                  ? test.personne?.nomEntreprise
-                  : `${test.personne?.nom ?? ""} ${
-                      test.personne?.prenom ?? ""
-                    }`}
-              </div>
-              
-              <div className="text-slate-500 flex items-center gap-1">
-                <button 
-                  onClick={(e) => handleEmailClick(e, test.personne?.email || '')}
-                  className="hover:text-blue-600 hover:underline transition-colors duration-200 flex items-center gap-1 text-left"
-                  title="Envoyer un email"
-                >
-                  {test.personne?.email}
-                  <Mail className="w-3 h-3 opacity-60" />
-                </button>
-              </div>
-            </div>
-            {/* Indicateur de contact dans la section personne - animation douce */}
-            {test.wannaBeContacted && (
-              <div className="flex items-center gap-1 text-blue-600">
-                <div className="w-2 h-2 bg-blue-500 rounded-full relative">
-                  {/* Animation d'opacité au lieu de pulse */}
-                  <div className="absolute inset-0 w-2 h-2 bg-blue-500 rounded-full animate-[pulse_2s_ease-in-out_infinite]"></div>
-                </div>
-                <span className="text-xs font-medium">Demande de contact</span>
-              </div>
-            )}
-          </div>
-        )}
+          );
+        })()}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="space-y-4">

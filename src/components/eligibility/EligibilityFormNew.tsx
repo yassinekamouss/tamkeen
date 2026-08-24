@@ -46,8 +46,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     if (client) {
       setFormData((prev) => ({
         ...prev,
-        applicantType: client.applicantType,
-        email: client.email,
+        applicantType: (client.applicantType || prev.applicantType || "") as any,
+        email: client.email || prev.email,
         nom: client.nom || prev.nom,
         prenom: client.prenom || prev.prenom,
         age: client.age?.toString() || prev.age,

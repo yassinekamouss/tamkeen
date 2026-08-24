@@ -1,56 +1,37 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../../api/axios";
-import { Building2, User2 } from "lucide-react"; // icônes Lucide
+import { Building2, User2 } from "lucide-react";
 import TestCard from "../../components/admin/TestCard";
-
-interface Test {
-  _id: string;
-  secteurTravail: string;
-  region: string;
-  statutJuridique?: string;
-  anneeCreation: number;
-  chiffreAffaires: {
-    chiffreAffaire2022: number | null;
-    chiffreAffaire2023: number | null;
-    chiffreAffaire2024: number | null;
-  };
-  montantInvestissement: string;
-  programmesEligibles: string[];
-  personne: {
-    _id: string;
-    applicantType: "physique" | "morale";
-    nom?: string;
-    prenom?: string;
-    nomEntreprise?: string;
-    email: string;
-    telephones?: string[];
-  };
-}
+import type { TestItem, UserLite } from "../../types/test";
 
 const UserDetails = () => {
   const { id } = useParams();
-  const [tests, setTests] = useState<Test[]>([]);
+  const [tests, setTests] = useState<TestItem[]>([]);
+  const [userInfo, setUserInfo] = useState<UserLite | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
-      axios
-        .get(`test/eligibilite/personne/${id}`)
-        .then((res) => {
-          setTests(res.data.tests);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Erreur lors du chargement :", err);
-          setLoading(false);
-        });
+      setLoading(true);
+      Promise.all([
+        axios.get(`test/eligibilite/user/${id}`).catch(() => ({ data: { tests: [] } })),
+        axios.get(`users/${id}`).catch(() => null),
+      ]).then(([testsRes, userRes]) => {
+        if (testsRes.data && testsRes.data.tests) {
+          setTests(testsRes.data.tests);
+        }
+        if (userRes && userRes.data) {
+          setUserInfo(userRes.data);
+        }
+        setLoading(false);
+      });
     }
   }, [id]);
 
   if (loading) return <p className="p-4">Chargement...</p>;
 
-  const personne = tests[0]?.personne;
+  const userObj = userInfo || tests[0]?.user || tests[0]?.personne || tests[0]?.client;
 
   return (
     <div className="min-h-full">
@@ -62,7 +43,7 @@ const UserDetails = () => {
               <div className="p-6 border-b border-slate-100">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                    {personne?.applicantType === "morale" ? (
+                    {userObj?.applicantType === "morale" ? (
                       <Building2 className="w-5 h-5 text-slate-600" />
                     ) : (
                       <User2 className="w-5 h-5 text-slate-600" />
@@ -70,7 +51,7 @@ const UserDetails = () => {
                   </div>
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900">
-                      {personne?.applicantType === "morale"
+                      {userObj?.applicantType === "morale"
                         ? "Personne morale"
                         : "Personne physique"}
                     </h2>
@@ -78,15 +59,15 @@ const UserDetails = () => {
                   </div>
                 </div>
 
-                {personne && (
+                {userObj && (
                   <div className="space-y-3">
-                    {personne.applicantType === "morale" ? (
+                    {userObj.applicantType === "morale" ? (
                       <div className="space-y-1">
                         <dt className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                           Dénomination
                         </dt>
                         <dd className="text-sm font-medium text-slate-900">
-                          {personne.nomEntreprise}
+                          {userObj.nomEntreprise || "—"}
                         </dd>
                       </div>
                     ) : (
@@ -96,7 +77,7 @@ const UserDetails = () => {
                             Nom complet
                           </dt>
                           <dd className="text-sm font-medium text-slate-900">
-                            {personne.nom} {personne.prenom}
+                            {userObj.nom} {userObj.prenom}
                           </dd>
                         </div>
                         <div className="space-y-1">
@@ -104,9 +85,9 @@ const UserDetails = () => {
                             Téléphone(s)
                           </dt>
                           <dd className="text-sm text-slate-700">
-                            {Array.isArray(personne.telephones) &&
-                            personne.telephones.length > 0
-                              ? personne.telephones.join(", ")
+                            {Array.isArray(userObj.telephones) &&
+                            userObj.telephones.length > 0
+                              ? userObj.telephones.join(", ")
                               : "—"}
                           </dd>
                         </div>
@@ -117,7 +98,7 @@ const UserDetails = () => {
                         Email
                       </dt>
                       <dd className="text-sm text-slate-700 break-all">
-                        {personne.email}
+                        {userObj.email}
                       </dd>
                     </div>
                   </div>
@@ -138,7 +119,7 @@ const UserDetails = () => {
                     <div className="text-2xl font-bold text-slate-900">
                       {
                         tests.filter(
-                          (test) => test.programmesEligibles.length > 0
+                          (test) => test.programmesEligibles && test.programmesEligibles.length > 0
                         ).length
                       }
                     </div>
@@ -171,7 +152,7 @@ const UserDetails = () => {
                   Aucun test trouvé
                 </h3>
                 <p className="text-slate-500">
-                  Cette personne n'a encore effectué aucun test d'éligibilité.
+                  Cet utilisateur n'a encore effectué aucun test d'éligibilité.
                 </p>
               </div>
             ) : (

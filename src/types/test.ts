@@ -1,4 +1,4 @@
-export interface PersonneLite {
+export interface UserLite {
   _id: string;
   applicantType: "physique" | "morale";
   nom?: string;
@@ -7,6 +7,8 @@ export interface PersonneLite {
   email: string;
   telephones?: string[];
 }
+
+export type PersonneLite = UserLite;
 
 export interface TestItem {
   _id: string;
@@ -18,11 +20,14 @@ export interface TestItem {
     chiffreAffaire2022?: number | null;
     chiffreAffaire2023?: number | null;
     chiffreAffaire2024?: number | null;
+    [key: string]: number | null | undefined;
   };
   montantInvestissement?: string | number | null;
   numberOfEmployees?: string | null;
   programmesEligibles: string[];
-  personne: PersonneLite;
+  personne?: UserLite;
+  user?: UserLite;
+  client?: UserLite;
   wannaBeContacted?: boolean;
   createdAt?: string;
 }

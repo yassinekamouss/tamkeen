@@ -12,6 +12,8 @@ export interface User {
   email: string;
   telephone?: string;
   telephones?: string[];
+  dossierId?: string;
+  dossier_id?: string;
   createdAt?: string;
   consultantAssocie?: {
     _id: string;
