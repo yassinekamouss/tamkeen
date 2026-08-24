@@ -16,37 +16,39 @@
     "client_area": "Espace Client"
   },
   "hero": {
-    "badge": "Plateforme Nationale d'Éligibilité",
-    "title": "Vérifiez votre éligibilité aux subventions et aides d'État au Maroc",
-    "description": "Renseignez votre profil en 2 minutes. Notre système analyse vos critères et vous indique immédiatement les programmes de financement public auxquels vous êtes potentiellement éligible.",
+    "badge": "Subventions d'investissement au Maroc",
+    "title": "Découvrez en 2 minutes à quelles subventions votre entreprise a droit.",
+    "description": "Un test gratuit, un dossier préparé avec l'aide de l'IA, validé par un consultant avant dépôt.",
     "cta": "Tester mon éligibilité",
+    "cta_sub": "Résultat immédiat",
     "metric1_value": "100%",
     "metric1_label": "Gratuit & Confidentiel",
     "metric2_value": "2 min",
     "metric2_label": "Diagnostic IA",
     "metric3_value": "2026",
     "metric3_label": "Données officielles",
-    "slides": [
-      {
-        "subtitle": "Simplifiez votre accès aux subventions",
-        "title": "Vous avez un projet d'investissement",
-        "description": "et vous vous demandez si vous pouvez bénéficier d'un appui ou d'une subvention ?"
-      },
-      {
-        "subtitle": "Votre partenaire de confiance",
-        "title": "Tamkeen vous accompagne dans vos démarches",
-        "description": "et vous aide à identifier les meilleures opportunités de financement."
-      },
-      {
-        "subtitle": "Innovez et Prospérez",
-        "title": "Transformez vos idées en succès concret",
-        "description": "grâce à notre expertise en subventions et accompagnement personnalisé."
-      }
-    ],
     "button": "Testez votre éligibilité ici",
     "cta_primary": "Tester mon éligibilité",
     "cta_secondary": "Explorer les programmes",
-    "programs_cta": "Explorer les programmes"
+    "programs_cta": "Explorer les programmes",
+    "trust_pills": {
+      "pill1": "Gratuit · 2 minutes · Sans engagement",
+      "pill2": "Chaque dossier validé par un consultant",
+      "pill3": "Documents traités de manière sécurisée",
+      "pill4": "Aucun engagement pour tester votre éligibilité"
+    }
+  },
+  "profile_selector": {
+    "eyebrow": "Étape 1 — Sélection du profil",
+    "title": "Sélectionnez votre structure pour démarrer le test d'éligibilité",
+    "subtitle": "Choisissez votre statut afin d'adapter automatiquement le parcours de vérification",
+    "morale_title": "Personne Morale",
+    "morale_subtitle": "Sociétés (SARL, SA, SAS), Coopératives et entreprises immatriculées.",
+    "morale_badge": "Entreprises & Sociétés",
+    "physique_title": "Personne Physique",
+    "physique_subtitle": "Auto-entrepreneurs, entreprises individuelles et porteurs de projet.",
+    "physique_badge": "Projets individuels",
+    "selected": "Sélectionné"
   },
   "eligibility": {
     "eyebrow": "Outil d'Évaluation en ligne",
@@ -461,21 +463,65 @@
     "loading": "Chargement...",
     "errorMessage": "Une erreur est survenue. Réessayez plus tard."
   },
+  "project_types": {
+    "badge": "Porteurs de projets",
+    "title": "Un accompagnement pensé pour les porteurs de projets marocains",
+    "subtitle": "Que vous portiez un projet de création, d'extension, ou un investissement en cours.",
+    "creation_title": "Création d'entreprise",
+    "creation_desc": "Identifiez les aides au démarrage disponibles pour votre projet.",
+    "extension_title": "Extension d'activité",
+    "extension_desc": "Financez le développement de votre activité existante.",
+    "investment_title": "Investissement en cours",
+    "investment_desc": "Optimisez votre dossier de financement industriel ou commercial."
+  },
   "process": {
-    "badge": "Comment ça marche",
-    "title": "3 étapes pour connaître vos aides",
-    "subtitle": "Un diagnostic rapide, transparent, et sans engagement. Vous saurez en 2 minutes si votre profil ouvre droit à des subventions publiques.",
-    "cta": "Démarrer le diagnostic",
-    "step1_title": "1. Renseignez votre profil",
-    "step1_desc": "Complétez les informations sur votre structure : type de demandeur, secteur d'activité, région, situation financière.",
-    "step2_title": "2. Analyse instantanée",
-    "step2_desc": "Notre système croise vos données avec les critères officiels de chaque programme d'appui public actif au Maroc.",
-    "step3_title": "3. Résultats & Orientation",
-    "step3_desc": "Vous recevez immédiatement la liste des programmes éligibles avec les liens officiels et la possibilité d'être accompagné par un conseiller.",
+    "badge": "Parcours complet en 4 étapes",
+    "title": "De l'éligibilité au dossier déposé, en 4 étapes",
+    "subtitle": "Un accompagnement structuré combinant l'analyse par l'IA et la validation rigoureuse par nos experts.",
+    "cta": "Tester mon éligibilité",
+    "step1_title": "Vous répondez",
+    "step1_desc": "Quelques questions sur votre entreprise et votre projet.",
+    "step2_title": "L'IA structure",
+    "step2_desc": "Les subventions pertinentes sont identifiées, le dossier est préparé.",
+    "step3_title": "Le consultant valide",
+    "step3_desc": "Chaque élément est vérifié avant tout dépôt officiel.",
+    "step4_title": "Le dossier est déposé",
+    "step4_desc": "Suivi jusqu'à la décision finale.",
     "trust1": "Test 100% gratuit",
-    "trust2": "Données traitées de manière confidentielle",
+    "trust2": "Données traitées de manière sécurisée",
     "trust3": "Résultats immédiats",
-    "trust4": "Aucun engagement"
+    "trust4": "Sans engagement"
+  },
+  "ai_human": {
+    "badge": "Expertise mixte",
+    "title": "L'IA accélère, l'humain valide",
+    "subtitle": "Une combinaison unique entre réactivité algorithmique et rigueur humaine.",
+    "ai_role_title": "Le rôle de l'IA",
+    "ai_role_desc": "Analyse votre situation, identifie les aides pertinentes, structure les documents nécessaires.",
+    "human_role_title": "Le rôle du consultant",
+    "human_role_desc": "Vérifie la cohérence du dossier, corrige si nécessaire, valide avant tout dépôt officiel."
+  },
+  "document_security": {
+    "badge": "Sécurité des données",
+    "title": "Vos documents sont protégés à chaque étape",
+    "desc": "Vos documents sont stockés de manière sécurisée et accessibles uniquement aux personnes habilitées à traiter votre dossier.",
+    "badge1": "Accès restreint aux consultants habilités",
+    "badge2": "Protection & Confidentialité stricte"
+  },
+  "cta_requirements": {
+    "title": "Savez-vous à quelles subventions vous avez droit ?",
+    "subtitle": "Répondez à quelques questions sur votre entreprise. Aucune pièce justificative n'est nécessaire à ce stade.",
+    "cta_btn": "Tester mon éligibilité",
+    "cta_badge": "Résultat immédiat",
+    "asked_title": "Ce qui est demandé",
+    "asked_item1": "Secteur d'activité",
+    "asked_item2": "Taille et stade de l'entreprise",
+    "asked_item3": "Nature du projet (création, extension, investissement)",
+    "asked_item4": "Montant approximatif du projet",
+    "not_asked_title": "Ce qui n'est pas demandé",
+    "not_asked_item1": "Pièces justificatives",
+    "not_asked_item2": "Coordonnées bancaires",
+    "not_asked_item3": "Paiement ou engagement"
   },
   "programs_section": {
     "badge": "Subventions & Aides",

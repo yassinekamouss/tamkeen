@@ -100,12 +100,10 @@
 
 .scrollbar-thumb-blue-300::-webkit-scrollbar-track {
   background: #dbeafe;
-  border-radius: 10px;
 }
 
 .scrollbar-thumb-blue-300::-webkit-scrollbar-thumb {
   background: #93c5fd;
-  border-radius: 10px;
 }
 
 .scrollbar-thumb-blue-300::-webkit-scrollbar-thumb:hover {
@@ -195,7 +193,6 @@ section[id] {
   text-transform: uppercase;
   padding: 6px 12px;
   font-family: var(--font-body);
-  border-radius: 4px;
 }
 
 /* CTA primary button (Blue) */
@@ -211,7 +208,6 @@ section[id] {
   font-weight: 600;
   letter-spacing: 0.025em;
   padding: 14px 28px;
-  border-radius: 4px;
   border: 1px solid var(--color-primary);
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
@@ -237,7 +233,6 @@ section[id] {
   font-weight: 600;
   letter-spacing: 0.025em;
   padding: 14px 28px;
-  border-radius: 4px;
   border: 1px solid var(--color-primary);
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
@@ -260,7 +255,6 @@ section[id] {
   font-weight: 600;
   letter-spacing: 0.025em;
   padding: 14px 28px;
-  border-radius: 4px;
   border: 1px solid var(--color-secondary);
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
@@ -279,7 +273,6 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -334,7 +327,6 @@ button {
 .queryBuilder > .ruleGroup {
   background: #ffffff !important;
   border: 2px solid #e5e7eb !important;
-  border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
   padding: 20px !important;
 }
@@ -345,7 +337,6 @@ button {
 .ruleGroup {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -405,7 +396,6 @@ button {
 ============================ */
 .ruleGroup-combinators select {
   padding: 8px 36px 8px 14px;
-  border-radius: 7px;
   border: 1.5px solid #d1d5db;
   background: #ffffff;
   font-size: 14px;
@@ -438,7 +428,6 @@ button {
 .ruleGroup-addRule button,
 .ruleGroup-addGroup button {
   padding: 8px 16px;
-  border-radius: 7px;
   border: 1.5px solid #d1d5db;
   background: #ffffff;
   color: #374151;
@@ -476,7 +465,6 @@ button {
 /* Bouton supprimer le groupe */
 .ruleGroup-remove button {
   padding: 8px 14px;
-  border-radius: 7px;
   border: 1.5px solid #fee2e2;
   background: #ffffff;
   color: #dc2626;
@@ -506,7 +494,6 @@ button {
   align-items: center;
   padding: 12px;
   background: rgba(255, 255, 255, 0.6);
-  border-radius: 7px;
   border: 1px solid rgba(209, 213, 219, 0.5);
   transition: all 0.2s ease;
 }
@@ -521,7 +508,6 @@ button {
 .rule select,
 .rule input {
   padding: 8px 14px;
-  border-radius: 6px;
   border: 1.5px solid #d1d5db;
   background: #ffffff;
   font-size: 14px;
@@ -553,7 +539,6 @@ button {
 /* Bouton supprimer la règle */
 .rule-remove button {
   padding: 7px 11px;
-  border-radius: 6px;
   border: 1px solid transparent;
   background: transparent;
   color: #dc2626;

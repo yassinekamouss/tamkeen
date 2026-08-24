@@ -76,7 +76,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className="sticky top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#FFFFFF] border-b border-[#E4E4E7]"
+      className="fixed top-0 left-0 w-full z-50 bg-white/60 backdrop-blur-md border-b border-gray-100"
       dir={isRTL ? "rtl" : "ltr"}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-8">

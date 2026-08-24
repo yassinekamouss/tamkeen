@@ -21,6 +21,8 @@ import { useClientAuth } from "../../contexts/ClientAuthContext";
 
 const EligibilityForm: React.FC<EligibilityFormProps> = ({
   onNavigateBack,
+  selectedProfile,
+  onSelectProfile,
 }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
@@ -28,7 +30,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
   // État du formulaire
   const [formData, setFormData] = useState<FormData>({
-    applicantType: client?.applicantType || "physique",
+    applicantType: selectedProfile || client?.applicantType || "physique",
     email: client?.email || "",
     nom: client?.nom || "",
     prenom: client?.prenom || "",
@@ -41,6 +43,12 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     acceptPrivacyPolicy: false,
     statutJuridique: "",
   });
+
+  React.useEffect(() => {
+    if (selectedProfile && selectedProfile !== formData.applicantType) {
+      setFormData((prev) => ({ ...prev, applicantType: selectedProfile }));
+    }
+  }, [selectedProfile]);
 
   React.useEffect(() => {
     if (client) {
@@ -145,6 +153,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
     if (errors.applicantType) {
       setErrors((prev) => ({ ...prev, applicantType: undefined }));
+    }
+
+    if (onSelectProfile) {
+      onSelectProfile(type);
     }
   };
 
@@ -389,56 +401,9 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
       <LoadingModal isOpen={showLoadingModal} title={t("eligibility.loadingModalTitle")} />
 
-      <section className="min-h-screen py-12 sm:py-20 px-4 bg-[#FFFFFF] font-body">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
-
-            {/* ---------- Colonne gauche : contexte ---------- */}
-            <div className="lg:col-span-2 lg:sticky lg:top-24">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#1E5ED8] mb-4 font-body">
-                {t("eligibility.eyebrow")}
-              </p>
-
-              <h1 className="section-h2 text-3xl sm:text-4xl font-bold text-[#1F2937] tracking-tight mb-4">
-                {t("eligibility.title")}
-              </h1>
-
-              <p className="text-sm sm:text-base text-[#5B6472] leading-relaxed font-body mb-8">
-                {t("eligibility.subtitle")}
-              </p>
-
-              {/* Ce qu'il vous faut pour commencer */}
-              <div className="border-t border-[#E4E4E7] pt-6 mb-8">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#1F2937]/60 mb-4 font-body">
-                  {t("eligibility.requirements.label")}
-                </p>
-                <ul className="space-y-3">
-                  {["applicantType", "sector", "financialSituation", "region"].map((key) => (
-                    <li key={key} className="flex items-start gap-3 text-sm text-[#1F2937] font-body">
-                      <svg
-                        className="w-4 h-4 mt-0.5 shrink-0 text-[#1E5ED8]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {t(`eligibility.requirements.${key}`)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Bande de réassurance */}
-              <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-[#E4E4E7] pt-6">
-                {["free", "confidential", "instant", "official"].map((key) => (
-                  <span key={key} className="text-xs font-medium text-[#5B6472] flex items-center gap-1.5 font-body">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#1E5ED8]" />
-                    {t(`eligibility.trust.${key}`)}
-                  </span>
-                ))}
-              </div>
-            </div>
+      <section className="py-12 sm:py-20 px-4 bg-[#FFFFFF] font-body">
+        <div className="max-w-4xl mx-auto">
+          <div className="">
 
             {/* ---------- Colonne droite : formulaire ---------- */}
             <div className="lg:col-span-3">
@@ -529,7 +494,7 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                         </div>
                       )}
 
-                      {!client && (
+                      {!client && !selectedProfile && (
                         <ApplicantTypeSelector
                           formData={formData}
                           onApplicantTypeSelect={handleApplicantTypeSelect}

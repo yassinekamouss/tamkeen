@@ -63,6 +63,8 @@ export interface EligibilityResult {
 
 export interface EligibilityFormProps {
   onNavigateBack?: () => void;
+  selectedProfile?: "morale" | "physique" | null;
+  onSelectProfile?: (type: "morale" | "physique") => void;
 }
 
 // --- Agent IA Remediation Interfaces ---

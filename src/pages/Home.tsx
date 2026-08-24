@@ -1,44 +1,85 @@
-import React from "react";
-import { Header, Hero, Footer } from "../components";
+import React, { useState } from "react";
+import {
+  Header,
+  Hero,
+  Footer,
+  ProfileSelector,
+  ProjectTypesSection,
+  ProcessSection,
+  DocumentSecuritySection,
+  ProgramsSection,
+  NewsSection,
+  FaqSection,
+} from "../components";
 import { EligibilityForm } from "../components/eligibility";
 import SeoHead from "../components/SeoHead";
-import ProgramsSection from "../components/ProgramsSection";
-import NewsSection from "../components/NewsSection";
-import ProcessSection from "../components/ProcessSection";
-import FaqSection from "../components/FaqSection";
+import type { ProfileType } from "../components/ProfileSelector";
 
 const Home: React.FC = () => {
-  const scrollToForm = () => {
-    const formElement = document.getElementById("eligibility-form");
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+  const [selectedProfile, setSelectedProfile] = useState<ProfileType | null>(null);
+
+  const handleProfileSelect = (profile: ProfileType) => {
+    setSelectedProfile(profile);
+    setTimeout(() => {
+      const formElement = document.getElementById("eligibility-form-content");
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 150);
   };
 
-  const scrollToPrograms = () => {
-    const programsElement = document.getElementById("programs");
-    if (programsElement) {
-      programsElement.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollToSelector = () => {
+    const selectorElement = document.getElementById("eligibility-selector");
+    if (selectorElement) {
+      selectorElement.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-slate-50/30 font-sans">
       <SeoHead />
 
       {/* Sticky Navigation */}
       <Header />
 
       {/* ── HERO ── */}
-      <Hero onNavigateToForm={scrollToForm} onNavigateToPrograms={scrollToPrograms} />
+      <Hero />
 
-      {/* ── ELIGIBILITY FORM ── */}
-      <section id="eligibility-form" className="w-full">
-        <EligibilityForm />
-      </section>
+      {/* ── OVERLAP FLOATING PROFILE SELECTOR & COLLAPSIBLE ELIGIBILITY FORM ── */}
+      <div id="eligibility-selector" className="relative z-20">
+        <ProfileSelector
+          selectedProfile={selectedProfile}
+          onSelectProfile={handleProfileSelect}
+        />
 
-      {/* ── PROCESS / HOW IT WORKS ── */}
-      <ProcessSection onNavigateToForm={scrollToForm} />
+        {/* Collapsible Accordion Form Wrapper */}
+        <div
+          id="eligibility-form-content"
+          className={`transition-all duration-700 ease-in-out ${
+            selectedProfile
+              ? "max-h-[3500px] opacity-100 py-4 sm:py-6"
+              : "max-h-0 opacity-0 py-0 overflow-hidden pointer-events-none"
+          }`}
+        >
+          {selectedProfile && (
+            <div className="w-full transition-all duration-300">
+              <EligibilityForm
+                selectedProfile={selectedProfile}
+                onSelectProfile={handleProfileSelect}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── PROJECT PROFILES (Création, Extension, Investissement) ── */}
+      <ProjectTypesSection onNavigateToForm={scrollToSelector} />
+
+      {/* ── 4-STEP CRM PROCESS ── */}
+      <ProcessSection onNavigateToForm={scrollToSelector} />
+
+      {/* ── DOCUMENT SECURITY ── */}
+      <DocumentSecuritySection />
 
       {/* ── PROGRAMS ── */}
       <ProgramsSection />
