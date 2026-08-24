@@ -8,8 +8,6 @@ interface UsersTableProps {
   users: User[];
   admins: Admin[];
   adminProfile: any;
-  onConsultantChange: (user: User, consultant: Admin | null) => Promise<void>;
-  onStatusChange: (user: User, status: string) => Promise<void>;
   onEdit: (user: User) => void;
   onViewDetails: (userId: string) => void;
 }
@@ -18,8 +16,6 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   users,
   admins,
   adminProfile,
-  onConsultantChange,
-  onStatusChange,
   onEdit,
   onViewDetails,
 }) => {
@@ -123,73 +119,10 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                       )}
                     </div>
 
-                    <div>
-                      <span className="text-gray-500 font-medium block">État</span>
-                      <select
-                        disabled={Boolean(
-                          user.consultantAssocie?._id &&
-                            user.consultantAssocie._id !== adminProfile._id
-                        )}
-                        className={`border border-gray-300 rounded px-1.5 py-1 text-xs w-full mt-0.5 ${
-                          user.consultantAssocie?._id &&
-                          user.consultantAssocie._id !== adminProfile._id
-                            ? "cursor-not-allowed bg-gray-100"
-                            : ""
-                        }`}
-                        value={user.etat || ""}
-                        onChange={async (e) => {
-                          await onStatusChange(user, e.target.value);
-                        }}
-                      >
-                        <option value="En traitement">En traitement</option>
-                        <option value="En attente">En attente</option>
-                        <option value="Terminé">Terminé</option>
-                      </select>
-                    </div>
+
                   </div>
 
-                  {adminProfile.role === "Administrateur" && (
-                    <div className="text-xs">
-                      <span className="text-gray-500 font-medium block mb-1">
-                        Consultant associé
-                      </span>
-                      <select
-                        name="consultant"
-                        className="border border-gray-300 rounded px-2 py-1 text-xs w-full bg-white"
-                        disabled={adminProfile.role !== "Administrateur"}
-                        value={
-                          user.consultantAssocie
-                            ? JSON.stringify(user.consultantAssocie)
-                            : ""
-                        }
-                        onChange={(e) => {
-                          const selectedValue = e.target.value;
-                          const adminObj = selectedValue
-                            ? JSON.parse(selectedValue)
-                            : null;
-                          onConsultantChange(user, adminObj);
-                        }}
-                      >
-                        {!user.consultantAssocie && (
-                          <option value="" className="text-gray-400 italic">
-                            Aucun consultant associé
-                          </option>
-                        )}
-                        {user.consultantAssocie && (
-                          <option value={JSON.stringify(user.consultantAssocie)}>
-                            {user.consultantAssocie.username}
-                          </option>
-                        )}
-                        {admins
-                          .filter((admin) => admin._id !== user.consultantAssocie?._id)
-                          .map((admin) => (
-                            <option key={admin._id} value={JSON.stringify(admin)}>
-                              {admin.username}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                  )}
+
 
                   <div className="flex items-center justify-end gap-2 pt-2">
                     <button
@@ -245,14 +178,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Contact
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    État
-                  </th>
-                  {adminProfile.role === "Administrateur" && (
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Consultant associé
-                    </th>
-                  )}
+
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
@@ -349,91 +275,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                           })()}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          <select
-                            disabled={Boolean(
-                              user.consultantAssocie?._id &&
-                                user.consultantAssocie._id !== adminProfile._id
-                            )}
-                            title={
-                              user.consultantAssocie?._id &&
-                              user.consultantAssocie._id !== adminProfile._id
-                                ? "Un consultant est déjà associé à ce client"
-                                : ""
-                            }
-                            className={`border border-gray-300 rounded px-2 py-1 text-sm ${
-                              user.consultantAssocie?._id &&
-                              user.consultantAssocie._id !== adminProfile._id
-                                ? "cursor-not-allowed bg-gray-100"
-                                : ""
-                            }`}
-                            value={user.etat || ""}
-                            onChange={async (e) => {
-                              await onStatusChange(user, e.target.value);
-                            }}>
-                            <option value="En traitement">En traitement</option>
-                            <option value="En attente">En attente</option>
-                            <option value="Terminé">Terminé</option>
-                          </select>
-                        </div>
-                      </td>
-                      {adminProfile.role === "Administrateur" && (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div
-                            className={
-                              user.consultantAssocie
-                                ? "text-sm text-gray-900"
-                                : "italic text-gray-400"
-                            }>
-                            <select
-                              name="consultant"
-                              className={
-                                adminProfile.role === "Administrateur"
-                                  ? ""
-                                  : "cursor-not-allowed bg-gray-100"
-                              }
-                              disabled={adminProfile.role !== "Administrateur"}
-                              value={
-                                user.consultantAssocie
-                                  ? JSON.stringify(user.consultantAssocie)
-                                  : ""
-                              }
-                              onChange={(e) => {
-                                const selectedValue = e.target.value;
-                                const adminObj = selectedValue
-                                  ? JSON.parse(selectedValue)
-                                  : null;
-                                onConsultantChange(user, adminObj);
-                              }}>
-                              {!user.consultantAssocie && (
-                                <option value="" className="text-gray-400 italic">
-                                  Aucun consultant associé
-                                </option>
-                              )}
 
-                              {user.consultantAssocie && (
-                                <option
-                                  value={JSON.stringify(user.consultantAssocie)}>
-                                  {user.consultantAssocie.username}
-                                </option>
-                              )}
-                              {admins
-                                .filter(
-                                  (admin) =>
-                                    admin._id !== user.consultantAssocie?._id
-                                )
-                                .map((admin) => (
-                                  <option
-                                    key={admin._id}
-                                    value={JSON.stringify(admin)}>
-                                    {admin.username}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-                        </td>
-                      )}
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center space-x-2">
                         <button
                           onClick={() => onViewDetails(user._id)}

@@ -61,20 +61,7 @@ const TestCard: React.FC<{
       className={`bg-white border rounded-lg hover:shadow-sm transition-all duration-200 relative ${
         isRecent ? "border-blue-300 ring-1 ring-blue-100" : "border-slate-200"
       }`}>
-      {/* Indicateur wannaBeContacted - Position absolue stabilisée */}
-      {test.wannaBeContacted && (
-        <div className="absolute -top-2 -right-2 z-10 pointer-events-none">
-          <div className="relative w-10 h-10">
-            {/* Cercle de pulsation en arrière-plan */}
-            <div className="absolute inset-0 w-10 h-10 bg-blue-400 rounded-full opacity-0 animate-[ping_2s_ease-in-out_infinite]"></div>
-            
-            {/* Badge principal - sans animation pulse */}
-            <div className="absolute inset-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-              <Phone className="w-5 h-5 text-white" />
-            </div>
-          </div>
-        </div>
-      )}
+
 
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
@@ -89,13 +76,6 @@ const TestCard: React.FC<{
                 <h3 className="font-semibold text-slate-900">
                   Test #{test._id?.slice(-6)}
                 </h3>
-                {/* Badge de contact inline */}
-                {test.wannaBeContacted && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700 border border-blue-200">
-                    <Phone className="w-3 h-3" />
-                    Souhaite être contacté
-                  </span>
-                )}
               </div>
               <p className="text-xs text-slate-500">
                 {formatRelativeDate(test.createdAt)}
@@ -154,15 +134,6 @@ const TestCard: React.FC<{
                   </button>
                 </div>
               </div>
-              {test.wannaBeContacted && (
-                <div className="flex items-center gap-1 text-blue-600">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full relative">
-                    <div className="absolute inset-0 w-2 h-2 bg-blue-500 rounded-full animate-[pulse_2s_ease-in-out_infinite]"></div>
-                  </div>
-                  <span className="text-xs font-medium">Demande de contact</span>
-                </div>
-              )}
-            </div>
           );
         })()}
 
