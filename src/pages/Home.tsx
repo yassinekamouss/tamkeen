@@ -36,7 +36,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-slate-50/30 font-sans">
+    <div className="w-full font-sans">
       <SeoHead />
 
       {/* Sticky Navigation */}

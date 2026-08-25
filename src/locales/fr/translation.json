@@ -13,7 +13,9 @@
     "menu": "Menu",
     "test_short": "Tester",
     "my_space": "Mon Espace",
-    "client_area": "Espace Client"
+    "client_area": "Espace Client",
+    "security_platform": "Plateforme publique sécurisée par l'État marocain",
+    "security_platform_short": "Plateforme Officielle"
   },
   "hero": {
     "badge": "Subventions d'investissement au Maroc",

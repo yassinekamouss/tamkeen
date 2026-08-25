@@ -13,7 +13,9 @@
     "menu": "القائمة",
     "test_short": "اختبر",
     "my_space": "فضائي",
-    "client_area": "فضاء الزبون"
+    "client_area": "فضاء الزبون",
+    "security_platform": "منصة عمومية آمنة تابعة للمملكة المغربية",
+    "security_platform_short": "المنصة الرسمية"
   },
   "hero": {
     "badge": "منح الاستثمار بالمغرب",
