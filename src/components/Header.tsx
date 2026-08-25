@@ -78,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
       >
         {/* TOP BAR - Compact, adaptative et fidèle à la maquette mobile */}
         <div
-          className={`w-full bg-blue-200/40 backdrop-blur-md border-b border-gray-100 transition-all duration-300 flex items-center justify-between px-2 sm:px-8 ${
+          className={`w-full bg-blue-100 transition-all duration-300 flex items-center justify-between px-2 sm:px-8 ${
             isScrolled
               ? "h-0 opacity-0 overflow-hidden pointer-events-none"
               : "h-10 sm:h-10 opacity-100 overflow-visible"

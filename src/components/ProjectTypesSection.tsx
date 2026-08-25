@@ -19,7 +19,7 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
       items: isRTL
         ? ["منح التأسيس", "دعم الأكرية والتجهيز", "المرافقة الأولى"]
         : ["Aides au démarrage", "Subvention loyer / équipement", "Accompagnement initial"],
-      range: "< 2M DA",
+      range: isRTL ? "< 2M د.م." : "< 2M DH",
     },
     {
       code: "CAT-02",
@@ -29,7 +29,7 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
       items: isRTL
         ? ["دعم الاستثمار", "تحديث آليات الإنتاج", "خلق مناصب شغل"]
         : ["Primes d'investissement", "Modernisation outil productif", "Création d'emplois"],
-      range: "2 – 10M DA",
+      range: isRTL ? "2 – 10M د.م." : "2 – 10M DH",
     },
     {
       code: "CAT-03",
@@ -39,7 +39,7 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
       items: isRTL
         ? ["عقود استثمارية", "إعفاءات جبائية", "دعم المناطق الصناعية"]
         : ["Conventions d'investissement", "Exonérations fiscales", "Appui foncier industriel"],
-      range: "> 10M DA",
+      range: isRTL ? "> 10M د.م." : "> 10M DH",
     },
   ];
 
@@ -74,11 +74,7 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
               className="group py-9 sm:py-11 first:pt-0 grid grid-cols-1 sm:grid-cols-12 gap-x-12 gap-y-5 items-start"
             >
               {/* Col 1 — Référence & enveloppe */}
-              <div
-                className={`sm:col-span-2 flex sm:flex-col sm:items-start items-baseline gap-x-4 gap-y-1.5 ${
-                  isRTL ? "sm:order-4" : ""
-                }`}
-              >
+              <div className="sm:col-span-2 flex sm:flex-col sm:items-start items-baseline gap-x-4 gap-y-1.5">
                 <span className="text-[10.5px] font-mono font-medium text-[#C0C0C0] tracking-widest">
                   {item.code}
                 </span>
@@ -91,7 +87,7 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
               </div>
 
               {/* Col 2 — Contenu principal */}
-              <div className={`sm:col-span-7 ${isRTL ? "sm:order-1" : ""}`}>
+              <div className="sm:col-span-7">
                 <span className="block text-[10.5px] font-semibold tracking-[0.12em] text-[#AAA] uppercase mb-2">
                   {item.label}
                 </span>
@@ -101,11 +97,11 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
                 <p className="text-[13px] leading-[1.8] text-[#666] max-w-[520px] mb-5">
                   {item.desc}
                 </p>
-                <ul className={`flex flex-wrap gap-x-5 gap-y-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <ul className="flex flex-wrap gap-x-5 gap-y-2">
                   {item.items.map((el, iIdx) => (
                     <li
                       key={iIdx}
-                      className={`flex items-center gap-2 text-[12px] text-[#555] ${isRTL ? "flex-row-reverse" : ""}`}
+                      className="flex items-center gap-2 text-[12px] text-[#555]"
                     >
                       <span className="w-[3px] h-[3px] rounded-full bg-[#CCC] shrink-0" />
                       {el}
@@ -115,25 +111,19 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
               </div>
 
               {/* Col 3 — Action */}
-              <div
-                className={`sm:col-span-3 sm:pt-7 sm:flex sm:justify-end ${
-                  isRTL ? "sm:order-2 sm:justify-start" : ""
-                }`}
-              >
+              <div className="sm:col-span-3 sm:pt-7 sm:flex sm:justify-end">
                 <button
                   onClick={onNavigateToForm}
-                  className={`group/btn inline-flex items-center gap-2 text-[11.5px] font-semibold text-[#1E5ED8] hover:text-[#1649AD] transition-colors ${isRTL ? "flex-row-reverse" : ""}`}
+                  className="group/btn inline-flex items-center gap-2 text-[11.5px] font-semibold text-[#1E5ED8] hover:text-[#1649AD] transition-colors cursor-pointer"
                 >
-                  <span
-                    className={`border-b border-[#1E5ED8]/0 group-hover/btn:border-[#1E5ED8] pb-px transition-colors duration-200 ${
-                      isRTL ? "border-b-[#1E5ED8]/0" : ""
-                    }`}
-                  >
+                  <span className="border-b border-[#1E5ED8]/0 group-hover/btn:border-[#1E5ED8] pb-px transition-colors duration-200">
                     {isRTL ? "تحقق من أهليتك" : "Vérifier mon éligibilité"}
                   </span>
                   <svg
-                    className={`w-3 h-3 transition-transform duration-150 group-hover/btn:translate-x-[3px] ${
-                      isRTL ? "rotate-180 group-hover/btn:-translate-x-[3px]" : ""
+                    className={`w-3 h-3 transition-transform duration-150 ${
+                      isRTL
+                        ? "rotate-180 group-hover/btn:-translate-x-[3px]"
+                        : "group-hover/btn:translate-x-[3px]"
                     }`}
                     fill="none"
                     stroke="currentColor"
