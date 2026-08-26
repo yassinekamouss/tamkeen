@@ -3,7 +3,6 @@ import {
   Header,
   Hero,
   Footer,
-  ProfileSelector,
   ProjectTypesSection,
   ProcessSection,
   DocumentSecuritySection,
@@ -13,7 +12,7 @@ import {
 } from "../components";
 import { EligibilityForm } from "../components/eligibility";
 import SeoHead from "../components/SeoHead";
-import type { ProfileType } from "../components/ProfileSelector";
+import type { ProfileType } from "../components/Hero";
 
 const Home: React.FC = () => {
   const [selectedProfile, setSelectedProfile] = useState<ProfileType | null>(null);
@@ -42,17 +41,14 @@ const Home: React.FC = () => {
       {/* Sticky Navigation */}
       <Header />
 
-      {/* ── HERO ── */}
-      <Hero />
+      {/* ── HERO & INTEGRATED PROFILE SELECTOR ── */}
+      <Hero
+        selectedProfile={selectedProfile}
+        onSelectProfile={handleProfileSelect}
+      />
 
-      {/* ── OVERLAP FLOATING PROFILE SELECTOR & COLLAPSIBLE ELIGIBILITY FORM ── */}
-      <div id="eligibility-selector" className="relative z-20">
-        <ProfileSelector
-          selectedProfile={selectedProfile}
-          onSelectProfile={handleProfileSelect}
-        />
-
-        {/* Collapsible Accordion Form Wrapper */}
+      {/* ── COLLAPSIBLE ELIGIBILITY FORM ── */}
+      <div id="eligibility-form-container" className="relative z-20">
         <div
           id="eligibility-form-content"
           className={`transition-all duration-700 ease-in-out ${
@@ -97,3 +93,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
