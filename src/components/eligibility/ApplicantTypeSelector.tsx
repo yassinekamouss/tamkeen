@@ -17,7 +17,7 @@ const ApplicantTypeSelector: React.FC<ApplicantTypeSelectorProps> = ({
 
   return (
     <div>
-      <label className="block text-sm font-semibold tracking-wider uppercase text-[#1F2937]/80 mb-6 text-center font-display">
+      <label className="block text-[14px] font-bold tracking-wider uppercase text-[#5F6368] mb-6 text-center" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
         {t("eligibility.applicantType.label")} *
       </label>
 
@@ -26,18 +26,18 @@ const ApplicantTypeSelector: React.FC<ApplicantTypeSelectorProps> = ({
         {/* Personne Physique */}
         <div
           onClick={() => onApplicantTypeSelect("physique")}
-          className={`relative cursor-pointer p-6 border transition-all duration-350 group ${
+          className={`relative cursor-pointer p-6 border rounded-xl shadow-sm transition-all duration-350 group ${
             formData.applicantType === "physique"
-              ? "border-[#F97316] bg-[#FFFFFF]"
-              : "border-[#E4E4E7] bg-white hover:border-[#1E5ED8]"
+              ? "border-[#1A73E8] bg-white ring-1 ring-[#1A73E8]"
+              : "border-[#DADCE0] bg-white hover:border-[#1A73E8]"
           }`}
         >
           <div className="flex flex-col items-center text-center space-y-4">
             <div
-              className={`p-3 transition-all duration-300 ${
+              className={`p-3 rounded-full transition-all duration-300 ${
                 formData.applicantType === "physique"
-                  ? "bg-[#1E5ED8] text-white"
-                  : "bg-[#FFFFFF] text-[#1E5ED8] border border-[#E4E4E7] group-hover:bg-[#1E5ED8]/5"
+                  ? "bg-[#1A73E8] text-white"
+                  : "bg-[#F8F9FA] text-[#1A73E8] group-hover:bg-[#1A73E8]/10"
               }`}
             >
               <svg
@@ -55,10 +55,10 @@ const ApplicantTypeSelector: React.FC<ApplicantTypeSelectorProps> = ({
               </svg>
             </div>
             <div>
-              <h3 className="font-bold text-[#1F2937] font-display">
+              <h3 className="font-bold text-[#191C1D] text-[16px]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
                 {t("eligibility.applicantType.physique")}
               </h3>
-              <p className="text-xs text-[#1F2937]/60 mt-1.5 max-w-[220px] leading-relaxed">
+              <p className="text-[14px] text-[#5F6368] mt-1.5 max-w-[220px] leading-relaxed" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
                 {t("eligibility.applicantType.physiqueSubtitle")}
               </p>
             </div>
@@ -66,7 +66,7 @@ const ApplicantTypeSelector: React.FC<ApplicantTypeSelectorProps> = ({
 
           {formData.applicantType === "physique" && (
             <div className="absolute top-4 right-4">
-              <div className="w-5 h-5 bg-[#1E5ED8] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-[#1A73E8] flex items-center justify-center">
                 <svg
                   className="w-3 h-3 text-white"
                   fill="none"
@@ -88,18 +88,18 @@ const ApplicantTypeSelector: React.FC<ApplicantTypeSelectorProps> = ({
         {/* Personne Morale */}
         <div
           onClick={() => onApplicantTypeSelect("morale")}
-          className={`relative cursor-pointer p-6 border transition-all duration-350 group ${
+          className={`relative cursor-pointer p-6 border rounded-xl shadow-sm transition-all duration-350 group ${
             formData.applicantType === "morale"
-              ? "border-[#F97316] bg-[#FFFFFF]"
-              : "border-[#E4E4E7] bg-white hover:border-[#1E5ED8]"
+              ? "border-[#1A73E8] bg-white ring-1 ring-[#1A73E8]"
+              : "border-[#DADCE0] bg-white hover:border-[#1A73E8]"
           }`}
         >
           <div className="flex flex-col items-center text-center space-y-4">
             <div
-              className={`p-3 transition-all duration-300 ${
+              className={`p-3 rounded-full transition-all duration-300 ${
                 formData.applicantType === "morale"
-                  ? "bg-[#1E5ED8] text-white"
-                  : "bg-[#FFFFFF] text-[#1E5ED8] border border-[#E4E4E7] group-hover:bg-[#1E5ED8]/5"
+                  ? "bg-[#1A73E8] text-white"
+                  : "bg-[#F8F9FA] text-[#1A73E8] group-hover:bg-[#1A73E8]/10"
               }`}
             >
               <svg
@@ -117,10 +117,10 @@ const ApplicantTypeSelector: React.FC<ApplicantTypeSelectorProps> = ({
               </svg>
             </div>
             <div>
-              <h3 className="font-bold text-[#1F2937] font-display">
+              <h3 className="font-bold text-[#191C1D] text-[16px]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
                 {t("eligibility.applicantType.morale")}
               </h3>
-              <p className="text-xs text-[#1F2937]/60 mt-1.5 max-w-[220px] leading-relaxed">
+              <p className="text-[14px] text-[#5F6368] mt-1.5 max-w-[220px] leading-relaxed" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
                 {t("eligibility.applicantType.moraleSubtitle")}
               </p>
             </div>
@@ -128,7 +128,7 @@ const ApplicantTypeSelector: React.FC<ApplicantTypeSelectorProps> = ({
 
           {formData.applicantType === "morale" && (
             <div className="absolute top-4 right-4">
-              <div className="w-5 h-5 bg-[#1E5ED8] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-[#1A73E8] flex items-center justify-center">
                 <svg
                   className="w-3 h-3 text-white"
                   fill="none"
@@ -149,7 +149,7 @@ const ApplicantTypeSelector: React.FC<ApplicantTypeSelectorProps> = ({
       </div>
 
       {errors.applicantType && (
-        <p className="text-red-600 text-xs mt-4 text-center font-mono uppercase tracking-wider font-semibold">
+        <p className="text-red-500 text-[12px] mt-4 text-center font-bold uppercase tracking-wider" style={{ fontFamily: "JetBrains Mono, monospace" }}>
           {errors.applicantType}
         </p>
       )}

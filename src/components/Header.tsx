@@ -94,7 +94,8 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
             {/* Logo + Navigation */}
             <div className="flex items-center">
               {/* Logo */}
-              <div className="flex-shrink-0 flex items-center">
+              <div className="flex-shrink-0 flex items-center gap-3">
+                {/* Logo */}
                 <Link to="/" aria-label={t("header.home_aria")}>
                   <img
                     className="h-10 sm:h-12 w-auto object-contain"
@@ -102,6 +103,42 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
                     alt="Tamkeen Center"
                   />
                 </Link>
+
+                {/* Texte centré verticalement par rapport au logo */}
+                <div
+                  className="
+                    hidden md:flex
+                    flex-col
+                    justify-center
+                    border-l border-[#DADCE0]
+                    pl-3
+                    ml-1
+
+                    rtl:border-l-0
+                    rtl:border-r
+                    rtl:pl-0
+                    rtl:pr-3
+                    rtl:ml-0
+                    rtl:mr-1
+                  "
+                >
+                  <span
+                    className="
+                      text-[10px]
+                      font-bold
+                      text-[#5F6368]
+                      uppercase
+                      tracking-wider
+                      leading-none
+                      whitespace-nowrap
+                      rtl:text-right
+                      rtl:tracking-normal
+                    "
+                    style={{ fontFamily: "Roboto Flex, sans-serif" }}
+                  >
+                    {t("header.evaluation_portal")}
+                  </span>
+                </div>
               </div>
 
               {/* Navigation */}
@@ -110,7 +147,7 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
                   hidden lg:flex
                   items-center
                   ml-10
-                  gap-4
+                  gap-5
                 "
                 aria-label={t("header.main_nav")}
               >
@@ -172,33 +209,33 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
             </div>
 
             {/* Section droite */}
-            <div className="hidden lg:flex items-center space-x-6 rtl:space-x-reverse">
+            <div className="hidden lg:flex items-center space-x-4 rtl:space-x-reverse">
               {/* Dropdown Langue */}
               <div className="relative" ref={langMenuRef}>
                 <button
                   onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className="flex items-center gap-2 py-1 border border-gray-300 rounded-full text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-1.5 py-1.5 px-3 border border-[#DADCE0] rounded-full text-xs font-medium text-[#5F6368] hover:bg-[#F8F9FA] transition-colors"
                 >
-                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-[#5F6368]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                   </svg>
-                  <span>Language</span>
-                  <svg className={`w-4 h-4 text-gray-500 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span>{i18n.language.toUpperCase()}</span>
+                  <svg className={`w-3.5 h-3.5 text-[#5F6368] transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
                 {isLangMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-lg shadow-lg py-1 z-50">
+                  <div className="absolute right-0 mt-2 w-32 bg-white border border-[#DADCE0] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.05)] py-1 z-50 overflow-hidden">
                     <button
                       onClick={() => changeLanguage("fr")}
-                      className={`block w-full text-left px-4 py-2 text-sm ${i18n.language === 'fr' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'}`}
+                      className={`block w-full text-left px-4 py-2 text-xs font-medium transition-colors ${i18n.language === 'fr' ? 'text-[#1A73E8] bg-[#E8F0FE]' : 'text-[#414754] hover:bg-[#F8F9FA]'}`}
                     >
                       🇫🇷 Français
                     </button>
                     <button
                       onClick={() => changeLanguage("ar")}
-                      className={`block w-full text-left px-4 py-2 text-sm ${i18n.language === 'ar' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'}`}
+                      className={`block w-full text-left px-4 py-2 text-xs font-medium transition-colors ${i18n.language === 'ar' ? 'text-[#1A73E8] bg-[#E8F0FE]' : 'text-[#414754] hover:bg-[#F8F9FA]'}`}
                     >
                       🇲🇦 العربية
                     </button>
@@ -209,9 +246,44 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
               {/* Lien Espace Client */}
               <Link
                 to={client ? "/dashboard" : "/login"}
-                className="text-[15px] font-medium text-[#1E5ED8] hover:text-blue-700 transition-colors"
+                className="
+                  text-xs
+                  font-bold
+                  bg-[#1A73E8]
+                  hover:bg-[#174EA6]
+                  text-white
+                  hover:text-white
+                  focus:text-white
+                  px-5
+                  py-2.5
+                  rounded
+                  transition-all
+                  shadow-sm
+                  flex
+                  items-center
+                  gap-2
+                "
+                style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
               >
-                {client ? t("header.my_space", "Mon espace") : t("header.client_area", "Espace Client")}
+                {client
+                  ? t("header.my_space", "Mon espace")
+                  : t("header.client_area", "Espace Client")}
+
+                {!client && (
+                  <svg
+                    className={`w-3.5 h-3.5 ${isRTL ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                )}
               </Link>
             </div>
 

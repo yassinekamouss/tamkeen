@@ -47,40 +47,40 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
     <section
       id="project-types"
       dir={isRTL ? "rtl" : "ltr"}
-      className="w-full bg-white border-b border-[#E5E5E0]"
+      className="w-full bg-white border-b border-[#DADCE0]"
     >
-      <div className="max-w-[1080px] mx-auto px-5 sm:px-8 py-20 sm:py-28">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
 
         {/* ── Header ── */}
-        <div className="mb-16">
-          <p className="text-[11px] font-semibold tracking-[0.18em] text-[#1E5ED8] uppercase mb-4">
+        <div className="mb-14">
+          <p className="text-[11px] font-bold tracking-[0.15em] text-[#1A73E8] uppercase mb-4" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
             {t("project_types.badge")}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 sm:gap-14">
-            <h2 className="sm:col-span-7 text-[25px] sm:text-[30px] font-bold text-[#1A1A1A] leading-[1.25] tracking-[-0.02em]">
+            <h2 className="sm:col-span-7 text-[28px] sm:text-[32px] font-bold text-[#191C1D] leading-tight tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
               {t("project_types.title")}
             </h2>
-            <p className="sm:col-span-5 sm:pt-1 text-[13.5px] leading-[1.8] text-[#777]">
+            <p className="sm:col-span-5 sm:pt-1 text-[15px] leading-relaxed text-[#5F6368]" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
               {t("project_types.subtitle")}
             </p>
           </div>
         </div>
 
         {/* ── Rows ── */}
-        <div className="divide-y divide-[#E5E5E0]">
+        <div className="divide-y divide-[#DADCE0]">
           {projectTypes.map((item, idx) => (
             <div
               key={idx}
-              className="group py-9 sm:py-11 first:pt-0 grid grid-cols-1 sm:grid-cols-12 gap-x-12 gap-y-5 items-start"
+              className="group py-8 sm:py-10 first:pt-0 grid grid-cols-1 sm:grid-cols-12 gap-x-12 gap-y-5 items-start"
             >
               {/* Col 1 — Référence & enveloppe */}
               <div className="sm:col-span-2 flex sm:flex-col sm:items-start items-baseline gap-x-4 gap-y-1.5">
-                <span className="text-[10.5px] font-mono font-medium text-[#C0C0C0] tracking-widest">
+                <span className="text-[12px] font-medium text-[#727785] tracking-widest" style={{ fontFamily: "JetBrains Mono, monospace" }}>
                   {item.code}
                 </span>
                 <span
-                  className="text-[15px] font-bold text-[#1A1A1A] tracking-tight"
-                  style={{ fontFeatureSettings: '"tnum"' }}
+                  className="text-[16px] font-bold text-[#191C1D] tracking-tight"
+                  style={{ fontFamily: "Roboto Flex, sans-serif", fontFeatureSettings: '"tnum"' }}
                 >
                   {item.range}
                 </span>
@@ -88,22 +88,23 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
 
               {/* Col 2 — Contenu principal */}
               <div className="sm:col-span-7">
-                <span className="block text-[10.5px] font-semibold tracking-[0.12em] text-[#AAA] uppercase mb-2">
+                <span className="block text-[11px] font-bold tracking-wider text-[#727785] uppercase mb-2" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
                   {item.label}
                 </span>
-                <h3 className="text-[17px] sm:text-[18px] font-bold text-[#1A1A1A] leading-[1.35] mb-3 tracking-[-0.01em]">
+                <h3 className="text-[18px] sm:text-[20px] font-bold text-[#191C1D] leading-snug mb-3 tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
                   {item.title}
                 </h3>
-                <p className="text-[13px] leading-[1.8] text-[#666] max-w-[520px] mb-5">
+                <p className="text-[14px] leading-relaxed text-[#5F6368] max-w-[520px] mb-5" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
                   {item.desc}
                 </p>
-                <ul className="flex flex-wrap gap-x-5 gap-y-2">
+                <ul className="flex flex-wrap gap-x-6 gap-y-2">
                   {item.items.map((el, iIdx) => (
                     <li
                       key={iIdx}
-                      className="flex items-center gap-2 text-[12px] text-[#555]"
+                      className="flex items-center gap-2 text-[13px] text-[#5F6368]"
+                      style={{ fontFamily: "Roboto Flex, sans-serif" }}
                     >
-                      <span className="w-[3px] h-[3px] rounded-full bg-[#CCC] shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#DADCE0] shrink-0" />
                       {el}
                     </li>
                   ))}
@@ -111,16 +112,17 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
               </div>
 
               {/* Col 3 — Action */}
-              <div className="sm:col-span-3 sm:pt-7 sm:flex sm:justify-end">
+              <div className="sm:col-span-3 sm:pt-6 sm:flex sm:justify-end">
                 <button
                   onClick={onNavigateToForm}
-                  className="group/btn inline-flex items-center gap-2 text-[11.5px] font-semibold text-[#1E5ED8] hover:text-[#1649AD] transition-colors cursor-pointer"
+                  className="group/btn inline-flex items-center gap-2 text-[13px] font-bold text-[#1A73E8] hover:text-[#174EA6] transition-colors cursor-pointer"
+                  style={{ fontFamily: "Roboto Flex, sans-serif" }}
                 >
-                  <span className="border-b border-[#1E5ED8]/0 group-hover/btn:border-[#1E5ED8] pb-px transition-colors duration-200">
+                  <span className="border-b border-transparent group-hover/btn:border-[#174EA6] pb-px transition-colors duration-200">
                     {isRTL ? "تحقق من أهليتك" : "Vérifier mon éligibilité"}
                   </span>
                   <svg
-                    className={`w-3 h-3 transition-transform duration-150 ${
+                    className={`w-4 h-4 transition-transform duration-150 ${
                       isRTL
                         ? "rotate-180 group-hover/btn:-translate-x-[3px]"
                         : "group-hover/btn:translate-x-[3px]"
@@ -139,7 +141,7 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
         </div>
 
         {/* ── Note ── */}
-        <p className="mt-10 text-[11px] text-[#BBB] leading-[1.8] max-w-xl">
+        <p className="mt-10 text-[12px] text-[#727785] leading-relaxed max-w-xl" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
           {isRTL
             ? "المبالغ المذكورة تقريبية. الأهلية النهائية تخضع لمعايير كل آلية على حدة."
             : "Les montants indiqués sont donnés à titre indicatif. L'éligibilité finale est soumise aux critères propres à chaque dispositif."}

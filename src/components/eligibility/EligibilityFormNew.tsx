@@ -401,18 +401,17 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
       <LoadingModal isOpen={showLoadingModal} title={t("eligibility.loadingModalTitle")} />
 
-      <section className="py-12 sm:py-20 px-4 bg-[#FFFFFF] font-body">
+      <section className="py-12 sm:py-16 px-4 bg-white" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
         <div className="max-w-4xl mx-auto">
-          <div className="">
-
-            {/* ---------- Colonne droite : formulaire ---------- */}
+          <div>
             <div className="lg:col-span-3">
-              <div className="bg-white p-6 sm:p-12">
+              <div className="bg-white p-6 sm:p-10 border border-[#DADCE0] rounded-xl shadow-sm">
                 {/* Bouton de retour */}
                 {onNavigateBack && (
                   <button
                     onClick={onNavigateBack}
-                    className="group flex items-center text-[#1E5ED8] hover:text-[#174BAE] font-body text-xs font-semibold uppercase tracking-wider mb-8 transition-colors duration-200"
+                    className="group flex items-center text-[#1A73E8] hover:text-[#174EA6] text-[12px] font-bold uppercase tracking-wider mb-8 transition-colors duration-200"
+                    style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
                   >
                     <svg
                       className="w-4 h-4 mr-2 rtl:ml-2 rtl:rotate-180 transition-transform duration-200 group-hover:-translate-x-0.5"
@@ -420,27 +419,27 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                     </svg>
                     {t("eligibility.backButton")}
                   </button>
                 )}
 
                 {/* Stepper Progress Bar */}
-                <div className="mb-8 sm:mb-12 border-b border-[#E4E4E7] pb-6 sm:pb-10">
+                <div className="mb-8 sm:mb-12 border-b border-[#DADCE0] pb-6 sm:pb-10">
                   {/* Mobile compact step counter badge */}
                   <div className="sm:hidden mb-4 text-center">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-[#1E5ED8]/10 text-[#1E5ED8] border border-[#1E5ED8]/20 text-xs font-mono font-bold uppercase tracking-wider rounded-full">
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F8F9FA] text-[#1A73E8] border border-[#DADCE0] text-[11px] font-bold uppercase tracking-wider rounded-full" style={{ fontFamily: "JetBrains Mono, monospace" }}>
                       <span>{t(`eligibility.steps.step${step}`)}</span>
-                      <span className="text-[#1F2937]/40">•</span>
+                      <span className="text-[#DADCE0]">•</span>
                       <span>Étape {step} / 3</span>
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between max-w-xl mx-auto relative px-2">
-                    <div className="absolute left-6 right-6 top-5 h-[1px] bg-[#E4E4E7] -translate-y-1/2 z-0" />
+                    <div className="absolute left-6 right-6 top-5 h-[1px] bg-[#DADCE0] -translate-y-1/2 z-0" />
                     <div
-                      className="absolute left-6 top-5 h-[1.5px] bg-[#1E5ED8] -translate-y-1/2 z-0 transition-all duration-500"
+                      className="absolute left-6 top-5 h-[2px] bg-[#1A73E8] -translate-y-1/2 z-0 transition-all duration-500"
                       style={{
                         width: step === 1 ? "0%" : step === 2 ? "50%" : "100%",
                         right: isRTL ? "auto" : undefined,
@@ -450,26 +449,27 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                     {[1, 2, 3].map((s) => (
                       <div key={s} className="flex flex-col items-center relative z-10">
                         <div
-                          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-[4px] flex items-center justify-center font-body font-semibold text-xs transition-all duration-300 ${step >= s
-                              ? "bg-[#1E5ED8] text-white border border-[#1E5ED8]"
-                              : "bg-white border border-[#E4E4E7] text-[#1F2937]/40"
+                          className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-[13px] transition-all duration-300 ${step >= s
+                              ? "bg-[#1A73E8] text-white border-2 border-[#1A73E8]"
+                              : "bg-white border-2 border-[#DADCE0] text-[#5F6368]"
                             }`}
+                          style={{ fontFamily: "JetBrains Mono, monospace" }}
                         >
                           {step > s ? (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                             </svg>
                           ) : (
-                            String(s).padStart(2, "0")
+                            s
                           )}
                         </div>
                         <span
-                          className={`text-[11px] sm:text-xs mt-2 sm:mt-3 font-semibold tracking-wider uppercase font-body transition-colors hidden sm:block ${step === s ? "text-[#1E5ED8]" : "text-[#1F2937]/50"
-                            }`}
+                          className={`text-[12px] sm:text-[13px] mt-3 font-bold tracking-wider uppercase transition-colors hidden sm:block ${step === s ? "text-[#1A73E8]" : "text-[#5F6368]"}`}
+                          style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
                         >
                           {t(`eligibility.steps.step${s}`)}
                         </span>
-                        <span className="text-[10px] text-[#1F2937]/40 font-body mt-0.5 hidden sm:block">
+                        <span className="text-[11px] text-[#727785] mt-1 hidden sm:block">
                           {t(`eligibility.steps.step${s}Sub`)}
                         </span>
                       </div>
@@ -477,16 +477,16 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 font-body">
+                <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                   {/* Step 1: Identité */}
                   {step === 1 && (
                     <div className="space-y-6 sm:space-y-8 animate-fadeIn">
                       {client && (
-                        <div className="bg-[#1E5ED8]/5 border border-[#1E5ED8]/20 rounded-md p-4 flex items-start gap-3">
-                          <svg className="w-5 h-5 text-[#1E5ED8] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="bg-[#F8F9FA] border border-[#DADCE0] rounded-xl p-5 flex items-start gap-4">
+                          <svg className="w-5 h-5 text-[#1A73E8] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
-                          <p className="text-sm text-[#1F2937] leading-relaxed" dangerouslySetInnerHTML={{
+                          <p className="text-[14px] text-[#191C1D] leading-relaxed" dangerouslySetInnerHTML={{
                             __html: t('clientAuth.warning.clientAccount', { 
                               type: client.applicantType === 'morale' ? t('eligibility.applicantType.morale') : t('eligibility.applicantType.physique') 
                             }) 
@@ -545,10 +545,10 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                   )}
 
                   {/* Navigation Actions */}
-                  <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-6 sm:pt-8 border-t border-[#E4E4E7]">
+                  <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pt-6 sm:pt-8 border-t border-[#DADCE0]">
                     {step > 1 ? (
-                      <button type="button" onClick={handlePrevStep} className="btn-secondary w-full sm:w-auto min-h-[46px] justify-center">
-                        <svg className="w-4 h-4 mr-2 rtl:ml-2 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <button type="button" onClick={handlePrevStep} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border border-[#DADCE0] text-[#5F6368] text-[14px] font-bold rounded-lg hover:bg-[#F8F9FA] hover:text-[#191C1D] transition-colors" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                        <svg className="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                         {t("pagination.previous")}
@@ -558,14 +558,14 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                     )}
 
                     {step < 3 ? (
-                      <button type="button" onClick={handleNextStep} className="btn-primary w-full sm:w-auto min-h-[46px] justify-center">
+                      <button type="button" onClick={handleNextStep} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#1A73E8] text-white text-[14px] font-bold rounded-lg hover:bg-[#174EA6] transition-colors shadow-sm" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
                         {t("pagination.next")}
-                        <svg className="w-4 h-4 ml-2 rtl:mr-2 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
                     ) : (
-                      <button type="submit" className="btn-primary w-full sm:w-auto min-h-[46px] justify-center">
+                      <button type="submit" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-[#1A73E8] text-white text-[14px] font-bold rounded-lg hover:bg-[#174EA6] transition-colors shadow-sm" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
                         {t("eligibility.submitButton")}
                       </button>
                     )}

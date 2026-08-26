@@ -59,7 +59,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
     <section
       id="process"
       dir={isRTL ? "rtl" : "ltr"}
-      className="w-full bg-[#174A8B] py-20 sm:py-24 lg:py-28 font-body"
+      className="w-full bg-[#F8F9FA] py-20 sm:py-24 lg:py-28 font-body border-b border-[#DADCE0]"
       aria-label={t("process.badge")}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
@@ -75,22 +75,23 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                 isRTL ? "flex-row-reverse justify-end" : ""
               }`}
             >
-              <span className="h-px w-10 bg-white/50" />
+              <span className="h-px w-10 bg-[#1A73E8]/30" />
 
-              <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-blue-100">
+              <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#1A73E8]" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
                 {t("process.badge")}
               </span>
             </div>
 
-            <h2 className="section-h2 font-display text-white leading-[1.08]">
+            <h2 className="text-[28px] sm:text-[32px] font-bold text-[#191C1D] leading-tight tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
               {t("process.title")}
             </h2>
           </div>
 
           <p
-            className={`max-w-xl text-[15px] sm:text-base leading-7 text-blue-100/90 ${
+            className={`max-w-xl text-[15px] sm:text-base leading-relaxed text-[#5F6368] ${
               isRTL ? "lg:text-right" : ""
             }`}
+            style={{ fontFamily: "Roboto Flex, sans-serif" }}
           >
             {t("process.subtitle")}
           </p>
@@ -99,67 +100,43 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
         {/* =========================================================
             PROCESS
         ========================================================= */}
-        <div className="border-t border-white/20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="border border-[#DADCE0] rounded-xl overflow-hidden bg-white shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#DADCE0] rtl:divide-x-reverse">
 
             {steps.map((step, index) => (
               <article
                 key={step.number}
-                className={`
-                  relative
-                  bg-white
-                  px-6 py-7 sm:px-7 sm:py-8
-                  min-h-[285px]
-                  flex flex-col
-                  ${index !== 0 ? "lg:border-l lg:border-[#D8E2EE]" : ""}
-                  ${index > 1 ? "sm:border-t sm:border-[#D8E2EE] lg:border-t-0" : ""}
-                `}
+                className="relative px-6 py-8 sm:px-7 sm:py-10 min-h-[285px] flex flex-col group hover:bg-[#F8F9FA] transition-colors"
               >
                 {/* Step number */}
-                <div className="flex items-center justify-between mb-10">
-                  <span className="text-[13px] font-semibold tracking-[0.12em] text-[#174A8B]">
+                <div className="flex items-center justify-between mb-8">
+                  <span className="text-[12px] font-bold tracking-[0.1em] text-[#1A73E8] uppercase" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
                     {isRTL ? `المرحلة ${step.number}` : `ÉTAPE ${step.number}`}
                   </span>
 
-                  <span className="text-xs text-slate-400 font-mono">
+                  <span className="text-[11px] text-[#A0A3BD] font-medium tracking-widest" style={{ fontFamily: "JetBrains Mono, monospace" }}>
                     {String(index + 1).padStart(2, "0")}/04
                   </span>
                 </div>
 
                 {/* Content */}
                 <div className="flex-1">
-                  <h3 className="text-[19px] sm:text-xl font-semibold tracking-tight text-slate-900 leading-snug mb-4">
+                  <h3 className="text-[18px] sm:text-[19px] font-bold text-[#191C1D] leading-snug mb-3 tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
                     {step.title}
                   </h3>
 
-                  <p className="text-sm leading-6 text-slate-600">
+                  <p className="text-[14px] leading-relaxed text-[#5F6368]" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
                     {step.desc}
                   </p>
                 </div>
 
                 {/* Administrative detail */}
-                <div className="mt-8 pt-4 border-t border-slate-100">
-                  <p className="text-xs leading-5 text-slate-500">
+                <div className="mt-8 pt-4 border-t border-[#DADCE0]/60">
+                  <p className="text-[12px] leading-relaxed text-[#727785] font-medium flex items-center gap-2" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1A73E8]/40 shrink-0" />
                     {step.detail}
                   </p>
                 </div>
-
-                {/* Process connector */}
-                {index < steps.length - 1 && (
-                  <div
-                    className={`
-                      hidden lg:block
-                      absolute
-                      top-1/2
-                      ${isRTL ? "-left-[1px]" : "-right-[1px]"}
-                      translate-y-[-50%]
-                      w-px
-                      h-12
-                      bg-[#174A8B]
-                      z-10
-                    `}
-                  />
-                )}
               </article>
             ))}
           </div>
@@ -168,9 +145,8 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
         {/* =========================================================
             FOOTER / TRUST
         ========================================================= */}
-        <div className="mt-8 border border-white/20 bg-[#123E75]">
-
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 px-6 py-7 sm:px-8">
+        <div className="mt-8 border border-[#DADCE0] bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 px-6 py-6 sm:px-8">
 
             {/* Trust points */}
             <div
@@ -183,11 +159,13 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
               {trust.map((label, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-3 text-sm text-blue-50"
+                  className="flex items-start gap-2.5 text-[13px] text-[#5F6368] font-medium"
+                  style={{ fontFamily: "Roboto Flex, sans-serif" }}
                 >
-                  <span className="mt-[7px] h-1.5 w-1.5 shrink-0 bg-[#F97316]" />
-
-                  <span className="leading-5">
+                  <svg className="w-4 h-4 text-[#1A73E8] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="leading-relaxed">
                     {label}
                   </span>
                 </div>
@@ -195,7 +173,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
             </div>
 
             {/* CTA */}
-            <div className="shrink-0">
+            <div className="shrink-0 w-full lg:w-auto">
               <button
                 onClick={onNavigateToForm}
                 className="
@@ -207,20 +185,18 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                   min-h-[48px]
                   w-full
                   lg:w-auto
-                  px-7
-                  bg-[#F97316]
+                  px-8
+                  bg-[#1A73E8]
                   text-white
-                  text-sm
-                  font-semibold
-                  transition-colors
+                  text-[14px]
+                  font-bold
+                  rounded
+                  transition-all
                   duration-200
-                  hover:bg-[#EA6508]
-                  focus:outline-none
-                  focus-visible:ring-2
-                  focus-visible:ring-white
-                  focus-visible:ring-offset-2
-                  focus-visible:ring-offset-[#123E75]
+                  hover:bg-[#174EA6]
+                  shadow-sm
                 "
+                style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
                 aria-label={t("process.cta")}
               >
                 <span>{t("process.cta")}</span>

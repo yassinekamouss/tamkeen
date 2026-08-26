@@ -22,9 +22,9 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
   const isDisabled = !!client;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FFFFFF] p-6 border border-[#E4E4E7] animate-fadeIn">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 border border-[#DADCE0] rounded-xl shadow-sm animate-fadeIn">
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.physique.nom")} *
         </label>
         <input
@@ -33,18 +33,19 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           value={formData.nom || ""}
           onChange={handleInputChange}
           disabled={isDisabled}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
-            errors.nom ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] ${isDisabled ? "bg-[#F8F9FA] cursor-not-allowed text-[#5F6368]" : "bg-white text-[#191C1D]"} ${
+            errors.nom ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
           placeholder={t("eligibility.physique.nomPlaceholder")}
         />
         {errors.nom && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.nom}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.nom}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.physique.prenom")} *
         </label>
         <input
@@ -53,18 +54,19 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           value={formData.prenom || ""}
           onChange={handleInputChange}
           disabled={isDisabled}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
-            errors.prenom ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] ${isDisabled ? "bg-[#F8F9FA] cursor-not-allowed text-[#5F6368]" : "bg-white text-[#191C1D]"} ${
+            errors.prenom ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
           placeholder={t("eligibility.physique.prenomPlaceholder")}
         />
         {errors.prenom && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.prenom}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.prenom}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.physique.age")} *
         </label>
         <input
@@ -75,18 +77,19 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           value={formData.age || ""}
           onChange={handleInputChange}
           disabled={isDisabled}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
-            errors.age ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] ${isDisabled ? "bg-[#F8F9FA] cursor-not-allowed text-[#5F6368]" : "bg-white text-[#191C1D]"} ${
+            errors.age ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
           placeholder={t("eligibility.physique.agePlaceholder")}
         />
         {errors.age && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.age}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.age}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.physique.sexe")} *
         </label>
         <select
@@ -94,9 +97,10 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           value={formData.sexe || ""}
           onChange={handleInputChange}
           disabled={isDisabled}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
-            errors.sexe ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] ${isDisabled ? "bg-[#F8F9FA] cursor-not-allowed text-[#5F6368]" : "bg-white text-[#191C1D]"} ${
+            errors.sexe ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
         >
           <option value="">{t("eligibility.selectPlaceholder")}</option>
           {sexe.map((option) => (
@@ -106,7 +110,7 @@ const PersonnePhysiqueForm: React.FC<PersonnePhysiqueFormProps> = ({
           ))}
         </select>
         {errors.sexe && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.sexe}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.sexe}</p>
         )}
       </div>
     </div>

@@ -21,9 +21,9 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
   const isDisabled = !!client;
 
   return (
-    <div className="bg-[#FFFFFF] p-6 border border-[#E4E4E7] animate-fadeIn">
+    <div className="bg-white p-6 border border-[#DADCE0] rounded-xl shadow-sm animate-fadeIn">
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.morale.nomEntreprise")} *
         </label>
         <input
@@ -32,13 +32,14 @@ const PersonneMoraleForm: React.FC<PersonneMoraleFormProps> = ({
           value={formData.nomEntreprise || ""}
           onChange={handleInputChange}
           disabled={isDisabled}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
-            errors.nomEntreprise ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] ${isDisabled ? "bg-[#F8F9FA] cursor-not-allowed text-[#5F6368]" : "bg-white text-[#191C1D]"} ${
+            errors.nomEntreprise ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
           placeholder={t("eligibility.morale.nomEntreprisePlaceholder")}
         />
         {errors.nomEntreprise && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.nomEntreprise}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.nomEntreprise}</p>
         )}
       </div>
     </div>

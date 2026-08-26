@@ -26,10 +26,10 @@ const Step2Fields: React.FC<Step2FieldsProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FFFFFF] p-6 border border-[#E4E4E7] animate-fadeIn font-sans">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 border border-[#DADCE0] rounded-xl shadow-sm animate-fadeIn">
       {/* Secteur d'activité */}
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {formData.applicantType === "physique"
             ? t("eligibility.physique.secteurTravail")
             : t("eligibility.morale.secteurActivite")}{" "}
@@ -39,9 +39,10 @@ const Step2Fields: React.FC<Step2FieldsProps> = ({
           name="secteurTravail"
           value={formData.secteurTravail || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
-            errors.secteurTravail ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] bg-white text-[#191C1D] ${
+            errors.secteurTravail ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
         >
           <option value="">{t("eligibility.selectPlaceholder")}</option>
           {SECTEURS_TRAVAIL.map((secteur) => (
@@ -51,22 +52,23 @@ const Step2Fields: React.FC<Step2FieldsProps> = ({
           ))}
         </select>
         {errors.secteurTravail && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.secteurTravail}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.secteurTravail}</p>
         )}
       </div>
 
       {/* Région */}
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.physique.region")} *
         </label>
         <select
           name="region"
           value={formData.region || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
-            errors.region ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] bg-white text-[#191C1D] ${
+            errors.region ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
         >
           <option value="">{t("eligibility.selectPlaceholder")}</option>
           {REGIONS.map((region) => (
@@ -76,13 +78,13 @@ const Step2Fields: React.FC<Step2FieldsProps> = ({
           ))}
         </select>
         {errors.region && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.region}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.region}</p>
         )}
       </div>
 
       {/* Statut juridique */}
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {formData.applicantType === "physique"
             ? t("eligibility.physique.statutJuridique")
             : t("eligibility.morale.statutJuridique")}{" "}
@@ -92,9 +94,10 @@ const Step2Fields: React.FC<Step2FieldsProps> = ({
           name="statutJuridique"
           value={formData.statutJuridique || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
-            errors.statutJuridique ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] bg-white text-[#191C1D] ${
+            errors.statutJuridique ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
         >
           <option value="">{t("eligibility.selectPlaceholder")}</option>
           {(formData.applicantType === "physique"
@@ -107,22 +110,23 @@ const Step2Fields: React.FC<Step2FieldsProps> = ({
           ))}
         </select>
         {errors.statutJuridique && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.statutJuridique}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.statutJuridique}</p>
         )}
       </div>
 
       {/* Année de création */}
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.anneeCreation")} *
         </label>
         <select
           name="anneeCreation"
           value={formData.anneeCreation || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
-            errors.anneeCreation ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] bg-white text-[#191C1D] ${
+            errors.anneeCreation ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
         >
           <option value="">{t("eligibility.selectPlaceholder")}</option>
           {ANNEE_CREATION_OPTIONS.map((option) => (
@@ -132,22 +136,23 @@ const Step2Fields: React.FC<Step2FieldsProps> = ({
           ))}
         </select>
         {errors.anneeCreation && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.anneeCreation}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.anneeCreation}</p>
         )}
       </div>
 
       {/* Nombre d'employés */}
       <div className="md:col-span-2">
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.numberOfEmployees")} *
         </label>
         <select
           name="numberOfEmployees"
           value={formData.numberOfEmployees || ""}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
-            errors.numberOfEmployees ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] bg-white text-[#191C1D] ${
+            errors.numberOfEmployees ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
         >
           <option value="">{t("eligibility.selectPlaceholder")}</option>
           {NUMBER_OF_EMPLOYEES.map((option) => (
@@ -157,7 +162,7 @@ const Step2Fields: React.FC<Step2FieldsProps> = ({
           ))}
         </select>
         {errors.numberOfEmployees && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.numberOfEmployees}</p>
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.numberOfEmployees}</p>
         )}
       </div>
     </div>

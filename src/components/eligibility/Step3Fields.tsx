@@ -35,17 +35,17 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
   const isDisabled = !!client;
 
   return (
-    <div className="space-y-6 bg-[#FFFFFF] p-6 border border-[#E4E4E7] animate-fadeIn font-sans">
+    <div className="space-y-6 bg-white p-6 border border-[#DADCE0] rounded-xl shadow-sm animate-fadeIn">
       {/* Chiffre d'affaires */}
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-3 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-3" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.chiffreAffaire")} (en MAD HT) *
         </label>
         {years.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {years.map((year) => (
               <div key={year}>
-                <label className="block text-[10px] font-bold text-[#1F2937]/50 uppercase tracking-wider mb-1.5 font-mono">
+                <label className="block text-[10px] font-bold text-[#5F6368] uppercase tracking-wider mb-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>
                   {t("eligibility.yearLabel", { year })}
                 </label>
                 <input
@@ -55,7 +55,8 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                     (formData[`chiffreAffaire${year}` as keyof FormData] as string) || ""
                   }
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-[#E4E4E7] rounded-none focus:border-[#1E5ED8] focus:ring-0 bg-white transition-colors duration-200 outline-none text-sm font-sans"
+                  className="w-full px-4 py-3 border border-[#DADCE0] rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] bg-white text-[#191C1D] transition-colors duration-200 outline-none text-[14px]"
+                  style={{ fontFamily: "Roboto Flex, sans-serif" }}
                   placeholder={t("eligibility.caPlaceholder")}
                   min="0"
                 />
@@ -63,8 +64,8 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
             ))}
           </div>
         ) : (
-          <div className="bg-[#1E5ED8]/5 border border-[#1E5ED8]/10 p-4">
-            <p className="text-[#1E5ED8] text-[11px] font-mono uppercase tracking-wider flex items-center">
+          <div className="bg-[#F8F9FA] border border-[#DADCE0] rounded-lg p-4">
+            <p className="text-[#1A73E8] text-[11px] uppercase tracking-wider flex items-center" style={{ fontFamily: "JetBrains Mono, monospace" }}>
               <svg className="w-4 h-4 mr-2 rtl:ml-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -77,7 +78,7 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
           </div>
         )}
         {errors.chiffreAffaire2024 && (
-          <p className="text-red-500 text-xs mt-2 font-mono">
+          <p className="text-red-500 text-xs mt-2" style={{ fontFamily: "JetBrains Mono, monospace" }}>
             {errors.chiffreAffaire2024}
           </p>
         )}
@@ -85,16 +86,17 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
 
       {/* Montant Investissement */}
       <div>
-        <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
           {t("eligibility.montantInvestissement")} *
         </label>
         <select
           name="montantInvestissement"
           value={formData.montantInvestissement}
           onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-white ${
-            errors.montantInvestissement ? "border-red-500" : "border-[#E4E4E7]"
+          className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] bg-white text-[#191C1D] ${
+            errors.montantInvestissement ? "border-red-500" : "border-[#DADCE0]"
           }`}
+          style={{ fontFamily: "Roboto Flex, sans-serif" }}
         >
           <option value="">{t("eligibility.selectPlaceholder")}</option>
           {MONTANT_INVESTISSEMENT_OPTIONS.map((option) => (
@@ -104,18 +106,18 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
           ))}
         </select>
         {errors.montantInvestissement && (
-          <p className="text-red-500 text-xs mt-1.5 font-mono">
+          <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>
             {errors.montantInvestissement}
           </p>
         )}
       </div>
 
-      <hr className="border-[#E4E4E7]" />
+      <hr className="border-[#DADCE0]" />
 
       {/* Email & Téléphone */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+          <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
             {t("eligibility.email")} *
           </label>
           <input
@@ -124,18 +126,19 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
             value={formData.email}
             onChange={handleInputChange}
             disabled={isDisabled}
-            className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
-              errors.email ? "border-red-500" : "border-[#E4E4E7]"
+            className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] ${isDisabled ? "bg-[#F8F9FA] cursor-not-allowed text-[#5F6368]" : "bg-white text-[#191C1D]"} ${
+              errors.email ? "border-red-500" : "border-[#DADCE0]"
             }`}
+            style={{ fontFamily: "Roboto Flex, sans-serif" }}
             placeholder={t("eligibility.emailPlaceholder")}
           />
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.email}</p>
+            <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.email}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-xs font-bold tracking-wider uppercase text-[#1F2937]/70 mb-2 font-display">
+          <label className="block text-xs font-bold tracking-wider uppercase text-[#5F6368] mb-2" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
             {t("eligibility.physique.telephone")} *
           </label>
           {phoneMode === "select" && availablePhones.length > 0 ? (
@@ -151,9 +154,10 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                 }
               }}
               disabled={isDisabled}
-              className={`w-full px-4 py-3 border rounded-none focus:border-[#1E5ED8] focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-500" : "bg-white"} ${
-                errors.telephone ? "border-red-500" : "border-[#E4E4E7]"
+              className={`w-full px-4 py-3 border rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors duration-200 outline-none text-[14px] ${isDisabled ? "bg-[#F8F9FA] cursor-not-allowed text-[#5F6368]" : "bg-white text-[#191C1D]"} ${
+                errors.telephone ? "border-red-500" : "border-[#DADCE0]"
               }`}
+              style={{ fontFamily: "Roboto Flex, sans-serif" }}
             >
               {availablePhones.map((ph) => (
                 <option key={ph} value={ph}>
@@ -163,10 +167,10 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
               <option value="__new__">{t("eligibility.newPhoneOption")}</option>
             </select>
           ) : (
-            <div className={`flex border rounded-none ${isDisabled ? "bg-gray-100" : "bg-white"} transition-colors duration-200 focus-within:border-[#1E5ED8] focus-within:ring-0 ${
-              errors.telephone ? "border-red-500" : "border-[#E4E4E7]"
+            <div className={`flex border rounded-lg ${isDisabled ? "bg-[#F8F9FA]" : "bg-white"} transition-colors duration-200 focus-within:border-[#1A73E8] focus-within:ring-1 focus-within:ring-[#1A73E8] ${
+              errors.telephone ? "border-red-500" : "border-[#DADCE0]"
             }`}>
-              <span className="inline-flex items-center px-4 bg-[#FFFFFF] border-e border-[#E4E4E7] text-[#1F2937]/60 text-xs font-mono rounded-none">
+              <span className="inline-flex items-center px-4 bg-[#F8F9FA] border-e border-[#DADCE0] text-[#5F6368] text-[13px] rounded-l-lg" style={{ fontFamily: "JetBrains Mono, monospace" }}>
                 +212
               </span>
               <input
@@ -176,19 +180,20 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                 onChange={handleInputChange}
                 disabled={isDisabled}
                 maxLength={9}
-                className={`w-full px-4 py-3 focus:ring-0 transition-colors duration-200 outline-none text-sm font-sans bg-transparent border-0 ${isDisabled ? "cursor-not-allowed text-gray-500" : ""}`}
+                className={`w-full px-4 py-3 focus:ring-0 transition-colors duration-200 outline-none text-[14px] bg-transparent border-0 rounded-r-lg ${isDisabled ? "cursor-not-allowed text-[#5F6368]" : "text-[#191C1D]"}`}
+                style={{ fontFamily: "Roboto Flex, sans-serif" }}
                 placeholder={t("eligibility.physique.telephonePlaceholder")}
               />
             </div>
           )}
           {errors.telephone && (
-            <p className="text-red-500 text-xs mt-1.5 font-mono">{errors.telephone}</p>
+            <p className="text-red-500 text-xs mt-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}>{errors.telephone}</p>
           )}
         </div>
       </div>
 
       {/* Politique de confidentialité */}
-      <div className="pt-4 border-t border-[#E4E4E7]">
+      <div className="pt-4 border-t border-[#DADCE0]">
         <div className="flex items-start space-x-3 rtl:space-x-reverse">
           <input
             type="checkbox"
@@ -196,28 +201,29 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
             name="acceptPrivacyPolicy"
             checked={formData.acceptPrivacyPolicy}
             onChange={handleCheckboxChange}
-            className={`mt-1 h-4 w-4 text-[#1E5ED8] focus:ring-0 focus:ring-offset-0 border-[#E4E4E7] rounded-none ${
+            className={`mt-1 h-4 w-4 text-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] focus:ring-offset-0 border-[#DADCE0] rounded ${
               errors.acceptPrivacyPolicy ? "border-red-500" : ""
             }`}
           />
           <div className="flex-1">
             <label
               htmlFor="acceptPrivacyPolicy"
-              className="text-xs text-[#1F2937]/70 leading-relaxed cursor-pointer select-none font-sans"
+              className="text-[14px] text-[#5F6368] leading-relaxed cursor-pointer select-none"
+              style={{ fontFamily: "Roboto Flex, sans-serif" }}
             >
               {t("eligibility.privacyPolicy.text1")}{" "}
               <Link
                 to="/privacy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#1E5ED8] hover:text-[#F97316] underline font-semibold transition-colors duration-200"
+                className="text-[#1A73E8] hover:text-[#174EA6] underline font-bold transition-colors duration-200"
               >
                 {t("eligibility.privacyPolicy.link")}
               </Link>{" "}
               {t("eligibility.privacyPolicy.text2")}
             </label>
             {errors.acceptPrivacyPolicy && (
-              <p className="text-red-500 text-[10px] font-mono mt-1 font-semibold">
+              <p className="text-red-500 text-[11px] mt-1 font-bold" style={{ fontFamily: "JetBrains Mono, monospace" }}>
                 {errors.acceptPrivacyPolicy}
               </p>
             )}
