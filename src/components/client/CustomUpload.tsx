@@ -7,6 +7,11 @@ interface CustomUploadProps {
   dossierId: number;
 }
 
+const font = {
+  display: "font-['Plus_Jakarta_Sans',_sans-serif]",
+  body: "font-['Roboto_Flex',_sans-serif]",
+};
+
 const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
@@ -90,26 +95,26 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
 
   return (
     <div
-      className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-6 transition-all"
+      className={`bg-white rounded-lg border border-[#DADCE0] overflow-hidden mt-6 ${font.body}`}
       dir={isRTL ? "rtl" : "ltr"}
     >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/70 hover:bg-slate-100/80 transition-colors text-left rtl:text-right"
+        className="w-full px-5 py-4 flex items-center justify-between bg-[#F8F9FA] hover:bg-[#EDEEEF] transition-colors text-left rtl:text-right"
       >
         <div className="flex items-center space-x-3 rtl:space-x-reverse">
-          <div className="w-8 h-8 rounded-lg bg-blue-100 text-[#1E5ED8] flex items-center justify-center font-bold text-lg">
+          <div className="w-7 h-7 rounded bg-[#E8F0FE] text-[#1A73E8] flex items-center justify-center font-bold text-base">
             +
           </div>
           <div>
-            <span className="font-bold text-slate-900 text-sm block">
+            <span className={`${font.display} font-bold text-[#191C1D] text-sm block`}>
               {t(
                 "clientDashboard.customUpload.title",
                 "Ajouter un document complémentaire non prévu"
               )}
             </span>
-            <span className="text-xs text-slate-500 block">
+            <span className="text-xs text-[#5F6368] block">
               {t(
                 "clientDashboard.customUpload.subtitle",
                 "Joignez tout document supplémentaire utile (Ex: Relevé bancaire, Business Plan, etc.)"
@@ -119,7 +124,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
         </div>
 
         <svg
-          className={`w-5 h-5 text-slate-500 transform transition-transform duration-200 ${
+          className={`w-5 h-5 text-[#5F6368] transform transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
           fill="none"
@@ -136,22 +141,22 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
       </button>
 
       {isOpen && (
-        <form onSubmit={handleSubmit} className="p-6 border-t border-slate-100 space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 border-t border-[#DADCE0] space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-lg bg-red-50 text-red-700 text-xs font-medium border border-red-200">
+            <div className="p-3 rounded bg-[#FFDAD6] border-l-4 border-[#BA1A1A] text-[#93000A] text-xs font-medium">
               {errorMsg}
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200">
+            <div className="p-3 rounded bg-[#E6F4EA] border-l-4 border-[#1E8E3E] text-[#1E8E3E] text-xs font-medium">
               {successMsg}
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#414754] mb-1.5">
                 {t(
                   "clientDashboard.customUpload.labelInput",
                   "Nom / Intitulé du document *"
@@ -160,7 +165,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
               <input
                 type="text"
                 required
-                className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#1E5ED8] focus:border-transparent outline-none transition-all placeholder-slate-400"
+                className="w-full px-3.5 py-2.5 bg-white border border-[#DADCE0] rounded text-sm text-[#191C1D] placeholder-[#727785] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors"
                 placeholder={t(
                   "clientDashboard.customUpload.labelPlaceholder",
                   "Ex: Plan de financement, Relevé bancaire..."
@@ -171,7 +176,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#414754] mb-1.5">
                 {t(
                   "clientDashboard.customUpload.fileInput",
                   "Fichier joint *"
@@ -181,7 +186,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
                 type="file"
                 required
                 accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.docx,.doc"
-                className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#1E5ED8] hover:file:bg-blue-100 transition-all cursor-pointer"
+                className="block w-full text-xs text-[#5F6368] file:mr-3 file:py-1.5 file:px-3 file:rounded file:border file:border-[#DADCE0] file:text-xs file:font-semibold file:bg-[#F8F9FA] file:text-[#191C1D] hover:file:bg-[#EDEEEF] cursor-pointer"
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {
                     setSelectedFile(e.target.files[0]);
@@ -195,7 +200,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
             <button
               type="submit"
               disabled={customUploadMutation.isPending}
-              className="px-5 py-2.5 rounded-xl bg-[#1E5ED8] hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-colors disabled:opacity-50 flex items-center space-x-2 rtl:space-x-reverse"
+              className="px-5 py-2.5 rounded bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold transition-colors disabled:opacity-50 flex items-center space-x-2 rtl:space-x-reverse"
             >
               {customUploadMutation.isPending && (
                 <svg
@@ -210,12 +215,12 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
                     r="10"
                     stroke="currentColor"
                     strokeWidth="4"
-                  ></circle>
+                  />
                   <path
                     className="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                  />
                 </svg>
               )}
               <span>

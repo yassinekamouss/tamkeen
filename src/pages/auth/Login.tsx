@@ -8,6 +8,12 @@ import { authService } from "../../services/authService";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
 import logo from "../../assets/logo.webp";
 
+const font = {
+  display: "font-['Plus_Jakarta_Sans',_sans-serif]",
+  body: "font-['Roboto_Flex',_sans-serif]",
+  mono: "font-['JetBrains_Mono',_monospace]",
+};
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -21,27 +27,20 @@ const Login: React.FC = () => {
 
   const isRTL = i18n.language === "ar";
 
-  // Certains anciens navigateurs peuvent déjà afficher
-  // leur propre bouton de révélation du mot de passe.
   const nativeRevealSupported = useMemo(() => {
     if (typeof navigator === "undefined") return false;
-
     const ua = navigator.userAgent || "";
-
     return ua.includes("Edge/") && !ua.includes("Edg/");
   }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     setLoading(true);
     setError("");
 
     try {
       const response = await authService.login(email, password);
-
       login(response);
-
       navigate("/client/dashboard");
     } catch (err: any) {
       const message =
@@ -50,7 +49,6 @@ const Login: React.FC = () => {
           "clientAuth.login.errorDefault",
           "Échec de la connexion. Vérifiez vos identifiants."
         );
-
       setError(message);
     } finally {
       setLoading(false);
@@ -59,255 +57,204 @@ const Login: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen bg-white flex items-center justify-center px-4 sm:px-6 lg:px-8"
+      className={`min-h-screen bg-[#F8F9FA] flex flex-col justify-between items-center px-4 py-8 sm:px-6 lg:px-8 ${font.body}`}
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
-
-          {/* =========================================================
-              HEADER
-          ========================================================= */}
-          <div className="px-8 py-8 text-center">
-            <Link
-              to="/"
-              className="inline-block focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg"
-            >
-              <img
-                src={logo}
-                alt="Tamkeen Center"
-                className="h-20 w-auto mx-auto mb-6"
-              />
-            </Link>
-
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {t("clientAuth.login.title", "Espace Client")}
-            </h1>
-
-            <p className="text-gray-600 text-sm">
-              {t(
-                "clientAuth.login.subtitle",
-                "Connectez-vous pour suivre votre dossier."
-              )}
-            </p>
-          </div>
-
-          {/* =========================================================
-              FORMULAIRE
-          ========================================================= */}
-          <div className="px-8 pb-8">
-
-            {/* Message d'erreur */}
-            {error && (
-              <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                <p
-                  className={`text-orange-700 text-sm flex items-center ${
-                    isRTL ? "flex-row-reverse" : ""
-                  }`}
+      <div className="w-full flex-grow flex items-center justify-center py-6">
+        <div className="max-w-md w-full">
+          {/* Double bezel frame */}
+          <div className="bg-[#EDEEEF]/60 p-2 sm:p-2.5 rounded-2xl border border-[#DADCE0]">
+            <div className="bg-white rounded-xl border border-[#DADCE0] overflow-hidden">
+              {/* Header */}
+              <div className="px-6 pt-8 pb-6 text-center border-b border-[#F3F4F5]">
+                <Link
+                  to="/"
+                  className="inline-block focus:outline-none focus:ring-2 focus:ring-[#1A73E8] focus:ring-offset-2 rounded-lg transition-transform hover:scale-[1.02]"
                 >
-                  <svg
-                    className={`w-4 h-4 shrink-0 ${
-                      isRTL ? "ml-2" : "mr-2"
-                    }`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <img
+                    src={logo}
+                    alt="Tamkeen Center - Masubvention.ma"
+                    className="h-16 sm:h-20 w-auto mx-auto mb-5 object-contain"
+                  />
+                </Link>
 
-                  <span>{error}</span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-3 rounded-full bg-[#E8F0FE] text-[#005BBF] text-[11px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1A73E8]"></span>
+                  {t("clientAuth.login.badge", "Espace Porteur de Projet")}
+                </div>
+
+                <h1 className={`${font.display} text-2xl font-bold text-[#191C1D] tracking-tight`}>
+                  {t("clientAuth.login.title", "Connexion à votre espace")}
+                </h1>
+
+                <p className="text-[#5F6368] text-xs sm:text-sm mt-1.5 max-w-xs mx-auto leading-relaxed">
+                  {t(
+                    "clientAuth.login.subtitle",
+                    "Accédez au suivi en temps réel et à la gestion de vos pièces de dossier."
+                  )}
                 </p>
               </div>
-            )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-
-              {/* Email */}
-              <div>
-                <label
-                  htmlFor="client-email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  {t(
-                    "clientAuth.login.emailLabel",
-                    "Adresse email"
-                  )}
-                </label>
-
-                <input
-                  id="client-email"
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t(
-                    "clientAuth.login.emailPlaceholder",
-                    "votre@email.com"
-                  )}
-                  dir="ltr"
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors"
-                />
-              </div>
-
-              {/* Mot de passe */}
-              <div>
-                <label
-                  htmlFor="client-password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  {t(
-                    "clientAuth.login.passwordLabel",
-                    "Mot de passe"
-                  )}
-                </label>
-
-                <div className="relative">
-                  <input
-                    id="client-password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={t(
-                      "clientAuth.login.passwordPlaceholder",
-                      "••••••••"
-                    )}
-                    dir="ltr"
-                    required
-                    className={`w-full ${
-                      isRTL ? "pl-12 pr-4" : "pl-4 pr-12"
-                    } py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors`}
-                  />
-
-                  {!nativeRevealSupported && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowPassword((visible) => !visible)
-                      }
-                      aria-pressed={showPassword}
-                      aria-label={
-                        showPassword
-                          ? t(
-                              "clientAuth.login.hidePassword",
-                              "Masquer le mot de passe"
-                            )
-                          : t(
-                              "clientAuth.login.showPassword",
-                              "Afficher le mot de passe"
-                            )
-                      }
-                      title={
-                        showPassword
-                          ? t(
-                              "clientAuth.login.hidePassword",
-                              "Masquer le mot de passe"
-                            )
-                          : t(
-                              "clientAuth.login.showPassword",
-                              "Afficher le mot de passe"
-                            )
-                      }
-                      className={`absolute inset-y-0 ${
-                        isRTL ? "left-0" : "right-0"
-                      } w-10 flex items-center justify-center text-gray-500 hover:text-gray-700 bg-transparent border-0 p-0 m-0 focus:outline focus:outline-2 focus:outline-orange-500`}
-                    >
-                      {showPassword ? (
-                        <EyeOff
-                          aria-hidden="true"
-                          size={20}
-                        />
-                      ) : (
-                        <Eye
-                          aria-hidden="true"
-                          size={20}
-                        />
-                      )}
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Bouton connexion */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-6 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 flex items-center justify-center gap-2"
-              >
-                {loading && (
-                  <svg
-                    className="animate-spin h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
+              {/* Form body */}
+              <div className="p-6 sm:p-8 space-y-5">
+                {error && (
+                  <div className="p-4 rounded-lg bg-[#FFDAD6] border-l-4 border-[#BA1A1A] text-[#93000A] text-xs sm:text-sm font-medium flex items-start gap-3">
+                    <svg
+                      className="w-4 h-4 text-[#BA1A1A] mt-0.5 shrink-0"
+                      fill="none"
                       stroke="currentColor"
-                      strokeWidth="4"
-                    />
-
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{error}</span>
+                  </div>
                 )}
 
-                {loading
-                  ? t(
-                      "clientAuth.login.loadingBtn",
-                      "Connexion..."
-                    )
-                  : t(
-                      "clientAuth.login.submitBtn",
-                      "Se connecter"
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="client-email"
+                      className="block text-xs font-semibold uppercase tracking-wider text-[#414754] mb-1.5"
+                    >
+                      {t("clientAuth.login.emailLabel", "Adresse email")}
+                    </label>
+
+                    <input
+                      id="client-email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t(
+                        "clientAuth.login.emailPlaceholder",
+                        "votre@entreprise.ma"
+                      )}
+                      dir="ltr"
+                      required
+                      className="w-full px-3.5 py-2.5 bg-white border border-[#DADCE0] rounded text-sm text-[#191C1D] placeholder-[#727785] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <label
+                        htmlFor="client-password"
+                        className="block text-xs font-semibold uppercase tracking-wider text-[#414754]"
+                      >
+                        {t("clientAuth.login.passwordLabel", "Mot de passe")}
+                      </label>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        id="client-password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        dir="ltr"
+                        required
+                        className={`w-full ${
+                          isRTL ? "pl-11 pr-3.5" : "pl-3.5 pr-11"
+                        } py-2.5 bg-white border border-[#DADCE0] rounded text-sm text-[#191C1D] placeholder-[#727785] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors`}
+                      />
+
+                      {!nativeRevealSupported && (
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((v) => !v)}
+                          aria-label={
+                            showPassword
+                              ? t("clientAuth.login.hidePassword", "Masquer")
+                              : t("clientAuth.login.showPassword", "Afficher")
+                          }
+                          className={`absolute inset-y-0 ${
+                            isRTL ? "left-0" : "right-0"
+                          } px-3 flex items-center justify-center text-[#727785] hover:text-[#191C1D] transition-colors focus:outline-none`}
+                        >
+                          {showPassword ? (
+                            <EyeOff size={18} />
+                          ) : (
+                            <Eye size={18} />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full mt-2 bg-[#1A73E8] hover:bg-[#174EA6] disabled:opacity-40 disabled:cursor-not-allowed text-white py-3 px-4 rounded font-medium text-sm shadow-[0_4px_14px_rgba(26,115,232,0.12)] transition-all focus:outline-none focus:ring-2 focus:ring-[#1A73E8] focus:ring-offset-2 flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <svg
+                          className="animate-spin h-4 w-4 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                        <span>{t("clientAuth.login.loadingBtn", "Connexion en cours...")}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{t("clientAuth.login.submitBtn", "Accéder à mon espace")}</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </>
                     )}
-              </button>
-            </form>
-          </div>
+                  </button>
+                </form>
+              </div>
 
-          {/* =========================================================
-              ACTION CLIENT
-          ========================================================= */}
-          <div className="px-8 py-5 bg-gray-50 border-t border-gray-200">
-            <div className="text-center">
+              {/* Footer callout */}
+              <div className="px-6 py-4 bg-[#F8F9FA] border-t border-[#DADCE0] text-center space-y-2">
+                <p className="text-xs text-[#5F6368]">
+                  {t(
+                    "clientAuth.login.noAccountYet",
+                    "Vous n'avez pas encore évalué l'éligibilité de votre projet ?"
+                  )}
+                </p>
 
-              <p className="text-xs text-gray-500 mb-2">
-                {t(
-                  "clientAuth.login.noAccountYet",
-                  "Vous n'avez pas encore fait le test d'éligibilité ?"
-                )}
-              </p>
-
-              <Link
-                to="/"
-                className="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded"
-              >
-                {t(
-                  "clientAuth.login.takeTestBtn",
-                  "Faire le test maintenant"
-                )}
-              </Link>
-
-              <p className="text-xs text-gray-500 mt-4">
-                Tamkeen Center © 2024
-              </p>
-
+                <Link
+                  to="/"
+                  className="inline-flex items-center text-xs font-bold text-[#1A73E8] hover:text-[#174EA6] hover:underline transition-colors gap-1"
+                >
+                  <span>{t("clientAuth.login.takeTestBtn", "Faire le test d'éligibilité gratuit")}</span>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="text-center text-[11px] text-[#727785] pb-2">
+        Tamkeen Center &amp; Masubvention.ma © 2026 — Plateforme d'Accompagnement aux Subventions
       </div>
     </div>
   );
