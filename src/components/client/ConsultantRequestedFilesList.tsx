@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { dossierService } from "../../services/dossierService";
-import { Upload, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { Upload, CheckCircle2, AlertCircle, Loader2, Download } from "lucide-react";
 
 interface ConsultantRequestedFilesListProps {
   dossierId: number;
@@ -67,7 +67,7 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                     Facultatif
                   </span>
                 )}
-                
+
                 {req.status === "PENDING" ? (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-orange-50 text-orange-700 border border-orange-200 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
@@ -81,7 +81,7 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                 )}
               </div>
               <h4 className="text-[15px] font-bold text-[#191C1D] leading-snug">
-                {req.message}
+                {req.input_type === "FILE" && req.documentType?.name ? req.documentType.name : req.message}
               </h4>
               <p className="text-xs text-[#5F6368] mt-1">
                 Demandé le {new Date(req.createdAt).toLocaleDateString()}
@@ -100,9 +100,8 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                   />
                   <label
                     htmlFor={`file-upload-${req.id}`}
-                    className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#1A73E8] hover:bg-[#174EA6] rounded-md cursor-pointer transition-colors ${
-                      uploadingRequestId === req.id ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#1A73E8] hover:bg-[#174EA6] rounded-md cursor-pointer transition-colors ${uploadingRequestId === req.id ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
                   >
                     {uploadingRequestId === req.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -114,9 +113,29 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                 </div>
               )}
               {req.status !== "PENDING" && (
-                <div className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-green-700 bg-green-50 rounded-md">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Transmis au consultant
+                <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 sm:mt-0">
+                  <div className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-green-700 bg-green-50 rounded-md whitespace-nowrap">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Transmis
+                  </div>
+
+                  {(() => {
+                    const attachmentMsg = req.messages?.slice().reverse().find((m: any) => m.attachment_url);
+                    if (attachmentMsg) {
+                      return (
+                        <a
+                          href={`${import.meta.env.VITE_PREFIX_URL || "http://localhost:5000/uploads"}/dossiers/${dossierId}/${attachmentMsg.attachment_url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-[#1A73E8] bg-[#F8F9FA] hover:bg-[#F3F4F5] border border-[#DADCE0] rounded-md transition-colors whitespace-nowrap"
+                        >
+                          <Download className="w-4 h-4" />
+                          Consulter
+                        </a>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
               )}
             </div>
