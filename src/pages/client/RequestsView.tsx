@@ -98,40 +98,6 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
     },
   });
 
-
-
-  // Fetch Requests
-  const { data: requests = [], isLoading } = useQuery<DossierRequest[]>({
-    queryKey: ["clientRequests", dossierId],
-    queryFn: async () => {
-      const res = await dossierService.getRequests(dossierId);
-      return res.data;
-    },
-    enabled: !!dossierId,
-  });
-
-  const createRequestMutation = useMutation({
-    mutationFn: async (message: string) => {
-      return dossierService.createClientRequest(dossierId, message);
-    },
-    onSuccess: () => {
-      setNewMessage("");
-      setIsCreatingNew(false);
-      queryClient.invalidateQueries({ queryKey: ["clientRequests", dossierId] });
-    },
-  });
-
-  const replyMutation = useMutation({
-    mutationFn: async ({ requestId, message, file }: { requestId: number; message: string; file: File | null }) => {
-      return dossierService.replyToRequest(dossierId, requestId, message, file);
-    },
-    onSuccess: () => {
-      setReplyMessage("");
-      setReplyFile(null);
-      queryClient.invalidateQueries({ queryKey: ["clientRequests", dossierId] });
-    },
-  });
-
   // Plan 1 Lock Screen
   if (planType !== "PLAN_2") {
     return (
