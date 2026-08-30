@@ -1,9 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { FormData, programsNamesAndLinks } from "./types";
 import { useTranslation } from "react-i18next";
 import { sanitizeFrenchText } from "../../utils/sanitize";
-import { CheckCircle2, Mail, ArrowRight } from "lucide-react";
+import { CheckCircle2, Mail, ArrowRight, FolderPlus, LayoutDashboard, Loader2 } from "lucide-react";
 import AgentChat from "./agent/AgentChat";
+import { useNavigate } from "react-router-dom";
+import api from "../../api/axios";
+import { useClientAuth } from "../../contexts/ClientAuthContext";
 
 interface EligibilityResultProps {
   isEligible: boolean;
@@ -14,6 +17,7 @@ interface EligibilityResultProps {
   testId?: string | null;
   onEditForm?: (fieldsToClear?: string[]) => void;
   isCorrectedFlow?: boolean;
+  isAuth?: boolean;
 }
 
 const EligibilityResult: React.FC<EligibilityResultProps> = ({
@@ -24,10 +28,31 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
   onSimulate,
   testId,
   onEditForm,
+  isAuth,
 }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as "fr" | "ar";
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
+  const { checkAuth } = useClientAuth();
+
+  const [isCreatingDossier, setIsCreatingDossier] = useState(false);
+  const [dossierError, setDossierError] = useState<string | null>(null);
+
+  const handleCreateDossier = async () => {
+    if (!testId) return;
+    setIsCreatingDossier(true);
+    setDossierError(null);
+    try {
+      await api.post("/dossiers", { testId });
+      await checkAuth(); // Mettre à jour le contexte avec le nouveau dossier
+      navigate("/client/dashboard");
+    } catch (err: any) {
+      console.error(err);
+      setDossierError(err.response?.data?.message || "Erreur lors de la création du dossier.");
+      setIsCreatingDossier(false);
+    }
+  };
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -138,27 +163,71 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
             </div>
           )}
 
-          {/* Message de Succès avec icône d'enveloppe */}
+          {/* Message de Succès : conditionnel selon isAuth */}
           <div className="pt-6 border-t border-[#DADCE0]">
-            <div className="bg-[#F8F9FA] border border-[#DADCE0] rounded-xl p-8 text-center space-y-5 shadow-sm">
-              <div className="w-16 h-16 mx-auto rounded-full bg-white border border-[#DADCE0] text-[#1A73E8] flex items-center justify-center shadow-sm">
-                <Mail className="w-8 h-8" />
+            {isAuth ? (
+              <div className="bg-[#E8F0FE] border border-[#ADC7FF] rounded-xl p-6 sm:p-8 space-y-6 shadow-sm">
+                <div className="text-center space-y-2 max-w-lg mx-auto">
+                  <h3 className="text-[18px] sm:text-xl font-bold text-[#191C1D]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                    Souhaitez-vous créer un dossier d'accompagnement ?
+                  </h3>
+                  <p className="text-[#1A73E8] text-[14px] leading-relaxed">
+                    Vous pouvez dès maintenant transformer ce résultat en dossier actif pour sélectionner votre plan d'accompagnement.
+                  </p>
+                </div>
+                
+                {dossierError && (
+                  <div className="p-3 bg-[#FFDAD6] border-l-4 border-[#BA1A1A] text-[#93000A] text-sm font-medium rounded text-center">
+                    {dossierError}
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                  <button
+                    onClick={async () => {
+                      await checkAuth();
+                      navigate("/client/dashboard");
+                    }}
+                    className="w-full sm:w-auto px-6 py-2.5 bg-white border border-[#DADCE0] hover:bg-[#F8F9FA] text-[#414754] font-bold text-[14px] rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <LayoutDashboard size={18} />
+                    Retour au tableau de bord
+                  </button>
+                  <button
+                    onClick={handleCreateDossier}
+                    disabled={isCreatingDossier || !testId}
+                    className="w-full sm:w-auto px-6 py-2.5 flex items-center justify-center gap-2 bg-[#1A73E8] hover:bg-[#174EA6] text-white font-bold text-[14px] rounded-lg shadow-sm transition-colors disabled:opacity-50"
+                  >
+                    {isCreatingDossier ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <FolderPlus size={18} />
+                    )}
+                    Oui, créer un dossier
+                  </button>
+                </div>
               </div>
-              <div className="max-w-lg mx-auto space-y-2">
-                <h3 className="text-xl font-bold text-[#191C1D]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-                  {t(
-                    "eligibilityResult.workspaceReadyTitle",
-                    "Votre Espace de Travail est Prêt !"
-                  )}
-                </h3>
-                <p className="text-[#5F6368] text-[14px] sm:text-[15px] leading-relaxed">
-                  {t(
-                    "eligibilityResult.workspaceReady",
-                    "Félicitations, votre espace de travail est prêt ! Un email vient de vous être envoyé. Veuillez cliquer sur le lien qu'il contient pour définir votre mot de passe et accéder à votre tableau de bord."
-                  )}
-                </p>
+            ) : (
+              <div className="bg-[#F8F9FA] border border-[#DADCE0] rounded-xl p-8 text-center space-y-5 shadow-sm">
+                <div className="w-16 h-16 mx-auto rounded-full bg-white border border-[#DADCE0] text-[#1A73E8] flex items-center justify-center shadow-sm">
+                  <Mail className="w-8 h-8" />
+                </div>
+                <div className="max-w-lg mx-auto space-y-2">
+                  <h3 className="text-xl font-bold text-[#191C1D]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                    {t(
+                      "eligibilityResult.workspaceReadyTitle",
+                      "Votre Espace de Travail est Prêt !"
+                    )}
+                  </h3>
+                  <p className="text-[#5F6368] text-[14px] sm:text-[15px] leading-relaxed">
+                    {t(
+                      "eligibilityResult.workspaceReady",
+                      "Félicitations, votre espace de travail est prêt ! Un email vient de vous être envoyé. Veuillez cliquer sur le lien qu'il contient pour définir votre mot de passe et accéder à votre tableau de bord."
+                    )}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Bouton pour relancer un test */}

@@ -29,30 +29,29 @@ export const getYearsForCA = (anneeCreation?: string): number[] => {
   return years.sort((a, b) => b - a); // Tri décroissant (2024, 2023, 2022)
 };
 
-export const checkEligibility = async (data: FormData): Promise<EligibilityResult> => {
+export const checkEligibility = async (data: FormData, isAuth: boolean = false): Promise<EligibilityResult> => {
   try {
-
     if (data.telephone) {
       if (!data.telephone.startsWith("+212")) {
         data.telephone = `+212${data.telephone}`;
       }
     }
-   
-    const response = await api.post("/test/eligibilite", data);
 
-    if(response.data.programs.length > 0){
-      return { isEligible : true , programs : response.data.programs , testId: response.data.testId };
+    const endpoint = isAuth ? "/test/eligibilite/me" : "/test/eligibilite";
+    const response = await api.post(endpoint, data);
+
+    if (response.data.programs.length > 0) {
+      return { isEligible: true, programs: response.data.programs, testId: response.data.testId };
     } else {
-      return { isEligible: false ,testId: response.data.testId };
+      return { isEligible: false, testId: response.data.testId };
     }
-  } catch (error:any) {
-   const message =error.response?.data?.message ||
-      "Erreur lors de la vérification d'éligibilité";
+  } catch (error: any) {
+    const statusCode: number | undefined = error.response?.status;
+    const message =
+      error.response?.data?.message || "Erreur lors de la vérification d'éligibilité";
 
-    // Retourner une erreur spécifique
-    return { isEligible: false, errorMessage: message };
+    return { isEligible: false, errorMessage: message, statusCode };
   }
-  
 };
 
 export const callAgent = async (params: {

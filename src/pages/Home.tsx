@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useClientAuth } from "../contexts/ClientAuthContext";
 import {
   Header,
   Hero,
@@ -16,6 +18,18 @@ import type { ProfileType } from "../components/Hero";
 
 const Home: React.FC = () => {
   const [selectedProfile, setSelectedProfile] = useState<ProfileType | null>(null);
+  const { user, loading } = useClientAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/client/dashboard", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  if (!loading && user) {
+    return null; // Prevents flashing the page before redirect
+  }
 
   const handleProfileSelect = (profile: ProfileType) => {
     setSelectedProfile(profile);

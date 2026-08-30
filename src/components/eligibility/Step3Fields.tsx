@@ -34,6 +34,13 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
   const { client } = useClientAuth();
   const isDisabled = !!client;
 
+  const formatCurrency = (val: any) => {
+    if (!val) return "";
+    const strVal = String(val).replace(/\s/g, "");
+    if (isNaN(Number(strVal))) return val;
+    return strVal.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  };
+
   return (
     <div className="space-y-6 bg-white p-6 border border-[#DADCE0] rounded-xl shadow-sm animate-fadeIn">
       {/* Chiffre d'affaires */}
@@ -49,16 +56,28 @@ const Step3Fields: React.FC<Step3FieldsProps> = ({
                   {t("eligibility.yearLabel", { year })}
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name={`chiffreAffaire${year}`}
-                  value={
+                  value={formatCurrency(
                     (formData[`chiffreAffaire${year}` as keyof FormData] as string) || ""
-                  }
-                  onChange={handleInputChange}
+                  )}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/\s/g, "");
+                    // Create a cloned event object because changing target properties 
+                    // doesn't always work cleanly depending on how React synthetic events map them
+                    const mockEvent = {
+                      ...e,
+                      target: {
+                        ...e.target,
+                        name: e.target.name,
+                        value: rawValue
+                      }
+                    } as React.ChangeEvent<HTMLInputElement>;
+                    handleInputChange(mockEvent);
+                  }}
                   className="w-full px-4 py-3 border border-[#DADCE0] rounded-lg focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] bg-white text-[#191C1D] transition-colors duration-200 outline-none text-[14px]"
                   style={{ fontFamily: "Roboto Flex, sans-serif" }}
                   placeholder={t("eligibility.caPlaceholder")}
-                  min="0"
                 />
               </div>
             ))}

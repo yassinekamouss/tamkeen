@@ -44,6 +44,9 @@ const DocumentTypes = lazy(() => import("./pages/admin/DocumentTypes"));
 const SetupPassword = lazy(() => import("./pages/auth/SetupPassword"));
 const ClientLogin = lazy(() => import("./pages/auth/Login"));
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
+const ClientTest = lazy(() => import("./pages/client/ClientTest"));
+const ClientProfile = lazy(() => import("./pages/client/ClientProfile"));
+const TestHistory = lazy(() => import("./pages/client/TestHistory"));
 const ClientProtectedRoute = lazy(
   () => import("./components/ClientProtectedRoute")
 );
@@ -146,6 +149,30 @@ function App() {
           element={
             <ClientProtectedRoute>
               <ClientDashboard />
+            </ClientProtectedRoute>
+          }
+        />
+        <Route
+          path="/client/test"
+          element={
+            <ClientProtectedRoute>
+              <ClientTest />
+            </ClientProtectedRoute>
+          }
+        />
+        <Route
+          path="/client/profile"
+          element={
+            <ClientProtectedRoute>
+              <ClientProfile />
+            </ClientProtectedRoute>
+          }
+        />
+        <Route
+          path="/client/historique"
+          element={
+            <ClientProtectedRoute>
+              <TestHistory />
             </ClientProtectedRoute>
           }
         />

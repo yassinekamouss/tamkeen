@@ -6,7 +6,7 @@ import {
   CheckCircle2,
   Shield,
   Award,
-  UserCheck
+  UserCheck,
 } from "lucide-react";
 
 import heroBackground from "../assets/hero_background.png";

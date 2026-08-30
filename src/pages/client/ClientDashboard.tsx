@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
@@ -10,6 +10,7 @@ import type { DocumentRequirement } from "../../types/dossier";
 import { useTranslation } from "react-i18next";
 import PlanSelection from "./PlanSelection";
 import RequestsView from "./RequestsView";
+import { FileText, Plus } from "lucide-react";
 
 const font = {
   display: "font-['Plus_Jakarta_Sans',_sans-serif]",
@@ -25,13 +26,21 @@ const ClientDashboard: React.FC = () => {
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"workspace" | "requests">("workspace");
+  const [activeDossierId, setActiveDossierId] = useState<number | null>(null);
+
+
+  useEffect(() => {
+    if (dossiers && dossiers.length > 0 && !activeDossierId) {
+      setActiveDossierId(dossiers[0].id);
+    }
+  }, [dossiers, activeDossierId]);
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
 
-  const activeDossier = dossiers && dossiers.length > 0 ? dossiers[0] : null;
+  const activeDossier = dossiers.find(d => d.id === activeDossierId) || (dossiers && dossiers.length > 0 ? dossiers[0] : null);
 
   const {
     data: requirementsData,
@@ -205,11 +214,52 @@ const ClientDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Dossier workspace */}
-        {activeDossier ? (
-          <div className="bg-white rounded border border-[#DADCE0] overflow-hidden">
-            {/* Dossier header */}
-            <div className="border-b border-[#DADCE0] bg-[#F8F9FA] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+        {/* Header Actions */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#DADCE0] pb-4">
+          <div className="flex gap-6">
+            <div className="text-[15px] font-bold text-[#191C1D] flex items-center gap-2">
+              <FileText size={18} className="text-[#1A73E8]" />
+              Mes Dossiers ({dossiers?.length || 0})
+            </div>
+          </div>
+          
+          <button
+            onClick={() => navigate("/client/test")}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#1A73E8] text-white text-sm font-bold rounded-lg hover:bg-[#174EA6] transition-colors shadow-sm"
+          >
+            <Plus size={16} />
+            Nouveau Test
+          </button>
+        </div>
+
+        {/* Dossiers Section */}
+        <div>
+            {dossiers && dossiers.length > 0 ? (
+              <div className="space-y-6">
+                {/* Sélecteur de dossiers */}
+                {dossiers.length > 1 && (
+                  <div className="flex flex-wrap gap-3">
+                    {dossiers.map((d) => (
+                      <button
+                        key={d.id}
+                        onClick={() => setActiveDossierId(d.id)}
+                        className={`px-4 py-2 rounded-full text-sm font-bold border transition-all ${
+                          activeDossierId === d.id
+                            ? "bg-[#E8F0FE] border-[#1A73E8] text-[#005BBF]"
+                            : "bg-white border-[#DADCE0] text-[#5F6368] hover:bg-[#F8F9FA] hover:text-[#191C1D]"
+                        }`}
+                      >
+                        Dossier #{d.id}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Dossier workspace */}
+                {activeDossier ? (
+                  <div className="bg-white rounded border border-[#DADCE0] overflow-hidden">
+                    {/* Dossier header */}
+                    <div className="border-b border-[#DADCE0] bg-[#F8F9FA] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3 rtl:space-x-reverse">
                 <span className={`${font.display} font-bold text-[#191C1D] text-lg`}>
                   Dossier #{activeDossier.id}
@@ -544,10 +594,29 @@ const ClientDashboard: React.FC = () => {
         ) : (
           <div className="bg-white rounded border border-[#DADCE0] p-8 text-center space-y-4">
             <p className="text-[#5F6368] font-medium">
-              Aucun dossier actif n'a été trouvé.
+              Aucun dossier actif n'a été sélectionné.
             </p>
           </div>
         )}
+        </div>
+      ) : (
+        <div className="bg-white rounded border border-[#DADCE0] p-12 text-center space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-full bg-[#F3F4F5] flex items-center justify-center text-[#727785]">
+            <FileText size={24} />
+          </div>
+          <h3 className="text-xl font-bold text-[#191C1D]">Aucun dossier actif</h3>
+          <p className="text-[#5F6368] font-medium max-w-sm mx-auto">
+            Vous n'avez pas encore créé de dossier d'accompagnement. Vous pouvez démarrer en lançant un nouveau test ou depuis votre historique.
+          </p>
+          <button
+            onClick={() => navigate("/client/test")}
+            className="mt-4 px-6 py-2.5 bg-[#1A73E8] text-white text-sm font-bold rounded-lg hover:bg-[#174EA6] transition-colors"
+          >
+            Nouveau test d'éligibilité
+          </button>
+        </div>
+      )}
+        </div>
       </main>
     </div>
   );

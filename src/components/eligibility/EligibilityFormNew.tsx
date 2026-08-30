@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import ErrorModal from "./Modals/ErrorModal";
@@ -78,6 +79,8 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
 
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [showServerErrorModal, setShowServerErrorModal] = useState(false);
+  // Modal dédié quand l'email est déjà lié à un compte avec mot de passe
+  const [showAccountExistsModal, setShowAccountExistsModal] = useState(false);
 
   // Remediation flow state
   const [isCorrectedFlow, setIsCorrectedFlow] = useState(false);
@@ -255,10 +258,16 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
     setShowLoadingModal(true);
 
     try {
-      const eligibilityResult = await checkEligibility(formData);
+      const eligibilityResult = await checkEligibility(formData, !!client);
       setShowLoadingModal(false);
 
       if (eligibilityResult.errorMessage) {
+        // Cas spécifique : l'email est déjà associé à un compte actif.
+        // On affiche un message dédié invitant l'utilisateur à se connecter.
+        if (eligibilityResult.statusCode === 403) {
+          setShowAccountExistsModal(true);
+          return;
+        }
         setServerError(eligibilityResult.errorMessage);
         setShowResult(false);
         setShowServerErrorModal(true);
@@ -383,12 +392,50 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
         testId={testId}
         onEditForm={handleEditForm}
         isCorrectedFlow={isCorrectedFlow}
+        isAuth={!!client}
       />
     );
   }
 
   return (
     <>
+      {/* Modal compte existant — invite à se connecter */}
+      {showAccountExistsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-xl shadow-[0_24px_60px_rgba(0,0,0,0.12)] border border-[#DADCE0] max-w-md w-full p-8 text-center">
+            <div className="mx-auto w-14 h-14 rounded-full bg-[#E8F0FE] flex items-center justify-center mb-5">
+              <svg className="w-7 h-7 text-[#1A73E8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <h3
+              className="text-[18px] font-bold text-[#191C1D] mb-2"
+              style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
+            >
+              Vous avez déjà un compte
+            </h3>
+            <p className="text-[14px] text-[#5F6368] leading-relaxed mb-6">
+              Cet email est déjà associé à un espace client actif. Connectez-vous à votre espace pour effectuer un nouveau test d'éligibilité.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowAccountExistsModal(false)}
+                className="flex-1 px-5 py-2.5 border border-[#DADCE0] text-[#414754] text-[13px] font-medium rounded hover:bg-[#F8F9FA] transition-colors"
+              >
+                Annuler
+              </button>
+              <Link
+                to="/login"
+                className="flex-1 px-5 py-2.5 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-[13px] font-bold rounded transition-colors shadow-sm text-center"
+                style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
+              >
+                Se connecter
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal pour afficher les erreurs serveur */}
       <ErrorModal
         isOpen={showServerErrorModal}
