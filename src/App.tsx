@@ -38,6 +38,7 @@ const ProgramEditor = lazy(() => import("./pages/admin/ProgramEditor"));
 const DossiersList = lazy(() => import("./pages/admin/DossiersList"));
 const AdminsGestion = lazy(() => import("./pages/admin/AdminsGestion.tsx"));
 const DossierReviewStudio = lazy(() => import("./pages/admin/DossierReviewStudio"));
+const DocumentTypes = lazy(() => import("./pages/admin/DocumentTypes"));
 
 // Client routes & protection
 const SetupPassword = lazy(() => import("./pages/auth/SetupPassword"));
@@ -182,6 +183,7 @@ function App() {
                 <Route path="reports" element={<Reports />} />
                 <Route path="news" element={<AdminNews />} />
                 <Route path="partenaires" element={<Partenaires />} />
+                <Route path="document-types" element={<DocumentTypes />} />
 
                 {/* ✅ Route protégée par rôle Administrateur */}
                 <Route

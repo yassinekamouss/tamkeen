@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { dossierService } from "../../services/dossierService";
+import { documentTypeService } from "../../services/documentTypeService";
 import { useTranslation } from "react-i18next";
 
 interface CustomUploadProps {
@@ -18,18 +19,23 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
   const queryClient = useQueryClient();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [customLabel, setCustomLabel] = useState("");
+  const [selectedDocumentTypeId, setSelectedDocumentTypeId] = useState<number | "">("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  const { data: documentTypes = [], isLoading: isLoadingTypes } = useQuery({
+    queryKey: ["activeDocumentTypes"],
+    queryFn: documentTypeService.getActiveDocumentTypes,
+  });
+
   const customUploadMutation = useMutation({
     mutationFn: async () => {
-      if (!customLabel.trim()) {
+      if (!selectedDocumentTypeId) {
         throw new Error(
           t(
             "clientDashboard.customUpload.errorMissingLabel",
-            "Veuillez indiquer un nom ou titre pour ce document."
+            "Veuillez sélectionner un type de document."
           )
         );
       }
@@ -54,7 +60,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
         dossierId,
         selectedFile,
         undefined,
-        customLabel.trim()
+        Number(selectedDocumentTypeId)
       );
     },
     onSuccess: () => {
@@ -65,7 +71,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
           "Document complémentaire ajouté avec succès."
         )
       );
-      setCustomLabel("");
+      setSelectedDocumentTypeId("");
       setSelectedFile(null);
       queryClient.invalidateQueries({
         queryKey: ["dossierRequirements", dossierId],
@@ -162,17 +168,24 @@ const CustomUpload: React.FC<CustomUploadProps> = ({ dossierId }) => {
                   "Nom / Intitulé du document *"
                 )}
               </label>
-              <input
-                type="text"
+              <select
                 required
-                className="w-full px-3.5 py-2.5 bg-white border border-[#DADCE0] rounded text-sm text-[#191C1D] placeholder-[#727785] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors"
-                placeholder={t(
-                  "clientDashboard.customUpload.labelPlaceholder",
-                  "Ex: Plan de financement, Relevé bancaire..."
-                )}
-                value={customLabel}
-                onChange={(e) => setCustomLabel(e.target.value)}
-              />
+                className="w-full px-3.5 py-2.5 bg-white border border-[#DADCE0] rounded text-sm text-[#191C1D] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] transition-colors"
+                value={selectedDocumentTypeId}
+                onChange={(e) => setSelectedDocumentTypeId(e.target.value ? Number(e.target.value) : "")}
+                disabled={isLoadingTypes}
+              >
+                <option value="" disabled>
+                  {isLoadingTypes
+                    ? t("clientDashboard.customUpload.loadingTypes", "Chargement...")
+                    : t("clientDashboard.customUpload.labelPlaceholder", "Sélectionnez un type de document")}
+                </option>
+                {documentTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>

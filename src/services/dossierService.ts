@@ -41,7 +41,7 @@ export const dossierService = {
     dossierId: number,
     file: File,
     requirementId?: number,
-    customLabel?: string
+    documentTypeId?: number
   ): Promise<UploadDocumentResponse> => {
     const formData = new FormData();
     formData.append("file", file);
@@ -49,8 +49,8 @@ export const dossierService = {
     if (requirementId) {
       formData.append("requirement_id", String(requirementId));
     }
-    if (customLabel) {
-      formData.append("custom_label", customLabel);
+    if (documentTypeId) {
+      formData.append("document_type_id", String(documentTypeId));
     }
 
     const response = await api.post<UploadDocumentResponse>(
