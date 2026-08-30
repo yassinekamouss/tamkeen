@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { documentTypeService, DocumentType } from "../../services/documentTypeService";
+import { documentTypeService, type DocumentType } from "../../services/documentTypeService";
 import { FileText, Plus, Edit2, Trash2, Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 export const DocumentTypes = () => {

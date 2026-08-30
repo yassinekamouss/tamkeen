@@ -37,7 +37,7 @@ export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(currentUser);
       setDossiers(data.dossiers || []);
       setTests(data.tests || []);
-    } catch (error) {
+    } catch {
       setUser(null);
       setDossiers([]);
       setTests([]);
@@ -73,7 +73,7 @@ export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await authService.logout();
-    } catch (e) {
+    } catch {
       // Ignorer les erreurs de réseau lors du logout
     } finally {
       setUser(null);
@@ -100,6 +100,7 @@ export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useClientAuth = () => {
   const context = useContext(ClientAuthContext);
   if (context === undefined) {

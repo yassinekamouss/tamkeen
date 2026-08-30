@@ -47,6 +47,18 @@ const ClientDashboard: React.FC = () => {
     ? requirementsData
     : [];
 
+  const { data: requests = [] } = useQuery({
+    queryKey: ["clientRequests", activeDossier?.id],
+    queryFn: async () => {
+      if (!activeDossier?.id) return [];
+      const res = await dossierService.getRequests(activeDossier.id);
+      return res.data;
+    },
+    enabled: !!activeDossier?.id,
+  });
+
+  const pendingRequestsCount = requests.filter((r: any) => r.status === "PENDING" && r.creator_type === "CONSULTANT").length;
+
   const requiredList = requirements.filter((r) => r.is_required === true);
   const requiredUploadedCount = requiredList.filter(
     (r) => r.status === "UPLOADED"
@@ -239,6 +251,11 @@ const ClientDashboard: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
                     Messagerie & requêtes
+                    {pendingRequestsCount > 0 && (
+                      <span className="flex items-center justify-center w-5 h-5 ml-1 text-[10px] font-bold text-white bg-orange-500 rounded-full animate-bounce">
+                        {pendingRequestsCount}
+                      </span>
+                    )}
                   </button>
                 </div>
               </div>

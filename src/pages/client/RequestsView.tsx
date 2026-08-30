@@ -13,8 +13,10 @@ import {
   FileCheck,
   Download,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  FolderOpen
 } from "lucide-react";
+import ConsultantRequestedFilesList from "../../components/client/ConsultantRequestedFilesList";
 
 interface RequestMessage {
   id: number;
@@ -56,6 +58,41 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
   const [newMessage, setNewMessage] = useState("");
   const [replyMessage, setReplyMessage] = useState("");
   const [replyFile, setReplyFile] = useState<File | null>(null);
+  const [activeSubTab, setActiveSubTab] = useState<"conversation" | "documents">("conversation");
+
+
+
+  // Fetch Requests
+  const { data: requests = [], isLoading } = useQuery<DossierRequest[]>({
+    queryKey: ["clientRequests", dossierId],
+    queryFn: async () => {
+      const res = await dossierService.getRequests(dossierId);
+      return res.data;
+    },
+    enabled: !!dossierId,
+  });
+
+  const createRequestMutation = useMutation({
+    mutationFn: async (message: string) => {
+      return dossierService.createClientRequest(dossierId, message);
+    },
+    onSuccess: () => {
+      setNewMessage("");
+      setIsCreatingNew(false);
+      queryClient.invalidateQueries({ queryKey: ["clientRequests", dossierId] });
+    },
+  });
+
+  const replyMutation = useMutation({
+    mutationFn: async ({ requestId, message, file }: { requestId: number; message: string; file: File | null }) => {
+      return dossierService.replyToRequest(dossierId, requestId, message, file);
+    },
+    onSuccess: () => {
+      setReplyMessage("");
+      setReplyFile(null);
+      queryClient.invalidateQueries({ queryKey: ["clientRequests", dossierId] });
+    },
+  });
 
   // Plan 1 Lock Screen
   if (planType !== "PLAN_2") {
@@ -98,38 +135,6 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
     );
   }
 
-  // Fetch Requests
-  const { data: requests = [], isLoading } = useQuery<DossierRequest[]>({
-    queryKey: ["clientRequests", dossierId],
-    queryFn: async () => {
-      const res = await dossierService.getRequests(dossierId);
-      return res.data;
-    },
-    enabled: !!dossierId,
-  });
-
-  const createRequestMutation = useMutation({
-    mutationFn: async (message: string) => {
-      return dossierService.createClientRequest(dossierId, message);
-    },
-    onSuccess: () => {
-      setNewMessage("");
-      setIsCreatingNew(false);
-      queryClient.invalidateQueries({ queryKey: ["clientRequests", dossierId] });
-    },
-  });
-
-  const replyMutation = useMutation({
-    mutationFn: async ({ requestId, message, file }: { requestId: number; message: string; file: File | null }) => {
-      return dossierService.replyToRequest(dossierId, requestId, message, file);
-    },
-    onSuccess: () => {
-      setReplyMessage("");
-      setReplyFile(null);
-      queryClient.invalidateQueries({ queryKey: ["clientRequests", dossierId] });
-    },
-  });
-
   if (isLoading) {
     return (
       <div className={`p-12 text-center text-[#727785] space-y-3 ${font.body}`}>
@@ -156,10 +161,46 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
   };
 
   return (
-    <div className={`flex flex-col md:flex-row h-[660px] bg-[#F8F9FA] border-t border-[#DADCE0] ${font.body}`} dir={isRTL ? "rtl" : "ltr"}>
+    <div className={`flex flex-col h-[700px] bg-[#F8F9FA] border-t border-[#DADCE0] ${font.body}`} dir={isRTL ? "rtl" : "ltr"}>
       
-      {/* LEFT SIDEBAR: REGISTRE DES TRANSMISSIONS */}
-      <div className="w-full md:w-80 border-r rtl:border-r-0 rtl:border-l border-[#DADCE0] flex flex-col bg-white">
+      {/* SUB-NAVBAR */}
+      <div className="flex items-center gap-2 px-6 py-3 border-b border-[#DADCE0] bg-white shrink-0">
+        <button
+          onClick={() => setActiveSubTab("conversation")}
+          className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
+            activeSubTab === "conversation"
+              ? "bg-[#1A73E8] text-white"
+              : "text-[#5F6368] hover:bg-[#F3F4F5]"
+          }`}
+        >
+          Conversation Libre
+        </button>
+        <button
+          onClick={() => setActiveSubTab("documents")}
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-colors ${
+            activeSubTab === "documents"
+              ? "bg-[#1A73E8] text-white"
+              : "text-[#5F6368] hover:bg-[#F3F4F5]"
+          }`}
+        >
+          <FolderOpen className="w-4 h-4" />
+          Fichiers Demandés
+          {requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length > 0 && (
+             <span className="flex items-center justify-center w-5 h-5 ml-1 text-[10px] font-bold text-white bg-orange-500 rounded-full animate-bounce">
+               {requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length}
+             </span>
+          )}
+        </button>
+      </div>
+
+      {/* CONTENT AREA */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {activeSubTab === "documents" ? (
+          <ConsultantRequestedFilesList dossierId={dossierId} requests={requests.filter(r => r.input_type === "FILE")} />
+        ) : (
+          <>
+            {/* LEFT SIDEBAR: REGISTRE DES TRANSMISSIONS */}
+            <div className="w-full md:w-80 border-r rtl:border-r-0 rtl:border-l border-[#DADCE0] flex flex-col bg-white shrink-0">
         
         {/* Header Registre */}
         <div className="p-4 border-b border-[#DADCE0] bg-[#F8F9FA] flex items-center justify-between">
@@ -546,7 +587,10 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
           </div>
         )}
       </div>
-    </div>
+      </>
+    )}
+  </div>
+</div>
   );
 };
 

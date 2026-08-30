@@ -36,6 +36,7 @@ export const DossierReviewStudio: React.FC = () => {
   // Formulaire de nouvelle demande (Plan 2)
   const [requestMessage, setRequestMessage] = useState<string>("");
   const [requestInputType, setRequestInputType] = useState<"FILE" | "TEXT">("FILE");
+  const [requestImportance, setRequestImportance] = useState<"OBLIGATOIRE" | "FACULTATIF">("OBLIGATOIRE");
   const [requestError, setRequestError] = useState<string | null>(null);
 
   // Messagerie & Thread (Plan 2)
@@ -122,7 +123,7 @@ export const DossierReviewStudio: React.FC = () => {
 
   // Mutation : Créer une demande complémentaire
   const createRequestMutation = useMutation({
-    mutationFn: (payload: { message: string; input_type: "FILE" | "TEXT" }) =>
+    mutationFn: (payload: { message: string; input_type: "FILE" | "TEXT"; importance?: string }) =>
       adminDossierService.createConsultantRequest(dossierId, payload),
     onSuccess: () => {
       setRequestMessage("");
@@ -238,6 +239,7 @@ export const DossierReviewStudio: React.FC = () => {
     createRequestMutation.mutate({
       message: requestMessage.trim(),
       input_type: requestInputType,
+      importance: requestInputType === "FILE" ? requestImportance : undefined,
     });
   };
 
@@ -625,6 +627,11 @@ export const DossierReviewStudio: React.FC = () => {
             >
               <MessageSquare className="w-4 h-4" />
               <span>Boucle Itérative ({dossier.dossierRequests?.length || 0})</span>
+              {dossier.dossierRequests?.some((r: any) => r.status === "PENDING" && r.messages?.[r.messages.length - 1]?.sender_type === "CLIENT") && (
+                <span className="flex items-center justify-center w-4 h-4 text-[9px] font-bold text-white bg-orange-500 rounded-full animate-bounce">
+                  !
+                </span>
+              )}
             </button>
           </div>
 
@@ -835,11 +842,27 @@ export const DossierReviewStudio: React.FC = () => {
                           <select
                             value={requestInputType}
                             onChange={(e) => setRequestInputType(e.target.value as "FILE" | "TEXT")}
-                            className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-900 focus:ring-1 focus:ring-slate-600 outline-none"
+                            className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-900 focus:ring-1 focus:ring-slate-600 outline-none mb-3"
                           >
                             <option value="FILE">Fichier / Justificatif (PDF, Docx...)</option>
                             <option value="TEXT">Explication texte / Information</option>
                           </select>
+
+                          {requestInputType === "FILE" && (
+                            <>
+                              <label className="block text-[11px] text-gray-600 font-medium mb-1">
+                                Importance du fichier
+                              </label>
+                              <select
+                                value={requestImportance}
+                                onChange={(e) => setRequestImportance(e.target.value as "OBLIGATOIRE" | "FACULTATIF")}
+                                className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-900 focus:ring-1 focus:ring-slate-600 outline-none"
+                              >
+                                <option value="OBLIGATOIRE">Obligatoire</option>
+                                <option value="FACULTATIF">Facultatif</option>
+                              </select>
+                            </>
+                          )}
                         </div>
                         <div>
                           <label className="block text-[11px] text-gray-600 font-medium mb-1">
