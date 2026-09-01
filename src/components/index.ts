@@ -1,4 +1,5 @@
 export { default as Header } from "./Header";
+export { default as ClientHeader } from "./ClientHeader";
 export { default as Hero } from "./Hero";
 export type { ProfileType } from "./Hero";
 export { EligibilityForm } from "./eligibility";
@@ -9,5 +10,3 @@ export { default as ProcessSection } from "./ProcessSection";
 export { default as FaqSection } from "./FaqSection";
 export { default as ProjectTypesSection } from "./ProjectTypesSection";
 export { default as DocumentSecuritySection } from "./DocumentSecuritySection";
-
-

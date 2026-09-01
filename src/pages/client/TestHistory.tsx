@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
-import { Header } from "../../components";
+import { ClientHeader } from "../../components";
 import { Clock, Plus, ChevronLeft, ChevronRight, CheckCircle2, AlertCircle, FileText, Calendar, MapPin, Building2, Briefcase, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -49,7 +49,7 @@ const TestHistory: React.FC = () => {
 
   return (
     <div className={`min-h-screen flex flex-col bg-[#F8F9FA] ${font.body}`} dir={isRTL ? "rtl" : "ltr"}>
-      <Header />
+      <ClientHeader />
 
       <main className="flex-grow max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* En-tête de la page */}

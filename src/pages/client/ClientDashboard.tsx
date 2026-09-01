@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
-import { Header } from "../../components";
+import { ClientHeader } from "../../components";
 import RequirementList from "../../components/client/RequirementList";
 import CustomUpload from "../../components/client/CustomUpload";
 import { dossierService } from "../../services/dossierService";
@@ -168,7 +168,7 @@ const ClientDashboard: React.FC = () => {
       className={`min-h-screen flex flex-col justify-between bg-[#F8F9FA] ${font.body}`}
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <Header />
+      <ClientHeader />
 
       <main className="flex-grow max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Welcome banner — flat card, hairline border, no shadow */}
