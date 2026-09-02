@@ -138,12 +138,12 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
   return (
     <>
       <header
-        className="fixed top-0 left-0 w-full z-50 bg-white border-b border-[#DADCE0] transition-all duration-300"
-        dir={isRTL ? "rtl" : "ltr"}
-        style={{ fontFamily: "'Roboto', sans-serif" }}
-      >
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14">
+      className="fixed top-0 left-0 w-full z-50 bg-white border-b border-[#DADCE0] transition-all duration-300"
+      dir={isRTL ? "rtl" : "ltr"}
+      style={{ fontFamily: "'Roboto', sans-serif" }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14">
             {/* Logo */}
             <div className="flex items-center gap-3 shrink-0">
               <Link to="/client/dashboard" aria-label="Accueil Espace Client">

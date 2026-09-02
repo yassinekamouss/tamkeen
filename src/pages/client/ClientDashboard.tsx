@@ -7,7 +7,7 @@ import { dossierService } from "../../services/dossierService";
 import { useTranslation } from "react-i18next";
 import PlanSelection from "./PlanSelection";
 import RequestsView from "./RequestsView";
-import { FileText, Plus, Download, CheckCircle2 } from "lucide-react";
+import { FileText, Plus, Download, CheckCircle2, AlertTriangle } from "lucide-react";
 
 const font = {
   display: "font-['Plus_Jakarta_Sans',_sans-serif]",
@@ -394,6 +394,68 @@ const ClientDashboard: React.FC = () => {
                     </button>
                   </div>
                 )}
+
+                {/* Excel Process Alert Callout */}
+                <div className="p-5 rounded-lg bg-[#FEF3C7] border-l-4 border-[#F59E0B] text-[#92400E] space-y-3.5 shadow-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-[#F59E0B]/20 text-[#D97706] flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className={`${font.display} font-bold text-sm text-[#78350F] uppercase tracking-wide flex items-center gap-2`}>
+                          <span>Procédure Recommandée</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-[#F59E0B] text-white font-bold tracking-normal normal-case">
+                            Étape Fichiers & Prévisions
+                          </span>
+                        </h4>
+                        <p className="text-xs text-[#92400E] font-medium mt-0.5">
+                          Téléchargez la grille Excel officielle, renseignez vos prévisions financières puis déposez-la ci-dessous.
+                        </p>
+                      </div>
+                    </div>
+                    <a
+                      href="/template_masubvention.xlsx"
+                      download
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#D97706] hover:bg-[#B45309] text-white text-xs font-bold rounded shadow-xs transition-all shrink-0 active:scale-95"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Télécharger la Grille Excel</span>
+                    </a>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                    <div className="bg-white/80 backdrop-blur-xs p-3 rounded border border-[#FDE68A] space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#92400E]">
+                        <span className="w-5 h-5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[10px] font-bold">1</span>
+                        <span>Télécharger la trame</span>
+                      </div>
+                      <p className="text-[11px] text-[#78350F] leading-relaxed">
+                        Obtenez le modèle officiel Excel (`template_masubvention.xlsx`) comprenant les onglets de projections.
+                      </p>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-xs p-3 rounded border border-[#FDE68A] space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#92400E]">
+                        <span className="w-5 h-5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[10px] font-bold">2</span>
+                        <span>Compléter les données</span>
+                      </div>
+                      <p className="text-[11px] text-[#78350F] leading-relaxed">
+                        Remplissez sereinement vos chiffres de ventes, charges et investissements prévisionnels.
+                      </p>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-xs p-3 rounded border border-[#FDE68A] space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#92400E]">
+                        <span className="w-5 h-5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[10px] font-bold">3</span>
+                        <span>Téléverser & Soumettre</span>
+                      </div>
+                      <p className="text-[11px] text-[#78350F] leading-relaxed">
+                        Joignez le fichier `.xlsx` rempli avec l'Attestation Fiscale, le RC et la CNSS pour débloquer l'IA.
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Document studio */}
                 <div className="space-y-6">
