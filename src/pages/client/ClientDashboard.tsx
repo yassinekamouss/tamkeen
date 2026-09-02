@@ -3,14 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
 import { ClientHeader } from "../../components";
-import RequirementList from "../../components/client/RequirementList";
-import CustomUpload from "../../components/client/CustomUpload";
 import { dossierService } from "../../services/dossierService";
-import type { DocumentRequirement } from "../../types/dossier";
 import { useTranslation } from "react-i18next";
 import PlanSelection from "./PlanSelection";
 import RequestsView from "./RequestsView";
-import { FileText, Plus } from "lucide-react";
+import { FileText, Plus, Download, CheckCircle2 } from "lucide-react";
 
 const font = {
   display: "font-['Plus_Jakarta_Sans',_sans-serif]",
@@ -28,6 +25,12 @@ const ClientDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"workspace" | "requests">("workspace");
   const [activeDossierId, setActiveDossierId] = useState<number | null>(null);
 
+  // New strict file uploads
+  const [fileFiscale, setFileFiscale] = useState<File | null>(null);
+  const [fileRC, setFileRC] = useState<File | null>(null);
+  const [fileCNSS, setFileCNSS] = useState<File | null>(null);
+  const [fileExcel, setFileExcel] = useState<File | null>(null);
+
 
   useEffect(() => {
     if (dossiers && dossiers.length > 0 && !activeDossierId) {
@@ -42,19 +45,28 @@ const ClientDashboard: React.FC = () => {
 
   const activeDossier = dossiers.find(d => d.id === activeDossierId) || (dossiers && dossiers.length > 0 ? dossiers[0] : null);
 
-  const {
-    data: requirementsData,
-    isLoading: isLoadingRequirements,
-    isError: isRequirementsError,
-  } = useQuery({
-    queryKey: ["dossierRequirements", activeDossier?.id],
-    queryFn: () => dossierService.getRequirements(activeDossier!.id),
-    enabled: !!activeDossier?.id,
-  });
+  const deliveredDoc =
+    activeDossier?.documents?.find(
+      (doc: any) => doc.doc_category === "DELIVERABLE_PDF" || doc.doc_category === "FINAL_REPORT"
+    ) ||
+    activeDossier?.documents?.find(
+      (doc: any) => doc.filename?.startsWith("Rapport_Investissement_") || doc.file_path?.includes("reports/")
+    );
 
-  const requirements: DocumentRequirement[] = Array.isArray(requirementsData)
-    ? requirementsData
-    : [];
+  const getDocUrl = (filePath?: string) => {
+    if (!filePath) return "#";
+    if (filePath.startsWith("http")) return filePath;
+
+    const normalized = filePath.replace(/\\/g, "/");
+    const uploadsIndex = normalized.indexOf("uploads/");
+    const relativePath = uploadsIndex !== -1 ? normalized.substring(uploadsIndex) : normalized.replace(/^\/+/, "");
+
+    const baseUrl = import.meta.env.VITE_API_URL
+      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "")
+      : "http://localhost:5000";
+
+    return `${baseUrl}/${relativePath}`;
+  };
 
   const { data: requests = [] } = useQuery({
     queryKey: ["clientRequests", activeDossier?.id],
@@ -68,22 +80,23 @@ const ClientDashboard: React.FC = () => {
 
   const pendingRequestsCount = requests.filter((r: any) => r.status === "PENDING" && r.creator_type === "CONSULTANT").length;
 
-  const requiredList = requirements.filter((r) => r.is_required === true);
-  const requiredUploadedCount = requiredList.filter(
-    (r) => r.status === "UPLOADED"
-  ).length;
-  const totalRequiredCount = requiredList.length;
-  const isAllRequiredUploaded =
-    totalRequiredCount > 0 && requiredUploadedCount === totalRequiredCount;
-  const progressPercent =
-    totalRequiredCount > 0
-      ? Math.round((requiredUploadedCount / totalRequiredCount) * 100)
-      : 0;
+  const isAllRequiredUploaded = !!fileFiscale && !!fileRC && !!fileCNSS && !!fileExcel;
+  const totalRequiredCount = 4;
+  const requiredUploadedCount = [fileFiscale, fileRC, fileCNSS, fileExcel].filter(Boolean).length;
+  const progressPercent = Math.round((requiredUploadedCount / totalRequiredCount) * 100);
 
-  const submitInputsMutation = useMutation({
+  const submitAllMutation = useMutation({
     mutationFn: async () => {
       if (!activeDossier?.id) throw new Error("Dossier introuvable.");
-      return await dossierService.submitInputs(activeDossier.id);
+      if (!fileFiscale || !fileRC || !fileCNSS || !fileExcel) throw new Error("Tous les fichiers sont obligatoires.");
+
+      const formData = new FormData();
+      formData.append("file_fiscale", fileFiscale);
+      formData.append("file_rc", fileRC);
+      formData.append("file_cnss", fileCNSS);
+      formData.append("file_excel", fileExcel);
+
+      return await dossierService.submitAllDocuments(activeDossier.id, formData);
     },
     onSuccess: async () => {
       setSubmitError(null);
@@ -392,51 +405,80 @@ const ClientDashboard: React.FC = () => {
                       )}
                     </h3>
                     <p className="text-xs text-[#5F6368]">
-                      {t(
-                        "clientDashboard.checklistDesc",
-                        "Déposez vos documents officiels directement dans les zones dédiées ci-dessous."
-                      )}
+                      Veuillez téléverser les 4 documents obligatoires pour valider votre dossier.
                     </p>
                   </div>
 
-                  {isLoadingRequirements ? (
-                    <div className="p-12 text-center text-[#727785] space-y-3">
-                      <svg
-                        className="animate-spin h-7 w-7 text-[#1A73E8] mx-auto"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      <p className="text-sm font-medium">
-                        Chargement de la checklist documentaire...
-                      </p>
+                  <div className="space-y-4">
+                    {/* Attestation Fiscale */}
+                    <div className="p-4 sm:p-5 bg-white border border-[#DADCE0] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:bg-[#F8F9FA]">
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
+                          <span className="font-bold text-[#191C1D] text-sm">Attestation de Régularité Fiscale</span>
+                          <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FFDAD6] text-[#93000A]">Obligatoire</span>
+                        </div>
+                        <p className="text-xs text-[#727785]">Format accepté: PDF uniquement. Taille max: 10 Mo.</p>
+                        {fileFiscale && <p className="text-xs font-semibold text-[#1E8E3E]">✔ {fileFiscale.name}</p>}
+                      </div>
+                      <label className="cursor-pointer inline-flex items-center px-3 py-1.5 rounded text-xs font-bold border border-[#DADCE0] hover:bg-[#F3F4F5] transition-colors whitespace-nowrap">
+                        Parcourir...
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => { if(e.target.files?.[0]) setFileFiscale(e.target.files[0]) }} />
+                      </label>
                     </div>
-                  ) : isRequirementsError ? (
-                    <div className="p-6 rounded bg-[#FFDAD6] border-l-4 border-[#BA1A1A] text-[#93000A] text-sm text-center">
-                      Erreur lors du chargement des pièces demandées.
+
+                    {/* RC */}
+                    <div className="p-4 sm:p-5 bg-white border border-[#DADCE0] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:bg-[#F8F9FA]">
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
+                          <span className="font-bold text-[#191C1D] text-sm">Registre de Commerce (RC)</span>
+                          <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FFDAD6] text-[#93000A]">Obligatoire</span>
+                        </div>
+                        <p className="text-xs text-[#727785]">Format accepté: PDF uniquement. Taille max: 10 Mo.</p>
+                        {fileRC && <p className="text-xs font-semibold text-[#1E8E3E]">✔ {fileRC.name}</p>}
+                      </div>
+                      <label className="cursor-pointer inline-flex items-center px-3 py-1.5 rounded text-xs font-bold border border-[#DADCE0] hover:bg-[#F3F4F5] transition-colors whitespace-nowrap">
+                        Parcourir...
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => { if(e.target.files?.[0]) setFileRC(e.target.files[0]) }} />
+                      </label>
                     </div>
-                  ) : (
-                    <>
-                      <RequirementList
-                        dossierId={activeDossier.id}
-                        requirements={requirements}
-                      />
-                      <CustomUpload dossierId={activeDossier.id} />
-                    </>
-                  )}
+
+                    {/* CNSS */}
+                    <div className="p-4 sm:p-5 bg-white border border-[#DADCE0] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:bg-[#F8F9FA]">
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
+                          <span className="font-bold text-[#191C1D] text-sm">Attestation d'Affiliation CNSS</span>
+                          <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FFDAD6] text-[#93000A]">Obligatoire</span>
+                        </div>
+                        <p className="text-xs text-[#727785]">Format accepté: PDF uniquement. Taille max: 10 Mo.</p>
+                        {fileCNSS && <p className="text-xs font-semibold text-[#1E8E3E]">✔ {fileCNSS.name}</p>}
+                      </div>
+                      <label className="cursor-pointer inline-flex items-center px-3 py-1.5 rounded text-xs font-bold border border-[#DADCE0] hover:bg-[#F3F4F5] transition-colors whitespace-nowrap">
+                        Parcourir...
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => { if(e.target.files?.[0]) setFileCNSS(e.target.files[0]) }} />
+                      </label>
+                    </div>
+
+                    {/* EXCEL */}
+                    <div className="p-4 sm:p-5 bg-white border border-[#DADCE0] border-l-4 border-l-[#1A73E8] rounded flex flex-col gap-4 shadow-sm">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
+                            <span className="font-bold text-[#191C1D] text-sm">Détails du Projet et Prévisions Financières</span>
+                            <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FFDAD6] text-[#93000A]">Obligatoire</span>
+                          </div>
+                          <p className="text-xs text-[#727785]">Format accepté: XLSX uniquement. Taille max: 10 Mo.</p>
+                          <a href="/template_masubvention.xlsx" download className="inline-block mt-2 text-sm font-bold text-[#1A73E8] hover:text-[#174EA6] underline transition-colors">
+                            Télécharger le modèle Excel obligatoire
+                          </a>
+                          {fileExcel && <p className="text-xs font-semibold text-[#1E8E3E] mt-2">✔ {fileExcel.name}</p>}
+                        </div>
+                        <label className="cursor-pointer inline-flex items-center px-4 py-2 rounded text-xs font-bold bg-[#1A73E8] text-white hover:bg-[#174EA6] transition-colors whitespace-nowrap shadow-sm">
+                          Parcourir...
+                          <input type="file" className="hidden" accept=".xlsx" onChange={(e) => { if(e.target.files?.[0]) setFileExcel(e.target.files[0]) }} />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Primary CTA — solid blue, 4px radius, diffused ambient shadow only here */}
@@ -468,13 +510,13 @@ const ClientDashboard: React.FC = () => {
                   </div>
 
                   <button
-                    onClick={() => submitInputsMutation.mutate()}
+                    onClick={() => submitAllMutation.mutate()}
                     disabled={
-                      !isAllRequiredUploaded || submitInputsMutation.isPending
+                      !isAllRequiredUploaded || submitAllMutation.isPending
                     }
                     className="w-full sm:w-auto px-8 py-3.5 rounded bg-[#1A73E8] hover:bg-[#174EA6] text-white font-bold text-sm shadow-[0_4px_14px_rgba(26,115,232,0.12)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 rtl:space-x-reverse"
                   >
-                    {submitInputsMutation.isPending ? (
+                    {submitAllMutation.isPending ? (
                       <>
                         <svg
                           className="animate-spin h-5 w-5 text-white"
@@ -563,6 +605,53 @@ const ClientDashboard: React.FC = () => {
                 <div className="text-xs text-[#5F6368] pt-2">
                   Un email vous sera adressé dès la validation de votre rapport par notre consultant expert.
                 </div>
+              </div>
+            ) : currentStatus === "DELIVERED" ? (
+              <div className="p-8 md:p-12 text-center space-y-6">
+                <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4EA] text-[#1E8E3E] flex items-center justify-center shadow-sm">
+                  <CheckCircle2 className="w-8 h-8 text-[#1E8E3E]" />
+                </div>
+
+                <div className="max-w-md mx-auto space-y-2">
+                  <h2 className={`${font.display} text-2xl font-bold text-[#191C1D]`}>
+                    Félicitations ! Votre dossier est livré 🎉
+                  </h2>
+                  <p className="text-[#5F6368] text-sm">
+                    Votre rapport d'investissement et de demande de subvention a été finalisé et validé par notre consultant expert.
+                  </p>
+                </div>
+
+                {deliveredDoc ? (
+                  <div className="max-w-lg mx-auto bg-white p-6 rounded-lg border border-[#DADCE0] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-left rtl:text-right">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-[#E8F0FE] rounded-lg text-[#1A73E8]">
+                        <FileText className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-[#191C1D]">Rapport d'Investissement Final (PDF)</h4>
+                        <p className="text-xs text-[#5F6368]">
+                          {deliveredDoc.original_name || "Document certifié Masubvention.ma"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <a
+                      href={getDocUrl(deliveredDoc.file_path)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E8E3E] text-white text-sm font-bold rounded-lg hover:bg-[#197A35] transition-colors shadow-sm whitespace-nowrap"
+                    >
+                      <Download className="w-4 h-4" />
+                      Télécharger PDF
+                    </a>
+                  </div>
+                ) : (
+                  <div className="max-w-lg mx-auto bg-emerald-50 p-6 rounded-lg border border-emerald-200 text-center space-y-3">
+                    <p className="text-xs font-semibold text-emerald-800">
+                      Le statut de votre dossier est <strong>Livré</strong>. Si le lien de téléchargement direct ne s'affiche pas immédiatement, veuillez rafraîchir la page.
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="p-8 text-center space-y-4">

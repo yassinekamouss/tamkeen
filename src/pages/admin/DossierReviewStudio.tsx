@@ -5,7 +5,6 @@ import {
     ArrowLeft,
     CheckCircle2,
     Send,
-    Save,
     FileText,
     Code,
     MessageSquare,
@@ -21,6 +20,7 @@ import {
 import { adminDossierService } from "../../services/adminDossierService";
 import { ADMIN_FRONT_PREFIX } from "../../api/axios";
 import api, { ADMIN_API_PREFIX } from "../../api/axios";
+import { DossierDataFormEditor } from "../../components/admin/DossierDataFormEditor";
 
 export const DossierReviewStudio: React.FC = () => {
     const { dossierId: paramDossierId } = useParams<{ dossierId: string }>();
@@ -32,8 +32,8 @@ export const DossierReviewStudio: React.FC = () => {
     const [activeTab, setActiveTab] = useState<"JSON" | "DOCS" | "REQUESTS">("JSON");
     const [activeSubTab, setActiveSubTab] = useState<"conversation" | "documents">("conversation");
 
-    // Éditeur JSON
-    const [jsonText, setJsonText] = useState<string>("");
+    // Éditeur JSON / Formulaire Structuré
+    const [jsonObject, setJsonObject] = useState<Record<string, any>>({});
     const [jsonError, setJsonError] = useState<string | null>(null);
 
     // Formulaire de nouvelle demande (Plan 2)
@@ -110,7 +110,7 @@ export const DossierReviewStudio: React.FC = () => {
     // Synchroniser l'éditeur JSON lorsque les données du dossier sont récupérées
     useEffect(() => {
         if (dossier?.dossierData?.extracted_json) {
-            setJsonText(JSON.stringify(dossier.dossierData.extracted_json, null, 2));
+            setJsonObject(dossier.dossierData.extracted_json);
             setJsonError(null);
         }
     }, [dossier?.dossierData?.extracted_json]);
@@ -227,17 +227,10 @@ export const DossierReviewStudio: React.FC = () => {
         },
     });
 
-    // Directive 1 : Validation de syntaxe JSON avant soumission
     const handleSaveJson = () => {
         setJsonError(null);
         setFeedback(null);
-
-        try {
-            const parsed = JSON.parse(jsonText);
-            updateDataMutation.mutate(parsed);
-        } catch (e: any) {
-            setJsonError(`Erreur de syntaxe JSON : ${e.message}`);
-        }
+        updateDataMutation.mutate(jsonObject);
     };
 
     // Traiter la création de demande
@@ -642,54 +635,18 @@ export const DossierReviewStudio: React.FC = () => {
 
                     {/* CONTENU ONGLET ACTIF */}
                     <div className="flex-1 overflow-y-auto p-4">
-                        {/* ONGLET 1 : EDITEUR JSON */}
+                        {/* ONGLET 1 : ÉDITEUR VISUEL DE DONNÉES & CODE */}
                         {activeTab === "JSON" && (
-                            <div className="h-full flex flex-col space-y-3">
-                                <div className="flex items-center justify-between shrink-0">
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-xs font-medium text-gray-500">
-                                            Édition directe de la structure extraite
-                                        </span>
-                                        {dossier.dossierData?.is_validated_by_consultant && (
-                                            <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-medium">
-                                                Validé par Consultant
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    <button
-                                        onClick={handleSaveJson}
-                                        disabled={updateDataMutation.isPending}
-                                        className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-800 disabled:opacity-50 text-white rounded-md font-semibold text-xs transition-colors shadow-sm"
-                                    >
-                                        {updateDataMutation.isPending ? (
-                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                        ) : (
-                                            <Save className="w-3.5 h-3.5" />
-                                        )}
-                                        <span>Enregistrer & Ré-hydrater</span>
-                                    </button>
-                                </div>
-
-                                {jsonError && (
-                                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs font-mono shrink-0">
-                                        <div className="flex items-center space-x-2 font-bold mb-1">
-                                            <AlertCircle className="w-4 h-4 text-red-500" />
-                                            <span>Erreur de Syntaxe JSON</span>
-                                        </div>
-                                        {jsonError}
-                                    </div>
-                                )}
-
-                                <textarea
-                                    value={jsonText}
-                                    onChange={(e) => {
-                                        setJsonText(e.target.value);
+                            <div className="h-full flex flex-col">
+                                <DossierDataFormEditor
+                                    value={jsonObject}
+                                    onChange={(updated) => {
+                                        setJsonObject(updated);
                                         if (jsonError) setJsonError(null);
                                     }}
-                                    className="flex-1 w-full bg-gray-50 text-gray-900 border border-gray-300 rounded-lg p-3 font-mono text-xs focus:ring-1 focus:ring-slate-500 focus:border-slate-500 outline-none resize-none leading-relaxed"
-                                    placeholder="Collez ou modifiez la structure JSON ici..."
-                                    spellCheck={false}
+                                    onSave={handleSaveJson}
+                                    isSaving={updateDataMutation.isPending}
+                                    error={jsonError}
                                 />
                             </div>
                         )}

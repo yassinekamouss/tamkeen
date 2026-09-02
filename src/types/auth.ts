@@ -39,6 +39,7 @@ export interface Dossier {
   plan_type: PlanType;
   status: DossierStatus;
   current_step_progress: number;
+  documents?: any[];
   createdAt?: string;
   updatedAt?: string;
 }
