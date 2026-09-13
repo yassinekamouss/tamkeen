@@ -18,19 +18,69 @@ import {
   generateProfileSummaryTags,
 } from "./dnfCompiler";
 import { EligibilityProfileCardEditor } from "./EligibilityProfileCardEditor";
+import { MagicRuleGenerator } from "./MagicRuleGenerator";
 
 interface Props {
   value: RuleGroupType;
   onChange: (updated: RuleGroupType) => void;
+  programId?: number;
 }
+
+const CardsSkeleton: React.FC = () => {
+  return (
+    <div className="space-y-6 animate-pulse mt-4">
+      <div className="flex items-center justify-between bg-indigo-50/70 border border-indigo-200/60 rounded-xl p-3.5 text-xs text-indigo-800">
+        <div className="flex items-center gap-2.5">
+          <div className="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin"></div>
+          <span className="font-semibold">
+            ✨ L'IA interprète vos consignes et remplit automatiquement les cartes visuelles...
+          </span>
+        </div>
+        <span className="text-[11px] text-indigo-600 font-medium">Hydratation en cours</span>
+      </div>
+
+      {[
+        "1. Territoire & Régions",
+        "2. Secteurs d'activité",
+        "3. Forme Juridique & Demandeur",
+        "4. Maturité & Âge de l'entreprise",
+        "5. Envergure Financière & Effectifs",
+      ].map((title, idx) => (
+        <div
+          key={idx}
+          className="bg-white border border-gray-200/80 rounded-xl p-5 shadow-xs relative overflow-hidden"
+        >
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-slate-200"></div>
+              <div>
+                <div className="text-xs font-semibold text-slate-400 mb-1">{title}</div>
+                <div className="h-3 w-48 bg-slate-100 rounded"></div>
+              </div>
+            </div>
+            <div className="h-7 w-28 bg-slate-100 rounded-lg"></div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mt-3">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((k) => (
+              <div key={k} className="h-10 bg-slate-100/70 rounded-lg border border-slate-200/40"></div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export const EligibilityProfileManager: React.FC<Props> = ({
   value,
   onChange,
+  programId,
 }) => {
   const [profiles, setProfiles] = useState<EligibilityProfile[]>(() =>
     ruleGroupToProfiles(value)
   );
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const [activeProfileId, setActiveProfileId] = useState<string>(() => {
     const initial = ruleGroupToProfiles(value);
@@ -120,8 +170,33 @@ export const EligibilityProfileManager: React.FC<Props> = ({
     emitChange(next);
   };
 
+  const handleRulesGenerated = (newProfiles: EligibilityProfile[], _summary: string) => {
+    const hydratedProfiles: EligibilityProfile[] = newProfiles.map((p, idx) => {
+      const defaultP = createDefaultProfile(p.name || `Profil ${idx + 1}`);
+      return {
+        ...defaultP,
+        ...p,
+        id: p.id || `profile_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
+        name: p.name || `Profil ${idx + 1}`,
+      };
+    });
+
+    if (hydratedProfiles.length > 0) {
+      setActiveProfileId(hydratedProfiles[0].id);
+      emitChange(hydratedProfiles);
+    }
+  };
+
   return (
     <div className="space-y-4">
+      {/* ── ASSISTANT IA : MAGIC INPUT ───────────────────────────────── */}
+      <MagicRuleGenerator
+        programId={programId}
+        onRulesGenerated={handleRulesGenerated}
+        isGenerating={isGenerating}
+        setIsGenerating={setIsGenerating}
+      />
+
       {/* ── BANDEAU D'EXPLICATION DNF ──────────────────────────────────── */}
       <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-200/80 rounded-xl p-4 shadow-sm">
         <div className="flex items-start justify-between gap-4">
@@ -306,14 +381,18 @@ export const EligibilityProfileManager: React.FC<Props> = ({
         </div>
       )}
 
-      {/* ── ÉDITEUR DES 5 CARTES VISUELLES POUR CE PROFIL ──────────────── */}
-      {activeProfile && (
-        <div className="mt-4">
-          <EligibilityProfileCardEditor
-            profile={activeProfile}
-            onChange={handleProfileChange}
-          />
-        </div>
+      {/* ── ÉDITEUR DES 5 CARTES VISUELLES POUR CE PROFIL OU SKELETON ─── */}
+      {isGenerating ? (
+        <CardsSkeleton />
+      ) : (
+        activeProfile && (
+          <div className="mt-4">
+            <EligibilityProfileCardEditor
+              profile={activeProfile}
+              onChange={handleProfileChange}
+            />
+          </div>
+        )
       )}
     </div>
   );

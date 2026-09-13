@@ -415,6 +415,7 @@ const ProgramEditor: React.FC = () => {
               onChange={(updatedCriteres: RuleGroupType) => {
                 setProgram((p) => ({ ...p, criteres: updatedCriteres }));
               }}
+              programId={programId ? Number(programId) : undefined}
             />
           </section>
         </form>
