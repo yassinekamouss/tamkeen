@@ -1,24 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios, { ADMIN_FRONT_PREFIX } from "../../api/axios";
-import { CheckCircle, Save, ArrowLeft, Info } from "lucide-react";
-import {
-  QueryBuilder,
-  type RuleGroupType,
-  type ValueEditorProps,
-  type ValueEditorType,
-} from "react-querybuilder";
-import "react-querybuilder/dist/query-builder.css";
-import "../../components/admin/programs/rqb-tailwind-fix.css";
+import { CheckCircle, Save, ArrowLeft, Info, Calculator } from "lucide-react";
+import type { RuleGroupType } from "react-querybuilder";
 
-import SearchableSelect from "../../components/admin/programs/SearchableSelect";
-import ImprovedMultiSelect from "../../components/admin/programs/ImprovedMultiSelect";
 import {
   type Program,
-  useRqbFields,
-  frenchTranslations,
   defaultRules,
 } from "../../components/admin/programs/QueryBuilderHelpers";
+import MathConfigVisualEditor, {
+  DEFAULT_MATH_CONFIG,
+} from "../../components/admin/programs/MathConfigVisualEditor";
+import { EligibilityProfileManager } from "../../components/admin/programs/EligibilityProfileManager";
 
 const ProgramEditor: React.FC = () => {
   const navigate = useNavigate();
@@ -36,9 +29,9 @@ const ProgramEditor: React.FC = () => {
     DateFin: "",
     link: "",
     criteres: defaultRules,
+    has_volets: false,
+    math_config: null,
   });
-
-  const fields = useRqbFields();
 
   useEffect(() => {
     let mounted = true;
@@ -58,7 +51,7 @@ const ProgramEditor: React.FC = () => {
 
         if (!mounted) return;
 
-        let normalizedCriteres;
+        let normalizedCriteres: RuleGroupType;
         if (typeof p.criteres === "string") {
           try {
             normalizedCriteres = JSON.parse(p.criteres);
@@ -75,6 +68,15 @@ const ProgramEditor: React.FC = () => {
           normalizedCriteres = { ...defaultRules };
         }
 
+        let loadedMathConfig = p.math_config ?? null;
+        if (typeof loadedMathConfig === "string") {
+          try {
+            loadedMathConfig = JSON.parse(loadedMathConfig);
+          } catch {
+            // keep as is or null
+          }
+        }
+
         const dateDebut = p.DateDebut ? String(p.DateDebut).split("T")[0] : "";
         const dateFin = p.DateFin ? String(p.DateFin).split("T")[0] : "";
 
@@ -86,6 +88,8 @@ const ProgramEditor: React.FC = () => {
           DateFin: dateFin,
           link: p.link ?? "",
           criteres: normalizedCriteres,
+          has_volets: Boolean(p.has_volets),
+          math_config: loadedMathConfig,
           _id: p._id ?? p.id,
           id: p.id ?? p._id,
         };
@@ -133,6 +137,10 @@ const ProgramEditor: React.FC = () => {
           : null,
         link: program.link || "",
         criteres: program.criteres,
+        has_volets: Boolean(program.has_volets),
+        math_config: program.has_volets
+          ? program.math_config || DEFAULT_MATH_CONFIG
+          : null,
       };
 
       if (programId) {
@@ -150,110 +158,6 @@ const ProgramEditor: React.FC = () => {
   };
 
   const pageTitle = programId ? "Modifier le programme" : "Nouveau programme";
-
-  const CustomValueEditor = (props: ValueEditorProps) => {
-    if (props.operator === "between") {
-      const values = Array.isArray(props.value)
-        ? props.value
-        : `${props.value ?? ""}`.split(",");
-
-      const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValues = [e.target.value, values[1] ?? ""];
-        props.handleOnChange(newValues);
-      };
-
-      const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValues = [values[0] ?? "", e.target.value];
-        props.handleOnChange(newValues);
-      };
-
-      return (
-        <div className="flex items-center gap-2 font-sans">
-          <input
-            type={props.inputType || "text"}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={values[0] ?? ""}
-            onChange={handleMinChange}
-            placeholder="Min"
-          />
-          <span className="text-gray-500">et</span>
-          <input
-            type={props.inputType || "text"}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={values[1] ?? ""}
-            onChange={handleMaxChange}
-            placeholder="Max"
-          />
-        </div>
-      );
-    }
-
-    if (props.operator === "in" || props.operator === "notIn") {
-      const currentValue = Array.isArray(props.value) ? props.value : [];
-      return (
-        <ImprovedMultiSelect
-          value={currentValue}
-          options={props.values || []}
-          onChange={props.handleOnChange}
-        />
-      );
-    }
-
-    if (
-      props.values &&
-      props.values.length > 0 &&
-      props.operator !== "in" &&
-      props.operator !== "notIn"
-    ) {
-      return (
-        <SearchableSelect
-          value={props.value as string}
-          options={props.values}
-          onChange={props.handleOnChange}
-          placeholder="-- Sélectionner --"
-        />
-      );
-    }
-
-    if (props.inputType === "number") {
-      return (
-        <input
-          type="number"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={props.value as string}
-          onChange={(e) => props.handleOnChange(e.target.value)}
-        />
-      );
-    }
-
-    return (
-      <input
-        type="text"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        value={props.value as string}
-        onChange={(e) => props.handleOnChange(e.target.value)}
-      />
-    );
-  };
-
-  const getValueEditorType = useCallback(
-    (field: string, operator: string): ValueEditorType => {
-      if (operator === "in" || operator === "notIn") {
-        const fieldData = fields.find((f) => f.name === field);
-        if (fieldData?.values && fieldData.values.length > 0) {
-          return "multiselect";
-        }
-      }
-
-      const fieldData = fields.find((f) => f.name === field);
-      if (fieldData?.valueEditorType) {
-        return fieldData.valueEditorType as ValueEditorType;
-      }
-
-      return "text";
-    },
-    [fields]
-  );
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -329,7 +233,7 @@ const ProgramEditor: React.FC = () => {
                   type="text"
                   required={false}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
-                  placeholder="مثال: برنامج دعم الشركات الناشئة"
+                  placeholder="مثال: برنامج دعم المقاولات الناشئة"
                   value={program.name.ar}
                   onChange={(e) =>
                     setProgram((p) => ({
@@ -340,16 +244,16 @@ const ProgramEditor: React.FC = () => {
                 />
               </div>
 
-              {/* Site web */}
+              {/* Lien */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Site web
+                  Lien officiel
                 </label>
                 <input
                   type="url"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://..."
-                  value={program.link || ""}
+                  placeholder="https://example.com"
+                  value={program.link}
                   onChange={(e) =>
                     setProgram((p) => ({ ...p, link: e.target.value }))
                   }
@@ -447,32 +351,71 @@ const ProgramEditor: React.FC = () => {
             </div>
           </section>
 
+          {/* SECTION VOLETS 1 & 2 (CHARTE DE L'INVESTISSEMENT) */}
+          <section className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100 flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-blue-50 text-blue-600 rounded-lg">
+                  <Calculator className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Configuration des Volets 1 &amp; 2 (Charte de l'Investissement)
+                  </h2>
+                  <p className="text-xs text-gray-500">
+                    Active les calculs financiers déterministes et les simulations de subventions selon la Charte de l'Investissement.
+                  </p>
+                </div>
+              </div>
+
+              {/* Switch interactif */}
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={Boolean(program.has_volets)}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setProgram((p) => ({
+                      ...p,
+                      has_volets: checked,
+                      math_config: checked
+                        ? p.math_config || DEFAULT_MATH_CONFIG
+                        : p.math_config,
+                    }));
+                  }}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <span className="ml-3 text-sm font-semibold text-gray-700 select-none">
+                  Activer les Volets 1 &amp; 2 pour ce programme
+                </span>
+              </label>
+            </div>
+
+            {program.has_volets && (
+              <div className="pt-2">
+                <MathConfigVisualEditor
+                  value={program.math_config}
+                  onChange={(updated) => {
+                    setProgram((p) => ({ ...p, math_config: updated }));
+                  }}
+                />
+              </div>
+            )}
+          </section>
+
+          {/* SECTION CRITÈRES D'ÉLIGIBILITÉ (PROFILS MULTIPLES - DNF) */}
           <section className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
               <CheckCircle className="w-5 h-5 mr-2 text-blue-600" /> Critères d'éligibilité
             </h2>
 
-            <div className="rqb-container">
-              <QueryBuilder
-                key={`qb-${programId || "new"}-${JSON.stringify(
-                  program.criteres
-                )}`}
-                fields={fields}
-                query={program.criteres}
-                onQueryChange={(q: RuleGroupType) => {
-                  setProgram((p) => ({ ...p, criteres: q }));
-                }}
-                getValueEditorType={getValueEditorType}
-                controlElements={{
-                  valueEditor: CustomValueEditor,
-                }}
-                translations={frenchTranslations}
-                combinators={[
-                  { name: "and", label: "ET" },
-                  { name: "or", label: "OU" },
-                ]}
-              />
-            </div>
+            <EligibilityProfileManager
+              value={program.criteres}
+              onChange={(updatedCriteres: RuleGroupType) => {
+                setProgram((p) => ({ ...p, criteres: updatedCriteres }));
+              }}
+            />
           </section>
         </form>
       )}

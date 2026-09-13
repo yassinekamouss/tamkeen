@@ -52,6 +52,7 @@ export interface programsNamesAndLinks {
   id: number;
   name: bilingue;
   link: string;
+  has_volets?: boolean;
 }
 export interface EligibilityResult {
   isEligible: boolean;

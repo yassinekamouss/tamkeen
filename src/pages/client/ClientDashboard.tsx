@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
 import { ClientHeader } from "../../components";
 import { dossierService } from "../../services/dossierService";
 import { useTranslation } from "react-i18next";
 import PlanSelection from "./PlanSelection";
 import RequestsView from "./RequestsView";
-import { FileText, Plus, Download, CheckCircle2, AlertTriangle } from "lucide-react";
+import { ClientStepper } from "../../components/client/stepper";
+import {
+  FileText,
+  Plus,
+  Download,
+  CheckCircle2,
+  AlertTriangle,
+  Sparkles,
+  UserCheck,
+  RefreshCw,
+  Clock,
+  ArrowRight,
+  ShieldCheck,
+  RotateCcw,
+} from "lucide-react";
 
 const font = {
   display: "font-['Plus_Jakarta_Sans',_sans-serif]",
@@ -21,15 +35,10 @@ const ClientDashboard: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
 
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"workspace" | "requests">("workspace");
   const [activeDossierId, setActiveDossierId] = useState<number | null>(null);
-
-  // New strict file uploads
-  const [fileFiscale, setFileFiscale] = useState<File | null>(null);
-  const [fileRC, setFileRC] = useState<File | null>(null);
-  const [fileCNSS, setFileCNSS] = useState<File | null>(null);
-  const [fileExcel, setFileExcel] = useState<File | null>(null);
+  const [isReediting, setIsReediting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
 
   useEffect(() => {
@@ -80,46 +89,21 @@ const ClientDashboard: React.FC = () => {
 
   const pendingRequestsCount = requests.filter((r: any) => r.status === "PENDING" && r.creator_type === "CONSULTANT").length;
 
-  const isAllRequiredUploaded = !!fileFiscale && !!fileRC && !!fileCNSS && !!fileExcel;
-  const totalRequiredCount = 4;
-  const requiredUploadedCount = [fileFiscale, fileRC, fileCNSS, fileExcel].filter(Boolean).length;
-  const progressPercent = Math.round((requiredUploadedCount / totalRequiredCount) * 100);
-
-  const submitAllMutation = useMutation({
-    mutationFn: async () => {
-      if (!activeDossier?.id) throw new Error("Dossier introuvable.");
-      if (!fileFiscale || !fileRC || !fileCNSS || !fileExcel) throw new Error("Tous les fichiers sont obligatoires.");
-
-      const formData = new FormData();
-      formData.append("file_fiscale", fileFiscale);
-      formData.append("file_rc", fileRC);
-      formData.append("file_cnss", fileCNSS);
-      formData.append("file_excel", fileExcel);
-
-      return await dossierService.submitAllDocuments(activeDossier.id, formData);
-    },
-    onSuccess: async () => {
-      setSubmitError(null);
-      await checkAuth();
-    },
-    onError: (err: any) => {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        t(
-          "clientDashboard.submitErrorDefault",
-          "Erreur lors de la soumission du dossier."
-        );
-      setSubmitError(message);
-    },
-  });
-
   const displayName =
     user?.applicantType === "morale"
       ? user?.nomEntreprise || user?.email
       : `${user?.prenom || ""} ${user?.nom || ""}`.trim() || user?.email;
 
   const currentStatus = activeDossier?.status || "AWAITING_INPUTS";
+
+  const handleRefreshStatus = async () => {
+    setIsRefreshing(true);
+    try {
+      await checkAuth();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Chips keep the pill radius (the one documented exception to the 4px system)
   // and are built from the design system's tonal pairs: tertiary (amber/orange),
@@ -132,45 +116,53 @@ const ClientDashboard: React.FC = () => {
       case "PLAN_SELECTION":
         return (
           <span className={`${base} bg-[#DDE0E3] text-[#414754]`}>
-            Choix du plan
+            {t("clientDashboard.badges.PLAN_SELECTION", "Choix du plan")}
           </span>
         );
       case "AWAITING_INPUTS":
         return (
           <span className={`${base} bg-[#FFDBCB] text-[#783100]`}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#9E4300] animate-pulse" />
-            En attente de vos pièces
+            {t("clientDashboard.badges.AWAITING_INPUTS", "En attente de vos données")}
           </span>
         );
       case "AI_DRAFTING":
         return (
           <span className={`${base} bg-[#E8F0FE] text-[#005BBF]`}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#1A73E8] animate-ping" />
-            Analyse &amp; rédaction IA
+            {t("clientDashboard.badges.AI_DRAFTING", "Analyse & rédaction IA")}
           </span>
         );
       case "CONSULTANT_REVIEW":
         return (
-          <span className={`${base} bg-[#DDE0E3] text-[#414754]`}>
-            Revue consultant expert
+          <span className={`${base} bg-[#F3E8FD] text-[#6B21A8] border border-[#E9D5FF]`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#9333EA] animate-pulse" />
+            {t("clientDashboard.badges.CONSULTANT_REVIEW", "Revue consultant expert")}
           </span>
         );
       case "AWAITING_CLIENT_INFO":
         return (
           <span className={`${base} bg-[#FFDAD6] text-[#93000A]`}>
-            Complément d'info requis
+            {t("clientDashboard.badges.AWAITING_CLIENT_INFO", "Complément d'info requis")}
           </span>
         );
       case "DELIVERED":
         return (
           <span className={`${base} bg-[#E6F4EA] text-[#1E8E3E]`}>
-            Dossier livré
+            {t("clientDashboard.badges.DELIVERED", "Dossier livré")}
+          </span>
+        );
+      case "GENERATION_FAILED":
+        return (
+          <span className={`${base} bg-[#FFDAD6] text-[#93000A]`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#BA1A1A] animate-pulse" />
+            {t("clientDashboard.badges.GENERATION_FAILED", "Génération en reprise")}
           </span>
         );
       default:
         return (
           <span className={`${base} bg-[#EDEEEF] text-[#414754]`}>
-            Dossier initialisé
+            {t("clientDashboard.badges.INITIALIZED", "Dossier initialisé")}
           </span>
         );
     }
@@ -188,19 +180,19 @@ const ClientDashboard: React.FC = () => {
         <div className="bg-white rounded border border-[#DADCE0] p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2 rtl:space-x-reverse text-[11px] font-bold uppercase tracking-[0.05em] text-[#1A73E8]">
-              <span>Masubvention.ma V2</span>
+              <span>Masubvention.ma</span>
               <span className="text-[#727785]">•</span>
               <span className="text-[#5F6368] font-semibold tracking-normal normal-case">
                 {user?.applicantType === "morale"
-                  ? "Personne Morale"
-                  : "Personne Physique"}
+                  ? t("clientDashboard.entreprise", "Personne Morale")
+                  : t("clientDashboard.personnePhysique", "Personne Physique")}
               </span>
             </div>
             <h1 className={`${font.display} text-2xl md:text-3xl font-bold text-[#191C1D] tracking-tight`}>
-              Bienvenue <span className="text-[#1A73E8]">{displayName}</span>
+              {t("clientDashboard.welcome", "Bienvenue,")} <span className="text-[#1A73E8]">{displayName}</span>
             </h1>
             <p className="text-[#5F6368] text-sm md:text-[15px]">
-              Suivez en temps réel l'avancement de votre dossier de subvention.
+              {t("clientDashboard.welcomeSubtitle", "Suivez en temps réel l'avancement de votre dossier de subvention.")}
             </p>
           </div>
 
@@ -222,7 +214,7 @@ const ClientDashboard: React.FC = () => {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              Se déconnecter
+              {t("clientHeader.logout", "Se déconnecter")}
             </button>
           </div>
         </div>
@@ -232,7 +224,7 @@ const ClientDashboard: React.FC = () => {
           <div className="flex gap-6">
             <div className="text-[15px] font-bold text-[#191C1D] flex items-center gap-2">
               <FileText size={18} className="text-[#1A73E8]" />
-              Mes Dossiers ({dossiers?.length || 0})
+              {t("clientDashboard.myDossiers", "Mes Dossiers")} ({dossiers?.length || 0})
             </div>
           </div>
           
@@ -241,7 +233,7 @@ const ClientDashboard: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#1A73E8] text-white text-sm font-bold rounded-lg hover:bg-[#174EA6] transition-colors shadow-sm"
           >
             <Plus size={16} />
-            Nouveau Test
+            {t("clientDashboard.newTestBtn", "Nouveau Test")}
           </button>
         </div>
 
@@ -262,7 +254,7 @@ const ClientDashboard: React.FC = () => {
                             : "bg-white border-[#DADCE0] text-[#5F6368] hover:bg-[#F8F9FA] hover:text-[#191C1D]"
                         }`}
                       >
-                        Dossier #{d.id}
+                        {t("clientDashboard.dossierNum", { id: d.id, defaultValue: `Dossier #${d.id}` })}
                       </button>
                     ))}
                   </div>
@@ -275,12 +267,12 @@ const ClientDashboard: React.FC = () => {
                     <div className="border-b border-[#DADCE0] bg-[#F8F9FA] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3 rtl:space-x-reverse">
                 <span className={`${font.display} font-bold text-[#191C1D] text-lg`}>
-                  Dossier #{activeDossier.id}
+                  {t("clientDashboard.dossierNum", { id: activeDossier.id, defaultValue: `Dossier #${activeDossier.id}` })}
                 </span>
                 <span className="text-xs px-2.5 py-1 rounded bg-[#E8F0FE] text-[#005BBF] font-semibold border border-[#C1C6D6]">
                   {activeDossier.plan_type === "PLAN_1"
-                    ? "Plan 1 : Génération IA"
-                    : "Plan 2 : Accompagnement Consultant"}
+                    ? t("clientDashboard.plan1Label", "Plan 1 : Génération IA")
+                    : t("clientDashboard.plan2Label", "Plan 2 : Accompagnement Consultant")}
                 </span>
               </div>
               <div>{getStatusBadge(currentStatus)}</div>
@@ -300,7 +292,7 @@ const ClientDashboard: React.FC = () => {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    Mon espace de travail
+                    {t("clientDashboard.tabWorkspace", "Mon espace de travail")}
                   </button>
                   <button
                     onClick={() => setActiveTab("requests")}
@@ -313,7 +305,7 @@ const ClientDashboard: React.FC = () => {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
-                    Messagerie & requêtes
+                    {t("clientDashboard.tabRequests", "Messagerie & requêtes")}
                     {pendingRequestsCount > 0 && (
                       <span className="flex items-center justify-center w-5 h-5 ml-1 text-[10px] font-bold text-white bg-orange-500 rounded-full animate-bounce">
                         {pendingRequestsCount}
@@ -329,345 +321,194 @@ const ClientDashboard: React.FC = () => {
             ) : activeTab === "requests" ? (
               <RequestsView dossierId={activeDossier.id} planType={activeDossier.plan_type} />
             ) : currentStatus === "AWAITING_INPUTS" ? (
-              <div className="p-6 md:p-8 space-y-8">
-                {/* Progress — subtle inset container, hairline border */}
-                <div className="bg-[#F8F9FA] rounded p-6 border border-[#DADCE0] space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <h3 className={`${font.display} text-[15px] font-semibold text-[#191C1D]`}>
-                        {t(
-                          "clientDashboard.progressTitle",
-                          "Progression de la collecte documentaire"
-                        )}
-                      </h3>
-                      <p className="text-xs text-[#5F6368] mt-0.5">
-                        {t(
-                          "clientDashboard.progressSubtitle",
-                          "Téléversez tous les documents obligatoires avant de valider l'envoi à l'IA."
-                        )}
-                      </p>
-                    </div>
-                    <div className={`text-sm font-bold text-[#1A73E8] ${font.mono}`}>
-                      {requiredUploadedCount} / {totalRequiredCount} {t("clientDashboard.documentsUploaded", "pièces fournies")} · {progressPercent}%
-                    </div>
-                  </div>
-
-                  <div className="w-full bg-[#E1E3E4] rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-[#1A73E8] h-2 rounded-full transition-all duration-500 ease-out"
-                      style={{ width: `${progressPercent}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                {/* Error callout — tinted box, 4px left accent, per spec */}
-                {submitError && (
-                  <div className="p-4 rounded bg-[#FFDAD6] border-l-4 border-[#BA1A1A] text-[#93000A] text-sm font-medium flex items-start gap-3 rtl:space-x-reverse">
-                    <svg
-                      className="w-5 h-5 text-[#BA1A1A] mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
-                    <div className="flex-1">
-                      <span className="font-bold block">
-                        {t(
-                          "clientDashboard.submitErrorTitle",
-                          "Soumission incomplète"
-                        )}
-                      </span>
-                      <span>{submitError}</span>
-                    </div>
-                    <button
-                      onClick={() => setSubmitError(null)}
-                      className="text-[#BA1A1A]/60 hover:text-[#BA1A1A] transition-colors"
-                      aria-label="Fermer"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-
-                {/* Excel Process Alert Callout */}
-                <div className="p-5 rounded-lg bg-[#FEF3C7] border-l-4 border-[#F59E0B] text-[#92400E] space-y-3.5 shadow-xs">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-[#F59E0B]/20 text-[#D97706] flex items-center justify-center shrink-0">
-                        <AlertTriangle className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className={`${font.display} font-bold text-sm text-[#78350F] uppercase tracking-wide flex items-center gap-2`}>
-                          <span>Procédure Recommandée</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded bg-[#F59E0B] text-white font-bold tracking-normal normal-case">
-                            Étape Fichiers & Prévisions
-                          </span>
-                        </h4>
-                        <p className="text-xs text-[#92400E] font-medium mt-0.5">
-                          Téléchargez la grille Excel officielle, renseignez vos prévisions financières puis déposez-la ci-dessous.
-                        </p>
-                      </div>
-                    </div>
-                    <a
-                      href="/template_masubvention.xlsx"
-                      download
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#D97706] hover:bg-[#B45309] text-white text-xs font-bold rounded shadow-xs transition-all shrink-0 active:scale-95"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Télécharger la Grille Excel</span>
-                    </a>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-                    <div className="bg-white/80 backdrop-blur-xs p-3 rounded border border-[#FDE68A] space-y-1">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#92400E]">
-                        <span className="w-5 h-5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[10px] font-bold">1</span>
-                        <span>Télécharger la trame</span>
-                      </div>
-                      <p className="text-[11px] text-[#78350F] leading-relaxed">
-                        Obtenez le modèle officiel Excel (`template_masubvention.xlsx`) comprenant les onglets de projections.
-                      </p>
-                    </div>
-
-                    <div className="bg-white/80 backdrop-blur-xs p-3 rounded border border-[#FDE68A] space-y-1">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#92400E]">
-                        <span className="w-5 h-5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[10px] font-bold">2</span>
-                        <span>Compléter les données</span>
-                      </div>
-                      <p className="text-[11px] text-[#78350F] leading-relaxed">
-                        Remplissez sereinement vos chiffres de ventes, charges et investissements prévisionnels.
-                      </p>
-                    </div>
-
-                    <div className="bg-white/80 backdrop-blur-xs p-3 rounded border border-[#FDE68A] space-y-1">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#92400E]">
-                        <span className="w-5 h-5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[10px] font-bold">3</span>
-                        <span>Téléverser & Soumettre</span>
-                      </div>
-                      <p className="text-[11px] text-[#78350F] leading-relaxed">
-                        Joignez le fichier `.xlsx` rempli avec l'Attestation Fiscale, le RC et la CNSS pour débloquer l'IA.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Document studio */}
-                <div className="space-y-6">
-                  <div>
-                    <h3 className={`${font.display} text-lg font-semibold text-[#191C1D] mb-1`}>
-                      {t(
-                        "clientDashboard.checklistTitle",
-                        "Checklist des documents requis"
-                      )}
-                    </h3>
-                    <p className="text-xs text-[#5F6368]">
-                      Veuillez téléverser les 4 documents obligatoires pour valider votre dossier.
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    {/* Attestation Fiscale */}
-                    <div className="p-4 sm:p-5 bg-white border border-[#DADCE0] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:bg-[#F8F9FA]">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
-                          <span className="font-bold text-[#191C1D] text-sm">Attestation de Régularité Fiscale</span>
-                          <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FFDAD6] text-[#93000A]">Obligatoire</span>
-                        </div>
-                        <p className="text-xs text-[#727785]">Format accepté: PDF uniquement. Taille max: 10 Mo.</p>
-                        {fileFiscale && <p className="text-xs font-semibold text-[#1E8E3E]">✔ {fileFiscale.name}</p>}
-                      </div>
-                      <label className="cursor-pointer inline-flex items-center px-3 py-1.5 rounded text-xs font-bold border border-[#DADCE0] hover:bg-[#F3F4F5] transition-colors whitespace-nowrap">
-                        Parcourir...
-                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => { if(e.target.files?.[0]) setFileFiscale(e.target.files[0]) }} />
-                      </label>
-                    </div>
-
-                    {/* RC */}
-                    <div className="p-4 sm:p-5 bg-white border border-[#DADCE0] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:bg-[#F8F9FA]">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
-                          <span className="font-bold text-[#191C1D] text-sm">Registre de Commerce (RC)</span>
-                          <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FFDAD6] text-[#93000A]">Obligatoire</span>
-                        </div>
-                        <p className="text-xs text-[#727785]">Format accepté: PDF uniquement. Taille max: 10 Mo.</p>
-                        {fileRC && <p className="text-xs font-semibold text-[#1E8E3E]">✔ {fileRC.name}</p>}
-                      </div>
-                      <label className="cursor-pointer inline-flex items-center px-3 py-1.5 rounded text-xs font-bold border border-[#DADCE0] hover:bg-[#F3F4F5] transition-colors whitespace-nowrap">
-                        Parcourir...
-                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => { if(e.target.files?.[0]) setFileRC(e.target.files[0]) }} />
-                      </label>
-                    </div>
-
-                    {/* CNSS */}
-                    <div className="p-4 sm:p-5 bg-white border border-[#DADCE0] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:bg-[#F8F9FA]">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
-                          <span className="font-bold text-[#191C1D] text-sm">Attestation d'Affiliation CNSS</span>
-                          <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FFDAD6] text-[#93000A]">Obligatoire</span>
-                        </div>
-                        <p className="text-xs text-[#727785]">Format accepté: PDF uniquement. Taille max: 10 Mo.</p>
-                        {fileCNSS && <p className="text-xs font-semibold text-[#1E8E3E]">✔ {fileCNSS.name}</p>}
-                      </div>
-                      <label className="cursor-pointer inline-flex items-center px-3 py-1.5 rounded text-xs font-bold border border-[#DADCE0] hover:bg-[#F3F4F5] transition-colors whitespace-nowrap">
-                        Parcourir...
-                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => { if(e.target.files?.[0]) setFileCNSS(e.target.files[0]) }} />
-                      </label>
-                    </div>
-
-                    {/* EXCEL */}
-                    <div className="p-4 sm:p-5 bg-white border border-[#DADCE0] border-l-4 border-l-[#1A73E8] rounded flex flex-col gap-4 shadow-sm">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
-                            <span className="font-bold text-[#191C1D] text-sm">Détails du Projet et Prévisions Financières</span>
-                            <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#FFDAD6] text-[#93000A]">Obligatoire</span>
-                          </div>
-                          <p className="text-xs text-[#727785]">Format accepté: XLSX uniquement. Taille max: 10 Mo.</p>
-                          <a href="/template_masubvention.xlsx" download className="inline-block mt-2 text-sm font-bold text-[#1A73E8] hover:text-[#174EA6] underline transition-colors">
-                            Télécharger le modèle Excel obligatoire
-                          </a>
-                          {fileExcel && <p className="text-xs font-semibold text-[#1E8E3E] mt-2">✔ {fileExcel.name}</p>}
-                        </div>
-                        <label className="cursor-pointer inline-flex items-center px-4 py-2 rounded text-xs font-bold bg-[#1A73E8] text-white hover:bg-[#174EA6] transition-colors whitespace-nowrap shadow-sm">
-                          Parcourir...
-                          <input type="file" className="hidden" accept=".xlsx" onChange={(e) => { if(e.target.files?.[0]) setFileExcel(e.target.files[0]) }} />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Primary CTA — solid blue, 4px radius, diffused ambient shadow only here */}
-                <div className="pt-6 border-t border-[#DADCE0] flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="text-xs text-[#5F6368]">
-                    {isAllRequiredUploaded ? (
-                      <span className="text-[#1E8E3E] font-semibold flex items-center">
-                        <svg
-                          className="w-4 h-4 mr-1 ml-1 text-[#1E8E3E]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        Toutes les pièces obligatoires sont transmises. Vous pouvez lancer la génération.
-                      </span>
-                    ) : (
-                      <span>
-                        Joignez toutes les pièces marquées{" "}
-                        <strong className="text-[#BA1A1A]">Obligatoire</strong> pour débloquer la génération IA.
-                      </span>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => submitAllMutation.mutate()}
-                    disabled={
-                      !isAllRequiredUploaded || submitAllMutation.isPending
-                    }
-                    className="w-full sm:w-auto px-8 py-3.5 rounded bg-[#1A73E8] hover:bg-[#174EA6] text-white font-bold text-sm shadow-[0_4px_14px_rgba(26,115,232,0.12)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 rtl:space-x-reverse"
-                  >
-                    {submitAllMutation.isPending ? (
-                      <>
-                        <svg
-                          className="animate-spin h-5 w-5 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        <span>Initialisation de l'IA...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Soumettre mon dossier à l'IA</span>
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M14 5l7 7m0 0l-7 7m7-7H3"
-                          />
-                        </svg>
-                      </>
-                    )}
-                  </button>
-                </div>
+              <div className="p-4 sm:p-6 lg:p-8">
+                <ClientStepper
+                  dossierId={activeDossier.id}
+                  onSubmitted={checkAuth}
+                />
               </div>
             ) : currentStatus === "AI_DRAFTING" ? (
-              <div className="p-8 md:p-12 text-center space-y-6">
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#E8F0FE] text-[#1A73E8] flex items-center justify-center">
-                  <svg
-                    className="w-8 h-8 animate-spin"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
+              <div className="p-8 md:p-14 text-center space-y-8 animate-fadeIn">
+                <div className="relative w-20 h-20 mx-auto">
+                  <div className="absolute inset-0 rounded-full bg-blue-400/20 animate-ping"></div>
+                  <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <Sparkles className="w-10 h-10 animate-pulse" />
+                  </div>
                 </div>
 
-                <div className="max-w-md mx-auto space-y-2">
-                  <h2 className={`${font.display} text-2xl font-bold text-[#191C1D]`}>
-                    Analyse et génération du dossier en cours
+                <div className="max-w-xl mx-auto space-y-3">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
+                    {t("clientDashboard.aiDrafting.badge", "Traitement algorithmique & rédactionnel")}
+                  </div>
+                  <h2 className={`${font.display} text-2xl md:text-3xl font-bold text-gray-900`}>
+                    {t("clientDashboard.aiDrafting.title", "Analyse des pièces justificatives et rédaction en cours...")}
                   </h2>
-                  <p className="text-[#5F6368] text-sm">
-                    L'agent IA de Masubvention analyse vos documents financiers et rédige la synthèse de votre dossier de subvention.
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {t("clientDashboard.aiDrafting.description", "L'agent IA de Masubvention extrait les données financières, valide l'assiette éligible et rédige l'intégralité du rapport d'investissement certifié pour la Charte TPME.")}
                   </p>
                 </div>
 
-                <div className="max-w-md mx-auto bg-[#F8F9FA] p-6 rounded border border-[#DADCE0] space-y-3 text-left rtl:text-right">
-                  <div className="flex items-center gap-3 rtl:space-x-reverse text-sm font-medium text-[#191C1D]">
-                    <span className="w-2 h-2 rounded-full bg-[#1E8E3E]"></span>
-                    <span>1. Extraction et validation des documents</span>
+                {/* Étapes d'exécution IA */}
+                <div className="max-w-lg mx-auto bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4 text-left rtl:text-right shadow-xs">
+                  <div className="flex items-center gap-3 text-sm font-semibold text-gray-800">
+                    <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span>{t("clientDashboard.aiDrafting.step1", "1. Extraction et certification des pièces (Fiscale, RC, CNSS)")}</span>
                   </div>
-                  <div className="flex items-center gap-3 rtl:space-x-reverse text-sm font-semibold text-[#1A73E8]">
-                    <span className="w-2 h-2 rounded-full bg-[#1A73E8] animate-ping"></span>
-                    <span>2. Calcul du montant optimal de subvention</span>
+                  <div className="flex items-center gap-3 text-sm font-bold text-blue-700">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    </div>
+                    <span>{t("clientDashboard.aiDrafting.step2", "2. Calcul du montant optimal de prime & projection financière")}</span>
                   </div>
-                  <div className="flex items-center gap-3 rtl:space-x-reverse text-sm font-medium text-[#727785]">
-                    <span className="w-2 h-2 rounded-full bg-[#C1C6D6]"></span>
-                    <span>3. Transfert de la synthèse à l'expert consultant</span>
+                  <div className="flex items-center gap-3 text-sm font-medium text-gray-500">
+                    <div className="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center shrink-0 text-xs font-bold">
+                      3
+                    </div>
+                    <span>{t("clientDashboard.aiDrafting.step3", "3. Transfert du dossier finalisé pour revue d'expertise")}</span>
                   </div>
                 </div>
 
-                <div className="text-xs text-[#5F6368] pt-2">
-                  Un email vous sera adressé dès la validation de votre rapport par notre consultant expert.
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    onClick={handleRefreshStatus}
+                    disabled={isRefreshing}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold transition-all shadow-xs disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-blue-600" : ""}`} />
+                    <span>{isRefreshing ? t("clientDashboard.aiDrafting.refreshing", "Actualisation...") : t("clientDashboard.aiDrafting.refreshBtn", "Actualiser le statut")}</span>
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400">
+                  {t("clientDashboard.aiDrafting.note", "La génération dure généralement 1 à 3 minutes. Vous serez également notifié par email.")}
+                </p>
+              </div>
+            ) : currentStatus === "CONSULTANT_REVIEW" ? (
+              <div className="p-8 md:p-14 text-center space-y-8 animate-fadeIn">
+                <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-purple-600 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-purple-500/30">
+                  <UserCheck className="w-10 h-10" />
+                </div>
+
+                <div className="max-w-xl mx-auto space-y-3">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-wider border border-purple-200">
+                    <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse"></span>
+                    {t("clientDashboard.consultantReview.badge", "Accompagnement Expert · Volet 2")}
+                  </div>
+                  <h2 className={`${font.display} text-2xl md:text-3xl font-bold text-gray-900`}>
+                    {t("clientDashboard.consultantReview.title", "Dossier pris en charge par nos experts - Volet 2")}
+                  </h2>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {t("clientDashboard.consultantReview.description", "Votre rapport préliminaire a été structuré avec succès par l'IA. Un consultant senior est actuellement mobilisé pour auditer vos pièces, affiner vos ratios bancaires et consolider votre argumentaire de subvention.")}
+                  </p>
+                </div>
+
+                {/* Encadré d'expertise */}
+                <div className="max-w-lg mx-auto bg-white p-6 rounded-2xl border border-purple-200 text-left rtl:text-right space-y-3 shadow-sm">
+                  <div className="text-xs font-bold uppercase tracking-wider text-purple-900 flex items-center gap-1.5 mb-2">
+                    <ShieldCheck className="w-4 h-4 text-purple-600" />
+                    <span>{t("clientDashboard.consultantReview.commitmentsTitle", "Engagements de l'audit consultant :")}</span>
+                  </div>
+                  <div className="space-y-2 text-xs text-gray-700 font-medium">
+                    <div className="flex items-start gap-2">
+                      <span className="text-purple-600 font-bold">•</span>
+                      <span>{t("clientDashboard.consultantReview.commitment1", "Vérification de la conformité juridique et de l'assiette CAPEX éligible.")}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-purple-600 font-bold">•</span>
+                      <span>{t("clientDashboard.consultantReview.commitment2", "Optimisation du montage financier (fonds propres, ratios bancaires, dette).")}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-purple-600 font-bold">•</span>
+                      <span>{t("clientDashboard.consultantReview.commitment3", "Remise du rapport officiel certifié prêt pour soumission bancaire.")}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <button
+                    onClick={() => setActiveTab("requests")}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold shadow-md transition-all active:scale-95"
+                  >
+                    <span>{t("clientDashboard.consultantReview.consultRequestsBtn", "Consulter la messagerie & les requêtes")}</span>
+                    <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                  </button>
+                  <button
+                    onClick={handleRefreshStatus}
+                    disabled={isRefreshing}
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold transition-all shadow-xs"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                    <span>{t("clientDashboard.consultantReview.refreshBtn", "Actualiser")}</span>
+                  </button>
                 </div>
               </div>
+            ) : currentStatus === "GENERATION_FAILED" ? (
+              isReediting ? (
+                <div className="p-4 sm:p-6 lg:p-8 space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <span className="text-xs font-bold text-amber-900">
+                      {t("clientDashboard.generationFailed.reeditModeBanner", "Mode Réédition actif : Vous pouvez réajuster vos données et relancer la certification.")}
+                    </span>
+                    <button
+                      onClick={() => setIsReediting(false)}
+                      className="text-xs font-bold text-amber-800 underline hover:text-amber-950"
+                    >
+                      {t("clientDashboard.generationFailed.closeReedit", "Fermer le mode réédition")}
+                    </button>
+                  </div>
+                  <ClientStepper
+                    dossierId={activeDossier.id}
+                    onSubmitted={async () => {
+                      setIsReediting(false);
+                      await checkAuth();
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="p-8 md:p-14 text-center space-y-8 animate-fadeIn">
+                  <div className="w-20 h-20 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shadow-md">
+                    <AlertTriangle className="w-10 h-10" />
+                  </div>
+
+                  <div className="max-w-xl mx-auto space-y-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold uppercase tracking-wider border border-amber-300">
+                      <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span>
+                      {t("clientDashboard.generationFailed.badge", "Prise en charge active")}
+                    </div>
+                    <h2 className={`${font.display} text-2xl md:text-3xl font-bold text-gray-900`}>
+                      {t("clientDashboard.generationFailed.title", "Génération en cours de reprise par notre équipe")}
+                    </h2>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      {t("clientDashboard.generationFailed.description", "La génération automatique a rencontré un aléa technique temporaire. Notre équipe technique en a été automatiquement notifiée et reprend le traitement de votre dossier pour vous délivrer votre rapport certifié.")}
+                    </p>
+                  </div>
+
+                  <div className="max-w-md mx-auto bg-amber-50/70 p-4 rounded-xl border border-amber-200 text-xs text-amber-900 text-left rtl:text-right space-y-1">
+                    <span className="font-bold block">{t("clientDashboard.generationFailed.safeDataNoteTitle", "Information sécurisée :")}</span>
+                    <span>{t("clientDashboard.generationFailed.safeDataNote", "Toutes vos pièces justificatives et données saisies sont conservées. Aucune action n'est requise de votre part, mais vous pouvez rééditer vos chiffres si nécessaire.")}</span>
+                  </div>
+
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button
+                      onClick={handleRefreshStatus}
+                      disabled={isRefreshing}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-sm transition-all"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                      <span>{isRefreshing ? t("clientDashboard.generationFailed.checking", "Vérification...") : t("clientDashboard.generationFailed.checkProgressBtn", "Vérifier l'état d'avancement")}</span>
+                    </button>
+                    <button
+                      onClick={() => setIsReediting(true)}
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold transition-all shadow-xs"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      <span>{t("clientDashboard.generationFailed.reeditBtn", "Rééditer mes données")}</span>
+                    </button>
+                  </div>
+                </div>
+              )
             ) : currentStatus === "DELIVERED" ? (
               <div className="p-8 md:p-12 text-center space-y-6">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4EA] text-[#1E8E3E] flex items-center justify-center shadow-sm">
@@ -676,10 +517,10 @@ const ClientDashboard: React.FC = () => {
 
                 <div className="max-w-md mx-auto space-y-2">
                   <h2 className={`${font.display} text-2xl font-bold text-[#191C1D]`}>
-                    Félicitations ! Votre dossier est livré 🎉
+                    {t("clientDashboard.delivered.title", "Félicitations ! Votre dossier est livré 🎉")}
                   </h2>
                   <p className="text-[#5F6368] text-sm">
-                    Votre rapport d'investissement et de demande de subvention a été finalisé et validé par notre consultant expert.
+                    {t("clientDashboard.delivered.description", "Votre rapport d'investissement et de demande de subvention a été finalisé et certifié par notre consultant expert.")}
                   </p>
                 </div>
 
@@ -690,9 +531,9 @@ const ClientDashboard: React.FC = () => {
                         <FileText className="w-6 h-6" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-[#191C1D]">Rapport d'Investissement Final (PDF)</h4>
+                        <h4 className="text-sm font-bold text-[#191C1D]">{t("clientDashboard.delivered.reportTitle", "Rapport d'Investissement Final (PDF)")}</h4>
                         <p className="text-xs text-[#5F6368]">
-                          {deliveredDoc.original_name || "Document certifié Masubvention.ma"}
+                          {deliveredDoc.original_name || t("clientDashboard.delivered.reportDesc", "Document certifié Masubvention.ma")}
                         </p>
                       </div>
                     </div>
@@ -704,40 +545,33 @@ const ClientDashboard: React.FC = () => {
                       className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E8E3E] text-white text-sm font-bold rounded-lg hover:bg-[#197A35] transition-colors shadow-sm whitespace-nowrap"
                     >
                       <Download className="w-4 h-4" />
-                      Télécharger PDF
+                      {t("clientDashboard.delivered.downloadPdf", "Télécharger PDF")}
                     </a>
                   </div>
                 ) : (
                   <div className="max-w-lg mx-auto bg-emerald-50 p-6 rounded-lg border border-emerald-200 text-center space-y-3">
                     <p className="text-xs font-semibold text-emerald-800">
-                      Le statut de votre dossier est <strong>Livré</strong>. Si le lien de téléchargement direct ne s'affiche pas immédiatement, veuillez rafraîchir la page.
+                      {t("clientDashboard.delivered.refreshNotice", "Le statut de votre dossier est Livré. Si le lien de téléchargement direct ne s'affiche pas immédiatement, veuillez rafraîchir la page.")}
                     </p>
+                    <button
+                      onClick={handleRefreshStatus}
+                      className="px-4 py-2 bg-emerald-600 text-white rounded text-xs font-bold"
+                    >
+                      {t("clientDashboard.delivered.refreshBtn", "Rafraîchir")}
+                    </button>
                   </div>
                 )}
               </div>
             ) : (
               <div className="p-8 text-center space-y-4">
                 <div className="w-14 h-14 mx-auto rounded-full bg-[#E6F4EA] text-[#1E8E3E] flex items-center justify-center">
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Clock className="w-7 h-7 text-[#1E8E3E]" />
                 </div>
                 <h3 className={`${font.display} text-xl font-bold text-[#191C1D]`}>
-                  Votre dossier est en cours de traitement
+                  {t("clientDashboard.inProgress.title", "Votre dossier est en cours de traitement")}
                 </h3>
                 <p className="text-[#5F6368] text-sm max-w-lg mx-auto">
-                  Le statut de votre dossier est actuellement{" "}
-                  <strong className="text-[#191C1D]">{currentStatus}</strong>. Nos équipes spécialisées sont mobilisées sur votre demande.
+                  {t("clientDashboard.inProgress.description", { status: currentStatus, defaultValue: `Le statut de votre dossier est actuellement ${currentStatus}. Nos équipes spécialisées sont mobilisées sur votre demande.` })}
                 </p>
               </div>
             )}
@@ -745,7 +579,7 @@ const ClientDashboard: React.FC = () => {
         ) : (
           <div className="bg-white rounded border border-[#DADCE0] p-8 text-center space-y-4">
             <p className="text-[#5F6368] font-medium">
-              Aucun dossier actif n'a été sélectionné.
+              {t("clientDashboard.noActiveDossier", "Aucun dossier actif n'a été sélectionné.")}
             </p>
           </div>
         )}
@@ -755,15 +589,15 @@ const ClientDashboard: React.FC = () => {
           <div className="w-16 h-16 mx-auto rounded-full bg-[#F3F4F5] flex items-center justify-center text-[#727785]">
             <FileText size={24} />
           </div>
-          <h3 className="text-xl font-bold text-[#191C1D]">Aucun dossier actif</h3>
+          <h3 className="text-xl font-bold text-[#191C1D]">{t("clientDashboard.emptyDossiersTitle", "Aucun dossier actif")}</h3>
           <p className="text-[#5F6368] font-medium max-w-sm mx-auto">
-            Vous n'avez pas encore créé de dossier d'accompagnement. Vous pouvez démarrer en lançant un nouveau test ou depuis votre historique.
+            {t("clientDashboard.emptyDossiersDesc", "Vous n'avez pas encore créé de dossier d'accompagnement. Vous pouvez démarrer en lançant un nouveau test ou depuis votre historique.")}
           </p>
           <button
             onClick={() => navigate("/client/test")}
             className="mt-4 px-6 py-2.5 bg-[#1A73E8] text-white text-sm font-bold rounded-lg hover:bg-[#174EA6] transition-colors"
           >
-            Nouveau test d'éligibilité
+            {t("clientDashboard.startFirstTest", "Nouveau test d'éligibilité")}
           </button>
         </div>
       )}

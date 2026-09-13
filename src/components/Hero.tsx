@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import heroBackground from "../assets/hero_background.png";
+import heroBackgroundArabe from "../assets/hero_background_arabe.png";
 
 export type ProfileType = "morale" | "physique";
 
@@ -22,6 +23,7 @@ const Hero: React.FC<HeroProps> = ({ selectedProfile, onSelectProfile }) => {
   const { t, i18n } = useTranslation();
 
   const isRTL = i18n.language === "ar";
+  const heroBg = isRTL ? heroBackgroundArabe : heroBackground;
 
   return (
     <main
@@ -49,45 +51,57 @@ const Hero: React.FC<HeroProps> = ({ selectedProfile, onSelectProfile }) => {
         {/* BACKGROUND IMAGE */}
         <div
           aria-hidden="true"
-          className="
+          className={`
             absolute
             inset-0
             z-0
             pointer-events-none
             bg-no-repeat
-            bg-right-center
+            ${isRTL ? "bg-left-center" : "bg-right-center"}
             bg-cover
             xl:bg-contain
-          "
+          `}
           style={{
-            backgroundImage: `url(${heroBackground})`,
-            backgroundPosition: "right center",
+            backgroundImage: `url(${heroBg})`,
+            backgroundPosition: isRTL ? "left center" : "right center",
           }}
         />
 
         {/* FADE OVER IMAGE */}
-<div
-  aria-hidden="true"
-  className="
-    absolute
-    inset-0
-    z-[1]
-    pointer-events-none
-  "
-  style={{
-    background: `
-      linear-gradient(
-        to right,
-        rgba(255,255,255,0) 0%,
-        rgba(255,255,255,0.05) 45%,
-        rgba(255,255,255,0.15) 60%,
-        rgba(255,255,255,0.25) 72%,
-        rgba(255,255,255,0.35) 85%,
-        rgba(255,255,255,0.45) 100%
-      )
-    `,
-  }}
-/>
+        <div
+          aria-hidden="true"
+          className="
+            absolute
+            inset-0
+            z-[1]
+            pointer-events-none
+          "
+          style={{
+            background: isRTL
+              ? `
+                linear-gradient(
+                  to left,
+                  rgba(255,255,255,0) 0%,
+                  rgba(255,255,255,0.05) 45%,
+                  rgba(255,255,255,0.15) 60%,
+                  rgba(255,255,255,0.25) 72%,
+                  rgba(255,255,255,0.35) 85%,
+                  rgba(255,255,255,0.45) 100%
+                )
+              `
+              : `
+                linear-gradient(
+                  to right,
+                  rgba(255,255,255,0) 0%,
+                  rgba(255,255,255,0.05) 45%,
+                  rgba(255,255,255,0.15) 60%,
+                  rgba(255,255,255,0.25) 72%,
+                  rgba(255,255,255,0.35) 85%,
+                  rgba(255,255,255,0.45) 100%
+                )
+              `,
+          }}
+        />
         {/* BOTTOM SOFT ATMOSPHERE */}
         <div
           aria-hidden="true"
@@ -508,6 +522,8 @@ const Hero: React.FC<HeroProps> = ({ selectedProfile, onSelectProfile }) => {
                 text-center
                 px-4
                 sm:border-r
+                rtl:sm:border-r-0
+                rtl:sm:border-l
                 border-[#E5E7EB]
               "
             >
@@ -540,6 +556,8 @@ const Hero: React.FC<HeroProps> = ({ selectedProfile, onSelectProfile }) => {
                 text-center
                 px-4
                 sm:border-r
+                rtl:sm:border-r-0
+                rtl:sm:border-l
                 border-[#E5E7EB]
               "
             >

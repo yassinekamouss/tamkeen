@@ -54,7 +54,7 @@ const font = {
 
 const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
   const queryClient = useQueryClient();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
 
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
@@ -110,13 +110,13 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
 
             <div className="space-y-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8F0FE] text-[#005BBF] text-[11px] font-bold uppercase tracking-wider border border-[#C1C6D6]">
-                Exclusivité Plan 2 (Accompagnement Expert)
+                {t("requests.lockBadge", "Exclusivité Plan 2 (Accompagnement Expert)")}
               </span>
               <h2 className={`${font.display} text-xl md:text-2xl font-bold text-[#191C1D]`}>
-                Portail des Échanges Administratifs
+                {t("requests.lockTitle", "Portail des Échanges Administratifs")}
               </h2>
               <p className="text-[#5F6368] text-xs md:text-sm max-w-md mx-auto leading-relaxed">
-                Le registre de correspondance directe et le suivi d'instructions personnalisées avec un consultant expert sont réservés aux dossiers souscrits au Plan 2.
+                {t("requests.lockDesc", "Le registre de correspondance directe et le suivi d'instructions personnalisées avec un consultant expert sont réservés aux dossiers souscrits au Plan 2.")}
               </p>
             </div>
 
@@ -129,7 +129,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                 }}
                 className="px-6 py-3 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold rounded shadow-[0_4px_14px_rgba(26,115,232,0.12)] transition-all flex items-center justify-center gap-2 mx-auto"
               >
-                <span>Activer l'Accompagnement Consultant (Plan 2)</span>
+                <span>{t("requests.activatePlan2", "Activer l'Accompagnement Consultant (Plan 2)")}</span>
                 <ChevronRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
               </button>
             </div>
@@ -141,9 +141,9 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
 
   if (isLoading) {
     return (
-      <div className={`p-12 text-center text-[#727785] space-y-3 ${font.body}`}>
+      <div className={`p-12 text-center text-[#727785] space-y-3 ${font.body}`} dir={isRTL ? "rtl" : "ltr"}>
         <div className="w-8 h-8 border-3 border-[#1A73E8] border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p className="text-xs font-medium">Accès au registre officiel des échanges...</p>
+        <p className="text-xs font-medium">{t("requests.loadingRegister", "Accès au registre officiel des échanges...")}</p>
       </div>
     );
   }
@@ -176,7 +176,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
             : "text-[#5F6368] hover:bg-[#F3F4F5]"
             }`}
         >
-          Conversation Libre
+          {t("requests.tabConversation", "Conversation Libre")}
         </button>
         <button
           onClick={() => setActiveSubTab("documents")}
@@ -186,7 +186,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
             }`}
         >
           <FolderOpen className="w-4 h-4" />
-          Fichiers Demandés
+          {t("requests.tabDocuments", "Fichiers Demandés")}
           {requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length > 0 && (
             <span className="flex items-center justify-center w-5 h-5 ml-1 text-[10px] font-bold text-white bg-orange-500 rounded-full animate-bounce">
               {requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length}
@@ -209,10 +209,10 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                 <div>
                   <h3 className={`${font.display} font-bold text-[#191C1D] text-xs uppercase tracking-wider flex items-center gap-2`}>
                     <FileCheck className="w-4 h-4 text-[#1A73E8]" />
-                    Bordereau d'échanges
+                    {t("requests.exchangeSchedule", "Bordereau d'échanges")}
                   </h3>
                   <p className="text-[11px] text-[#5F6368] mt-0.5">
-                    Dossier Officiel #{dossierId}
+                    {t("requests.officialDossier", { id: dossierId, defaultValue: `Dossier Officiel #${dossierId}` })}
                   </p>
                 </div>
                 <button
@@ -221,10 +221,10 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                     setIsCreatingNew(true);
                   }}
                   className="p-1.5 bg-[#E8F0FE] hover:bg-[#D2E3FC] text-[#1A73E8] rounded border border-[#C1C6D6] transition-colors flex items-center gap-1 text-[11px] font-semibold"
-                  title="Nouvelle sollicitation"
+                  title={t("requests.newRequestBtn", "Nouvelle")}
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
-                  <span>Nouvelle</span>
+                  <span>{t("requests.newRequestBtn", "Nouvelle")}</span>
                 </button>
               </div>
 
@@ -233,8 +233,8 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                 {requests.length === 0 ? (
                   <div className="p-6 text-center text-[#727785] text-xs leading-relaxed space-y-2">
                     <ShieldCheck className="w-8 h-8 text-[#C1C6D6] mx-auto" />
-                    <p className="font-semibold text-[#191C1D]">Aucune transmission en cours</p>
-                    <p className="text-[11px]">Utilisez le bouton "Nouvelle" pour adresser une demande officielle à votre consultant référent.</p>
+                    <p className="font-semibold text-[#191C1D]">{t("requests.noTransmissions", "Aucune transmission en cours")}</p>
+                    <p className="text-[11px]">{t("requests.noTransmissionsDesc", "Utilisez le bouton 'Nouvelle' pour adresser une demande officielle à votre consultant référent.")}</p>
                   </div>
                 ) : (
                   requests.map((req) => {
@@ -261,7 +261,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                             <span>Ref #{req.id}</span>
                           </span>
                           <span className={`${font.mono} text-[10px] text-[#727785]`}>
-                            {new Date(req.createdAt).toLocaleDateString()}
+                            {new Date(req.createdAt).toLocaleDateString(isRTL ? "ar-MA" : "fr-FR")}
                           </span>
                         </div>
 
@@ -279,14 +279,14 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                               }`}
                           >
                             {req.status === "PENDING"
-                              ? "En cours d'instruction"
+                              ? t("requests.pending", "En cours d'instruction")
                               : req.status === "RESOLVED"
-                                ? "Transmis & Traité"
-                                : "Réponse enregistrée"}
+                                ? t("requests.resolved", "Transmis & Traité")
+                                : t("requests.provided", "Réponse enregistrée")}
                           </span>
 
                           <span className="text-[10px] text-[#5F6368] font-medium">
-                            {req.creator_type === "CONSULTANT" ? "Consultant" : "Client"}
+                            {req.creator_type === "CONSULTANT" ? t("requests.consultant", "Consultant") : t("requests.you", "Client")}
                           </span>
                         </div>
                       </button>
@@ -299,10 +299,10 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
               <div className="p-3 border-t border-[#DADCE0] bg-[#F8F9FA] text-[10px] text-[#727785] flex items-center justify-between">
                 <span className="flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#1E8E3E]" />
-                  Transmission sécurisée
+                  {t("requests.secureTransmission", "Transmission sécurisée")}
                 </span>
                 <span className={`${font.mono} font-semibold`}>
-                  {requests.length} enregistrement(s)
+                  {t("requests.recordCount", { count: requests.length, defaultValue: `${requests.length} enregistrement(s)` })}
                 </span>
               </div>
             </div>
@@ -318,29 +318,29 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                       <div>
                         <h4 className={`${font.display} text-base font-bold text-[#191C1D] flex items-center gap-2`}>
                           <PlusCircle className="w-4 h-4 text-[#1A73E8]" />
-                          Transmettre une sollicitation au Consultant Référent
+                          {t("requests.newTransmissionTitle", "Transmettre une sollicitation au Consultant Référent")}
                         </h4>
                         <p className="text-xs text-[#5F6368] mt-1">
-                          Formulez une question technique, administrative ou financière concernant l'élaboration de votre dossier.
+                          {t("requests.newTransmissionDesc", "Formulez une question technique, administrative ou financière concernant l'élaboration de votre dossier.")}
                         </p>
                       </div>
                       <button
                         onClick={() => setIsCreatingNew(false)}
                         className="text-xs text-[#5F6368] hover:text-[#191C1D] underline"
                       >
-                        Annuler
+                        {t("requests.cancel", "Annuler")}
                       </button>
                     </div>
 
                     <form onSubmit={handleCreateRequest} className="space-y-4">
                       <div>
                         <label className="block text-xs font-semibold text-[#191C1D] mb-1.5">
-                          Objet & Explication détaillée de votre demande
+                          {t("requests.subjectLabel", "Objet & Explication détaillée de votre demande")}
                         </label>
                         <textarea
                           className="w-full p-3.5 bg-white border border-[#DADCE0] rounded text-xs text-[#191C1D] placeholder-[#727785] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] leading-relaxed resize-none"
                           rows={6}
-                          placeholder="Précisez l'élément ou le document sur lequel vous désirez l'avis de l'expert..."
+                          placeholder={t("requests.placeholder", "Précisez l'élément ou le document sur lequel vous désirez l'avis de l'expert...")}
                           value={newMessage}
                           onChange={(e) => setNewMessage(e.target.value)}
                         />
@@ -352,7 +352,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           onClick={() => setIsCreatingNew(false)}
                           className="px-4 py-2 bg-white border border-[#DADCE0] hover:bg-[#F3F4F5] text-[#414754] text-xs font-medium rounded transition-colors"
                         >
-                          Annuler
+                          {t("requests.cancel", "Annuler")}
                         </button>
                         <button
                           type="submit"
@@ -360,11 +360,11 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           className="px-6 py-2 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold rounded transition-colors disabled:opacity-40 flex items-center gap-2 shadow-xs"
                         >
                           {createRequestMutation.isPending ? (
-                            <span>Transmission...</span>
+                            <span>{t("requests.sending", "Transmission...")}</span>
                           ) : (
                             <>
                               <Send className="w-3.5 h-3.5" />
-                              <span>Consigner et Transmettre</span>
+                              <span>{t("requests.submitBtn", "Consigner et Transmettre")}</span>
                             </>
                           )}
                         </button>
@@ -381,11 +381,11 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 rtl:space-x-reverse">
                         <span className={`${font.mono} text-xs font-bold text-[#1A73E8] uppercase tracking-wider`}>
-                          Fiche d'Échange #00{selectedRequest.id}
+                          {t("requests.recordNum", { id: selectedRequest.id, defaultValue: `Fiche d'Échange #00${selectedRequest.id}` })}
                         </span>
                         <span className="text-[#C1C6D6]">•</span>
                         <span className="text-xs text-[#5F6368]">
-                          Créé le {new Date(selectedRequest.createdAt).toLocaleString()}
+                          {t("requests.createdOn", { date: new Date(selectedRequest.createdAt).toLocaleString(isRTL ? "ar-MA" : "fr-FR"), defaultValue: `Créé le ${new Date(selectedRequest.createdAt).toLocaleString()}` })}
                         </span>
                       </div>
                       <h4 className={`${font.display} font-bold text-[#191C1D] text-sm md:text-base`}>
@@ -403,10 +403,10 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           }`}
                       >
                         {selectedRequest.status === "PENDING"
-                          ? "En traitement"
+                          ? t("requests.pending", "En traitement")
                           : selectedRequest.status === "RESOLVED"
-                            ? "Statut : Clôturé"
-                            : "En attente de retour"}
+                            ? t("requests.resolved", "Statut : Clôturé")
+                            : t("requests.provided", "En attente de retour")}
                       </span>
                     </div>
                   </div>
@@ -420,9 +420,9 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           <FolderOpen className="w-8 h-8" />
                         </div>
                         <div>
-                          <h3 className={`${font.display} text-lg font-bold text-[#191C1D] mb-2`}>Demande de Document</h3>
+                          <h3 className={`${font.display} text-lg font-bold text-[#191C1D] mb-2`}>{t("requests.tabDocuments", "Demande de Document")}</h3>
                           <p className="text-sm max-w-md mx-auto text-[#5F6368] leading-relaxed">
-                            Cette requête concerne la transmission d'un fichier ("{selectedRequest.documentType?.name || selectedRequest.message}"). Veuillez vous rendre dans l'onglet "Fichiers Demandés" pour consulter ou joindre ce document.
+                            {selectedRequest.documentType?.name || selectedRequest.message}
                           </p>
                         </div>
                         <button
@@ -430,7 +430,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           className="mt-4 px-6 py-2.5 bg-[#1A73E8] hover:bg-[#174EA6] text-white rounded font-bold shadow-sm transition-colors text-sm flex items-center gap-2"
                         >
                           <FolderOpen className="w-4 h-4" />
-                          Aller aux Fichiers Demandés
+                          {t("requests.tabDocuments", "Aller aux Fichiers Demandés")}
                         </button>
                       </div>
                     ) : (
@@ -444,12 +444,12 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                               </div>
                               <span className="text-xs font-bold text-[#191C1D]">
                                 {selectedRequest.creator_type === "CONSULTANT"
-                                  ? "Demande officielle de l'Expert Consultant"
-                                  : "Demande formulée par vous-même"}
+                                  ? t("requests.consultant", "Demande officielle de l'Expert Consultant")
+                                  : t("requests.you", "Demande formulée par vous-même")}
                               </span>
                             </div>
                             <span className={`${font.mono} text-[11px] text-[#727785]`}>
-                              {new Date(selectedRequest.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(selectedRequest.createdAt).toLocaleTimeString(isRTL ? "ar-MA" : "fr-FR", { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>
 
@@ -475,16 +475,16 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                                       : "bg-[#E8F0FE] text-[#005BBF]"
                                       }`}
                                   >
-                                    {isClient ? "Société Client" : "Expert Consultant Masubvention"}
+                                    {isClient ? t("requests.you", "Société Client") : t("requests.consultant", "Expert Consultant Masubvention")}
                                   </span>
                                   <span className="text-[#727785]">•</span>
                                   <span className={`${font.mono} text-[11px] text-[#727785]`}>
-                                    Transmission #{index + 1}
+                                    #{index + 1}
                                   </span>
                                 </div>
 
                                 <span className={`${font.mono} text-[11px] text-[#727785]`}>
-                                  {new Date(msg.createdAt).toLocaleString([], {
+                                  {new Date(msg.createdAt).toLocaleString(isRTL ? "ar-MA" : "fr-FR", {
                                     year: "numeric",
                                     month: "2-digit",
                                     day: "2-digit",
@@ -509,7 +509,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                                     className="inline-flex items-center gap-2 p-2.5 bg-[#F8F9FA] hover:bg-[#F3F4F5] border border-[#DADCE0] rounded text-xs font-semibold text-[#1A73E8] transition-colors"
                                   >
                                     <Paperclip className="w-4 h-4 text-[#1A73E8]" />
-                                    <span>Consulter la pièce transmise ({msg.attachment_url.split("/").pop()})</span>
+                                    <span>{t("requests.viewAttachment", { file: msg.attachment_url.split("/").pop(), defaultValue: `Consulter la pièce transmise (${msg.attachment_url.split("/").pop()})` })}</span>
                                     <Download className="w-3.5 h-3.5 text-[#5F6368] ml-2 rtl:mr-2 rtl:ml-0" />
                                   </a>
                                 </div>
@@ -528,14 +528,14 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                         <div className="flex items-center justify-between">
                           <label className="text-xs font-bold text-[#191C1D] uppercase tracking-wider flex items-center gap-1.5">
                             <Send className="w-3.5 h-3.5 text-[#1A73E8]" />
-                            Formuler une réponse ou joindre une pièce
+                            {t("requests.replyOrAttach", "Formuler une réponse ou joindre une pièce")}
                           </label>
                         </div>
 
                         <textarea
                           className="w-full p-3 bg-white border border-[#DADCE0] rounded text-xs sm:text-sm text-[#191C1D] placeholder-[#727785] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] resize-none leading-relaxed"
                           rows={2}
-                          placeholder="Saisissez votre note explicative ou votre réponse officielle..."
+                          placeholder={t("requests.replyPlaceholder", "Saisissez votre note explicative ou votre réponse officielle...")}
                           value={replyMessage}
                           onChange={(e) => setReplyMessage(e.target.value)}
                         />
@@ -544,7 +544,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           {selectedRequest.input_type === "FILE" || selectedRequest.creator_type === "CONSULTANT" ? (
                             <div className="flex items-center gap-2">
                               <label className="text-xs font-semibold text-[#414754] whitespace-nowrap">
-                                Joindre un fichier :
+                                {t("requests.attachFile", "Joindre un fichier :")}
                               </label>
                               <input
                                 type="file"
@@ -562,10 +562,10 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                             className="px-6 py-2.5 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold rounded transition-colors disabled:opacity-40 flex items-center justify-center gap-2 shadow-xs"
                           >
                             {replyMutation.isPending ? (
-                              <span>Transmission...</span>
+                              <span>{t("requests.sending", "Transmission...")}</span>
                             ) : (
                               <>
-                                <span>Transmettre au dossier</span>
+                                <span>{t("requests.send", "Transmettre au dossier")}</span>
                                 <Send className="w-3.5 h-3.5" />
                               </>
                             )}
@@ -575,12 +575,12 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                     </div>
                   ) : selectedRequest.input_type === "FILE" ? (
                     <div className="p-4 bg-white border-t border-[#DADCE0] shrink-0 text-center text-[#5F6368] text-xs">
-                      Veuillez utiliser l'onglet "Fichiers Demandés" pour gérer ce document.
+                      {t("requests.tabDocuments", "Veuillez utiliser l'onglet 'Fichiers Demandés' pour gérer ce document.")}
                     </div>
                   ) : (
                     <div className="p-4 bg-[#E6F4EA] border-t border-[#DADCE0] text-center text-xs font-bold text-[#1E8E3E] flex items-center justify-center gap-2 shrink-0">
                       <CheckCircle2 className="w-4 h-4 text-[#1E8E3E]" />
-                      Cette fiche d'échange a été clôturée et validée par le consultant expert.
+                      {t("requests.closedNotice", "Cette fiche d'échange a été clôturée et validée par le consultant expert.")}
                     </div>
                   )}
                 </div>
@@ -591,10 +591,10 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                     <FileText className="w-6 h-6" />
                   </div>
                   <h4 className={`${font.display} text-base font-bold text-[#191C1D]`}>
-                    Registre Officiel des Transmissions
+                    {t("requests.exchangeSchedule", "Registre Officiel des Transmissions")}
                   </h4>
                   <p className="text-xs max-w-sm text-[#5F6368]">
-                    Sélectionnez une fiche d'échange dans le bordereau à gauche pour consulter les instructions ou ouvrir un nouveau point d'échange.
+                    {t("requests.subtitle", "Sélectionnez une fiche d'échange dans le bordereau à gauche pour consulter les instructions ou ouvrir un nouveau point d'échange.")}
                   </p>
                 </div>
               )}

@@ -93,7 +93,41 @@ const SetupPassword: React.FC = () => {
       className={`min-h-screen bg-[#F8F9FA] flex flex-col justify-between items-center px-4 py-8 sm:px-6 lg:px-8 ${font.body}`}
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <div className="w-full flex-grow flex items-center justify-center py-6">
+      {/* Language Switcher Bar */}
+      <div className="w-full max-w-md flex justify-end mb-1">
+        <div className="inline-flex items-center bg-white border border-[#DADCE0] rounded-full p-1 shadow-sm text-xs font-medium">
+          <button
+            type="button"
+            onClick={() => {
+              i18n.changeLanguage("fr");
+              localStorage.setItem("appLanguage", "fr");
+            }}
+            className={`px-3 py-1 rounded-full transition-colors ${
+              i18n.language === "fr"
+                ? "bg-[#1A73E8] text-white"
+                : "text-[#5F6368] hover:text-[#191C1D]"
+            }`}
+          >
+            🇫🇷 Français
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              i18n.changeLanguage("ar");
+              localStorage.setItem("appLanguage", "ar");
+            }}
+            className={`px-3 py-1 rounded-full transition-colors ${
+              i18n.language === "ar"
+                ? "bg-[#1A73E8] text-white"
+                : "text-[#5F6368] hover:text-[#191C1D]"
+            }`}
+          >
+            🇲🇦 العربية
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full flex-grow flex items-center justify-center py-4">
         <div className="max-w-md w-full">
           {/* Double bezel frame */}
           <div className="bg-[#EDEEEF]/60 p-2 sm:p-2.5 rounded-2xl border border-[#DADCE0]">
@@ -377,7 +411,10 @@ const SetupPassword: React.FC = () => {
       </div>
 
       <div className="text-center text-[11px] text-[#727785] pb-2">
-        Tamkeen Center &amp; Masubvention.ma © 2026 — Plateforme d'Accompagnement aux Subventions
+        {t(
+          "footer.legal",
+          "Tamkeen Center & Masubvention.ma © 2026 — Plateforme d'Accompagnement aux Subventions"
+        )}
       </div>
     </div>
   );

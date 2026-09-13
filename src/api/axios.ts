@@ -18,6 +18,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       const currentPath = window.location.pathname;
+      const isAdminPath = currentPath.includes("x9zTAMkeen-secure-dashboard-77-center");
       const isAuthPage =
         currentPath.includes("/login") ||
         currentPath.includes("/setup-password");
@@ -27,7 +28,11 @@ api.interceptors.response.use(
 
       // Ne rediriger automatiquement que si l'utilisateur n'est pas déjà sur une page d'authentification
       if (!isAuthPage) {
-        window.location.href = "/login";
+        if (isAdminPath) {
+          window.location.href = `${ADMIN_FRONT_PREFIX}/login`;
+        } else {
+          window.location.href = "/login";
+        }
       }
     }
     return Promise.reject(error);

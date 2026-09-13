@@ -33,10 +33,17 @@ export const adminDossierService = {
 
   // 2. Rendu HTML Handlebars (Directive 1 Backend : { success: true, data: { htmlContent } })
   getReportHtml: async (dossierId: number): Promise<string> => {
-    const response = await api.get(
-      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/render-report`
-    );
-    return response.data?.data?.htmlContent || response.data?.htmlContent || "";
+    try {
+      const response = await api.get(
+        `${ADMIN_API_PREFIX}/dossiers/${dossierId}/render-report`
+      );
+      return response.data?.data?.htmlContent || response.data?.htmlContent || "";
+    } catch (err: any) {
+      if (err.response && err.response.status === 404) {
+        return "";
+      }
+      throw err;
+    }
   },
 
   // Génération du PDF
@@ -113,6 +120,26 @@ export const adminDossierService = {
   validateDossier: async (dossierId: number): Promise<any> => {
     const response = await api.post(
       `${ADMIN_API_PREFIX}/dossiers/${dossierId}/validate`
+    );
+    return response.data;
+  },
+
+  // 7. Recalcul dynamique des projections financières
+  recalculateFinancials: async (
+    dossierId: number,
+    overrides?: Record<string, any>
+  ): Promise<any> => {
+    const response = await api.put(
+      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/recalculate`,
+      overrides || {}
+    );
+    return response.data;
+  },
+
+  // 8. Relancer la génération PDF (statut GENERATION_FAILED)
+  retryPdf: async (dossierId: number): Promise<any> => {
+    const response = await api.post(
+      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/retry-pdf`
     );
     return response.data;
   },

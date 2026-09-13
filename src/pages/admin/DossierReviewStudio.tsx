@@ -16,6 +16,7 @@ import {
     Plus,
     Paperclip,
     FolderOpen,
+    Calculator,
 } from "lucide-react";
 import { adminDossierService } from "../../services/adminDossierService";
 import { ADMIN_FRONT_PREFIX } from "../../api/axios";
@@ -54,7 +55,7 @@ export const DossierReviewStudio: React.FC = () => {
     const { data: documentTypes = [] } = useQuery({
         queryKey: ["documentTypes"],
         queryFn: async () => {
-            const res = await api.get(`${ADMIN_API_PREFIX}/../document-types/active`);
+            const res = await api.get(`${ADMIN_API_PREFIX}/document-types`);
             return res.data?.data || [];
         },
     });
@@ -71,7 +72,7 @@ export const DossierReviewStudio: React.FC = () => {
         enabled: dossierId > 0,
     });
 
-    // 2. Fetcher le rendu HTML du rapport
+    // 2. Fetcher le rendu HTML du rapport (actif seulement si des données extraites existent)
     const {
         data: reportHtml,
         isLoading: isReportLoading,
@@ -80,7 +81,8 @@ export const DossierReviewStudio: React.FC = () => {
     } = useQuery({
         queryKey: ["adminDossierReport", dossierId],
         queryFn: () => adminDossierService.getReportHtml(dossierId),
-        enabled: dossierId > 0,
+        enabled: dossierId > 0 && !!dossier?.dossierData?.extracted_json,
+        retry: false,
     });
 
     const adminProfile = JSON.parse(localStorage.getItem("adminProfile") || "{}");
@@ -227,6 +229,49 @@ export const DossierReviewStudio: React.FC = () => {
         },
     });
 
+    // Mutation : Recalculer les projections financières à la volée
+    const recalculateMutation = useMutation({
+        mutationFn: (overrides?: Record<string, any>) =>
+            adminDossierService.recalculateFinancials(dossierId, overrides),
+        onSuccess: (data: any) => {
+            const updatedJson = data?.extracted_json || data?.data?.extracted_json;
+            if (updatedJson) {
+                setJsonObject(updatedJson);
+            }
+            setFeedback({
+                type: "success",
+                message: "Projections financières recalculées avec succès !",
+            });
+            queryClient.invalidateQueries({ queryKey: ["adminDossierReport", dossierId] });
+            queryClient.invalidateQueries({ queryKey: ["adminDossier", dossierId] });
+        },
+        onError: (err: any) => {
+            setFeedback({
+                type: "error",
+                message: err.response?.data?.message || "Erreur lors du recalcul des projections financières.",
+            });
+        },
+    });
+
+    // Mutation : Relancer la génération PDF
+    const retryPdfMutation = useMutation({
+        mutationFn: () => adminDossierService.retryPdf(dossierId),
+        onSuccess: () => {
+            setFeedback({
+                type: "success",
+                message: "Génération PDF relancée avec succès !",
+            });
+            queryClient.invalidateQueries({ queryKey: ["adminDossier", dossierId] });
+            queryClient.invalidateQueries({ queryKey: ["adminDossierReport", dossierId] });
+        },
+        onError: (err: any) => {
+            setFeedback({
+                type: "error",
+                message: err.response?.data?.message || "Erreur lors de la relance de la génération PDF.",
+            });
+        },
+    });
+
     const handleSaveJson = () => {
         setJsonError(null);
         setFeedback(null);
@@ -335,7 +380,9 @@ export const DossierReviewStudio: React.FC = () => {
                                                 ? "bg-amber-50 text-amber-700 border-amber-200"
                                                 : dossier.status === "AWAITING_CLIENT_INFO"
                                                     ? "bg-slate-100 text-slate-700 border-slate-300"
-                                                    : "bg-gray-50 text-gray-600 border-gray-200"
+                                                    : dossier.status === "GENERATION_FAILED"
+                                                        ? "bg-red-50 text-red-700 border-red-200"
+                                                        : "bg-gray-50 text-gray-600 border-gray-200"
                                         }
                   `}
                                 >
@@ -365,17 +412,19 @@ export const DossierReviewStudio: React.FC = () => {
 
                                 <span className="inline-flex items-center gap-1.5">
                                     <span className="font-medium text-slate-600">
-                                        {dossier.client?.prenom} {dossier.client?.nom}
+                                        {(dossier.client?.prenom || dossier.client?.nom)
+                                            ? `${dossier.client?.prenom || ""} ${dossier.client?.nom || ""}`.trim()
+                                            : (dossier.client?.email || "Client")}
                                     </span>
                                 </span>
 
-                                {dossier.client?.company_name && (
+                                {(dossier.client?.nomEntreprise || dossier.client?.company_name) && (
                                     <>
                                         <span className="h-3 w-px bg-gray-200" />
 
                                         <span className="inline-flex items-center gap-1.5">
                                             <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                                            <span>{dossier.client.company_name}</span>
+                                            <span>{dossier.client?.nomEntreprise || dossier.client?.company_name}</span>
                                         </span>
                                     </>
                                 )}
@@ -474,6 +523,43 @@ export const DossierReviewStudio: React.FC = () => {
 
                         {/* Action separator */}
                         <div className="hidden lg:block h-10 w-px bg-gray-200 mx-1" />
+
+                        {/* Recalculer les projections financières */}
+                        <button
+                            onClick={() => recalculateMutation.mutate({})}
+                            disabled={recalculateMutation.isPending}
+                            className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                h-10
+                px-4
+                rounded-lg
+                border border-blue-200
+                bg-blue-50
+                text-sm
+                font-semibold
+                text-blue-700
+                shadow-sm
+                transition-all duration-200
+                hover:bg-blue-100
+                hover:border-blue-300
+                hover:text-blue-800
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+                whitespace-nowrap
+              "
+                            title="Recalculer les projections financières"
+                        >
+                            {recalculateMutation.isPending ? (
+                                <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                            ) : (
+                                <Calculator className="w-4 h-4 text-blue-600" />
+                            )}
+
+                            <span>Recalculer les projections financières</span>
+                        </button>
 
                         {/* Generate PDF */}
                         <button
@@ -587,6 +673,35 @@ export const DossierReviewStudio: React.FC = () => {
                     </div>
                 )}
             </header>
+
+            {/* ALERTE ERREUR DE GÉNÉRATION PDF */}
+            {dossier?.status === "GENERATION_FAILED" && (
+                <div className="mb-4 bg-red-50 border-l-4 border-red-500 rounded-xl p-4 shadow-sm flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-3">
+                        <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+                        <div>
+                            <h3 className="text-sm font-bold text-red-800">
+                                Échec de la génération du rapport PDF
+                            </h3>
+                            <p className="text-xs text-red-600">
+                                La génération précédente du rapport PDF a rencontré une anomalie. Vous pouvez relancer le traitement.
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => retryPdfMutation.mutate()}
+                        disabled={retryPdfMutation.isPending}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors shrink-0 ml-4"
+                    >
+                        {retryPdfMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <RefreshCw className="w-4 h-4" />
+                        )}
+                        <span>Relancer la génération PDF</span>
+                    </button>
+                </div>
+            )}
 
             {/* SPLIT-SCREEN MAIN CONTENT */}
             <div className="flex-1 flex overflow-hidden rounded-xl">

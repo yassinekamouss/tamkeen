@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { dossierService } from "../../services/dossierService";
+import { useTranslation } from "react-i18next";
 
 interface PlanSelectionProps {
   dossierId: number;
@@ -14,6 +15,8 @@ const font = {
 };
 
 const PlanSelection: React.FC<PlanSelectionProps> = ({ dossierId, onPlanSelected }) => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
   const [error, setError] = useState<string | null>(null);
 
   const selectPlanMutation = useMutation({
@@ -25,24 +28,24 @@ const PlanSelection: React.FC<PlanSelectionProps> = ({ dossierId, onPlanSelected
     },
     onError: (err: any) => {
       setError(
-        err.response?.data?.message || err.message || "Une erreur est survenue lors de la sélection du plan."
+        err.response?.data?.message || err.message || t("clientProfile.defaultError", "Une erreur est survenue lors de la sélection du plan.")
       );
     },
   });
 
   return (
-    <div className={`p-6 md:p-10 max-w-5xl mx-auto space-y-8 ${font.body}`}>
+    <div className={`p-6 md:p-10 max-w-5xl mx-auto space-y-8 ${font.body}`} dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8F0FE] text-[#005BBF] text-[11px] font-bold uppercase tracking-wider">
           <span className="w-1.5 h-1.5 rounded-full bg-[#1A73E8]" />
-          Formules d'accompagnement porteur
+          {t("planSelection.badge", "Formules d'accompagnement porteur")}
         </div>
         <h2 className={`${font.display} text-2xl md:text-3xl font-bold text-[#191C1D] tracking-tight`}>
-          Choisissez votre formule de suivi
+          {t("planSelection.title", "Choisissez votre formule de suivi")}
         </h2>
         <p className="text-[#5F6368] text-sm md:text-base leading-relaxed">
-          Sélectionnez l'offre adaptée aux besoins de votre projet pour lancer immédiatement la rédaction et l'analyse de votre dossier.
+          {t("planSelection.subtitle", "Sélectionnez l'offre adaptée aux besoins de votre projet pour lancer immédiatement la rédaction et l'analyse de votre dossier.")}
         </p>
       </div>
 
@@ -60,27 +63,27 @@ const PlanSelection: React.FC<PlanSelectionProps> = ({ dossierId, onPlanSelected
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#5F6368]">
-                  Plan 1 · Fast-Track
+                  {t("planSelection.plan1.badge", "Plan 1 · Fast-Track")}
                 </span>
                 <span className="px-2.5 py-0.5 rounded text-[11px] font-medium bg-[#F3F4F5] text-[#414754] border border-[#DADCE0]">
-                  Autonomie IA
+                  {t("planSelection.plan1.tag", "Autonomie IA")}
                 </span>
               </div>
 
               <div>
                 <h3 className={`${font.display} text-xl font-bold text-[#191C1D]`}>
-                  Le Livrable Structuré
+                  {t("planSelection.plan1.title", "Le Livrable Structuré")}
                 </h3>
                 <p className="text-[#5F6368] text-xs sm:text-sm mt-1 leading-relaxed min-h-[40px]">
-                  Génération instantanée de votre rapport d'investissement et dossier d'éligibilité par notre IA.
+                  {t("planSelection.plan1.desc", "Génération instantanée de votre rapport d'investissement et dossier d'éligibilité par notre IA.")}
                 </p>
               </div>
 
               <div className="pt-2 pb-1 border-y border-[#F3F4F5] flex items-baseline gap-2">
                 <span className={`${font.mono} text-3xl sm:text-4xl font-bold text-[#191C1D]`}>
-                  1 990
+                  {t("planSelection.plan1.price", "1 990")}
                 </span>
-                <span className="text-[#5F6368] font-bold text-sm">DH TTC</span>
+                <span className="text-[#5F6368] font-bold text-sm">{t("planSelection.plan1.currency", "DH TTC")}</span>
               </div>
 
               <ul className="space-y-3 pt-2 text-xs sm:text-sm">
@@ -88,31 +91,25 @@ const PlanSelection: React.FC<PlanSelectionProps> = ({ dossierId, onPlanSelected
                   <svg className="w-4 h-4 text-[#1A73E8] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Analyse automatique de l'ensemble de vos pièces justificatives</span>
+                  <span>{t("planSelection.plan1.feature1", "Analyse automatique de l'ensemble de vos pièces justificatives")}</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-[#191C1D]">
                   <svg className="w-4 h-4 text-[#1A73E8] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Calcul et simulation du montant optimal de subvention</span>
+                  <span>{t("planSelection.plan1.feature2", "Calcul et simulation du montant optimal de subvention")}</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-[#191C1D]">
                   <svg className="w-4 h-4 text-[#1A73E8] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Génération de la synthèse au format bancaire / institutionnel</span>
+                  <span>{t("planSelection.plan1.feature3", "Délivrance sous filigrane d'un rapport structuré complet pour préparation interne")}</span>
                 </li>
-                <li className="flex items-start gap-2.5 text-[#727785] opacity-60">
-                  <svg className="w-4 h-4 text-[#727785] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <li className="flex items-start gap-2.5 text-[#191C1D]">
+                  <svg className="w-4 h-4 text-[#1A73E8] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Revue personnalisée par un consultant expert dédié</span>
-                </li>
-                <li className="flex items-start gap-2.5 text-[#727785] opacity-60">
-                  <svg className="w-4 h-4 text-[#727785] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  <span>Messagerie directe &amp; accompagnement aux démarches</span>
+                  <span>{t("planSelection.plan1.feature4", "Zéro délai d'attente : téléchargement immédiat après analyse")}</span>
                 </li>
               </ul>
             </div>
@@ -122,7 +119,7 @@ const PlanSelection: React.FC<PlanSelectionProps> = ({ dossierId, onPlanSelected
               disabled={selectPlanMutation.isPending}
               className="w-full py-3 px-4 rounded border border-[#DADCE0] bg-white text-[#191C1D] font-bold text-sm hover:bg-[#F3F4F5] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A73E8] disabled:opacity-50"
             >
-              {selectPlanMutation.isPending ? "Validation..." : "Choisir le Plan 1 (Autonomie)"}
+              {selectPlanMutation.isPending ? t("planSelection.selectingBtn", "Sélection en cours...") : t("planSelection.selectPlanBtn", "Choisir ce plan")}
             </button>
           </div>
         </div>
@@ -133,27 +130,27 @@ const PlanSelection: React.FC<PlanSelectionProps> = ({ dossierId, onPlanSelected
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#1A73E8]">
-                  Plan 2 · Expert Premium
+                  {t("planSelection.plan2.badge", "Plan 2 · Expert Premium")}
                 </span>
                 <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-[#E8F0FE] text-[#005BBF] border border-[#C1C6D6]">
-                  ★ Recommandé
+                  {t("planSelection.plan2.tag", "★ Recommandé")}
                 </span>
               </div>
 
               <div>
                 <h3 className={`${font.display} text-xl font-bold text-[#1A73E8]`}>
-                  Accompagnement Complet
+                  {t("planSelection.plan2.title", "Accompagnement Complet")}
                 </h3>
                 <p className="text-[#5F6368] text-xs sm:text-sm mt-1 leading-relaxed min-h-[40px]">
-                  Un consultant senior relit, affine votre dossier et vous assiste jusqu'à l'octroi de la subvention.
+                  {t("planSelection.plan2.desc", "Un consultant senior relit, affine votre dossier et vous assiste jusqu'à l'octroi de la subvention.")}
                 </p>
               </div>
 
               <div className="pt-2 pb-1 border-y border-[#F3F4F5] flex items-baseline gap-2">
                 <span className={`${font.mono} text-3xl sm:text-4xl font-bold text-[#191C1D]`}>
-                  4 990
+                  {t("planSelection.plan2.price", "5 900")}
                 </span>
-                <span className="text-[#5F6368] font-bold text-sm">DH TTC</span>
+                <span className="text-[#5F6368] font-bold text-sm">{t("planSelection.plan2.currency", "DH TTC")}</span>
               </div>
 
               <ul className="space-y-3 pt-2 text-xs sm:text-sm">
@@ -161,25 +158,25 @@ const PlanSelection: React.FC<PlanSelectionProps> = ({ dossierId, onPlanSelected
                   <svg className="w-4 h-4 text-[#1A73E8] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="font-semibold text-[#191C1D]">Inclus l'ensemble des fonctionnalités du Plan 1</span>
+                  <span className="font-semibold text-[#191C1D]">{t("planSelection.plan2.feature1", "Tous les avantages et livrables du Plan 1 inclus")}</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-[#191C1D]">
                   <svg className="w-4 h-4 text-[#1A73E8] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Revue approfondie et correction manuelle par un consultant expert</span>
+                  <span>{t("planSelection.plan2.feature2", "Audit juridique et fiscal approfondi de l'assiette éligible par un consultant")}</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-[#191C1D]">
                   <svg className="w-4 h-4 text-[#1A73E8] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Messagerie dédiée &amp; fil de discussion direct avec votre expert</span>
+                  <span>{t("planSelection.plan2.feature3", "Optimisation des ratios financiers et modèle CPC conforme aux exigences bancaires")}</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-[#191C1D]">
                   <svg className="w-4 h-4 text-[#1A73E8] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Assistance aux échanges avec les organismes financeurs</span>
+                  <span>{t("planSelection.plan2.feature4", "Livrable officiel certifié sans filigrane, prêt pour dépôt légal et bancaire")}</span>
                 </li>
               </ul>
             </div>
@@ -189,7 +186,7 @@ const PlanSelection: React.FC<PlanSelectionProps> = ({ dossierId, onPlanSelected
               disabled={selectPlanMutation.isPending}
               className="w-full py-3 px-4 rounded bg-[#1A73E8] hover:bg-[#174EA6] text-white font-bold text-sm shadow-[0_4px_14px_rgba(26,115,232,0.12)] transition-all focus:outline-none focus:ring-2 focus:ring-[#1A73E8] focus:ring-offset-2 disabled:opacity-50"
             >
-              {selectPlanMutation.isPending ? "Validation..." : "Choisir le Plan 2 (Accompagnement Expert)"}
+              {selectPlanMutation.isPending ? t("planSelection.selectingBtn", "Sélection en cours...") : t("planSelection.selectPlanBtn", "Choisir ce plan")}
             </button>
           </div>
         </div>

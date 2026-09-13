@@ -92,6 +92,19 @@ export const dossierService = {
     return response.data;
   },
 
+  submitStepper: async (dossierId: number, formData: FormData): Promise<any> => {
+    const response = await api.post(
+      `/documents/${dossierId}/stepper-submit`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  },
+
   selectPlan: async (dossierId: number, planType: "PLAN_1" | "PLAN_2"): Promise<any> => {
     const response = await api.post(
       `/dossiers/${dossierId}/select-plan`,

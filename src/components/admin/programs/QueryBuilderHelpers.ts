@@ -24,6 +24,8 @@ export interface Program {
   link?: string;
   hero?: unknown;
   criteres: RuleGroupType;
+  has_volets?: boolean;
+  math_config?: any;
 }
 
 export const frenchTranslations: Partial<Translations> = {

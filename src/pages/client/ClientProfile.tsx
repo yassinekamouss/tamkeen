@@ -19,7 +19,7 @@ type SaveStatus = "idle" | "saving" | "success" | "error";
  */
 const ClientProfile: React.FC = () => {
   const { user, checkAuth } = useClientAuth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
 
   const [nom, setNom] = useState(user?.nom ?? "");
@@ -79,7 +79,7 @@ const ClientProfile: React.FC = () => {
       setSaveStatus("success");
       setTimeout(() => setSaveStatus("idle"), 3000);
     } catch (err: any) {
-      const msg = err.response?.data?.message ?? "Une erreur est survenue. Veuillez réessayer.";
+      const msg = err.response?.data?.message ?? t("clientProfile.defaultError", "Une erreur est survenue. Veuillez réessayer.");
       setErrorMsg(msg);
       setSaveStatus("error");
     }
@@ -106,10 +106,10 @@ const ClientProfile: React.FC = () => {
           </div>
           <div>
             <h1 className={`${font.display} text-[18px] font-bold text-[#191C1D]`}>
-              Mon profil
+              {t("clientProfile.title", "Mon profil")}
             </h1>
             <p className="text-[13px] text-[#5F6368] mt-0.5">
-              Gérez vos informations personnelles. L'email ne peut pas être modifié.
+              {t("clientProfile.subtitle", "Gérez vos informations personnelles. L'email ne peut pas être modifié.")}
             </p>
           </div>
         </div>
@@ -119,16 +119,16 @@ const ClientProfile: React.FC = () => {
           <section className="bg-white rounded border border-[#DADCE0] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#DADCE0] bg-[#F8F9FA]">
               <h2 className={`${font.display} text-[14px] font-bold text-[#191C1D]`}>
-                Informations du compte
+                {t("clientProfile.accountSection", "Informations du compte")}
               </h2>
             </div>
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Email — verrouillé */}
               <div className="sm:col-span-2">
                 <label className={labelClass}>
-                  Adresse email
-                  <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#F1F3F4] text-[#727785] normal-case tracking-normal">
-                    Non modifiable
+                  {t("clientProfile.emailLabel", "Adresse email")}
+                  <span className="ml-2 rtl:ml-0 rtl:mr-2 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#F1F3F4] text-[#727785] normal-case tracking-normal">
+                    {t("clientProfile.notModifiable", "Non modifiable")}
                   </span>
                 </label>
                 <input
@@ -142,10 +142,10 @@ const ClientProfile: React.FC = () => {
 
               {/* Type de profil — info */}
               <div className="sm:col-span-2">
-                <label className={labelClass}>Type de profil</label>
+                <label className={labelClass}>{t("clientProfile.profileTypeLabel", "Type de profil")}</label>
                 <div className="flex items-center gap-2 px-3 py-2.5 bg-[#F8F9FA] border border-[#DADCE0] rounded">
                   <span className="text-[13px] text-[#414754] font-medium">
-                    {user?.applicantType === "morale" ? "Personne Morale" : "Personne Physique"}
+                    {user?.applicantType === "morale" ? t("clientProfile.personneMorale", "Personne Morale") : t("clientProfile.personnePhysique", "Personne Physique")}
                   </span>
                 </div>
               </div>
@@ -156,65 +156,65 @@ const ClientProfile: React.FC = () => {
           <section className="bg-white rounded border border-[#DADCE0] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#DADCE0] bg-[#F8F9FA]">
               <h2 className={`${font.display} text-[14px] font-bold text-[#191C1D]`}>
-                {isPhysique ? "Informations personnelles" : "Informations de l'entreprise"}
+                {isPhysique ? t("clientProfile.personalInfo", "Informations personnelles") : t("clientProfile.companyInfo", "Informations de l'entreprise")}
               </h2>
             </div>
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {isPhysique ? (
                 <>
                   <div>
-                    <label className={labelClass}>Nom</label>
+                    <label className={labelClass}>{t("clientProfile.nom", "Nom")}</label>
                     <input
                       type="text"
                       value={nom}
                       onChange={(e) => setNom(e.target.value)}
-                      placeholder="Votre nom"
+                      placeholder={t("clientProfile.nomPlaceholder", "Votre nom")}
                       className={inputClass}
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>Prénom</label>
+                    <label className={labelClass}>{t("clientProfile.prenom", "Prénom")}</label>
                     <input
                       type="text"
                       value={prenom}
                       onChange={(e) => setPrenom(e.target.value)}
-                      placeholder="Votre prénom"
+                      placeholder={t("clientProfile.prenomPlaceholder", "Votre prénom")}
                       className={inputClass}
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>Sexe</label>
+                    <label className={labelClass}>{t("clientProfile.sexe", "Sexe")}</label>
                     <select
                       value={sexe}
                       onChange={(e) => setSexe(e.target.value)}
                       className={inputClass}
                     >
-                      <option value="">— Sélectionner —</option>
-                      <option value="Homme">Homme</option>
-                      <option value="Femme">Femme</option>
+                      <option value="">{t("clientProfile.selectPlaceholder", "— Sélectionner —")}</option>
+                      <option value="Homme">{t("clientProfile.homme", "Homme")}</option>
+                      <option value="Femme">{t("clientProfile.femme", "Femme")}</option>
                     </select>
                   </div>
                   <div>
-                    <label className={labelClass}>Âge</label>
+                    <label className={labelClass}>{t("clientProfile.age", "Âge")}</label>
                     <input
                       type="number"
                       min={18}
                       max={99}
                       value={age}
                       onChange={(e) => setAge(e.target.value)}
-                      placeholder="Votre âge"
+                      placeholder={t("clientProfile.agePlaceholder", "Votre âge")}
                       className={inputClass}
                     />
                   </div>
                 </>
               ) : (
                 <div className="sm:col-span-2">
-                  <label className={labelClass}>Nom de l'entreprise</label>
+                  <label className={labelClass}>{t("clientProfile.companyName", "Nom de l'entreprise")}</label>
                   <input
                     type="text"
                     value={nomEntreprise}
                     onChange={(e) => setNomEntreprise(e.target.value)}
-                    placeholder="Raison sociale"
+                    placeholder={t("clientProfile.companyNamePlaceholder", "Raison sociale")}
                     className={inputClass}
                   />
                 </div>
@@ -226,7 +226,7 @@ const ClientProfile: React.FC = () => {
           <section className="bg-white rounded border border-[#DADCE0] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#DADCE0] bg-[#F8F9FA] flex items-center justify-between">
               <h2 className={`${font.display} text-[14px] font-bold text-[#191C1D]`}>
-                Numéros de téléphone
+                {t("clientProfile.phones", "Numéros de téléphone")}
               </h2>
               {telephones.length < 5 && (
                 <button
@@ -235,7 +235,7 @@ const ClientProfile: React.FC = () => {
                   className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#1A73E8] hover:text-[#174EA6] transition-colors"
                 >
                   <Plus size={14} />
-                  Ajouter
+                  {t("clientProfile.addPhone", "Ajouter")}
                 </button>
               )}
             </div>
@@ -245,14 +245,15 @@ const ClientProfile: React.FC = () => {
                   <div className="relative flex-1">
                     <Phone
                       size={14}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#727785] pointer-events-none"
+                      className={`absolute ${isRTL ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-[#727785] pointer-events-none`}
                     />
                     <input
                       type="tel"
                       value={phone}
                       onChange={(e) => handlePhoneChange(index, e.target.value)}
-                      placeholder="+212 6XX XXX XXX"
-                      className={`${inputClass} pl-9 ${font.mono}`}
+                      placeholder={t("clientProfile.phonePlaceholder", "+212 6XX XXX XXX")}
+                      dir="ltr"
+                      className={`${inputClass} ${isRTL ? "pr-9" : "pl-9"} ${font.mono}`}
                     />
                   </div>
                   {telephones.length > 1 && (
@@ -260,7 +261,7 @@ const ClientProfile: React.FC = () => {
                       type="button"
                       onClick={() => removePhone(index)}
                       className="p-2 text-[#727785] hover:text-[#BA1A1A] hover:bg-[#FFDAD6] rounded transition-colors"
-                      aria-label="Supprimer ce numéro"
+                      aria-label={t("clientProfile.deletePhone", "Supprimer ce numéro")}
                     >
                       <Trash2 size={15} />
                     </button>
@@ -281,7 +282,7 @@ const ClientProfile: React.FC = () => {
           {saveStatus === "success" && (
             <div className="flex items-center gap-3 px-5 py-4 bg-[#E6F4EA] border-l-4 border-[#1E8E3E] rounded text-[#1E8E3E] text-[13px] font-medium">
               <CheckCircle2 size={16} className="shrink-0" />
-              Profil mis à jour avec succès.
+              {t("clientProfile.successMsg", "Profil mis à jour avec succès.")}
             </div>
           )}
 
@@ -298,12 +299,12 @@ const ClientProfile: React.FC = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Enregistrement…
+                  {t("clientProfile.saving", "Enregistrement…")}
                 </>
               ) : (
                 <>
                   <Save size={15} />
-                  Enregistrer les modifications
+                  {t("clientProfile.saveBtn", "Enregistrer les modifications")}
                 </>
               )}
             </button>

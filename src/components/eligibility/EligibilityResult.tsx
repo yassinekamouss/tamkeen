@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { FormData, programsNamesAndLinks } from "./types";
 import { useTranslation } from "react-i18next";
 import { sanitizeFrenchText } from "../../utils/sanitize";
-import { CheckCircle2, Mail, ArrowRight, FolderPlus, LayoutDashboard, Loader2 } from "lucide-react";
+import { CheckCircle2, Mail, ArrowRight, FolderPlus, LayoutDashboard, Loader2, Calendar, ExternalLink, PhoneCall } from "lucide-react";
 import AgentChat from "./agent/AgentChat";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
@@ -49,7 +49,7 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
       navigate("/client/dashboard");
     } catch (err: any) {
       console.error(err);
-      setDossierError(err.response?.data?.message || "Erreur lors de la création du dossier.");
+      setDossierError(err.response?.data?.message || t("eligibilityResult.createDossierError", "Erreur lors de la création du dossier."));
       setIsCreatingDossier(false);
     }
   };
@@ -154,7 +154,7 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
                         <ArrowRight className="w-4 h-4 text-[#1A73E8]" />
                       </a>
                       <span className="text-[12px] font-bold px-3 py-1.5 rounded-lg bg-[#F8F9FA] text-[#191C1D] border border-[#DADCE0]" style={{ fontFamily: "JetBrains Mono, monospace" }}>
-                        Éligible
+                        {t("eligibilityResult.tagEligible", "Éligible")}
                       </span>
                     </div>
                   );
@@ -163,72 +163,130 @@ const EligibilityResult: React.FC<EligibilityResultProps> = ({
             </div>
           )}
 
-          {/* Message de Succès : conditionnel selon isAuth */}
-          <div className="pt-6 border-t border-[#DADCE0]">
-            {isAuth ? (
-              <div className="bg-[#E8F0FE] border border-[#ADC7FF] rounded-xl p-6 sm:p-8 space-y-6 shadow-sm">
-                <div className="text-center space-y-2 max-w-lg mx-auto">
-                  <h3 className="text-[18px] sm:text-xl font-bold text-[#191C1D]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-                    Souhaitez-vous créer un dossier d'accompagnement ?
-                  </h3>
-                  <p className="text-[#1A73E8] text-[14px] leading-relaxed">
-                    Vous pouvez dès maintenant transformer ce résultat en dossier actif pour sélectionner votre plan d'accompagnement.
-                  </p>
+          {/* Message d'action : conditionnel selon hasVoletsEligible et isAuth */}
+          {(() => {
+            const hasVoletsEligible =
+              eligibleProgram.length > 0 &&
+              eligibleProgram.some((p) => p.has_volets !== false);
+
+            if (!hasVoletsEligible) {
+              return (
+                <div className="pt-6 border-t border-[#DADCE0]">
+                  <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-6 sm:p-8 space-y-6 shadow-sm">
+                    <div className="text-center space-y-2 max-w-xl mx-auto">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {t("eligibilityResult.specificSupportBadge", "Accompagnement Spécifique Direct")}
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-bold text-[#191C1D]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                        {t("eligibilityResult.specificSupportTitle", "Éligibilité validée · Planifiez votre entretien expert")}
+                      </h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        {t(
+                          "eligibilityResult.specificSupportDesc",
+                          "Ce programme ne nécessite pas le passage par les volets standards TPME. Nos experts vous accompagnent directement dans le montage de votre dossier institutionnel sur mesure."
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                      <a
+                        href="https://calendly.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto px-6 py-3 bg-[#1E8E3E] hover:bg-[#197A35] text-white font-bold text-sm rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        <span>{t("eligibilityResult.bookCalendly", "Prendre rendez-vous (Calendly)")}</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                      <a
+                        href="mailto:contact@masubvention.ma?subject=Demande%20Rendez-vous%20Programme%20Spécifique"
+                        className="w-full sm:w-auto px-6 py-3 bg-white border border-[#DADCE0] hover:bg-gray-50 text-gray-700 font-bold text-sm rounded-lg transition-all flex items-center justify-center gap-2"
+                      >
+                        <PhoneCall className="w-4 h-4 text-emerald-600" />
+                        <span>{t("eligibilityResult.contactAdvisor", "Contacter un conseiller")}</span>
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                
-                {dossierError && (
-                  <div className="p-3 bg-[#FFDAD6] border-l-4 border-[#BA1A1A] text-[#93000A] text-sm font-medium rounded text-center">
-                    {dossierError}
+              );
+            }
+
+            return (
+              <div className="pt-6 border-t border-[#DADCE0]">
+                {isAuth ? (
+                  <div className="bg-[#E8F0FE] border border-[#ADC7FF] rounded-xl p-6 sm:p-8 space-y-6 shadow-sm">
+                    <div className="text-center space-y-2 max-w-lg mx-auto">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider">
+                        {t("eligibilityResult.volet2Badge", "Dispositif Volet 2 · Charte TPME")}
+                      </div>
+                      <h3 className="text-[18px] sm:text-xl font-bold text-[#191C1D]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                        {t("eligibilityResult.volet2Title", "Activez votre accompagnement pour ce projet")}
+                      </h3>
+                      <p className="text-[#1A73E8] text-[14px] leading-relaxed">
+                        {t(
+                          "eligibilityResult.volet2Desc",
+                          "Créez votre dossier actif pour choisir votre formule d'accompagnement (Plan 1 Autonomie ou Plan 2 Expert) puis complétez le formulaire de projet en 5 étapes."
+                        )}
+                      </p>
+                    </div>
+
+                    {dossierError && (
+                      <div className="p-3 bg-[#FFDAD6] border-l-4 border-[#BA1A1A] text-[#93000A] text-sm font-medium rounded text-center">
+                        {dossierError}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                      <button
+                        onClick={async () => {
+                          await checkAuth();
+                          navigate("/client/dashboard");
+                        }}
+                        className="w-full sm:w-auto px-6 py-2.5 bg-white border border-[#DADCE0] hover:bg-[#F8F9FA] text-[#414754] font-bold text-[14px] rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <LayoutDashboard size={18} />
+                        {t("eligibilityResult.backToDashboard", "Retour au tableau de bord")}
+                      </button>
+                      <button
+                        onClick={handleCreateDossier}
+                        disabled={isCreatingDossier || !testId}
+                        className="w-full sm:w-auto px-6 py-2.5 flex items-center justify-center gap-2 bg-[#1A73E8] hover:bg-[#174EA6] text-white font-bold text-[14px] rounded-lg shadow-sm transition-colors disabled:opacity-50"
+                      >
+                        {isCreatingDossier ? (
+                          <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                          <FolderPlus size={18} />
+                        )}
+                        {t("eligibilityResult.selectPlanAndStart", "Sélectionner mon plan & Accéder au formulaire")}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-[#F8F9FA] border border-[#DADCE0] rounded-xl p-8 text-center space-y-5 shadow-sm">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-white border border-[#DADCE0] text-[#1A73E8] flex items-center justify-center shadow-sm">
+                      <Mail className="w-8 h-8" />
+                    </div>
+                    <div className="max-w-lg mx-auto space-y-2">
+                      <h3 className="text-xl font-bold text-[#191C1D]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                        {t(
+                          "eligibilityResult.workspaceReadyTitle",
+                          "Votre Espace de Travail est Prêt !"
+                        )}
+                      </h3>
+                      <p className="text-[#5F6368] text-[14px] sm:text-[15px] leading-relaxed">
+                        {t(
+                          "eligibilityResult.workspaceReady",
+                          "Félicitations, votre espace de travail est prêt ! Un email vient de vous être envoyé. Veuillez cliquer sur le lien qu'il contient pour définir votre mot de passe et accéder à votre tableau de bord afin de choisir votre plan et renseigner votre projet."
+                        )}
+                      </p>
+                    </div>
                   </div>
                 )}
-
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                  <button
-                    onClick={async () => {
-                      await checkAuth();
-                      navigate("/client/dashboard");
-                    }}
-                    className="w-full sm:w-auto px-6 py-2.5 bg-white border border-[#DADCE0] hover:bg-[#F8F9FA] text-[#414754] font-bold text-[14px] rounded-lg transition-colors flex items-center justify-center gap-2"
-                  >
-                    <LayoutDashboard size={18} />
-                    Retour au tableau de bord
-                  </button>
-                  <button
-                    onClick={handleCreateDossier}
-                    disabled={isCreatingDossier || !testId}
-                    className="w-full sm:w-auto px-6 py-2.5 flex items-center justify-center gap-2 bg-[#1A73E8] hover:bg-[#174EA6] text-white font-bold text-[14px] rounded-lg shadow-sm transition-colors disabled:opacity-50"
-                  >
-                    {isCreatingDossier ? (
-                      <Loader2 size={18} className="animate-spin" />
-                    ) : (
-                      <FolderPlus size={18} />
-                    )}
-                    Oui, créer un dossier
-                  </button>
-                </div>
               </div>
-            ) : (
-              <div className="bg-[#F8F9FA] border border-[#DADCE0] rounded-xl p-8 text-center space-y-5 shadow-sm">
-                <div className="w-16 h-16 mx-auto rounded-full bg-white border border-[#DADCE0] text-[#1A73E8] flex items-center justify-center shadow-sm">
-                  <Mail className="w-8 h-8" />
-                </div>
-                <div className="max-w-lg mx-auto space-y-2">
-                  <h3 className="text-xl font-bold text-[#191C1D]" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
-                    {t(
-                      "eligibilityResult.workspaceReadyTitle",
-                      "Votre Espace de Travail est Prêt !"
-                    )}
-                  </h3>
-                  <p className="text-[#5F6368] text-[14px] sm:text-[15px] leading-relaxed">
-                    {t(
-                      "eligibilityResult.workspaceReady",
-                      "Félicitations, votre espace de travail est prêt ! Un email vient de vous être envoyé. Veuillez cliquer sur le lien qu'il contient pour définir votre mot de passe et accéder à votre tableau de bord."
-                    )}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+            );
+          })()}
 
           {/* Bouton pour relancer un test */}
           <div className="pt-6 border-t border-[#DADCE0] flex justify-end">

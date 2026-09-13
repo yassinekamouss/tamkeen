@@ -19,7 +19,7 @@ interface ClientHeaderProps {
 }
 
 const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { client, logout } = useClientAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -146,7 +146,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
         <div className="flex items-center justify-between h-14">
             {/* Logo */}
             <div className="flex items-center gap-3 shrink-0">
-              <Link to="/client/dashboard" aria-label="Accueil Espace Client">
+              <Link to="/client/dashboard" aria-label={t("clientHeader.spaceTitle")}>
                 <img className="h-10 w-auto object-contain" src={logo} alt="Tamkeen Center" />
               </Link>
               <div className="hidden md:flex flex-col justify-center border-l border-[#DADCE0] pl-3 ml-1 rtl:border-l-0 rtl:border-r rtl:pl-0 rtl:pr-3">
@@ -154,7 +154,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                   className="text-[10px] font-bold text-[#5F6368] uppercase tracking-wider leading-none whitespace-nowrap"
                   style={{ fontFamily: "Roboto Flex, sans-serif" }}
                 >
-                  Espace Client
+                  {t("clientHeader.spaceTitle")}
                 </span>
               </div>
             </div>
@@ -163,19 +163,19 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
             <nav className="hidden lg:flex items-center gap-1" aria-label="Navigation espace client">
               <Link to="/client/dashboard" className={clientNavItemClass(isActiveLink("/client/dashboard") || isActiveLink("/dashboard"))}>
                 <LayoutDashboard size={15} />
-                Mon tableau de bord
+                {t("clientHeader.dashboard")}
               </Link>
               <Link to="/client/historique" className={clientNavItemClass(isActiveLink("/client/historique"))}>
                 <FileText size={15} />
-                Historique
+                {t("clientHeader.history")}
               </Link>
               <Link to="/client/test" className={clientNavItemClass(isActiveLink("/client/test"))}>
                 <ClipboardCheck size={15} />
-                Nouveau test
+                {t("clientHeader.newTest")}
               </Link>
               <Link to="/client/profile" className={clientNavItemClass(isActiveLink("/client/profile"))}>
                 <UserCircle size={15} />
-                Mon profil
+                {t("clientHeader.profile")}
               </Link>
             </nav>
 
@@ -204,7 +204,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                   <div className="absolute right-0 mt-2 w-52 bg-white border border-[#DADCE0] rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.08)] py-2 z-50 overflow-hidden">
                     <div className="px-4 py-2.5 border-b border-[#DADCE0]">
                       <p className="text-[11px] text-[#727785] font-medium uppercase tracking-wide">
-                        Connecté en tant que
+                        {t("clientHeader.connectedAs")}
                       </p>
                       <p className="text-[13px] font-semibold text-[#191C1D] truncate mt-0.5">
                         {client?.email}
@@ -217,14 +217,14 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                         className="flex items-center gap-3 px-4 py-2.5 text-[13px] text-[#414754] hover:bg-[#F1F3F4] hover:text-[#191C1D] transition-colors"
                       >
                         <UserCircle size={15} className="text-[#727785]" />
-                        Mon profil
+                        {t("clientHeader.profile")}
                       </Link>
                       <button
                         onClick={handleLogout}
                         className="flex items-center gap-3 w-full px-4 py-2.5 text-[13px] text-[#BA1A1A] hover:bg-[#FFDAD6] transition-colors"
                       >
                         <LogOut size={15} />
-                        Se déconnecter
+                        {t("clientHeader.logout")}
                       </button>
                     </div>
                   </div>
@@ -266,7 +266,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                 )}
               >
                 <LayoutDashboard size={16} />
-                Mon tableau de bord
+                {t("clientHeader.dashboard")}
               </Link>
               <Link
                 to="/client/historique"
@@ -274,7 +274,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                 className={mobileNavItemClass(isActiveLink("/client/historique"))}
               >
                 <FileText size={16} />
-                Historique
+                {t("clientHeader.history")}
               </Link>
               <Link
                 to="/client/test"
@@ -282,7 +282,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                 className={mobileNavItemClass(isActiveLink("/client/test"))}
               >
                 <ClipboardCheck size={16} />
-                Nouveau test
+                {t("clientHeader.newTest")}
               </Link>
               <Link
                 to="/client/profile"
@@ -290,13 +290,13 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                 className={mobileNavItemClass(isActiveLink("/client/profile"))}
               >
                 <UserCircle size={16} />
-                Mon profil
+                {t("clientHeader.profile")}
               </Link>
 
               {/* Lang */}
               <div className="pt-4 mt-3 border-t border-[#DADCE0]">
                 <span className="text-xs font-medium text-[#727785] mb-2 block uppercase tracking-wider">
-                  Langue
+                  {t("clientHeader.language")}
                 </span>
                 <div className="flex gap-2">
                   {["fr", "ar"].map((lng) => (
@@ -323,7 +323,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                   className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white border border-[#DADCE0] text-[#BA1A1A] font-medium text-sm rounded-lg hover:bg-[#FFDAD6] transition-colors"
                 >
                   <LogOut size={15} />
-                  Se déconnecter
+                  {t("clientHeader.logout")}
                 </button>
               </div>
             </nav>

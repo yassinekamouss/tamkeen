@@ -5,6 +5,7 @@ export interface UserClient {
   email: string;
   telephone?: string;
   company_name?: string;
+  nomEntreprise?: string;
 }
 
 export interface DocumentItem {

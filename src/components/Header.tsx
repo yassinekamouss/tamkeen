@@ -26,6 +26,7 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    localStorage.setItem("appLanguage", lng);
     document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = lng;
     setIsLangMenuOpen(false);

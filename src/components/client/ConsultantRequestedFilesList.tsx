@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { dossierService } from "../../services/dossierService";
+import { useTranslation } from "react-i18next";
 import { Upload, CheckCircle2, AlertCircle, Loader2, Download } from "lucide-react";
 
 interface ConsultantRequestedFilesListProps {
@@ -10,6 +11,8 @@ interface ConsultantRequestedFilesListProps {
 
 const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> = ({ dossierId, requests }) => {
   const queryClient = useQueryClient();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
   const [uploadingRequestId, setUploadingRequestId] = useState<number | null>(null);
 
   const replyMutation = useMutation({
@@ -35,23 +38,23 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
 
   if (requests.length === 0) {
     return (
-      <div className="flex-1 p-8 flex flex-col items-center justify-center text-center bg-white m-6 rounded border border-[#DADCE0] shadow-sm">
+      <div className="flex-1 p-8 flex flex-col items-center justify-center text-center bg-white m-6 rounded border border-[#DADCE0] shadow-sm" dir={isRTL ? "rtl" : "ltr"}>
         <div className="w-12 h-12 rounded-full bg-[#E8F0FE] flex items-center justify-center mb-4">
           <CheckCircle2 className="w-6 h-6 text-[#1A73E8]" />
         </div>
-        <h3 className="text-lg font-bold text-[#191C1D] mb-2">Aucun document requis</h3>
+        <h3 className="text-lg font-bold text-[#191C1D] mb-2">{t("requests.noRequests", "Aucun document requis")}</h3>
         <p className="text-sm text-[#5F6368] max-w-sm">
-          Votre consultant n'a demandé aucun document pour le moment. Vous serez notifié en cas de nouvelle demande.
+          {t("requests.noRequestsDesc", "Votre consultant n'a demandé aucun document pour le moment. Vous serez notifié en cas de nouvelle demande.")}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 p-6 overflow-y-auto bg-gray-50">
+    <div className="flex-1 p-6 overflow-y-auto bg-gray-50" dir={isRTL ? "rtl" : "ltr"}>
       <div className="max-w-4xl mx-auto space-y-4">
         <h2 className="text-xl font-bold text-[#191C1D] mb-6 flex items-center gap-2">
-          Fichiers demandés par le consultant
+          {t("requests.filesRequestedByConsultant", "Fichiers demandés par le consultant")}
         </h2>
 
         {requests.map((req) => (
@@ -60,23 +63,23 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
               <div className="flex items-center gap-2 mb-1">
                 {req.importance === "OBLIGATOIRE" ? (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-50 text-red-700 border border-red-200">
-                    Obligatoire
+                    {t("requests.mandatory", "Obligatoire")}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-100 text-gray-600 border border-gray-200">
-                    Facultatif
+                    {t("requests.optional", "Facultatif")}
                   </span>
                 )}
 
                 {req.status === "PENDING" ? (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-orange-50 text-orange-700 border border-orange-200 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
-                    En attente
+                    {t("requests.pending", "En attente")}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-50 text-green-700 border border-green-200 flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" />
-                    Fourni
+                    {t("requests.provided", "Fourni")}
                   </span>
                 )}
               </div>
@@ -84,7 +87,7 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                 {req.input_type === "FILE" && req.documentType?.name ? req.documentType.name : req.message}
               </h4>
               <p className="text-xs text-[#5F6368] mt-1">
-                Demandé le {new Date(req.createdAt).toLocaleDateString()}
+                {t("requests.requestedOn", { date: new Date(req.createdAt).toLocaleDateString(isRTL ? "ar-MA" : "fr-FR"), defaultValue: `Demandé le ${new Date(req.createdAt).toLocaleDateString()}` })}
               </p>
             </div>
 
@@ -108,7 +111,7 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                     ) : (
                       <Upload className="w-4 h-4" />
                     )}
-                    {uploadingRequestId === req.id ? "Envoi..." : "Joindre le fichier"}
+                    {uploadingRequestId === req.id ? t("requests.sending", "Envoi...") : t("requests.attachFile", "Joindre le fichier")}
                   </label>
                 </div>
               )}
@@ -116,7 +119,7 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                 <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 sm:mt-0">
                   <div className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-green-700 bg-green-50 rounded-md whitespace-nowrap">
                     <CheckCircle2 className="w-4 h-4" />
-                    Transmis
+                    {t("requests.provided", "Transmis")}
                   </div>
 
                   {(() => {
@@ -130,7 +133,7 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                           className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-[#1A73E8] bg-[#F8F9FA] hover:bg-[#F3F4F5] border border-[#DADCE0] rounded-md transition-colors whitespace-nowrap"
                         >
                           <Download className="w-4 h-4" />
-                          Consulter
+                          {t("requests.consult", "Consulter")}
                         </a>
                       );
                     }

@@ -30,6 +30,10 @@ export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const checkAuth = async () => {
+    if (window.location.pathname.includes("x9zTAMkeen-secure-dashboard-77-center")) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const data = await authService.getMe();

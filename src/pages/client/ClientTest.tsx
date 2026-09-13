@@ -19,7 +19,7 @@ const font = {
  */
 const ClientTest: React.FC = () => {
   const { user } = useClientAuth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
 
   // Le type de profil est figé selon le compte de l'utilisateur
@@ -40,10 +40,10 @@ const ClientTest: React.FC = () => {
           </div>
           <div>
             <h1 className={`${font.display} text-[18px] font-bold text-[#191C1D]`}>
-              Nouveau test d'éligibilité
+              {t("clientTest.title", "Nouveau test d'éligibilité")}
             </h1>
             <p className="text-[13px] text-[#5F6368] mt-0.5">
-              Évaluez votre éligibilité aux programmes de financement disponibles.
+              {t("clientTest.subtitle", "Évaluez votre éligibilité aux programmes de financement disponibles.")}
             </p>
           </div>
         </div>
@@ -64,8 +64,7 @@ const ClientTest: React.FC = () => {
             />
           </svg>
           <p className="text-[13px] text-[#1A73E8] leading-relaxed">
-            Ce test est lié à votre compte. Vos informations de profil sont
-            pré-remplies et votre email ne peut pas être modifié depuis ce formulaire.
+            {t("clientTest.infoBanner", "Ce test est lié à votre compte. Vos informations de profil sont pré-remplies et votre email ne peut pas être modifié depuis ce formulaire.")}
           </p>
         </div>
 

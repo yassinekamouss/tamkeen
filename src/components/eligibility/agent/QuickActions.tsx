@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { SuggestedAction } from "../types";
 
 interface QuickActionsProps {
@@ -12,6 +13,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({
   onActionClick,
   disabled = false,
 }) => {
+  const { t } = useTranslation();
   if (!actions || actions.length === 0) return null;
 
   const getButtonStyle = (actionType: string) => {
@@ -71,7 +73,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({
   return (
     <div className="pt-4 border-t border-gray-200">
       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-        Actions suggérées :
+        {t("agent.suggestedActions", "Actions suggérées :")}
       </p>
       <div className="flex flex-wrap gap-2.5">
         {actions.map((act, idx) => (
