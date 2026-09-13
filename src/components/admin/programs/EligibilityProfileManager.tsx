@@ -28,15 +28,15 @@ interface Props {
 
 const CardsSkeleton: React.FC = () => {
   return (
-    <div className="space-y-6 animate-pulse mt-4">
-      <div className="flex items-center justify-between bg-indigo-50/70 border border-indigo-200/60 rounded-xl p-3.5 text-xs text-indigo-800">
+    <div className="space-y-4 animate-pulse mt-4">
+      <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-700">
         <div className="flex items-center gap-2.5">
-          <div className="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin"></div>
-          <span className="font-semibold">
-            ✨ L'IA interprète vos consignes et remplit automatiquement les cartes visuelles...
+          <div className="w-4 h-4 rounded-full border-2 border-gray-600 border-t-transparent animate-spin"></div>
+          <span className="font-medium">
+            Configuration automatique des profils d'éligibilité en cours...
           </span>
         </div>
-        <span className="text-[11px] text-indigo-600 font-medium">Hydratation en cours</span>
+        <span className="text-[11px] text-gray-500 font-medium">Traitement</span>
       </div>
 
       {[
@@ -210,29 +210,29 @@ export const EligibilityProfileManager: React.FC<Props> = ({
       />
 
       {/* ── BANDEAU D'EXPLICATION DNF ──────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-200/80 rounded-xl p-4 shadow-sm">
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-600 text-white rounded-lg mt-0.5 shadow-sm">
-              <Layers className="w-5 h-5" />
+            <div className="p-2 bg-gray-800 text-white rounded-lg mt-0.5">
+              <Layers className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm font-bold text-gray-900">
-                  Profils d'Éligibilité Multiples (Logique OU)
+                <h3 className="text-sm font-semibold text-gray-900">
+                  Profils d'éligibilité multiples (Logique OU)
                 </h3>
-                <span className="px-2 py-0.5 text-[11px] font-semibold bg-blue-100 text-blue-700 rounded-full">
+                <span className="px-2 py-0.5 text-[11px] font-medium bg-gray-200 text-gray-700 rounded-md">
                   {profiles.length} profil{profiles.length > 1 ? "s" : ""}{" "}
                   configuré{profiles.length > 1 ? "s" : ""}
                 </span>
               </div>
               <p className="text-xs text-gray-600 mt-1">
                 Le candidat est éligible au programme s'il correspond au{" "}
-                <strong className="text-blue-800">Profil 1</strong>{" "}
+                <strong className="text-gray-900">Profil 1</strong>{" "}
                 {profiles.length > 1 && (
                   <>
-                    <span className="font-semibold text-blue-600">OU</span> au{" "}
-                    <strong className="text-blue-800">
+                    <span className="font-semibold text-gray-700">OU</span> au{" "}
+                    <strong className="text-gray-900">
                       {profiles[1]?.name || "Profil 2"}
                     </strong>
                     {profiles.length > 2 && " OU à l'un des autres profils"}
@@ -240,7 +240,7 @@ export const EligibilityProfileManager: React.FC<Props> = ({
                 )}
                 . À l'intérieur de chaque profil, les 5 critères visuels
                 s'appliquent ensemble (
-                <span className="font-semibold text-emerald-700">ET</span>{" "}
+                <span className="font-medium text-emerald-700">ET</span>{" "}
                 implicite).
               </p>
             </div>
