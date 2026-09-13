@@ -170,20 +170,32 @@ export const EligibilityProfileManager: React.FC<Props> = ({
     emitChange(next);
   };
 
-  const handleRulesGenerated = (newProfiles: EligibilityProfile[], _summary: string) => {
+  const handleRulesGenerated = (
+    newProfiles: EligibilityProfile[],
+    _summary: string,
+    applyMode: "APPEND" | "REPLACE" = "APPEND"
+  ) => {
+    const startIndex = applyMode === "APPEND" ? profiles.length : 0;
+
     const hydratedProfiles: EligibilityProfile[] = newProfiles.map((p, idx) => {
-      const defaultP = createDefaultProfile(p.name || `Profil ${idx + 1}`);
+      const defaultP = createDefaultProfile(p.name || `Profil ${startIndex + idx + 1}`);
       return {
         ...defaultP,
         ...p,
         id: p.id || `profile_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
-        name: p.name || `Profil ${idx + 1}`,
+        name: p.name || `Profil ${startIndex + idx + 1}`,
       };
     });
 
     if (hydratedProfiles.length > 0) {
+      let finalProfiles: EligibilityProfile[];
+      if (applyMode === "APPEND") {
+        finalProfiles = [...profiles, ...hydratedProfiles];
+      } else {
+        finalProfiles = hydratedProfiles;
+      }
       setActiveProfileId(hydratedProfiles[0].id);
-      emitChange(hydratedProfiles);
+      emitChange(finalProfiles);
     }
   };
 

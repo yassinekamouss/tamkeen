@@ -5,7 +5,7 @@ import type { EligibilityProfile } from "./dnfCompiler";
 
 interface Props {
   programId?: number;
-  onRulesGenerated: (profiles: EligibilityProfile[], summary: string) => void;
+  onRulesGenerated: (profiles: EligibilityProfile[], summary: string, applyMode: "APPEND" | "REPLACE") => void;
   isGenerating: boolean;
   setIsGenerating: (loading: boolean) => void;
 }
@@ -24,6 +24,7 @@ export const MagicRuleGenerator: React.FC<Props> = ({
   setIsGenerating,
 }) => {
   const [prompt, setPrompt] = useState("");
+  const [applyMode, setApplyMode] = useState<"APPEND" | "REPLACE">("APPEND");
   const [error, setError] = useState<string | null>(null);
   const [successSummary, setSuccessSummary] = useState<string | null>(null);
 
@@ -42,7 +43,7 @@ export const MagicRuleGenerator: React.FC<Props> = ({
 
       if (response && response.success && Array.isArray(response.profiles) && response.profiles.length > 0) {
         setSuccessSummary(response.summary);
-        onRulesGenerated(response.profiles, response.summary);
+        onRulesGenerated(response.profiles, response.summary, applyMode);
       } else {
         setError("L'IA n'a pas pu extraire de profils valides à partir de cette description. Veuillez préciser vos critères.");
       }
@@ -117,25 +118,57 @@ export const MagicRuleGenerator: React.FC<Props> = ({
               ))}
             </div>
 
-            {/* Bouton de génération */}
-            <button
-              type="button"
-              onClick={handleGenerate}
-              disabled={isGenerating || !prompt.trim()}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-200 transition-all hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg hover:shadow-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-300 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Interprétation et génération IA...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  <span>Générer les règles avec l'IA</span>
-                </>
-              )}
-            </button>
+            {/* Choix Mode & Bouton de génération */}
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="flex items-center bg-white/90 border border-indigo-200/80 rounded-xl p-0.5 text-xs shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setApplyMode("APPEND")}
+                  disabled={isGenerating}
+                  className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                    applyMode === "APPEND"
+                      ? "bg-indigo-600 text-white shadow-xs font-semibold"
+                      : "text-gray-600 hover:text-indigo-700 hover:bg-indigo-50/50"
+                  }`}
+                  title="Conserve les profils existants et ajoute les nouveaux profils générés à la suite"
+                >
+                  ➕ Ajouter à la liste
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setApplyMode("REPLACE")}
+                  disabled={isGenerating}
+                  className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                    applyMode === "REPLACE"
+                      ? "bg-indigo-600 text-white shadow-xs font-semibold"
+                      : "text-gray-600 hover:text-indigo-700 hover:bg-indigo-50/50"
+                  }`}
+                  title="Remplace tous les profils existants par les nouveaux profils générés"
+                >
+                  🔄 Remplacer tout
+                </button>
+              </div>
+
+              {/* Bouton de génération */}
+              <button
+                type="button"
+                onClick={handleGenerate}
+                disabled={isGenerating || !prompt.trim()}
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 px-5 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-200 transition-all hover:from-indigo-700 hover:to-purple-700 hover:shadow-lg hover:shadow-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-300 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Interprétation IA...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    <span>Générer les règles avec l'IA</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
