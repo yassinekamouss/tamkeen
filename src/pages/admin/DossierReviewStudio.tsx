@@ -17,6 +17,8 @@ import {
     Paperclip,
     FolderOpen,
     Calculator,
+    Maximize2,
+    X,
 } from "lucide-react";
 import { adminDossierService } from "../../services/adminDossierService";
 import { ADMIN_FRONT_PREFIX } from "../../api/axios";
@@ -48,8 +50,31 @@ export const DossierReviewStudio: React.FC = () => {
     const [replyMessage, setReplyMessage] = useState("");
     const [replyFile, setReplyFile] = useState<File | null>(null);
 
-    // Notifications / Feedback
+    // Notifications / Feedback (Toast flottant)
     const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+    // Modal plein écran pour l'aperçu du rapport
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Auto-dismiss pour la notification flottante après 5 secondes
+    useEffect(() => {
+        if (!feedback) return;
+        const timer = setTimeout(() => {
+            setFeedback(null);
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [feedback]);
+
+    // Fermeture du modal avec la touche Échap
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && isModalOpen) {
+                setIsModalOpen(false);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isModalOpen]);
 
     // Fetch Document Types
     const { data: documentTypes = [] } = useQuery({
@@ -199,7 +224,7 @@ export const DossierReviewStudio: React.FC = () => {
         onSuccess: () => {
             setFeedback({
                 type: "success",
-                message: "Dossier validé et livré au client avec succès !",
+                message: "Dossier validé et rapport PDF généré & livré au client avec succès !",
             });
             queryClient.invalidateQueries({ queryKey: ["adminDossier", dossierId] });
         },
@@ -490,40 +515,6 @@ export const DossierReviewStudio: React.FC = () => {
               RIGHT SECTION
           ========================================================= */}
                     <div className="flex items-center gap-3 shrink-0">
-
-                        {/* Feedback */}
-                        {feedback && (
-                            <div
-                                className={`
-                  hidden xl:flex
-                  items-center
-                  gap-2
-                  px-3
-                  py-2
-                  rounded-lg
-                  border
-                  text-xs
-                  font-medium
-                  whitespace-nowrap
-                  ${feedback.type === "success"
-                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                        : "bg-red-50 text-red-700 border-red-200"
-                                    }
-                `}
-                            >
-                                {feedback.type === "success" ? (
-                                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-                                ) : (
-                                    <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
-                                )}
-
-                                <span>{feedback.message}</span>
-                            </div>
-                        )}
-
-                        {/* Action separator */}
-                        <div className="hidden lg:block h-10 w-px bg-gray-200 mx-1" />
-
                         {/* Recalculer les projections financières */}
                         <button
                             onClick={() => recalculateMutation.mutate({})}
@@ -561,53 +552,11 @@ export const DossierReviewStudio: React.FC = () => {
                             <span>Recalculer les projections financières</span>
                         </button>
 
-                        {/* Generate PDF */}
-                        <button
-                            onClick={() => generatePdfMutation.mutate()}
-                            disabled={
-                                generatePdfMutation.isPending ||
-                                dossier.status === "DELIVERED"
-                            }
-                            className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                h-10
-                px-4
-                rounded-lg
-                border border-gray-300
-                bg-white
-                text-sm
-                font-semibold
-                text-slate-700
-                shadow-sm
-                transition-all duration-200
-                hover:bg-slate-50
-                hover:border-slate-400
-                hover:text-slate-900
-                disabled:opacity-50
-                disabled:cursor-not-allowed
-                whitespace-nowrap
-              "
-                        >
-                            {generatePdfMutation.isPending ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <FileText className="w-4 h-4" />
-                            )}
-
-                            <span>Générer le PDF Final</span>
-                        </button>
-
-                        {/* Validate */}
+                        {/* Bouton Unifié: Valider & Livrer (génère automatiquement le PDF et le met à disposition du client) */}
                         <button
                             onClick={() => validateMutation.mutate()}
-                            disabled={
-                                validateMutation.isPending ||
-                                dossier.status === "DELIVERED"
-                            }
-                            className="
+                            disabled={validateMutation.isPending}
+                            className={`
                 inline-flex
                 items-center
                 justify-center
@@ -615,18 +564,19 @@ export const DossierReviewStudio: React.FC = () => {
                 h-10
                 px-5
                 rounded-lg
-                bg-slate-700
                 text-sm
                 font-semibold
                 text-white
                 shadow-sm
                 transition-all duration-200
-                hover:bg-slate-800
-                hover:shadow-md
                 disabled:opacity-50
                 disabled:cursor-not-allowed
                 whitespace-nowrap
-              "
+                ${dossier.status === "DELIVERED"
+                                    ? "bg-slate-700 hover:bg-slate-800"
+                                    : "bg-emerald-600 hover:bg-emerald-700 hover:shadow-md"
+                                }
+              `}
                         >
                             {validateMutation.isPending ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -636,42 +586,12 @@ export const DossierReviewStudio: React.FC = () => {
 
                             <span>
                                 {dossier.status === "DELIVERED"
-                                    ? "Dossier déjà livré"
-                                    : "Valider"}
+                                    ? "Régénérer & Mettre à jour le livrable"
+                                    : "Valider & Livrer au client"}
                             </span>
                         </button>
                     </div>
                 </div>
-
-                {/* =========================================================
-            RESPONSIVE FEEDBACK
-        ========================================================= */}
-                {feedback && (
-                    <div className="xl:hidden mt-3 pt-3 border-t border-gray-100">
-                        <div
-                            className={`
-                flex items-center gap-2
-                px-3 py-2
-                rounded-lg
-                border
-                text-xs
-                font-medium
-                ${feedback.type === "success"
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                    : "bg-red-50 text-red-700 border-red-200"
-                                }
-              `}
-                        >
-                            {feedback.type === "success" ? (
-                                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-                            ) : (
-                                <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
-                            )}
-
-                            <span>{feedback.message}</span>
-                        </div>
-                    </div>
-                )}
             </header>
 
             {/* ALERTE ERREUR DE GÉNÉRATION PDF */}
@@ -1209,14 +1129,25 @@ export const DossierReviewStudio: React.FC = () => {
                             Aperçu Rapport d'Investissement (Handlebars HTML)
                         </span>
 
-                        <button
-                            onClick={() => refetchReport()}
-                            disabled={isReportFetching}
-                            className="p-1.5 hover:bg-gray-100 text-gray-500 hover:text-gray-900 rounded transition-colors"
-                            title="Rafraîchir la prévisualisation"
-                        >
-                            <RefreshCw className={`w-3.5 h-3.5 ${isReportFetching ? "animate-spin" : ""}`} />
-                        </button>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() => refetchReport()}
+                                disabled={isReportFetching}
+                                className="p-1.5 hover:bg-gray-100 text-gray-500 hover:text-gray-900 rounded transition-colors"
+                                title="Rafraîchir la prévisualisation"
+                            >
+                                <RefreshCw className={`w-3.5 h-3.5 ${isReportFetching ? "animate-spin" : ""}`} />
+                            </button>
+
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                disabled={!reportHtml}
+                                className="p-1.5 hover:bg-gray-100 text-gray-500 hover:text-gray-900 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                title="Agrandir le rapport (Plein écran)"
+                            >
+                                <Maximize2 className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* CONTENEUR IFRAME PREVIEW */}
@@ -1242,6 +1173,114 @@ export const DossierReviewStudio: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* MODAL PROFESSIONNEL ET MINIMAL POUR APERÇU DU RAPPORT EN GRAND */}
+            {isModalOpen && (
+                <div
+                    className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-150"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) setIsModalOpen(false);
+                    }}
+                >
+                    <div className="relative w-full max-w-6xl h-[92vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
+                        {/* Header Modal */}
+                        <div className="h-14 border-b border-gray-200 bg-slate-50 px-5 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-2 bg-blue-100 rounded-lg text-blue-700">
+                                    <FileText className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-gray-900 leading-none">
+                                        Rapport d'Investissement - Dossier #{dossierId}
+                                    </h3>
+                                    <span className="text-[11px] text-gray-500 mt-1 inline-block">
+                                        Prévisualisation haute fidélité (Aperçu du livrable final)
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => refetchReport()}
+                                    disabled={isReportFetching}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-xs font-semibold shadow-xs transition-colors"
+                                    title="Rafraîchir"
+                                >
+                                    <RefreshCw className={`w-3.5 h-3.5 ${isReportFetching ? "animate-spin text-blue-600" : ""}`} />
+                                    <span>Rafraîchir</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="p-1.5 hover:bg-gray-200 text-gray-500 hover:text-gray-900 rounded-lg transition-colors ml-1"
+                                    title="Fermer (Échap)"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Corps Modal */}
+                        <div className="flex-1 w-full h-full bg-slate-100 p-2 sm:p-4 overflow-hidden">
+                            {isReportLoading ? (
+                                <div className="w-full h-full flex items-center justify-center bg-white border border-gray-200 rounded-lg">
+                                    <div className="flex flex-col items-center gap-2 text-gray-500">
+                                        <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
+                                        <span className="text-xs">Chargement du rapport...</span>
+                                    </div>
+                                </div>
+                            ) : reportHtml ? (
+                                <iframe
+                                    srcDoc={reportHtml}
+                                    title="Rapport d'Investissement Plein Écran"
+                                    className="w-full h-full border border-gray-200 rounded-lg bg-white shadow-sm"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-white border border-gray-200 rounded-lg text-gray-400 text-xs">
+                                    Aucun contenu disponible.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* NOTIFICATION FLOTTANTE (TOAST) : Discrète, moderne et n'impacte pas le layout */}
+            {feedback && (
+                <div
+                    className={`
+            fixed bottom-6 right-6 z-50
+            flex items-center gap-3
+            px-4 py-3
+            rounded-xl
+            border
+            shadow-xl
+            text-xs sm:text-sm
+            font-medium
+            transition-all duration-300
+            ${feedback.type === "success"
+                            ? "bg-slate-900 text-emerald-300 border-slate-700 shadow-slate-900/30"
+                            : "bg-red-900 text-white border-red-700 shadow-red-900/30"
+                        }
+          `}
+                >
+                    {feedback.type === "success" ? (
+                        <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                    ) : (
+                        <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                    )}
+
+                    <span className="max-w-md">{feedback.message}</span>
+
+                    <button
+                        onClick={() => setFeedback(null)}
+                        className="p-1 hover:bg-white/10 rounded text-slate-300 hover:text-white transition-colors ml-2"
+                        title="Fermer"
+                    >
+                        <X className="w-3.5 h-3.5" />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

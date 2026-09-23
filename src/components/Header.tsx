@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo-removebg-preview.webp";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 interface HeaderProps {
   noSpacer?: boolean;
@@ -13,8 +14,6 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
   const location = useLocation();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-  const langMenuRef = useRef<HTMLDivElement>(null);
 
   const isHome =
     location.pathname === "/" || location.pathname === `/${i18n.language}`;
@@ -23,14 +22,6 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
   const isRTL = lang === "ar";
 
   const isActiveLink = (path: string) => location.pathname === path;
-
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-    localStorage.setItem("appLanguage", lng);
-    document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
-    document.documentElement.lang = lng;
-    setIsLangMenuOpen(false);
-  };
 
   const scrollTo = (id: string) => {
     setIsMobileMenuOpen(false);
@@ -41,20 +32,6 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (
-        langMenuRef.current &&
-        !langMenuRef.current.contains(e.target as Node)
-      ) {
-        setIsLangMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   // Lock scroll when mobile menu is open
   useEffect(() => {
@@ -82,54 +59,6 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
         : "text-[#4B5563] border-transparent hover:text-[#1A73E8] hover:bg-[#F9FAFB]"
     }`;
 
-  const LangDropdown = () => (
-    <div className="relative" ref={langMenuRef}>
-      <button
-        onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-        className="flex items-center gap-1.5 py-1.5 px-3 border border-[#DADCE0] rounded-full text-xs font-medium text-[#5F6368] hover:bg-[#F8F9FA] transition-colors"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-          />
-        </svg>
-        <span>{i18n.language.toUpperCase()}</span>
-        <ChevronDown
-          size={13}
-          className={`text-[#5F6368] transition-transform ${
-            isLangMenuOpen ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-      {isLangMenuOpen && (
-        <div className="absolute right-0 mt-2 w-32 bg-white border border-[#DADCE0] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.05)] py-1 z-50">
-          <button
-            onClick={() => changeLanguage("fr")}
-            className={`block w-full text-left px-4 py-2 text-xs font-medium transition-colors ${
-              i18n.language === "fr"
-                ? "text-[#1A73E8] bg-[#E8F0FE]"
-                : "text-[#414754] hover:bg-[#F8F9FA]"
-            }`}
-          >
-            🇫🇷 Français
-          </button>
-          <button
-            onClick={() => changeLanguage("ar")}
-            className={`block w-full text-left px-4 py-2 text-xs font-medium transition-colors ${
-              i18n.language === "ar"
-                ? "text-[#1A73E8] bg-[#E8F0FE]"
-                : "text-[#414754] hover:bg-[#F8F9FA]"
-            }`}
-          >
-            🇲🇦 العربية
-          </button>
-        </div>
-      )}
-    </div>
-  );
 
   return (
     <>
@@ -215,7 +144,7 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
 
             {/* Right section Desktop */}
             <div className="hidden lg:flex items-center gap-3">
-              <LangDropdown />
+              <LanguageSwitcher />
 
               <Link
                 to="/login"
@@ -239,14 +168,17 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
               </Link>
             </div>
 
-            {/* Burger Mobile */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-[#414754] hover:text-[#1A73E8] transition-colors rounded-md"
-              aria-label="Menu"
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            {/* Mobile Actions */}
+            <div className="lg:hidden flex items-center gap-2">
+              <LanguageSwitcher />
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 text-[#414754] hover:text-[#1A73E8] transition-colors rounded-md"
+                aria-label="Menu"
+              >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -331,28 +263,10 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
                 <span className="text-xs font-medium text-[#727785] mb-2 block uppercase tracking-wider">
                   {t("header.language", "Langue")}
                 </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => changeLanguage("fr")}
-                    className={`flex-1 py-2 px-3 rounded text-xs font-medium border text-center transition-colors ${
-                      i18n.language === "fr"
-                        ? "border-[#1A73E8] bg-[#E8F0FE] text-[#1A73E8]"
-                        : "border-[#DADCE0] text-[#414754] bg-white"
-                    }`}
-                  >
-                    🇫🇷 Français
-                  </button>
-                  <button
-                    onClick={() => changeLanguage("ar")}
-                    className={`flex-1 py-2 px-3 rounded text-xs font-medium border text-center transition-colors ${
-                      i18n.language === "ar"
-                        ? "border-[#1A73E8] bg-[#E8F0FE] text-[#1A73E8]"
-                        : "border-[#DADCE0] text-[#414754] bg-white"
-                    }`}
-                  >
-                    🇲🇦 العربية
-                  </button>
-                </div>
+                <LanguageSwitcher
+                  variant="inline"
+                  onLanguageChange={() => setIsMobileMenuOpen(false)}
+                />
               </div>
 
               {/* CTA */}

@@ -26,13 +26,9 @@ api.interceptors.response.use(
       // Émettre un événement personnalisé pour informer le Context
       window.dispatchEvent(new CustomEvent("auth:unauthorized"));
 
-      // Ne rediriger automatiquement que si l'utilisateur n'est pas déjà sur une page d'authentification
-      if (!isAuthPage) {
-        if (isAdminPath) {
-          window.location.href = `${ADMIN_FRONT_PREFIX}/login`;
-        } else {
-          window.location.href = "/login";
-        }
+      // Ne rediriger automatiquement vers le login admin que sur les routes admin protégées
+      if (!isAuthPage && isAdminPath) {
+        window.location.href = `${ADMIN_FRONT_PREFIX}/login`;
       }
     }
     return Promise.reject(error);

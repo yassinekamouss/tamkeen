@@ -10,3 +10,4 @@ export { default as ProcessSection } from "./ProcessSection";
 export { default as FaqSection } from "./FaqSection";
 export { default as ProjectTypesSection } from "./ProjectTypesSection";
 export { default as DocumentSecuritySection } from "./DocumentSecuritySection";
+export { default as LanguageSwitcher, LANGUAGES } from "./LanguageSwitcher";
