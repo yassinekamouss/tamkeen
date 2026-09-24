@@ -54,9 +54,12 @@ export interface RequestMessageItem {
 export interface ConsultantRequestItem {
   id: number;
   dossier_id: number;
+  document_type_id?: number | null;
+  documentType?: { id: number; name: string } | null;
   creator_type: "CLIENT" | "CONSULTANT";
   message: string;
   input_type: "FILE" | "TEXT";
+  importance?: "OBLIGATOIRE" | "FACULTATIF";
   status: "PENDING" | "FULFILLED" | "RESOLVED";
   response_data?: any;
   messages: RequestMessageItem[];
@@ -83,4 +86,6 @@ export interface DossierDetail {
 export interface CreateConsultantRequestPayload {
   message: string;
   input_type: "FILE" | "TEXT";
+  importance?: "OBLIGATOIRE" | "FACULTATIF";
+  document_type_id?: number;
 }

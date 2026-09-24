@@ -14,7 +14,7 @@ import {
   Download,
   CheckCircle2,
   AlertTriangle,
-  Sparkles,
+  FileSpreadsheet,
   UserCheck,
   RefreshCw,
   Clock,
@@ -130,7 +130,7 @@ const ClientDashboard: React.FC = () => {
         return (
           <span className={`${base} bg-[#E8F0FE] text-[#005BBF]`}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#1A73E8] animate-ping" />
-            {t("clientDashboard.badges.AI_DRAFTING", "Analyse & rédaction IA")}
+            {t("clientDashboard.badges.AI_DRAFTING", "Instruction & Structuration")}
           </span>
         );
       case "CONSULTANT_REVIEW":
@@ -271,8 +271,8 @@ const ClientDashboard: React.FC = () => {
                 </span>
                 <span className="text-xs px-2.5 py-1 rounded bg-[#E8F0FE] text-[#005BBF] font-semibold border border-[#C1C6D6]">
                   {activeDossier.plan_type === "PLAN_1"
-                    ? t("clientDashboard.plan1Label", "Plan 1 : Génération IA")
-                    : t("clientDashboard.plan2Label", "Plan 2 : Accompagnement Consultant")}
+                    ? t("clientDashboard.plan1Label", "Plan 1 : Formule Directe")
+                    : t("clientDashboard.plan2Label", "Plan 2 : Accompagnement Expert Dédié")}
                 </span>
               </div>
               <div>{getStatusBadge(currentStatus)}</div>
@@ -332,42 +332,42 @@ const ClientDashboard: React.FC = () => {
                 <div className="relative w-20 h-20 mx-auto">
                   <div className="absolute inset-0 rounded-full bg-blue-400/20 animate-ping"></div>
                   <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <Sparkles className="w-10 h-10 animate-pulse" />
+                    <FileSpreadsheet className="w-10 h-10 animate-pulse" />
                   </div>
                 </div>
 
                 <div className="max-w-xl mx-auto space-y-3">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
                     <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
-                    {t("clientDashboard.aiDrafting.badge", "Traitement algorithmique & rédactionnel")}
+                    {t("clientDashboard.aiDrafting.badge", "Traitement & Modélisation Financière")}
                   </div>
                   <h2 className={`${font.display} text-2xl md:text-3xl font-bold text-gray-900`}>
-                    {t("clientDashboard.aiDrafting.title", "Analyse des pièces justificatives et rédaction en cours...")}
+                    {t("clientDashboard.aiDrafting.title", "Instruction technique et financière de votre dossier...")}
                   </h2>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    {t("clientDashboard.aiDrafting.description", "L'agent IA de Masubvention extrait les données financières, valide l'assiette éligible et rédige l'intégralité du rapport d'investissement certifié pour la Charte TPME.")}
+                    {t("clientDashboard.aiDrafting.description", "Nos équipes et outils d'analyse instruisent vos pièces justificatives, vérifient l'assiette éligible et modélisent l'ensemble des projections financières pour la Charte TPME.")}
                   </p>
                 </div>
 
-                {/* Étapes d'exécution IA */}
+                {/* Étapes d'instruction du dossier */}
                 <div className="max-w-lg mx-auto bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4 text-left rtl:text-right shadow-xs">
                   <div className="flex items-center gap-3 text-sm font-semibold text-gray-800">
                     <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
-                    <span>{t("clientDashboard.aiDrafting.step1", "1. Extraction et certification des pièces (Fiscale, RC, CNSS)")}</span>
+                    <span>{t("clientDashboard.aiDrafting.step1", "1. Contrôle de conformité et audit des pièces (Liasse fiscale, RC, CNSS)")}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm font-bold text-blue-700">
                     <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                     </div>
-                    <span>{t("clientDashboard.aiDrafting.step2", "2. Calcul du montant optimal de prime & projection financière")}</span>
+                    <span>{t("clientDashboard.aiDrafting.step2", "2. Modélisation financière & optimisation des primes d'investissement")}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm font-medium text-gray-500">
                     <div className="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center shrink-0 text-xs font-bold">
                       3
                     </div>
-                    <span>{t("clientDashboard.aiDrafting.step3", "3. Transfert du dossier finalisé pour revue d'expertise")}</span>
+                    <span>{t("clientDashboard.aiDrafting.step3", "3. Transmission du dossier à votre consultant senior dédié")}</span>
                   </div>
                 </div>
 
@@ -382,7 +382,7 @@ const ClientDashboard: React.FC = () => {
                   </button>
                 </div>
                 <p className="text-xs text-gray-400">
-                  {t("clientDashboard.aiDrafting.note", "La génération dure généralement 1 à 3 minutes. Vous serez également notifié par email.")}
+                  {t("clientDashboard.aiDrafting.note", "Cette phase d'instruction préliminaire est en cours de finalisation. Vous serez notifié dès la prise en main par votre consultant.")}
                 </p>
               </div>
             ) : currentStatus === "CONSULTANT_REVIEW" ? (
@@ -400,7 +400,7 @@ const ClientDashboard: React.FC = () => {
                     {t("clientDashboard.consultantReview.title", "Dossier pris en charge par nos experts - Volet 2")}
                   </h2>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    {t("clientDashboard.consultantReview.description", "Votre rapport préliminaire a été structuré avec succès par l'IA. Un consultant senior est actuellement mobilisé pour auditer vos pièces, affiner vos ratios bancaires et consolider votre argumentaire de subvention.")}
+                    {t("clientDashboard.consultantReview.description", "Votre dossier a été instruit avec succès. Un consultant senior est actuellement mobilisé pour auditer vos pièces, affiner vos ratios bancaires et consolider votre argumentaire de subvention.")}
                   </p>
                 </div>
 

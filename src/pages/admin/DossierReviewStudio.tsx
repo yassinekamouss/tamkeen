@@ -21,6 +21,7 @@ import {
     X,
 } from "lucide-react";
 import { adminDossierService } from "../../services/adminDossierService";
+import type { CreateConsultantRequestPayload } from "../../types/adminDossier";
 import { ADMIN_FRONT_PREFIX } from "../../api/axios";
 import api, { ADMIN_API_PREFIX } from "../../api/axios";
 import { DossierDataFormEditor } from "../../components/admin/DossierDataFormEditor";
@@ -41,6 +42,7 @@ export const DossierReviewStudio: React.FC = () => {
 
     // Formulaire de nouvelle demande (Plan 2)
     const [requestMessage, setRequestMessage] = useState<string>("");
+    const [requestDocumentTypeId, setRequestDocumentTypeId] = useState<number | null>(null);
     const [requestInputType, setRequestInputType] = useState<"FILE" | "TEXT">("FILE");
     const [requestImportance, setRequestImportance] = useState<"OBLIGATOIRE" | "FACULTATIF">("OBLIGATOIRE");
     const [requestError, setRequestError] = useState<string | null>(null);
@@ -161,10 +163,11 @@ export const DossierReviewStudio: React.FC = () => {
 
     // Mutation : Créer une demande complémentaire
     const createRequestMutation = useMutation({
-        mutationFn: (payload: { message: string; input_type: "FILE" | "TEXT"; importance?: string }) =>
+        mutationFn: (payload: CreateConsultantRequestPayload) =>
             adminDossierService.createConsultantRequest(dossierId, payload),
         onSuccess: () => {
             setRequestMessage("");
+            setRequestDocumentTypeId(null);
             setRequestError(null);
             setFeedback({ type: "success", message: "Nouvelle demande ajoutée au dossier." });
             queryClient.invalidateQueries({ queryKey: ["adminDossier", dossierId] });
@@ -236,23 +239,6 @@ export const DossierReviewStudio: React.FC = () => {
         },
     });
 
-    // Mutation : Générer PDF
-    const generatePdfMutation = useMutation({
-        mutationFn: () => adminDossierService.generatePdf(dossierId),
-        onSuccess: () => {
-            setFeedback({
-                type: "success",
-                message: "Rapport PDF généré avec succès ! Le dossier est maintenant Livré.",
-            });
-            queryClient.invalidateQueries({ queryKey: ["adminDossier", dossierId] });
-        },
-        onError: (err: any) => {
-            setFeedback({
-                type: "error",
-                message: err.response?.data?.message || "Erreur lors de la génération du PDF.",
-            });
-        },
-    });
 
     // Mutation : Recalculer les projections financières à la volée
     const recalculateMutation = useMutation({
@@ -307,13 +293,14 @@ export const DossierReviewStudio: React.FC = () => {
     const handleCreateRequest = (e: React.FormEvent) => {
         e.preventDefault();
         if (!requestMessage.trim()) {
-            setRequestError("Veuillez saisir une description pour la demande.");
+            setRequestError("Veuillez sélectionner un type de document ou saisir un message.");
             return;
         }
         createRequestMutation.mutate({
             message: requestMessage.trim(),
             input_type: requestInputType,
             importance: requestInputType === "FILE" ? requestImportance : undefined,
+            document_type_id: requestInputType === "FILE" ? (requestDocumentTypeId || undefined) : undefined,
         });
     };
 
@@ -637,7 +624,7 @@ export const DossierReviewStudio: React.FC = () => {
                                 }`}
                         >
                             <Code className="w-4 h-4" />
-                            <span>Données IA (JSON)</span>
+                            <span>Données du projet (JSON)</span>
                         </button>
 
                         <button
@@ -694,7 +681,20 @@ export const DossierReviewStudio: React.FC = () => {
                                 </h3>
 
                                 <div className="space-y-2">
-                                    {dossier.requirements?.map((req) => (
+                                    {dossier.requirements
+                                        ?.filter((req) => {
+                                            const l = (req.label || "").toLowerCase();
+                                            return !(
+                                                l.includes("modèle j") ||
+                                                l.includes("modele j") ||
+                                                l.includes("synthèse") ||
+                                                l.includes("synthese") ||
+                                                l.includes("devis d'investissement") ||
+                                                l.includes("devis dinvestissement") ||
+                                                l.includes("rgularit")
+                                            );
+                                        })
+                                        ?.map((req) => (
                                         <div
                                             key={req.id}
                                             className="p-3 bg-white border border-gray-200 shadow-sm rounded-lg flex items-center justify-between"
@@ -713,8 +713,12 @@ export const DossierReviewStudio: React.FC = () => {
                                                 {req.uploadedDocument && (
                                                     <p className="text-[11px] text-gray-500 mt-1 flex items-center gap-1">
                                                         <span>{req.uploadedDocument.original_name}</span>
-                                                        <span>•</span>
-                                                        <span>{(req.uploadedDocument.file_size / 1024).toFixed(0)} KB</span>
+                                                        {Boolean(req.uploadedDocument.file_size) && (
+                                                            <>
+                                                                <span>•</span>
+                                                                <span>{(Number(req.uploadedDocument.file_size) / 1024).toFixed(0)} KB</span>
+                                                            </>
+                                                        )}
                                                     </p>
                                                 )}
                                             </div>
@@ -789,7 +793,7 @@ export const DossierReviewStudio: React.FC = () => {
                                                                     {req.status === "PENDING" ? "En attente" : "Fourni"}
                                                                 </span>
                                                             </div>
-                                                            <h4 className="text-xs font-bold text-gray-900">{req.message}</h4>
+                                                            <h4 className="text-xs font-bold text-gray-900">{req.documentType?.name || req.message}</h4>
                                                             <p className="text-[10px] text-gray-500 mt-1">Demandé le {new Date(req.createdAt).toLocaleDateString()}</p>
                                                         </div>
                                                         <div>
@@ -921,13 +925,18 @@ export const DossierReviewStudio: React.FC = () => {
                                                                         Document demandé
                                                                     </label>
                                                                     <select
-                                                                        value={requestMessage}
-                                                                        onChange={(e) => setRequestMessage(e.target.value)}
+                                                                        value={requestDocumentTypeId || ""}
+                                                                        onChange={(e) => {
+                                                                            const val = e.target.value ? Number(e.target.value) : null;
+                                                                            setRequestDocumentTypeId(val);
+                                                                            const selected = documentTypes.find((t: any) => t.id === val);
+                                                                            setRequestMessage(selected ? selected.name : "");
+                                                                        }}
                                                                         className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-900 focus:ring-1 focus:ring-slate-600 outline-none mb-3"
                                                                     >
                                                                         <option value="">Sélectionnez un document...</option>
-                                                                        {documentTypes.map((type: any) => (
-                                                                            <option key={type.id} value={type.name}>{type.name}</option>
+                                                                        {documentTypes.filter((type: any) => type.is_active !== false).map((type: any) => (
+                                                                            <option key={type.id} value={type.id}>{type.name}</option>
                                                                         ))}
                                                                     </select>
 

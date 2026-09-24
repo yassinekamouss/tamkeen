@@ -328,7 +328,7 @@ export const Step5SummaryUpload: React.FC<Step5SummaryUploadProps> = ({
             <p className="text-xs text-gray-500 mt-0.5">
               {t(
                 "stepper.step5.requiredDocsDesc",
-                "Ces documents légaux sont indispensables pour la certification de votre dossier par l'IA et le consultant."
+                "Ces documents légaux sont indispensables pour l'instruction et la certification de votre dossier par nos experts."
               )}
             </p>
           </div>

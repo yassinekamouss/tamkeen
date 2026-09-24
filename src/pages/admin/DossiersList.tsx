@@ -13,7 +13,7 @@ import {
   Calendar,
   Clock,
   CheckCircle2,
-  Sparkles,
+  FileSpreadsheet,
   Layers,
   UserCheck,
   ExternalLink,
@@ -48,7 +48,7 @@ const DossiersList: React.FC = () => {
       case "AI_DRAFTING":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
-            <Sparkles className="w-4 h-4" /> Rédaction IA
+            <FileSpreadsheet className="w-4 h-4" /> Instruction en cours
           </span>
         );
       case "CONSULTANT_REVIEW":
@@ -135,7 +135,7 @@ const DossiersList: React.FC = () => {
           <option value="">Tous les statuts</option>
           <option value="PLAN_SELECTION">Sélection du plan (PLAN_SELECTION)</option>
           <option value="AWAITING_INPUTS">En attente des données (AWAITING_INPUTS)</option>
-          <option value="AI_DRAFTING">Rédaction IA (AI_DRAFTING)</option>
+          <option value="AI_DRAFTING">Instruction en cours (AI_DRAFTING)</option>
           <option value="CONSULTANT_REVIEW">Révision Consultant (CONSULTANT_REVIEW)</option>
           <option value="AWAITING_CLIENT_INFO">Infos client requises (AWAITING_CLIENT_INFO)</option>
           <option value="DELIVERED">Livré (DELIVERED)</option>

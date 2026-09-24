@@ -284,7 +284,7 @@ export const DossierDataFormEditor: React.FC<DossierDataFormEditorProps> = ({
                 {viewMode === "CODE" && (
                     <div className="h-full flex flex-col space-y-2">
                         <div className="flex items-center justify-between text-xs text-gray-500 font-medium">
-                            <span>JSON Structuré extrait par l'IA (LangGraph / DeepSeek)</span>
+                            <span>Données du projet structurées (JSON)</span>
                             <span className="font-mono text-[10px]">Syntaxe UTF-8 JSON</span>
                         </div>
                         <textarea

@@ -12,7 +12,6 @@ import {
 } from "./useStepperMath";
 import { dossierService } from "../../../services/dossierService";
 import {
-  Check,
   ChevronLeft,
   ChevronRight,
   Send,
@@ -20,6 +19,7 @@ import {
   AlertTriangle,
   RotateCcw,
 } from "lucide-react";
+import { StepperHeader } from "../../common/StepperHeader";
 
 interface ClientStepperProps {
   dossierId: number;
@@ -267,56 +267,18 @@ export const ClientStepper: React.FC<ClientStepperProps> = ({
         </div>
 
         {/* Stepper Wizard Bar */}
-        <div className="relative">
-          <div className="hidden sm:block absolute top-1/2 left-0 right-0 h-1 bg-gray-100 -translate-y-1/2 z-0"></div>
-          <div
-            className={`hidden sm:block absolute top-1/2 h-1 bg-blue-600 -translate-y-1/2 z-0 transition-all duration-300 ${
-              isRTL ? "right-0" : "left-0"
-            }`}
-            style={{ width: `${((currentStep - 1) / 4) * 100}%` }}
-          ></div>
-
-          <div className="flex items-center justify-between relative z-10">
-            {steps.map((step) => {
-              const isCompleted = currentStep > step.number;
-              const isCurrent = currentStep === step.number;
-
-              return (
-                <div
-                  key={step.number}
-                  className="flex flex-col items-center cursor-pointer"
-                  onClick={() => {
-                    if (step.number < currentStep || validateStep(currentStep)) {
-                      setCurrentStep(step.number);
-                    }
-                  }}
-                >
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 ${
-                      isCompleted
-                        ? "bg-emerald-600 text-white shadow-sm"
-                        : isCurrent
-                        ? "bg-blue-600 text-white ring-4 ring-blue-100 shadow-md"
-                        : "bg-white text-gray-400 border-2 border-gray-300"
-                    }`}
-                  >
-                    {isCompleted ? <Check className="w-4 h-4" /> : step.number}
-                  </div>
-                  <span
-                    className={`text-[11px] sm:text-xs font-bold mt-2 hidden sm:block ${
-                      isCurrent
-                        ? "text-blue-600"
-                        : isCompleted
-                        ? "text-gray-700"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    {step.title}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+        <div className="pt-2 sm:pt-3">
+          <StepperHeader
+            steps={steps.map((s) => ({ number: s.number, label: s.title }))}
+            currentStep={currentStep}
+            onStepClick={(stepNumber) => {
+              if (stepNumber < currentStep || validateStep(currentStep)) {
+                setCurrentStep(stepNumber);
+              }
+            }}
+            canClickStep={(stepNumber) => stepNumber <= currentStep}
+            showMobileBadge={false}
+          />
         </div>
       </div>
 

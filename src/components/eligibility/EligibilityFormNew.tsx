@@ -19,14 +19,14 @@ import Step2Fields from "./Step2Fields";
 import Step3Fields from "./Step3Fields";
 import { useEligibilityPhone } from "./useEligibilityPhone";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
+import { StepperHeader } from "../common/StepperHeader";
 
 const EligibilityForm: React.FC<EligibilityFormProps> = ({
   onNavigateBack,
   selectedProfile,
   onSelectProfile,
 }) => {
-  const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === "ar";
+  const { t } = useTranslation();
   const { client } = useClientAuth();
 
   // État du formulaire
@@ -473,55 +473,15 @@ const EligibilityForm: React.FC<EligibilityFormProps> = ({
                 )}
 
                 {/* Stepper Progress Bar */}
-                <div className="mb-8 sm:mb-12 border-b border-[#DADCE0] pb-6 sm:pb-10">
-                  {/* Mobile compact step counter badge */}
-                  <div className="sm:hidden mb-4 text-center">
-                    <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F8F9FA] text-[#1A73E8] border border-[#DADCE0] text-[11px] font-bold uppercase tracking-wider rounded-full" style={{ fontFamily: "JetBrains Mono, monospace" }}>
-                      <span>{t(`eligibility.steps.step${step}`)}</span>
-                      <span className="text-[#DADCE0]">•</span>
-                      <span>Étape {step} / 3</span>
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between max-w-xl mx-auto relative px-2">
-                    <div className="absolute left-6 right-6 top-5 h-[1px] bg-[#DADCE0] -translate-y-1/2 z-0" />
-                    <div
-                      className="absolute left-6 top-5 h-[2px] bg-[#1A73E8] -translate-y-1/2 z-0 transition-all duration-500"
-                      style={{
-                        width: step === 1 ? "0%" : step === 2 ? "50%" : "100%",
-                        right: isRTL ? "auto" : undefined,
-                      }}
-                    />
-
-                    {[1, 2, 3].map((s) => (
-                      <div key={s} className="flex flex-col items-center relative z-10">
-                        <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-[13px] transition-all duration-300 ${step >= s
-                              ? "bg-[#1A73E8] text-white border-2 border-[#1A73E8]"
-                              : "bg-white border-2 border-[#DADCE0] text-[#5F6368]"
-                            }`}
-                          style={{ fontFamily: "JetBrains Mono, monospace" }}
-                        >
-                          {step > s ? (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                            </svg>
-                          ) : (
-                            s
-                          )}
-                        </div>
-                        <span
-                          className={`text-[12px] sm:text-[13px] mt-3 font-bold tracking-wider uppercase transition-colors hidden sm:block ${step === s ? "text-[#1A73E8]" : "text-[#5F6368]"}`}
-                          style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-                        >
-                          {t(`eligibility.steps.step${s}`)}
-                        </span>
-                        <span className="text-[11px] text-[#727785] mt-1 hidden sm:block">
-                          {t(`eligibility.steps.step${s}Sub`)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="mb-8 sm:mb-12 border-b border-[#DADCE0] pb-6 sm:pb-10 max-w-xl mx-auto">
+                  <StepperHeader
+                    steps={[1, 2, 3].map((s) => ({
+                      number: s,
+                      label: t(`eligibility.steps.step${s}`),
+                      sublabel: t(`eligibility.steps.step${s}Sub`),
+                    }))}
+                    currentStep={step}
+                  />
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
