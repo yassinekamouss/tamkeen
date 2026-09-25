@@ -258,17 +258,6 @@ const Header: React.FC<HeaderProps> = ({ noSpacer = false }) => {
                 </Link>
               )}
 
-              {/* Lang */}
-              <div className="pt-4 mt-3 border-t border-[#DADCE0]">
-                <span className="text-xs font-medium text-[#727785] mb-2 block uppercase tracking-wider">
-                  {t("header.language", "Langue")}
-                </span>
-                <LanguageSwitcher
-                  variant="inline"
-                  onLanguageChange={() => setIsMobileMenuOpen(false)}
-                />
-              </div>
-
               {/* CTA */}
               <div className="pt-4 mt-2 border-t border-[#DADCE0]">
                 <Link

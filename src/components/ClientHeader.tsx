@@ -248,17 +248,6 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                 {t("clientHeader.profile")}
               </Link>
 
-              {/* Lang */}
-              <div className="pt-4 mt-3 border-t border-[#DADCE0]">
-                <span className="text-xs font-medium text-[#727785] mb-2 block uppercase tracking-wider">
-                  {t("clientHeader.language")}
-                </span>
-                <LanguageSwitcher
-                  variant="inline"
-                  onLanguageChange={() => setIsMobileMenuOpen(false)}
-                />
-              </div>
-
               {/* Logout */}
               <div className="pt-4 mt-2 border-t border-[#DADCE0]">
                 <button

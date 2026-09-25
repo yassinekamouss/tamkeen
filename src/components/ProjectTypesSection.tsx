@@ -49,25 +49,91 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
       dir={isRTL ? "rtl" : "ltr"}
       className="w-full bg-white border-b border-[#DADCE0]"
     >
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-12 sm:py-20 lg:py-24">
 
         {/* ── Header ── */}
-        <div className="mb-14">
-          <p className="text-[11px] font-bold tracking-[0.15em] text-[#1A73E8] uppercase mb-4" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
+        <div className="mb-10 sm:mb-14">
+          <p className="text-[11px] font-bold tracking-[0.15em] text-[#1A73E8] uppercase mb-3 sm:mb-4">
             {t("project_types.badge")}
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 sm:gap-14">
-            <h2 className="sm:col-span-7 text-[28px] sm:text-[32px] font-bold text-[#191C1D] leading-tight tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-14">
+            <h2 className="sm:col-span-7 text-[24px] sm:text-[32px] font-bold text-[#191C1D] leading-tight tracking-tight">
               {t("project_types.title")}
             </h2>
-            <p className="sm:col-span-5 sm:pt-1 text-[15px] leading-relaxed text-[#5F6368]" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
+            <p className="sm:col-span-5 sm:pt-1 text-[14px] sm:text-[15px] leading-relaxed text-[#5F6368]">
               {t("project_types.subtitle")}
             </p>
           </div>
         </div>
 
-        {/* ── Rows ── */}
-        <div className="divide-y divide-[#DADCE0]">
+        {/* ── Mobile Cards Layout (< sm) ── */}
+        <div className="sm:hidden space-y-4">
+          {projectTypes.map((item, idx) => (
+            <div
+              key={idx}
+              className="bg-white border border-[#DADCE0] rounded-2xl p-5 shadow-xs space-y-3.5"
+            >
+              {/* Card Top: Code & Range */}
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold tracking-widest text-[#727785] bg-[#F1F3F4] px-2.5 py-1 rounded-md font-mono">
+                  {item.code}
+                </span>
+                <span className="text-[12.5px] font-bold text-[#1A73E8] bg-[#E8F0FE] px-2.5 py-0.5 rounded-full">
+                  {item.range}
+                </span>
+              </div>
+
+              {/* Title & Phase */}
+              <div>
+                <span className="block text-[10.5px] font-bold tracking-wider text-[#727785] uppercase mb-1">
+                  {item.label}
+                </span>
+                <h3 className="text-[17px] font-bold text-[#191C1D] leading-snug">
+                  {item.title}
+                </h3>
+              </div>
+
+              {/* Description */}
+              <p className="text-[13px] leading-relaxed text-[#5F6368]">
+                {item.desc}
+              </p>
+
+              {/* Bullets Chips */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {item.items.map((el, iIdx) => (
+                  <span
+                    key={iIdx}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#F8F9FA] text-[11.5px] text-[#475569] font-medium"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1A73E8]/60 shrink-0" />
+                    {el}
+                  </span>
+                ))}
+              </div>
+
+              {/* Mobile CTA Button */}
+              <button
+                type="button"
+                onClick={onNavigateToForm}
+                className="w-full mt-2 py-2.5 px-4 rounded-xl bg-[#F0F4F9] active:bg-[#E8F0FE] text-[#1A73E8] font-bold text-xs flex items-center justify-between transition-colors active:scale-[0.99]"
+              >
+                <span>{isRTL ? "تحقق من أهليتك" : "Vérifier mon éligibilité"}</span>
+                <svg
+                  className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Desktop Rows (>= sm) ── */}
+        <div className="hidden sm:block divide-y divide-[#DADCE0]">
           {projectTypes.map((item, idx) => (
             <div
               key={idx}
@@ -75,12 +141,12 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
             >
               {/* Col 1 — Référence & enveloppe */}
               <div className="sm:col-span-2 flex sm:flex-col sm:items-start items-baseline gap-x-4 gap-y-1.5">
-                <span className="text-[12px] font-medium text-[#727785] tracking-widest" style={{ fontFamily: "JetBrains Mono, monospace" }}>
+                <span className="text-[12px] font-medium text-[#727785] tracking-widest font-mono">
                   {item.code}
                 </span>
                 <span
                   className="text-[16px] font-bold text-[#191C1D] tracking-tight"
-                  style={{ fontFamily: "Roboto Flex, sans-serif", fontFeatureSettings: '"tnum"' }}
+                  style={{ fontFeatureSettings: '"tnum"' }}
                 >
                   {item.range}
                 </span>
@@ -88,13 +154,13 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
 
               {/* Col 2 — Contenu principal */}
               <div className="sm:col-span-7">
-                <span className="block text-[11px] font-bold tracking-wider text-[#727785] uppercase mb-2" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
+                <span className="block text-[11px] font-bold tracking-wider text-[#727785] uppercase mb-2">
                   {item.label}
                 </span>
-                <h3 className="text-[18px] sm:text-[20px] font-bold text-[#191C1D] leading-snug mb-3 tracking-tight" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+                <h3 className="text-[18px] sm:text-[20px] font-bold text-[#191C1D] leading-snug mb-3 tracking-tight">
                   {item.title}
                 </h3>
-                <p className="text-[14px] leading-relaxed text-[#5F6368] max-w-[520px] mb-5" style={{ fontFamily: "Roboto Flex, sans-serif" }}>
+                <p className="text-[14px] leading-relaxed text-[#5F6368] max-w-[520px] mb-5">
                   {item.desc}
                 </p>
                 <ul className="flex flex-wrap gap-x-6 gap-y-2">
@@ -102,7 +168,6 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
                     <li
                       key={iIdx}
                       className="flex items-center gap-2 text-[13px] text-[#5F6368]"
-                      style={{ fontFamily: "Roboto Flex, sans-serif" }}
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-[#DADCE0] shrink-0" />
                       {el}
@@ -116,7 +181,6 @@ const ProjectTypesSection: React.FC<ProjectTypesSectionProps> = ({ onNavigateToF
                 <button
                   onClick={onNavigateToForm}
                   className="group/btn inline-flex items-center gap-2 text-[13px] font-bold text-[#1A73E8] hover:text-[#174EA6] transition-colors cursor-pointer"
-                  style={{ fontFamily: "Roboto Flex, sans-serif" }}
                 >
                   <span className="border-b border-transparent group-hover/btn:border-[#174EA6] pb-px transition-colors duration-200">
                     {isRTL ? "تحقق من أهليتك" : "Vérifier mon éligibilité"}
