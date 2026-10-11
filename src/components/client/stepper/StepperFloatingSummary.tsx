@@ -34,7 +34,7 @@ export const StepperFloatingSummary: React.FC<StepperFloatingSummaryProps> = ({
                   {t("stepper.floatingSummary.badge", "Prime Estimée (Charte TPME)")}
                 </span>
                 <span className="inline-flex items-center px-2 py-0.2 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                  +{formatPercent(math.tauxGlobal)}
+                  {formatPercent(math.tauxGlobal)}
                 </span>
               </div>
               <div className="text-sm sm:text-base font-black font-mono text-gray-900">
@@ -71,7 +71,7 @@ export const StepperFloatingSummary: React.FC<StepperFloatingSummaryProps> = ({
                 {t("stepper.floatingSummary.territory", "Territoire")}
               </span>
               <span className="font-bold text-gray-800 font-mono">
-                {math.zone} (+{formatPercent(math.tauxTerritoriale)})
+                {math.zone} ({formatPercent(math.tauxTerritoriale)})
               </span>
             </div>
             <div className="p-2 bg-white rounded-lg border border-gray-200">

@@ -876,6 +876,24 @@ export const BRANCHES_ACTIVITE: BrancheInfo[] = [
     "sectorCode": "ARTS",
     "label": "Activités récréatives et de loisirs",
     "isPrioritaire": true
+  },
+  {
+    "id": "SANTE-1",
+    "sectorCode": "SANTE",
+    "label": "Santé humaine et soins médicaux",
+    "isPrioritaire": true
+  },
+  {
+    "id": "SCIENT-1",
+    "sectorCode": "SCIENT",
+    "label": "Activités spécialisées, scientifiques et techniques",
+    "isPrioritaire": false
+  },
+  {
+    "id": "AUTRES-1",
+    "sectorCode": "AUTRES",
+    "label": "Autres activités et services aux entreprises",
+    "isPrioritaire": false
   }
 ];
 

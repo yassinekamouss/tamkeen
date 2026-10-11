@@ -55,6 +55,7 @@ export interface TestElegibiliteData {
   anneeCreation?: string;
   chiffreAffaires?: Record<string, any>;
   montantInvestissement?: string;
+  numberOfEmployees?: string;
   programmesEligibles?: string[];
   createdAt?: string;
 }

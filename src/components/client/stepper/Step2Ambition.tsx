@@ -94,7 +94,14 @@ export const Step2Ambition: React.FC<Step2AmbitionProps> = ({
           </label>
           <select
             value={values.secteur_activite || ""}
-            onChange={(e) => onChange({ secteur_activite: e.target.value, branche_activite: "" })}
+            onChange={(e) => {
+              const newSector = e.target.value;
+              const branches = BRANCHES_ACTIVITE.filter((b) => b.sectorCode === newSector);
+              onChange({
+                secteur_activite: newSector,
+                branche_activite: branches.length > 0 ? branches[0].id : "",
+              });
+            }}
             className={`w-full px-3.5 py-2.5 bg-white border rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
               errors.secteur_activite ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
             }`}

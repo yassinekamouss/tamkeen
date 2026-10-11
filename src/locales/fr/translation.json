@@ -933,6 +933,7 @@
     "you": "Vous"
   },
   "stepper": {
+    "prefilledNotice": "Vos informations d'éligibilité (Région, Secteur, Emplois, Budget) ont été automatiquement pré-remplies. Vous pouvez les ajuster à votre guise.",
     "steps": {
       "step1": {
         "title": "Implantation",

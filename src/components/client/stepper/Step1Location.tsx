@@ -55,6 +55,19 @@ export const Step1Location: React.FC<Step1LocationProps> = ({
         </p>
       </div>
 
+      {/* Bandeau d'information UX : Données pré-remplies */}
+      <div className="p-3.5 bg-blue-50/80 border border-blue-200 rounded-xl flex items-center justify-between text-xs text-blue-900">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse shrink-0" />
+          <span>
+            {t(
+              "stepper.prefilledNotice",
+              "Vos informations d'éligibilité (Région, Secteur, Emplois, Budget) ont été automatiquement pré-remplies. Vous pouvez les ajuster à votre guise."
+            )}
+          </span>
+        </div>
+      </div>
+
       {/* Région & Province */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>

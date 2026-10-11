@@ -27,44 +27,10 @@ interface TpmeStepperProps {
   onSubmitted: () => Promise<void> | void;
 }
 
-const DEFAULT_FORM_VALUES: StepperFormValues = {
-  // Étape 1
-  region_id: "Casablanca-Settat",
-  province_id: "Casablanca",
-  adresse_projet: "",
-  gps_coordinates: "",
-  regime_foncier: "ACQUISITION",
-  titre_foncier: "",
-
-  // Étape 2
-  nature_projet: "CREATION",
-  secteur_activite: "IND-AUTO",
-  branche_activite: "IND-AUTO-EQ",
-  emplois_directs: 5,
-  is_activite_prioritaire: false,
-  banque_partenaire: "CDM",
-
-  // Étape 3
-  capex_etudes: 150000,
-  capex_foncier: 0,
-  capex_immeuble: 1200000,
-  capex_amenagement: 350000,
-  capex_materiel: 1800000,
-  capex_divers: 100000,
-  mode_financement: "100_FONDS_PROPRES",
-  part_fonds_propres: 100,
-
-  // Étape 4
-  annee_demarrage: 2026,
-  ca_cible_croisiere: 8000000,
-  profil_montee_charge: "STANDARD",
-  ratio_cogs: 25,
-  code_profil_rh: "OPERATEUR",
-  salaire_moyen_brut: 4500,
-  part_export: 0,
-  dette_taux: 6.5,
-  dette_duree: 7,
-};
+import {
+  DEFAULT_FORM_VALUES,
+  buildFormValuesFromTest,
+} from "./tpmeMapper";
 
 export const TpmeStepper: React.FC<TpmeStepperProps> = ({
   dossierId,
@@ -82,34 +48,76 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
     { number: 5, title: t("stepper.steps.step5.title", "Synthèse & Pièces"), short: t("stepper.steps.step5.short", "Certification") },
   ];
 
-  const { dossiers, tests } = useClientAuth();
+  const { dossiers, tests, user } = useClientAuth();
 
-  // Récupération initiale depuis localStorage ou les données d'éligibilité
+  // Trouver le dossier et le test d'éligibilité associé
+  const currentDossier = dossiers.find((d) => d.id === dossierId);
+  const currentTest = currentDossier?.test_id
+    ? tests.find((t) => t.id === currentDossier.test_id)
+    : tests[0] || null;
+
+  // Récupération initiale depuis localStorage ou génération intelligente depuis le test
   const [formValues, setFormValues] = useState<StepperFormValues>(() => {
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
-        return { ...DEFAULT_FORM_VALUES, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        const mappedExpected = buildFormValuesFromTest(currentTest, user);
+        // Si la sauvegarde contient des données cohérentes et non l'ancien fallback erroné
+        const isStaleFallback =
+          parsed.branche_activite === "MANUF-25" ||
+          (parsed.secteur_activite === "MANUF" &&
+            parsed.branche_activite === "MANUF-1" &&
+            currentTest?.secteurTravail === "FabricationMeubles");
+
+        if (parsed.secteur_activite && parsed.secteur_activite !== "IND-AUTO" && !isStaleFallback) {
+          return { ...DEFAULT_FORM_VALUES, ...parsed };
+        }
       }
     } catch (e) {
       console.warn("Erreur lecture localStorage stepper:", e);
     }
 
-    const initial = { ...DEFAULT_FORM_VALUES };
-    const dossier = dossiers.find(d => d.id === dossierId);
-    if (dossier?.test_id) {
-      const test = tests.find(t => t.id === dossier.test_id);
-      if (test) {
-        if (test.region) initial.region_id = test.region;
-        // Simple mapping pour les secteurs
-        if (test.secteurTravail === "IndustriesTransformation") initial.secteur_activite = "AUTRE-IND";
-        if (test.secteurTravail === "HebergementRestauration") initial.secteur_activite = "TOURISME";
-        if (test.secteurTravail === "SanteActionSociale") initial.secteur_activite = "AUTRE-SERV";
-      }
-    }
-
-    return initial;
+    return buildFormValuesFromTest(currentTest, user);
   });
+
+  const [hasInitializedWithTest, setHasInitializedWithTest] = useState(false);
+
+  // Synchronisation dynamique dès que les tests sont chargés par useClientAuth
+  useEffect(() => {
+    if (hasInitializedWithTest) return;
+
+    if (currentTest) {
+      const saved = localStorage.getItem(storageKey);
+      let shouldHydrate = true;
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          const mappedExpected = buildFormValuesFromTest(currentTest, user);
+          const isStaleFallback =
+            parsed.branche_activite === "MANUF-25" ||
+            (parsed.secteur_activite === "MANUF" &&
+              parsed.branche_activite === "MANUF-1" &&
+              currentTest?.secteurTravail === "FabricationMeubles");
+
+          if (
+            parsed.secteur_activite &&
+            parsed.secteur_activite !== "IND-AUTO" &&
+            !isStaleFallback
+          ) {
+            shouldHydrate = false;
+          }
+        } catch {
+          shouldHydrate = true;
+        }
+      }
+
+      if (shouldHydrate) {
+        setFormValues(buildFormValuesFromTest(currentTest, user));
+      }
+      setHasInitializedWithTest(true);
+    }
+  }, [currentTest, user, hasInitializedWithTest, storageKey]);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -144,7 +152,7 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
   const handleReset = () => {
     if (window.confirm(t("stepper.common.confirmReset", "Voulez-vous réinitialiser toutes les données de ce formulaire ?"))) {
       localStorage.removeItem(storageKey);
-      setFormValues(DEFAULT_FORM_VALUES);
+      setFormValues(buildFormValuesFromTest(currentTest, user));
       setCurrentStep(1);
       setFileFiscale(null);
       setFileRC(null);
