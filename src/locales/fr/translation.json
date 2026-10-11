@@ -807,6 +807,7 @@
     "startFirstTest": "Nouveau test d'éligibilité"
   },
   "clientHeader": {
+    "spaceTitle": "Espace Client",
     "dashboard": "Mon tableau de bord",
     "history": "Historique",
     "newTest": "Nouveau test",

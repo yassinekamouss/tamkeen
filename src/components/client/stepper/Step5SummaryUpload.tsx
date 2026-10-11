@@ -14,7 +14,7 @@ import {
   getProfilRampLabel,
   BANQUES_PARTENAIRES,
   PROFILS_MONTEE_CHARGE,
-} from "./referentiels";
+} from "./tpmeReferentiels";
 import {
   FileCheck2,
   UploadCloud,
@@ -220,28 +220,24 @@ export const Step5SummaryUpload: React.FC<Step5SummaryUploadProps> = ({
               {t("stepper.step5.primeTerritoriale", { zone: zoneInfo.zone, defaultValue: `Prime Territoriale (${zoneInfo.zone})` })}
             </span>
             <span className="font-bold text-white font-mono text-sm">
-              +{formatPercent(math.tauxTerritoriale)}
+              {formatPercent(math.tauxTerritoriale)}
             </span>
           </div>
           <div className="bg-white/10 backdrop-blur-xs p-2.5 rounded-lg">
             <span className="text-blue-200 block text-[11px]">
-              {t("stepper.step5.primeSectorielle", "Prime Sectorielle")}
+              {t("stepper.step5.primeEmploi", "Prime Emploi")}
             </span>
             <span className="font-bold text-white font-mono text-sm">
-              +{formatPercent(math.tauxSectorielle)} (
-              {sectorInfo.isPrioritaire
-                ? t("stepper.step5.sectorPriority", "Prioritaire")
-                : t("stepper.step5.sectorStandard", "0%")}
-              )
+              {formatPercent(math.tauxEmploi)}
             </span>
           </div>
           <div className="bg-white/10 backdrop-blur-xs p-2.5 rounded-lg">
             <span className="text-blue-200 block text-[11px]">
-              {t("stepper.step5.bonusEco", "Bonus Transition Durable")}
+              {t("stepper.step5.primePrioritaire", "Activité Prioritaire")}
             </span>
             <span className="font-bold text-white font-mono text-sm">
-              +{formatPercent(math.bonusEcologique)} (
-              {values.is_eco_transition
+              {formatPercent(math.tauxPrioritaire)} (
+              {values.is_activite_prioritaire
                 ? t("stepper.step5.ecoActivated", "Activé")
                 : t("stepper.step5.ecoNotActivated", "0% Non activé")}
               )
@@ -296,7 +292,7 @@ export const Step5SummaryUpload: React.FC<Step5SummaryUploadProps> = ({
               · {t("stepper.step5.directJobs", { count: values.emplois_directs, defaultValue: `${values.emplois_directs} emplois directs` })}
             </div>
             <div>
-              <strong>{t("stepper.step5.sectorLabel", "Secteur :")}</strong> {getSectorLabel(sectorInfo, lang)}
+              <strong>{t("stepper.step5.sectorLabel", "Secteur :")}</strong> {sectorInfo ? getSectorLabel(sectorInfo, lang) : values.secteur_activite}
             </div>
             <div>
               <strong>{t("stepper.step5.cruisingCaLabel", "CA croisière :")}</strong>{" "}

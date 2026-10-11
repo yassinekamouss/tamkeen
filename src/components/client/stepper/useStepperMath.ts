@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import {
   getProvinceDetails,
-  getSectorDetails,
   CNSS_MULTIPLIER,
   type ZoneType,
-} from "./referentiels";
+} from "./tpmeReferentiels";
 
 export interface StepperFormValues {
   // Étape 1 : Localisation & Foncier
@@ -18,8 +17,9 @@ export interface StepperFormValues {
   // Étape 2 : Ambition & Secteur
   nature_projet: "CREATION" | "EXTENSION";
   secteur_activite: string;
+  branche_activite: string;
   emplois_directs: number;
-  is_eco_transition: boolean;
+  is_activite_prioritaire: boolean;
   banque_partenaire: string;
 
   // Étape 3 : CAPEX & Financement
@@ -48,8 +48,9 @@ export interface StepperMathCalculations {
   // Primes & Taux
   zone: ZoneType;
   tauxTerritoriale: number; // ex: 0.10 ou 0.15
-  tauxSectorielle: number; // ex: 0.05 ou 0
-  bonusEcologique: number; // ex: 0.03 ou 0
+  tauxEmploi: number; // 5%, 7% ou 10%
+  tauxPrioritaire: number; // 10% ou 0
+  ratioEmploiCapex: number;
   tauxGlobal: number; // ex: 0.18
 
   // CAPEX
@@ -88,24 +89,12 @@ export const formatPercent = (rate: number): string => {
 
 export function useStepperMath(formValues: StepperFormValues): StepperMathCalculations {
   return useMemo(() => {
-    // 1. Taux territorial (Zone A: 10%, Zone B: 15%)
-    const { zone, rate: tauxTerritoriale } = getProvinceDetails(
-      formValues.region_id,
-      formValues.province_id
-    );
+    // 1. Prime territoriale
+    const provDetails = getProvinceDetails(formValues.region_id, formValues.province_id);
+    const zone = provDetails.zone;
+    const tauxTerritoriale = provDetails.rate;
 
-    // 2. Taux sectoriel (5% si secteur prioritaire, sinon 0%)
-    const sectorInfo = getSectorDetails(formValues.secteur_activite);
-    const tauxSectorielle = sectorInfo.rate;
-
-    // 3. Bonus écologique / transition durable (3% si activé, sinon 0%)
-    const bonusEcologique = formValues.is_eco_transition ? 0.03 : 0.0;
-
-    // 4. Taux global cumulé
-    const tauxGlobal = tauxTerritoriale + tauxSectorielle + bonusEcologique;
-
-    // 5. Total CAPEX HT
-    // Remarque : Si régime = LOCATION, l'acquisition de foncier n'est pas comptabilisée
+    // 2. Taux d'emploi (5%, 7% ou 10%)
     const foncierEffectif =
       formValues.regime_foncier === "LOCATION" ? 0 : Number(formValues.capex_foncier) || 0;
 
@@ -116,6 +105,20 @@ export function useStepperMath(formValues: StepperFormValues): StepperMathCalcul
       (Number(formValues.capex_amenagement) || 0) +
       (Number(formValues.capex_materiel) || 0) +
       (Number(formValues.capex_divers) || 0);
+
+    const emplois = Math.max(0, Number(formValues.emplois_directs) || 0);
+    const ratioEmploiCapex = totalCapex > 0 ? (emplois / totalCapex) * 1000000 : 0;
+    
+    let tauxEmploi = 0;
+    if (ratioEmploiCapex >= 2 && ratioEmploiCapex <= 5) tauxEmploi = 0.05;
+    else if (ratioEmploiCapex > 5 && ratioEmploiCapex <= 10) tauxEmploi = 0.07;
+    else if (ratioEmploiCapex > 10) tauxEmploi = 0.10;
+
+    // 3. Taux prioritaire (10%)
+    const tauxPrioritaire = formValues.is_activite_prioritaire ? 0.10 : 0.0;
+
+    // 4. Taux global cumulé
+    const tauxGlobal = tauxTerritoriale + tauxEmploi + tauxPrioritaire;
 
     // 6. Montant estimé de subvention
     const montantSubventionEstimee = totalCapex * tauxGlobal;
@@ -138,15 +141,15 @@ export function useStepperMath(formValues: StepperFormValues): StepperMathCalcul
     // 8. Indicateurs RH
     const salaireBrut = Number(formValues.salaire_moyen_brut) || 0;
     const salaireBrutChargeMensuel = salaireBrut * CNSS_MULTIPLIER;
-    const emplois = Math.max(0, Number(formValues.emplois_directs) || 0);
     const masseSalarialeAnnuelleEstimee =
       emplois * salaireBrutChargeMensuel * 12;
 
     return {
       zone,
       tauxTerritoriale,
-      tauxSectorielle,
-      bonusEcologique,
+      tauxEmploi,
+      tauxPrioritaire,
+      ratioEmploiCapex,
       tauxGlobal,
       totalCapex,
       montantSubventionEstimee,
@@ -163,7 +166,8 @@ export function useStepperMath(formValues: StepperFormValues): StepperMathCalcul
     formValues.region_id,
     formValues.province_id,
     formValues.secteur_activite,
-    formValues.is_eco_transition,
+    formValues.branche_activite,
+    formValues.is_activite_prioritaire,
     formValues.regime_foncier,
     formValues.capex_etudes,
     formValues.capex_foncier,

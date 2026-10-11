@@ -799,6 +799,7 @@
     "startFirstTest": "اختبار أهلية جديد"
   },
   "clientHeader": {
+    "spaceTitle": "فضاء الزبون",
     "dashboard": "لوحة القيادة",
     "history": "سجل المحاكاة",
     "newTest": "اختبار جديد",

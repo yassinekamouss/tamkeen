@@ -79,8 +79,8 @@ export const StepperFloatingSummary: React.FC<StepperFloatingSummaryProps> = ({
                 {t("stepper.floatingSummary.sector", "Secteur")}
               </span>
               <span className="font-bold text-gray-800 font-mono">
-                {math.tauxSectorielle > 0
-                  ? t("stepper.floatingSummary.sectorPriority", "+5% Prioritaire")
+                {math.tauxEmploi > 0
+                  ? `${(math.tauxEmploi * 100).toFixed(0)}%`
                   : t("stepper.floatingSummary.sectorStandard", "0% Standard")}
               </span>
             </div>
@@ -89,8 +89,8 @@ export const StepperFloatingSummary: React.FC<StepperFloatingSummaryProps> = ({
                 {t("stepper.floatingSummary.ecoBonus", "Bonus Durable")}
               </span>
               <span className="font-bold text-gray-800 font-mono">
-                {math.bonusEcologique > 0
-                  ? t("stepper.floatingSummary.ecoActive", "+3% Activé")
+                {math.tauxPrioritaire > 0
+                  ? t("stepper.floatingSummary.ecoActive", "10% Activé")
                   : t("stepper.floatingSummary.ecoInactive", "0% Non activé")}
               </span>
             </div>

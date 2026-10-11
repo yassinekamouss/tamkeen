@@ -6,7 +6,7 @@ import {
   getProvinceDetails,
   getRegionLabel,
   getProvinceLabel,
-} from "./referentiels";
+} from "./tpmeReferentiels";
 import type { StepperFormValues } from "./useStepperMath";
 import { MapPin, Navigation, Building2, KeyRound } from "lucide-react";
 
@@ -90,12 +90,14 @@ export const Step1Location: React.FC<Step1LocationProps> = ({
             {values.province_id && (
               <span
                 className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${
-                  currentZoneDetails.zone === "Zone B"
+                  currentZoneDetails.zone === "Catégorie B"
                     ? "bg-amber-100 text-amber-900 border border-amber-300"
-                    : "bg-blue-100 text-blue-900 border border-blue-300"
+                    : currentZoneDetails.zone === "Catégorie A"
+                    ? "bg-blue-100 text-blue-900 border border-blue-300"
+                    : "bg-gray-100 text-gray-700 border border-gray-300"
                 }`}
               >
-                {currentZoneDetails.zone} (+{(currentZoneDetails.rate * 100).toFixed(0)}%)
+                {currentZoneDetails.zone} ({currentZoneDetails.rate > 0 ? `${(currentZoneDetails.rate * 100).toFixed(0)}%` : "0%"})
               </span>
             )}
           </div>
@@ -112,7 +114,7 @@ export const Step1Location: React.FC<Step1LocationProps> = ({
             </option>
             {currentProvinces.map((prov) => (
               <option key={prov.id} value={prov.id}>
-                {getProvinceLabel(prov, lang)} ({prov.zone} · +{(prov.rate * 100).toFixed(0)}%)
+                {getProvinceLabel(prov, lang)} ({prov.zone} · {(prov.rate * 100).toFixed(0)}%)
               </option>
             ))}
           </select>

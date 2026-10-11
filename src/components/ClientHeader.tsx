@@ -98,7 +98,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
         <div className="flex items-center justify-between h-14">
             {/* Logo */}
             <div className="flex items-center gap-3 shrink-0">
-              <Link to="/client/dashboard" aria-label={t("clientHeader.spaceTitle")}>
+              <Link to="/client/dashboard" aria-label={t("clientHeader.spaceTitle", "Espace Client")}>
                 <img className="h-10 w-auto object-contain" src={logo} alt="Tamkeen Center" />
               </Link>
               <div className="hidden md:flex flex-col justify-center border-l border-[#DADCE0] pl-3 ml-1 rtl:border-l-0 rtl:border-r rtl:pl-0 rtl:pr-3">
@@ -106,7 +106,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ noSpacer = false }) => {
                   className="text-[10px] font-bold text-[#5F6368] uppercase tracking-wider leading-none whitespace-nowrap"
                   style={{ fontFamily: "Roboto Flex, sans-serif" }}
                 >
-                  {t("clientHeader.spaceTitle")}
+                  {t("clientHeader.spaceTitle", "Espace Client")}
                 </span>
               </div>
             </div>

@@ -11,6 +11,7 @@ import {
   useStepperMath,
 } from "./useStepperMath";
 import { dossierService } from "../../../services/dossierService";
+import { useClientAuth } from "../../../contexts/ClientAuthContext";
 import {
   ChevronLeft,
   ChevronRight,
@@ -21,7 +22,7 @@ import {
 } from "lucide-react";
 import { StepperHeader } from "../../common/StepperHeader";
 
-interface ClientStepperProps {
+interface TpmeStepperProps {
   dossierId: number;
   onSubmitted: () => Promise<void> | void;
 }
@@ -38,8 +39,9 @@ const DEFAULT_FORM_VALUES: StepperFormValues = {
   // Étape 2
   nature_projet: "CREATION",
   secteur_activite: "IND-AUTO",
+  branche_activite: "IND-AUTO-EQ",
   emplois_directs: 5,
-  is_eco_transition: false,
+  is_activite_prioritaire: false,
   banque_partenaire: "CDM",
 
   // Étape 3
@@ -64,7 +66,7 @@ const DEFAULT_FORM_VALUES: StepperFormValues = {
   dette_duree: 7,
 };
 
-export const ClientStepper: React.FC<ClientStepperProps> = ({
+export const TpmeStepper: React.FC<TpmeStepperProps> = ({
   dossierId,
   onSubmitted,
 }) => {
@@ -80,7 +82,9 @@ export const ClientStepper: React.FC<ClientStepperProps> = ({
     { number: 5, title: t("stepper.steps.step5.title", "Synthèse & Pièces"), short: t("stepper.steps.step5.short", "Certification") },
   ];
 
-  // Récupération initiale depuis localStorage
+  const { dossiers, tests } = useClientAuth();
+
+  // Récupération initiale depuis localStorage ou les données d'éligibilité
   const [formValues, setFormValues] = useState<StepperFormValues>(() => {
     try {
       const saved = localStorage.getItem(storageKey);
@@ -90,7 +94,21 @@ export const ClientStepper: React.FC<ClientStepperProps> = ({
     } catch (e) {
       console.warn("Erreur lecture localStorage stepper:", e);
     }
-    return DEFAULT_FORM_VALUES;
+
+    const initial = { ...DEFAULT_FORM_VALUES };
+    const dossier = dossiers.find(d => d.id === dossierId);
+    if (dossier?.test_id) {
+      const test = tests.find(t => t.id === dossier.test_id);
+      if (test) {
+        if (test.region) initial.region_id = test.region;
+        // Simple mapping pour les secteurs
+        if (test.secteurTravail === "IndustriesTransformation") initial.secteur_activite = "AUTRE-IND";
+        if (test.secteurTravail === "HebergementRestauration") initial.secteur_activite = "TOURISME";
+        if (test.secteurTravail === "SanteActionSociale") initial.secteur_activite = "AUTRE-SERV";
+      }
+    }
+
+    return initial;
   });
 
   const [currentStep, setCurrentStep] = useState(1);

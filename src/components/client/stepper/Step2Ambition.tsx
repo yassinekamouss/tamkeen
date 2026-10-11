@@ -3,20 +3,19 @@ import { useTranslation } from "react-i18next";
 import {
   SECTEURS_ACTIVITE,
   BANQUES_PARTENAIRES,
-  getSectorDetails,
+  BRANCHES_ACTIVITE,
   getSectorLabel,
   getBankLabel,
-} from "./referentiels";
+} from "./tpmeReferentiels";
 import type { StepperFormValues } from "./useStepperMath";
 import {
   Rocket,
   Sparkles,
   Users,
-  Leaf,
+  Star,
   Landmark,
   Plus,
   Minus,
-  CheckCircle2,
 } from "lucide-react";
 
 interface Step2AmbitionProps {
@@ -32,7 +31,6 @@ export const Step2Ambition: React.FC<Step2AmbitionProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const currentSector = getSectorDetails(values.secteur_activite);
 
   const handleEmploisStep = (delta: number) => {
     const current = Number(values.emplois_directs) || 0;
@@ -88,42 +86,58 @@ export const Step2Ambition: React.FC<Step2AmbitionProps> = ({
         </div>
       </div>
 
-      {/* Secteur d'activité */}
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+      {/* Secteurs et Branches */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
             {t("stepper.step2.secteurLabel", "Secteur d'activité")} <span className="text-red-500">*</span>
           </label>
-          {currentSector.isPrioritaire ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              {t("stepper.step2.priorityBadge", "Secteur Prioritaire (+5% de prime)")}
-            </span>
-          ) : (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-              {t("stepper.step2.standardBadge", "Standard (0%)")}
-            </span>
+          <select
+            value={values.secteur_activite || ""}
+            onChange={(e) => onChange({ secteur_activite: e.target.value, branche_activite: "" })}
+            className={`w-full px-3.5 py-2.5 bg-white border rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
+              errors.secteur_activite ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+            }`}
+          >
+            <option value="" disabled>
+              Sélectionnez un secteur
+            </option>
+            {SECTEURS_ACTIVITE.map((sec) => (
+              <option key={sec.code} value={sec.code}>
+                {getSectorLabel(sec, lang)}
+              </option>
+            ))}
+          </select>
+          {errors.secteur_activite && (
+            <p className="text-xs text-red-600 mt-1">{errors.secteur_activite}</p>
           )}
         </div>
-        <select
-          value={values.secteur_activite}
-          onChange={(e) => onChange({ secteur_activite: e.target.value })}
-          className={`w-full px-3.5 py-2.5 bg-white border rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
-            errors.secteur_activite ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
-          }`}
-        >
-          <option value="" disabled>
-            {t("stepper.step2.secteurPlaceholder", "Sélectionnez votre secteur")}
-          </option>
-          {SECTEURS_ACTIVITE.map((sec) => (
-            <option key={sec.code} value={sec.code}>
-              {getSectorLabel(sec, lang)} {sec.isPrioritaire ? "★ (+5%)" : "(0%)"}
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+            {t("stepper.step2.brancheLabel", "Branche d'activité")} <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={values.branche_activite || ""}
+            onChange={(e) => onChange({ branche_activite: e.target.value })}
+            disabled={!values.secteur_activite}
+            className={`w-full px-3.5 py-2.5 bg-white border rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${
+              errors.branche_activite ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+            }`}
+          >
+            <option value="" disabled>
+              Sélectionnez une branche
             </option>
-          ))}
-        </select>
-        {errors.secteur_activite && (
-          <p className="text-xs text-red-600 mt-1">{errors.secteur_activite}</p>
-        )}
+            {BRANCHES_ACTIVITE.filter(b => b.sectorCode === values.secteur_activite).map((br) => (
+              <option key={br.id} value={br.id}>
+                {br.label}
+              </option>
+            ))}
+          </select>
+          {errors.branche_activite && (
+            <p className="text-xs text-red-600 mt-1">{errors.branche_activite}</p>
+          )}
+        </div>
       </div>
 
       {/* Emplois directs & Transition écologique */}
@@ -176,47 +190,44 @@ export const Step2Ambition: React.FC<Step2AmbitionProps> = ({
           )}
         </div>
 
-        {/* Toggle Transition Écologique */}
+        {/* Toggle Activité Prioritaire */}
         <div
-          onClick={() => onChange({ is_eco_transition: !values.is_eco_transition })}
+          onClick={() => onChange({ is_activite_prioritaire: !values.is_activite_prioritaire })}
           className={`p-4 border rounded-xl cursor-pointer transition-all flex flex-col justify-between ${
-            values.is_eco_transition
-              ? "border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-400"
+            values.is_activite_prioritaire
+              ? "border-amber-500 bg-amber-50/60 ring-2 ring-amber-400"
               : "border-gray-200 bg-white hover:bg-gray-50"
           }`}
         >
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-1.5">
-                <Leaf className="w-4 h-4 text-emerald-600" />
+                <Star className={`w-4 h-4 ${values.is_activite_prioritaire ? 'text-amber-600 fill-amber-500' : 'text-gray-400'}`} />
                 <span className="text-sm font-bold text-gray-900">
-                  {t("stepper.step2.ecoTitle", "Transition Écologique & RSE")}
+                  Activité Prioritaire
                 </span>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                  {t("stepper.step2.ecoBadge", "+3% bonus")}
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                  10%
                 </span>
               </div>
               <p className="text-xs text-gray-500 leading-relaxed">
-                {t(
-                  "stepper.step2.ecoDesc",
-                  "Le projet intègre-t-il l'efficacité énergétique, le solaire, le traitement des effluents ou le recyclage ?"
-                )}
+                Le projet relève-t-il spécifiquement d'une activité prioritaire au sein de la branche ?
               </p>
             </div>
             <div className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
               <input
                 type="checkbox"
-                checked={values.is_eco_transition}
+                checked={values.is_activite_prioritaire || false}
                 onChange={() => {}}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
             </div>
           </div>
-          <div className="text-[11px] font-medium text-emerald-700 pt-2">
-            {values.is_eco_transition
-              ? t("stepper.step2.ecoActive", "✔ Bonus durable de 3% activé sur l'assiette du CAPEX")
-              : t("stepper.step2.ecoInactive", "Activez pour bénéficier de la surprime durable de 3%")}
+          <div className="text-[11px] font-medium text-amber-700 pt-2">
+            {values.is_activite_prioritaire
+              ? "✔ Prime d'activité prioritaire de 10% activée"
+              : "Activez si votre activité exacte figure dans la liste 2"}
           </div>
         </div>
       </div>

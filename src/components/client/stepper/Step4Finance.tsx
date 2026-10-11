@@ -6,7 +6,7 @@ import {
   getProfilRampLabel,
   getProfilRampDesc,
   getProfilRHLabel,
-} from "./referentiels";
+} from "./tpmeReferentiels";
 import type { StepperFormValues } from "./useStepperMath";
 import { useStepperMath, formatMAD } from "./useStepperMath";
 import {
@@ -173,7 +173,7 @@ export const Step4Finance: React.FC<Step4FinanceProps> = ({
                     {t("stepper.step4.rampTrajectory", "Trajectoire d'activité An 1 à An 6 :")}
                   </span>
                   <div className="grid grid-cols-6 gap-1 text-center font-mono text-[11px] font-bold">
-                    {profil.coefficients.map((coeff, idx) => (
+                    {profil.coefficients.map((coeff: number, idx: number) => (
                       <div key={idx} className="bg-gray-50 py-0.5 rounded text-gray-700">
                         {coeff}%
                       </div>
