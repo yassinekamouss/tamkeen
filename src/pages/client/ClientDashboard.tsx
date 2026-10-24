@@ -14,13 +14,14 @@ import {
   Download,
   CheckCircle2,
   AlertTriangle,
-  FileSpreadsheet,
   UserCheck,
   RefreshCw,
   Clock,
   ArrowRight,
   ShieldCheck,
   RotateCcw,
+  ArrowUpRight,
+  Landmark,
 } from "lucide-react";
 
 const font = {
@@ -39,6 +40,22 @@ const ClientDashboard: React.FC = () => {
   const [activeDossierId, setActiveDossierId] = useState<number | null>(null);
   const [isReediting, setIsReediting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
+
+  const handleUpgradePlan = async (newPlan: "PLAN_2" | "PLAN_3") => {
+    if (!activeDossier) return;
+    setIsUpgrading(true);
+    try {
+      await dossierService.upgradePlan(activeDossier.id, newPlan);
+      setShowUpgradeModal(false);
+      await checkAuth();
+    } catch (err: any) {
+      alert(err.response?.data?.message || err.message || "Erreur lors de la mise à niveau");
+    } finally {
+      setIsUpgrading(false);
+    }
+  };
 
 
   useEffect(() => {
@@ -105,63 +122,69 @@ const ClientDashboard: React.FC = () => {
     }
   };
 
-  // Chips keep the pill radius (the one documented exception to the 4px system)
-  // and are built from the design system's tonal pairs: tertiary (amber/orange),
-  // primary (blue), secondary (neutral), error (red), and a Google-style green
-  // for the terminal "delivered" state.
+  // Badges administratifs épurés et lisibles (norme portail institutionnel)
   const getStatusBadge = (status?: string) => {
     const base =
-      "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide";
+      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold tracking-normal";
     switch (status) {
       case "PLAN_SELECTION":
         return (
-          <span className={`${base} bg-[#DDE0E3] text-[#414754]`}>
-            {t("clientDashboard.badges.PLAN_SELECTION", "Choix du plan")}
+          <span className={`${base} bg-slate-100 text-slate-700 border border-slate-200`}>
+            {t("clientDashboard.badges.PLAN_SELECTION", "Sélection de formule")}
           </span>
         );
       case "AWAITING_INPUTS":
         return (
-          <span className={`${base} bg-[#FFDBCB] text-[#783100]`}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#9E4300] animate-pulse" />
-            {t("clientDashboard.badges.AWAITING_INPUTS", "En attente de vos données")}
+          <span className={`${base} bg-amber-50 text-amber-800 border border-amber-200`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+            {t("clientDashboard.badges.AWAITING_INPUTS", "Saisie du formulaire en attente")}
+          </span>
+        );
+      case "DELEGATED_TO_CONSULTANT":
+        return (
+          <span className={`${base} bg-sky-50 text-sky-800 border border-sky-200`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-600" />
+            {t("clientDashboard.badges.DELEGATED", "Délégué au conseiller")}
           </span>
         );
       case "AI_DRAFTING":
         return (
-          <span className={`${base} bg-[#E8F0FE] text-[#005BBF]`}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#1A73E8] animate-ping" />
-            {t("clientDashboard.badges.AI_DRAFTING", "Instruction & Structuration")}
+          <span className={`${base} bg-blue-50 text-blue-800 border border-blue-200`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+            {t("clientDashboard.badges.AI_DRAFTING", "Instruction & Modélisation")}
           </span>
         );
       case "CONSULTANT_REVIEW":
         return (
-          <span className={`${base} bg-[#F3E8FD] text-[#6B21A8] border border-[#E9D5FF]`}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#9333EA] animate-pulse" />
-            {t("clientDashboard.badges.CONSULTANT_REVIEW", "Revue consultant expert")}
+          <span className={`${base} bg-indigo-50 text-indigo-800 border border-indigo-200`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
+            {t("clientDashboard.badges.CONSULTANT_REVIEW", "Revue de conformité expert")}
           </span>
         );
       case "AWAITING_CLIENT_INFO":
         return (
-          <span className={`${base} bg-[#FFDAD6] text-[#93000A]`}>
-            {t("clientDashboard.badges.AWAITING_CLIENT_INFO", "Complément d'info requis")}
+          <span className={`${base} bg-rose-50 text-rose-800 border border-rose-200`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+            {t("clientDashboard.badges.AWAITING_CLIENT_INFO", "Pièces complémentaires requises")}
           </span>
         );
       case "DELIVERED":
         return (
-          <span className={`${base} bg-[#E6F4EA] text-[#1E8E3E]`}>
-            {t("clientDashboard.badges.DELIVERED", "Dossier livré")}
+          <span className={`${base} bg-emerald-50 text-emerald-800 border border-emerald-200`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            {t("clientDashboard.badges.DELIVERED", "Dossier instruit & délivré")}
           </span>
         );
       case "GENERATION_FAILED":
         return (
-          <span className={`${base} bg-[#FFDAD6] text-[#93000A]`}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#BA1A1A] animate-pulse" />
-            {t("clientDashboard.badges.GENERATION_FAILED", "Génération en reprise")}
+          <span className={`${base} bg-amber-50 text-amber-900 border border-amber-300`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-700" />
+            {t("clientDashboard.badges.GENERATION_FAILED", "Vérification manuelle")}
           </span>
         );
       default:
         return (
-          <span className={`${base} bg-[#EDEEEF] text-[#414754]`}>
+          <span className={`${base} bg-slate-100 text-slate-700 border border-slate-200`}>
             {t("clientDashboard.badges.INITIALIZED", "Dossier initialisé")}
           </span>
         );
@@ -265,49 +288,66 @@ const ClientDashboard: React.FC = () => {
                   <div className="bg-white rounded border border-[#DADCE0] overflow-hidden">
                     {/* Dossier header */}
                     <div className="border-b border-[#DADCE0] bg-[#F8F9FA] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3 rtl:space-x-reverse">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 rtl:space-x-reverse">
                 <span className={`${font.display} font-bold text-[#191C1D] text-lg`}>
                   {t("clientDashboard.dossierNum", { id: activeDossier.id, defaultValue: `Dossier #${activeDossier.id}` })}
                 </span>
-                <span className="text-xs px-2.5 py-1 rounded bg-[#E8F0FE] text-[#005BBF] font-semibold border border-[#C1C6D6]">
+                <span className={`text-xs px-2.5 py-1 rounded font-semibold border ${
+                  activeDossier.plan_type === "PLAN_3"
+                    ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+                    : activeDossier.plan_type === "PLAN_2"
+                    ? "bg-[#E8F0FE] text-[#005BBF] border-[#C1C6D6]"
+                    : "bg-gray-100 text-gray-700 border-gray-300"
+                }`}>
                   {activeDossier.plan_type === "PLAN_1"
-                    ? t("clientDashboard.plan1Label", "Plan 1 : Formule Directe")
-                    : t("clientDashboard.plan2Label", "Plan 2 : Accompagnement Expert Dédié")}
+                    ? t("clientDashboard.plan1Label", "Plan 1 : Fast-Track")
+                    : activeDossier.plan_type === "PLAN_2"
+                    ? t("clientDashboard.plan2Label", "Plan 2 : Accompagnement Expert")
+                    : t("clientDashboard.plan3Label", "Plan 3 : Postulation Clé en Main")}
                 </span>
+
+                {activeDossier.plan_type !== "PLAN_3" && currentStatus !== "PLAN_SELECTION" && (
+                  <button
+                    type="button"
+                    onClick={() => setShowUpgradeModal(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-500" />
+                    <span>{t("clientDashboard.upgradeBtn", "Changer de formule")}</span>
+                  </button>
+                )}
               </div>
               <div>{getStatusBadge(currentStatus)}</div>
             </div>
 
             {currentStatus !== "PLAN_SELECTION" && (
-              <div className="border-b border-[#DADCE0] bg-white px-6 py-4">
-                <div className="inline-flex bg-[#F1F3F4] p-1 rounded-lg gap-1 rtl:space-x-reverse border border-[#E1E3E4]">
+              <div className="border-b border-[#DADCE0] bg-white px-6 py-3">
+                <div className="inline-flex bg-slate-100 p-1 rounded-lg gap-1 rtl:space-x-reverse border border-slate-200">
                   <button
                     onClick={() => setActiveTab("workspace")}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#1A73E8] focus-visible:ring-offset-2 ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold transition-all duration-150 outline-none ${
                       activeTab === "workspace"
-                        ? "bg-white text-[#1A73E8] shadow-sm ring-1 ring-black/5"
-                        : "text-[#5F6368] hover:text-[#191C1D] hover:bg-[#E8EAED]"
+                        ? "bg-white text-slate-900 shadow-2xs border border-slate-200"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
                     }`}
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    {t("clientDashboard.tabWorkspace", "Mon espace de travail")}
+                    <FileText className="w-4 h-4 text-slate-600" />
+                    {t("clientDashboard.tabWorkspace", "Espace d'instruction")}
                   </button>
                   <button
                     onClick={() => setActiveTab("requests")}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#1A73E8] focus-visible:ring-offset-2 ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold transition-all duration-150 outline-none ${
                       activeTab === "requests"
-                        ? "bg-white text-[#1A73E8] shadow-sm ring-1 ring-black/5"
-                        : "text-[#5F6368] hover:text-[#191C1D] hover:bg-[#E8EAED]"
+                        ? "bg-white text-slate-900 shadow-2xs border border-slate-200"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
                     }`}
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    <svg className="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
-                    {t("clientDashboard.tabRequests", "Messagerie & requêtes")}
+                    {t("clientDashboard.tabRequests", "Bordereau & Correspondance")}
                     {pendingRequestsCount > 0 && (
-                      <span className="flex items-center justify-center w-5 h-5 ml-1 text-[10px] font-bold text-white bg-orange-500 rounded-full animate-bounce">
+                      <span className="flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold text-white bg-slate-900 rounded-full">
                         {pendingRequestsCount}
                       </span>
                     )}
@@ -316,10 +356,128 @@ const ClientDashboard: React.FC = () => {
               </div>
             )}
 
+            {/* Suivi officiel de la procédure de conventionnement (Exclusivité Plan 3) */}
+            {activeDossier.plan_type === "PLAN_3" && currentStatus !== "PLAN_SELECTION" && (
+              <div className="border-b border-[#DADCE0] bg-slate-50/70 p-5 sm:p-6 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded bg-slate-900 text-white">
+                      <Landmark className="w-4 h-4" />
+                    </span>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900">
+                        {t("postulation.title", "Procédure de Conventionnement d'Investissement")}
+                      </h3>
+                      <p className="text-xs text-slate-600">
+                        {t("postulation.subtitle", "Mandat de postulation officielle piloté par notre cabinet auprès des instances d'investissement.")}
+                      </p>
+                    </div>
+                  </div>
+                  {activeDossier.postulation_data?.reference && (
+                    <span className="px-3 py-1 rounded bg-white border border-slate-300 text-slate-800 text-xs font-mono font-semibold shadow-2xs">
+                      Réf. Démarche : {activeDossier.postulation_data.reference}
+                    </span>
+                  )}
+                </div>
+
+                {/* Frise des 5 étapes administratives */}
+                <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-1">
+                  {[
+                    { step: 1, label: t("postulation.step1", "1. Constitution"), sub: "Audit technique" },
+                    { step: 2, label: t("postulation.step2", "2. Dépôt officiel"), sub: "Plateforme CRI / État" },
+                    { step: 3, label: t("postulation.step3", "3. Recevabilité"), sub: "Conformité légale" },
+                    { step: 4, label: t("postulation.step4", "4. Commission"), sub: "Examen des primes" },
+                    { step: 5, label: t("postulation.step5", "5. Décaissement"), sub: "Convention signée" },
+                  ].map((item) => {
+                    const currentStepNum = activeDossier.postulation_step || 1;
+                    const isDone = item.step < currentStepNum;
+                    const isCurrent = item.step === currentStepNum;
+
+                    return (
+                      <div
+                        key={item.step}
+                        className={`p-3 rounded-lg border transition-all text-left ${
+                          isDone
+                            ? "bg-emerald-50/70 border-emerald-300 text-emerald-950"
+                            : isCurrent
+                            ? "bg-white border-slate-900 shadow-xs ring-1 ring-slate-900 text-slate-900"
+                            : "bg-white/60 border-slate-200 text-slate-400"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                            isDone ? "text-emerald-700" : isCurrent ? "text-slate-900 font-extrabold" : "text-slate-400"
+                          }`}>
+                            Étape {item.step}
+                          </span>
+                          {isDone ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          ) : isCurrent ? (
+                            <span className="w-2 h-2 rounded-full bg-slate-900" />
+                          ) : null}
+                        </div>
+                        <div className="text-xs font-bold truncate">{item.label}</div>
+                        <div className="text-[10px] text-slate-500 truncate">{item.sub}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {activeDossier.postulation_data?.lastNotes && (
+                  <div className="bg-white p-3 rounded-lg border border-slate-200 text-xs text-slate-800 flex items-start gap-2 shadow-2xs">
+                    <span className="font-semibold text-slate-900 shrink-0">Note de suivi :</span>
+                    <span className="text-slate-700">« {activeDossier.postulation_data.lastNotes} »</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {currentStatus === "PLAN_SELECTION" ? (
               <PlanSelection dossierId={activeDossier.id} onPlanSelected={checkAuth} />
             ) : activeTab === "requests" ? (
               <RequestsView dossierId={activeDossier.id} planType={activeDossier.plan_type} />
+            ) : currentStatus === "DELEGATED_TO_CONSULTANT" ? (
+              <div className="p-8 md:p-12 text-center space-y-6">
+                <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 border border-slate-300 text-slate-700 flex items-center justify-center">
+                  <UserCheck className="w-7 h-7" />
+                </div>
+
+                <div className="max-w-xl mx-auto space-y-2">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-sky-50 text-sky-800 text-xs font-semibold border border-sky-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-600"></span>
+                    {t("clientDashboard.delegated.badge", "Dossier confié au conseiller référent")}
+                  </div>
+                  <h2 className={`${font.display} text-xl md:text-2xl font-bold text-slate-900`}>
+                    {t("clientDashboard.delegated.title", "Instruction prise en charge par votre conseiller")}
+                  </h2>
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                    {t("clientDashboard.delegated.description", "Le montage administratif et la saisie de vos données financières sont délégués à votre conseiller dédié. Il procède actuellement à l'audit de vos pièces réglementaires et à la structuration du programme d'investissement conformément à la Charte TPME.")}
+                  </p>
+                </div>
+
+                <div className="max-w-md mx-auto bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs text-slate-700 text-left rtl:text-right space-y-1">
+                  <span className="font-semibold text-slate-900 block">Registre des transmissions :</span>
+                  <span>Vous pouvez transmettre des pièces justificatives complémentaires ou communiquer à tout moment avec votre conseiller via l'onglet Bordereau & Correspondance.</span>
+                </div>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    onClick={() => setActiveTab("requests")}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                  >
+                    <span>{t("clientDashboard.delegated.goToChat", "Accéder au bordereau d'échanges")}</span>
+                    <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                  </button>
+                  <button
+                    onClick={handleRefreshStatus}
+                    disabled={isRefreshing}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors shadow-2xs cursor-pointer"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                    <span>{t("clientDashboard.delegated.refresh", "Actualiser le statut")}</span>
+                  </button>
+                </div>
+              </div>
             ) : currentStatus === "AWAITING_INPUTS" ? (
               <div className="p-4 sm:p-6 lg:p-8">
                 <ClientStepper
@@ -328,46 +486,43 @@ const ClientDashboard: React.FC = () => {
                 />
               </div>
             ) : currentStatus === "AI_DRAFTING" ? (
-              <div className="p-8 md:p-14 text-center space-y-8 animate-fadeIn">
-                <div className="relative w-20 h-20 mx-auto">
-                  <div className="absolute inset-0 rounded-full bg-blue-400/20 animate-ping"></div>
-                  <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <FileSpreadsheet className="w-10 h-10 animate-pulse" />
-                  </div>
+              <div className="p-8 md:p-12 text-center space-y-6">
+                <div className="w-14 h-14 mx-auto rounded-full bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center">
+                  <FileText className="w-7 h-7" />
                 </div>
 
-                <div className="max-w-xl mx-auto space-y-3">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-200">
-                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
-                    {t("clientDashboard.aiDrafting.badge", "Traitement & Modélisation Financière")}
+                <div className="max-w-xl mx-auto space-y-2">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-blue-50 text-blue-800 text-xs font-semibold border border-blue-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                    {t("clientDashboard.aiDrafting.badge", "Instruction réglementaire & Modélisation financière")}
                   </div>
-                  <h2 className={`${font.display} text-2xl md:text-3xl font-bold text-gray-900`}>
-                    {t("clientDashboard.aiDrafting.title", "Instruction technique et financière de votre dossier...")}
+                  <h2 className={`${font.display} text-xl md:text-2xl font-bold text-slate-900`}>
+                    {t("clientDashboard.aiDrafting.title", "Instruction technique et financière de votre dossier")}
                   </h2>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {t("clientDashboard.aiDrafting.description", "Nos équipes et outils d'analyse instruisent vos pièces justificatives, vérifient l'assiette éligible et modélisent l'ensemble des projections financières pour la Charte TPME.")}
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                    {t("clientDashboard.aiDrafting.description", "Nos analystes procèdent au contrôle de recevabilité des pièces justificatives, à la vérification de l'assiette CAPEX éligible et à la modélisation des projections financières selon les dispositions de la Charte de l'Investissement (Loi-cadre n° 03-22).")}
                   </p>
                 </div>
 
                 {/* Étapes d'instruction du dossier */}
-                <div className="max-w-lg mx-auto bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4 text-left rtl:text-right shadow-xs">
-                  <div className="flex items-center gap-3 text-sm font-semibold text-gray-800">
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-4 h-4" />
+                <div className="max-w-lg mx-auto bg-slate-50 p-5 rounded-lg border border-slate-200 space-y-3 text-left rtl:text-right shadow-2xs">
+                  <div className="flex items-center gap-3 text-xs font-semibold text-slate-800">
+                    <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
                     </div>
-                    <span>{t("clientDashboard.aiDrafting.step1", "1. Contrôle de conformité et audit des pièces (Liasse fiscale, RC, CNSS)")}</span>
+                    <span>{t("clientDashboard.aiDrafting.step1", "1. Contrôle de recevabilité des pièces réglementaires (Liasse, RC, CNSS)")}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm font-bold text-blue-700">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <div className="flex items-center gap-3 text-xs font-semibold text-blue-800">
+                    <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                      <RefreshCw className="w-3 h-3 animate-spin" />
                     </div>
-                    <span>{t("clientDashboard.aiDrafting.step2", "2. Modélisation financière & optimisation des primes d'investissement")}</span>
+                    <span>{t("clientDashboard.aiDrafting.step2", "2. Modélisation financière & calcul des primes d'investissement (Charte TPME)")}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm font-medium text-gray-500">
-                    <div className="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center shrink-0 text-xs font-bold">
+                  <div className="flex items-center gap-3 text-xs font-medium text-slate-400">
+                    <div className="w-5 h-5 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center shrink-0 text-[10px] font-bold">
                       3
                     </div>
-                    <span>{t("clientDashboard.aiDrafting.step3", "3. Transmission du dossier à votre consultant senior dédié")}</span>
+                    <span>{t("clientDashboard.aiDrafting.step3", "3. Transmission du dossier au consultant senior pour visa de certification")}</span>
                   </div>
                 </div>
 
@@ -375,79 +530,79 @@ const ClientDashboard: React.FC = () => {
                   <button
                     onClick={handleRefreshStatus}
                     disabled={isRefreshing}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold transition-all shadow-xs disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors shadow-2xs disabled:opacity-50"
                   >
-                    <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-blue-600" : ""}`} />
-                    <span>{isRefreshing ? t("clientDashboard.aiDrafting.refreshing", "Actualisation...") : t("clientDashboard.aiDrafting.refreshBtn", "Actualiser le statut")}</span>
+                    <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-blue-600" : ""}`} />
+                    <span>{isRefreshing ? t("clientDashboard.aiDrafting.refreshing", "Actualisation en cours...") : t("clientDashboard.aiDrafting.refreshBtn", "Actualiser le statut")}</span>
                   </button>
                 </div>
-                <p className="text-xs text-gray-400">
-                  {t("clientDashboard.aiDrafting.note", "Cette phase d'instruction préliminaire est en cours de finalisation. Vous serez notifié dès la prise en main par votre consultant.")}
+                <p className="text-[11px] text-slate-500">
+                  {t("clientDashboard.aiDrafting.note", "Cette phase d'instruction préliminaire est en cours de traitement. Vous recevrez une notification dès sa finalisation.")}
                 </p>
               </div>
             ) : currentStatus === "CONSULTANT_REVIEW" ? (
-              <div className="p-8 md:p-14 text-center space-y-8 animate-fadeIn">
-                <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-purple-600 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-purple-500/30">
-                  <UserCheck className="w-10 h-10" />
+              <div className="p-8 md:p-12 text-center space-y-6">
+                <div className="w-14 h-14 mx-auto rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center">
+                  <ShieldCheck className="w-7 h-7" />
                 </div>
 
-                <div className="max-w-xl mx-auto space-y-3">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-wider border border-purple-200">
-                    <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse"></span>
-                    {t("clientDashboard.consultantReview.badge", "Accompagnement Expert · Volet 2")}
+                <div className="max-w-xl mx-auto space-y-2">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-indigo-50 text-indigo-800 text-xs font-semibold border border-indigo-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+                    {t("clientDashboard.consultantReview.badge", "Revue de conformité expert · Formule Accompagnée")}
                   </div>
-                  <h2 className={`${font.display} text-2xl md:text-3xl font-bold text-gray-900`}>
-                    {t("clientDashboard.consultantReview.title", "Dossier pris en charge par nos experts - Volet 2")}
+                  <h2 className={`${font.display} text-xl md:text-2xl font-bold text-slate-900`}>
+                    {t("clientDashboard.consultantReview.title", "Revue de conformité et validation finale par l'expert")}
                   </h2>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {t("clientDashboard.consultantReview.description", "Votre dossier a été instruit avec succès. Un consultant senior est actuellement mobilisé pour auditer vos pièces, affiner vos ratios bancaires et consolider votre argumentaire de subvention.")}
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                    {t("clientDashboard.consultantReview.description", "Votre dossier a été instruit avec succès. Un consultant senior audite actuellement vos pièces justificatives, affine vos équilibres financiers et valide l'éligibilité de votre investissement.")}
                   </p>
                 </div>
 
                 {/* Encadré d'expertise */}
-                <div className="max-w-lg mx-auto bg-white p-6 rounded-2xl border border-purple-200 text-left rtl:text-right space-y-3 shadow-sm">
-                  <div className="text-xs font-bold uppercase tracking-wider text-purple-900 flex items-center gap-1.5 mb-2">
-                    <ShieldCheck className="w-4 h-4 text-purple-600" />
-                    <span>{t("clientDashboard.consultantReview.commitmentsTitle", "Engagements de l'audit consultant :")}</span>
+                <div className="max-w-lg mx-auto bg-white p-5 rounded-lg border border-slate-200 text-left rtl:text-right space-y-3 shadow-2xs">
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-1.5 mb-1">
+                    <ShieldCheck className="w-4 h-4 text-indigo-700" />
+                    <span>{t("clientDashboard.consultantReview.commitmentsTitle", "Périmètre de l'audit de conformité :")}</span>
                   </div>
-                  <div className="space-y-2 text-xs text-gray-700 font-medium">
+                  <div className="space-y-2 text-xs text-slate-700">
                     <div className="flex items-start gap-2">
-                      <span className="text-purple-600 font-bold">•</span>
+                      <span className="text-slate-900 font-bold">•</span>
                       <span>{t("clientDashboard.consultantReview.commitment1", "Vérification de la conformité juridique et de l'assiette CAPEX éligible.")}</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-purple-600 font-bold">•</span>
-                      <span>{t("clientDashboard.consultantReview.commitment2", "Optimisation du montage financier (fonds propres, ratios bancaires, dette).")}</span>
+                      <span className="text-slate-900 font-bold">•</span>
+                      <span>{t("clientDashboard.consultantReview.commitment2", "Optimisation du plan de financement (fonds propres, ratios bancaires, concours de crédit).")}</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-purple-600 font-bold">•</span>
-                      <span>{t("clientDashboard.consultantReview.commitment3", "Remise du rapport officiel certifié prêt pour soumission bancaire.")}</span>
+                      <span className="text-slate-900 font-bold">•</span>
+                      <span>{t("clientDashboard.consultantReview.commitment3", "Délivrance du rapport officiel certifié prêt pour soumission administrative et bancaire.")}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     onClick={() => setActiveTab("requests")}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold shadow-md transition-all active:scale-95"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs transition-colors"
                   >
-                    <span>{t("clientDashboard.consultantReview.consultRequestsBtn", "Consulter la messagerie & les requêtes")}</span>
+                    <span>{t("clientDashboard.consultantReview.consultRequestsBtn", "Consulter le bordereau & les échanges")}</span>
                     <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                   </button>
                   <button
                     onClick={handleRefreshStatus}
                     disabled={isRefreshing}
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold transition-all shadow-xs"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors shadow-2xs"
                   >
-                    <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
-                    <span>{t("clientDashboard.consultantReview.refreshBtn", "Actualiser")}</span>
+                    <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                    <span>{t("clientDashboard.consultantReview.refreshBtn", "Actualiser le statut")}</span>
                   </button>
                 </div>
               </div>
             ) : currentStatus === "GENERATION_FAILED" ? (
               isReediting ? (
                 <div className="p-4 sm:p-6 lg:p-8 space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                  <div className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-lg">
                     <span className="text-xs font-bold text-amber-900">
                       {t("clientDashboard.generationFailed.reeditModeBanner", "Mode Réédition actif : Vous pouvez réajuster vos données et relancer la certification.")}
                     </span>
@@ -467,73 +622,73 @@ const ClientDashboard: React.FC = () => {
                   />
                 </div>
               ) : (
-                <div className="p-8 md:p-14 text-center space-y-8 animate-fadeIn">
-                  <div className="w-20 h-20 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shadow-md">
-                    <AlertTriangle className="w-10 h-10" />
+                <div className="p-8 md:p-12 text-center space-y-6">
+                  <div className="w-14 h-14 mx-auto rounded-full bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center">
+                    <AlertTriangle className="w-7 h-7" />
                   </div>
 
-                  <div className="max-w-xl mx-auto space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold uppercase tracking-wider border border-amber-300">
-                      <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span>
-                      {t("clientDashboard.generationFailed.badge", "Prise en charge active")}
+                  <div className="max-w-xl mx-auto space-y-2">
+                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-amber-50 text-amber-900 text-xs font-semibold border border-amber-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-700"></span>
+                      {t("clientDashboard.generationFailed.badge", "Vérification complémentaire requise")}
                     </div>
-                    <h2 className={`${font.display} text-2xl md:text-3xl font-bold text-gray-900`}>
-                      {t("clientDashboard.generationFailed.title", "Génération en cours de reprise par notre équipe")}
+                    <h2 className={`${font.display} text-xl md:text-2xl font-bold text-slate-900`}>
+                      {t("clientDashboard.generationFailed.title", "Vérification manuelle en cours par notre équipe")}
                     </h2>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      {t("clientDashboard.generationFailed.description", "La génération automatique a rencontré un aléa technique temporaire. Notre équipe technique en a été automatiquement notifiée et reprend le traitement de votre dossier pour vous délivrer votre rapport certifié.")}
+                    <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                      {t("clientDashboard.generationFailed.description", "Le traitement automatique a nécessité un contrôle complémentaire. Notre équipe technique et nos analystes ont été notifiés et finalisent manuellement votre dossier d'investissement.")}
                     </p>
                   </div>
 
-                  <div className="max-w-md mx-auto bg-amber-50/70 p-4 rounded-xl border border-amber-200 text-xs text-amber-900 text-left rtl:text-right space-y-1">
-                    <span className="font-bold block">{t("clientDashboard.generationFailed.safeDataNoteTitle", "Information sécurisée :")}</span>
-                    <span>{t("clientDashboard.generationFailed.safeDataNote", "Toutes vos pièces justificatives et données saisies sont conservées. Aucune action n'est requise de votre part, mais vous pouvez rééditer vos chiffres si nécessaire.")}</span>
+                  <div className="max-w-md mx-auto bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs text-slate-700 text-left rtl:text-right space-y-1">
+                    <span className="font-semibold text-slate-900 block">{t("clientDashboard.generationFailed.safeDataNoteTitle", "Données sécurisées :")}</span>
+                    <span>{t("clientDashboard.generationFailed.safeDataNote", "L'intégralité de vos pièces et éléments saisis est conservée. Aucune ressaisie n'est nécessaire.")}</span>
                   </div>
 
                   <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
                     <button
                       onClick={handleRefreshStatus}
                       disabled={isRefreshing}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-sm transition-all"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs transition-colors"
                     >
-                      <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
-                      <span>{isRefreshing ? t("clientDashboard.generationFailed.checking", "Vérification...") : t("clientDashboard.generationFailed.checkProgressBtn", "Vérifier l'état d'avancement")}</span>
+                      <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                      <span>{isRefreshing ? t("clientDashboard.generationFailed.checking", "Vérification en cours...") : t("clientDashboard.generationFailed.checkProgressBtn", "Vérifier l'état d'avancement")}</span>
                     </button>
                     <button
                       onClick={() => setIsReediting(true)}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold transition-all shadow-xs"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors shadow-2xs"
                     >
-                      <RotateCcw className="w-4 h-4" />
-                      <span>{t("clientDashboard.generationFailed.reeditBtn", "Rééditer mes données")}</span>
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>{t("clientDashboard.generationFailed.reeditBtn", "Rééditer les données")}</span>
                     </button>
                   </div>
                 </div>
               )
             ) : currentStatus === "DELIVERED" ? (
               <div className="p-8 md:p-12 text-center space-y-6">
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4EA] text-[#1E8E3E] flex items-center justify-center shadow-sm">
-                  <CheckCircle2 className="w-8 h-8 text-[#1E8E3E]" />
+                <div className="w-14 h-14 mx-auto rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center">
+                  <CheckCircle2 className="w-7 h-7" />
                 </div>
 
                 <div className="max-w-md mx-auto space-y-2">
-                  <h2 className={`${font.display} text-2xl font-bold text-[#191C1D]`}>
-                    {t("clientDashboard.delivered.title", "Félicitations ! Votre dossier est livré 🎉")}
+                  <h2 className={`${font.display} text-xl md:text-2xl font-bold text-slate-900`}>
+                    {t("clientDashboard.delivered.title", "Dossier d'investissement finalisé et délivré")}
                   </h2>
-                  <p className="text-[#5F6368] text-sm">
-                    {t("clientDashboard.delivered.description", "Votre rapport d'investissement et de demande de subvention a été finalisé et certifié par notre consultant expert.")}
+                  <p className="text-slate-600 text-xs sm:text-sm">
+                    {t("clientDashboard.delivered.description", "Votre rapport d'investissement et de demande de prime est certifié conforme aux critères de la Charte de l'Investissement.")}
                   </p>
                 </div>
 
                 {deliveredDoc ? (
-                  <div className="max-w-lg mx-auto bg-white p-6 rounded-lg border border-[#DADCE0] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-left rtl:text-right">
+                  <div className="max-w-lg mx-auto bg-white p-5 rounded-lg border border-slate-300 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-left rtl:text-right">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-[#E8F0FE] rounded-lg text-[#1A73E8]">
-                        <FileText className="w-6 h-6" />
+                      <div className="p-2.5 bg-slate-100 rounded border border-slate-200 text-slate-700">
+                        <FileText className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-[#191C1D]">{t("clientDashboard.delivered.reportTitle", "Rapport d'Investissement Final (PDF)")}</h4>
-                        <p className="text-xs text-[#5F6368]">
-                          {deliveredDoc.original_name || t("clientDashboard.delivered.reportDesc", "Document certifié Masubvention.ma")}
+                        <h4 className="text-xs font-bold text-slate-900">{t("clientDashboard.delivered.reportTitle", "Rapport d'Investissement Final (PDF)")}</h4>
+                        <p className="text-[11px] text-slate-500">
+                          {deliveredDoc.original_name || t("clientDashboard.delivered.reportDesc", "Document certifié conforme Masubvention.ma")}
                         </p>
                       </div>
                     </div>
@@ -542,22 +697,22 @@ const ClientDashboard: React.FC = () => {
                       href={getDocUrl(deliveredDoc.file_path)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E8E3E] text-white text-sm font-bold rounded-lg hover:bg-[#197A35] transition-colors shadow-sm whitespace-nowrap"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-700 text-white text-xs font-semibold rounded hover:bg-emerald-800 transition-colors shadow-2xs whitespace-nowrap"
                     >
-                      <Download className="w-4 h-4" />
-                      {t("clientDashboard.delivered.downloadPdf", "Télécharger PDF")}
+                      <Download className="w-3.5 h-3.5" />
+                      {t("clientDashboard.delivered.downloadPdf", "Télécharger le PDF")}
                     </a>
                   </div>
                 ) : (
-                  <div className="max-w-lg mx-auto bg-emerald-50 p-6 rounded-lg border border-emerald-200 text-center space-y-3">
-                    <p className="text-xs font-semibold text-emerald-800">
-                      {t("clientDashboard.delivered.refreshNotice", "Le statut de votre dossier est Livré. Si le lien de téléchargement direct ne s'affiche pas immédiatement, veuillez rafraîchir la page.")}
+                  <div className="max-w-lg mx-auto bg-slate-50 p-5 rounded-lg border border-slate-200 text-center space-y-3">
+                    <p className="text-xs text-slate-700">
+                      {t("clientDashboard.delivered.refreshNotice", "Le statut de votre dossier est validé. Si le lien de téléchargement direct ne s'affiche pas immédiatement, veuillez actualiser la page.")}
                     </p>
                     <button
                       onClick={handleRefreshStatus}
-                      className="px-4 py-2 bg-emerald-600 text-white rounded text-xs font-bold"
+                      className="px-4 py-2 bg-slate-900 text-white rounded text-xs font-semibold hover:bg-slate-800"
                     >
-                      {t("clientDashboard.delivered.refreshBtn", "Rafraîchir")}
+                      {t("clientDashboard.delivered.refreshBtn", "Actualiser")}
                     </button>
                   </div>
                 )}
@@ -595,13 +750,75 @@ const ClientDashboard: React.FC = () => {
           </p>
           <button
             onClick={() => navigate("/client/test")}
-            className="mt-4 px-6 py-2.5 bg-[#1A73E8] text-white text-sm font-bold rounded-lg hover:bg-[#174EA6] transition-colors"
+            className="mt-4 px-6 py-2.5 bg-[#1A73E8] text-white text-sm font-bold rounded-lg hover:bg-[#174EA6] transition-colors cursor-pointer"
           >
             {t("clientDashboard.startFirstTest", "Nouveau test d'éligibilité")}
           </button>
         </div>
       )}
         </div>
+
+        {/* Modal de changement de formule */}
+        {showUpgradeModal && activeDossier && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs animate-fadeIn">
+            <div className="bg-white rounded-lg max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-1.5 rounded bg-slate-100 text-slate-800 border border-slate-200">
+                    <ShieldCheck className="w-5 h-5" />
+                  </span>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {t("clientDashboard.upgradeModalTitle", "Faire évoluer votre formule d'accompagnement")}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowUpgradeModal(false)}
+                  className="text-slate-400 hover:text-slate-700 text-base font-bold cursor-pointer p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {t("clientDashboard.upgradeModalSubtitle", "Sélectionnez une formule supérieure pour bénéficier d'un conseiller dédié, déléguer la constitution de vos pièces ou mandater le cabinet pour la postulation officielle.")}
+              </p>
+
+              <div className="space-y-3 pt-1">
+                {activeDossier.plan_type === "PLAN_1" && (
+                  <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">Formule 2 · Accompagnement</span>
+                      <h4 className="text-xs font-bold text-slate-900">Montage & Conseil Expert</h4>
+                      <p className="text-[11px] text-slate-500">Messagerie directe, délégation intégrale de saisie, modèle CPC certifié.</p>
+                    </div>
+                    <button
+                      onClick={() => handleUpgradePlan("PLAN_2")}
+                      disabled={isUpgrading}
+                      className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shrink-0 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      {isUpgrading ? "..." : t("clientDashboard.choosePlan2", "Choisir la Formule 2")}
+                    </button>
+                  </div>
+                )}
+
+                <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">Formule 3 · Mandat Intégral</span>
+                    <h4 className="text-xs font-bold text-slate-900">Postulation Clé en Main Cabinet</h4>
+                    <p className="text-[11px] text-slate-500">Le cabinet postule officiellement pour vous auprès de la CRI et pilote l'instruction.</p>
+                  </div>
+                  <button
+                    onClick={() => handleUpgradePlan("PLAN_3")}
+                    disabled={isUpgrading}
+                    className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shrink-0 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    {isUpgrading ? "..." : t("clientDashboard.choosePlan3", "Choisir la Formule 3")}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

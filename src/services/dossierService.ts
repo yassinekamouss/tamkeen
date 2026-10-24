@@ -105,10 +105,25 @@ export const dossierService = {
     return response.data;
   },
 
-  selectPlan: async (dossierId: number, planType: "PLAN_1" | "PLAN_2"): Promise<any> => {
+  selectPlan: async (dossierId: number, planType: "PLAN_1" | "PLAN_2" | "PLAN_3"): Promise<any> => {
     const response = await api.post(
       `/dossiers/${dossierId}/select-plan`,
       { plan_type: planType }
+    );
+    return response.data;
+  },
+
+  upgradePlan: async (dossierId: number, newPlanType: "PLAN_2" | "PLAN_3"): Promise<any> => {
+    const response = await api.post(
+      `/dossiers/${dossierId}/upgrade-plan`,
+      { new_plan_type: newPlanType }
+    );
+    return response.data;
+  },
+
+  delegateStepper: async (dossierId: number): Promise<any> => {
+    const response = await api.post(
+      `/dossiers/${dossierId}/delegate`
     );
     return response.data;
   },

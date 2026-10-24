@@ -62,7 +62,6 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
-        const mappedExpected = buildFormValuesFromTest(currentTest, user);
         // Si la sauvegarde contient des données cohérentes et non l'ancien fallback erroné
         const isStaleFallback =
           parsed.branche_activite === "MANUF-25" ||
@@ -93,7 +92,6 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          const mappedExpected = buildFormValuesFromTest(currentTest, user);
           const isStaleFallback =
             parsed.branche_activite === "MANUF-25" ||
             (parsed.secteur_activite === "MANUF" &&
@@ -162,40 +160,68 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
   };
 
   // Validation bloquante par étape
+  const [showDelegateModal, setShowDelegateModal] = useState(false);
+  const [isDelegating, setIsDelegating] = useState(false);
+  const isPlan1 = currentDossier?.plan_type === "PLAN_1";
+
+  const handleConfirmDelegate = async () => {
+    setIsDelegating(true);
+    try {
+      await dossierService.delegateStepper(dossierId);
+      localStorage.removeItem(storageKey);
+      setShowDelegateModal(false);
+      await onSubmitted();
+    } catch (err: any) {
+      console.error("Erreur lors de la délégation:", err);
+      setSubmitGlobalError(
+        err.response?.data?.message || err.message || "Erreur lors de la délégation."
+      );
+      setShowDelegateModal(false);
+    } finally {
+      setIsDelegating(false);
+    }
+  };
+
   const validateStep = (step: number): boolean => {
     const errs: Record<string, string> = {};
 
     if (step === 1) {
       if (!formValues.region_id?.trim()) errs.region_id = t("stepper.validation.chooseRegion", "Veuillez choisir une région.");
-      if (!formValues.province_id?.trim()) errs.province_id = t("stepper.validation.chooseProvince", "Veuillez choisir une province.");
-      if (!formValues.adresse_projet?.trim()) errs.adresse_projet = t("stepper.validation.addressRequired", "L'adresse du projet est requise.");
-      if (
-        formValues.regime_foncier === "ACQUISITION" &&
-        !formValues.titre_foncier?.trim()
-      ) {
-        errs.titre_foncier = t("stepper.validation.titreRequired", "La référence du titre foncier ou de la réquisition est requise en acquisition.");
+      if (!isPlan1) {
+        if (!formValues.province_id?.trim()) errs.province_id = t("stepper.validation.chooseProvince", "Veuillez choisir une province.");
+        if (!formValues.adresse_projet?.trim()) errs.adresse_projet = t("stepper.validation.addressRequired", "L'adresse du projet est requise.");
+        if (
+          formValues.regime_foncier === "ACQUISITION" &&
+          !formValues.titre_foncier?.trim()
+        ) {
+          errs.titre_foncier = t("stepper.validation.titreRequired", "La référence du titre foncier ou de la réquisition est requise en acquisition.");
+        }
       }
     } else if (step === 2) {
       if (!formValues.nature_projet) errs.nature_projet = t("stepper.validation.natureRequired", "Veuillez indiquer la nature du projet.");
       if (!formValues.secteur_activite) errs.secteur_activite = t("stepper.validation.sectorRequired", "Veuillez choisir un secteur d'activité.");
-      if (!formValues.emplois_directs || formValues.emplois_directs < 1) {
+      if (!isPlan1 && (!formValues.emplois_directs || formValues.emplois_directs < 1)) {
         errs.emplois_directs = t("stepper.validation.jobsMin", "Le nombre d'emplois directs doit être d'au moins 1.");
       }
     } else if (step === 3) {
-      if (math.totalCapex <= 0) {
+      if (!isPlan1 && math.totalCapex <= 0) {
         errs.totalCapex = t("stepper.validation.capexMin", "Le montant total d'investissement HT doit être supérieur à 0 MAD.");
       }
     } else if (step === 4) {
-      if (!formValues.ca_cible_croisiere || formValues.ca_cible_croisiere <= 0) {
-        errs.ca_cible_croisiere = t("stepper.validation.caMin", "Le chiffre d'affaires cible doit être supérieur à 0 MAD.");
-      }
-      if (!formValues.salaire_moyen_brut || formValues.salaire_moyen_brut <= 0) {
-        errs.salaire_moyen_brut = t("stepper.validation.salaryMin", "Le salaire brut moyen doit être supérieur à 0 MAD.");
+      if (!isPlan1) {
+        if (!formValues.ca_cible_croisiere || formValues.ca_cible_croisiere <= 0) {
+          errs.ca_cible_croisiere = t("stepper.validation.caMin", "Le chiffre d'affaires cible doit être supérieur à 0 MAD.");
+        }
+        if (!formValues.salaire_moyen_brut || formValues.salaire_moyen_brut <= 0) {
+          errs.salaire_moyen_brut = t("stepper.validation.salaryMin", "Le salaire brut moyen doit être supérieur à 0 MAD.");
+        }
       }
     } else if (step === 5) {
-      if (!fileFiscale) errs.file_fiscale = t("stepper.validation.fiscaleRequired", "L'attestation fiscale est obligatoire.");
-      if (!fileRC) errs.file_rc = t("stepper.validation.rcRequired", "Le registre de commerce (RC / Modèle J) est obligatoire.");
-      if (!fileCNSS) errs.file_cnss = t("stepper.validation.cnssRequired", "L'attestation d'affiliation CNSS est obligatoire.");
+      if (!isPlan1) {
+        if (!fileFiscale) errs.file_fiscale = t("stepper.validation.fiscaleRequired", "L'attestation fiscale est obligatoire.");
+        if (!fileRC) errs.file_rc = t("stepper.validation.rcRequired", "Le registre de commerce (RC / Modèle J) est obligatoire.");
+        if (!fileCNSS) errs.file_cnss = t("stepper.validation.cnssRequired", "L'attestation d'affiliation CNSS est obligatoire.");
+      }
     }
 
     setErrors(errs);
@@ -218,7 +244,11 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
 
   const handleSubmit = async () => {
     if (!validateStep(5)) {
-      setSubmitGlobalError(t("stepper.validation.missingFiles", "Veuillez joindre les 3 documents obligatoires avant de soumettre."));
+      setSubmitGlobalError(
+        isPlan1
+          ? t("stepper.validation.missingBasic", "Veuillez renseigner les informations de base requises.")
+          : t("stepper.validation.missingFiles", "Veuillez joindre les 3 documents obligatoires avant de soumettre.")
+      );
       return;
     }
 
@@ -281,15 +311,27 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
               })}
             </h2>
           </div>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
-            title={t("stepper.common.resetBtn", "Réinitialiser")}
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{t("stepper.common.resetBtn", "Réinitialiser")}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {!isPlan1 && (
+              <button
+                type="button"
+                onClick={() => setShowDelegateModal(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                title={t("stepper.delegateBtnTitle", "Confier la saisie de ce formulaire à votre consultant")}
+              >
+                <span>🤝 {t("stepper.delegateBtn", "Déléguer à mon consultant")}</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleReset}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+              title={t("stepper.common.resetBtn", "Réinitialiser")}
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t("stepper.common.resetBtn", "Réinitialiser")}</span>
+            </button>
+          </div>
         </div>
 
         {/* Stepper Wizard Bar */}
@@ -405,6 +447,51 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
           )}
         </div>
       </div>
+
+      {/* Modal de confirmation de délégation */}
+      {showDelegateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4 text-center">
+            <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center text-xl">
+              🤝
+            </div>
+            <h3 className="text-lg font-bold text-gray-900">
+              {t("stepper.delegateModal.title", "Déléguer le montage à votre consultant ?")}
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+              {t(
+                "stepper.delegateModal.desc",
+                "Vous n'aurez plus à saisir ce formulaire. Votre consultant senior prendra directement la main pour structurer vos données financières et administratives. Vous pourrez échanger avec lui et lui transmettre vos pièces via la messagerie."
+              )}
+            </p>
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDelegateModal(false)}
+                disabled={isDelegating}
+                className="flex-1 py-2.5 px-4 rounded-lg border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
+              >
+                {t("stepper.delegateModal.cancel", "Continuer moi-même")}
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelegate}
+                disabled={isDelegating}
+                className="flex-1 py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isDelegating ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>{t("stepper.delegateModal.delegating", "Délégation...")}</span>
+                  </>
+                ) : (
+                  <span>{t("stepper.delegateModal.confirm", "Confirmer la délégation")}</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Encart flottant récapitulatif en temps réel */}
       <StepperFloatingSummary values={formValues} />

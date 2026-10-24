@@ -79,6 +79,10 @@ export interface DossierDetail {
   dossierData?: DossierDataInfo | null;
   dossierRequests: ConsultantRequestItem[];
   consultant_id?: number | null;
+  is_delegated?: boolean;
+  postulation_step?: number;
+  postulation_data?: any;
+  stepperInputs?: any;
   createdAt: string;
   updatedAt: string;
 }

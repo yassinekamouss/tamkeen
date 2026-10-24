@@ -262,7 +262,7 @@ export function getDefaultProvinceForRegion(regionId: string): string {
 
 export function buildFormValuesFromTest(
   test?: TestElegibiliteData | null,
-  user?: User | null
+  _user?: User | null
 ): StepperFormValues {
   if (!test) {
     return { ...DEFAULT_FORM_VALUES };

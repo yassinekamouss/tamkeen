@@ -28,9 +28,12 @@ export type DossierStatus =
   | "GENERATION_FAILED"
   | "IN_PROGRESS"
   | "CLIENT_APPROVAL_PENDING"
-  | "EXTERNAL_PROCESS";
+  | "EXTERNAL_PROCESS"
+  | "DELEGATED_TO_CONSULTANT"
+  | "POSTULATION_IN_PROGRESS"
+  | "POSTULATION_COMPLETED";
 
-export type PlanType = "PLAN_1" | "PLAN_2";
+export type PlanType = "PLAN_1" | "PLAN_2" | "PLAN_3";
 
 export interface Dossier {
   id: number;
@@ -40,6 +43,9 @@ export interface Dossier {
   plan_type: PlanType;
   status: DossierStatus;
   current_step_progress: number;
+  is_delegated?: boolean;
+  postulation_step?: number;
+  postulation_data?: any;
   documents?: any[];
   createdAt?: string;
   updatedAt?: string;

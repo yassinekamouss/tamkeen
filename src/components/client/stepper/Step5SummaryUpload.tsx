@@ -20,7 +20,6 @@ import {
   UploadCloud,
   FileText,
   Trash2,
-  Sparkles,
   Building2,
   TrendingUp,
   ShieldCheck,
@@ -181,58 +180,58 @@ export const Step5SummaryUpload: React.FC<Step5SummaryUploadProps> = ({
         </p>
       </div>
 
-      {/* Hero Card : Prime & Subvention Estimée */}
-      <div className="p-6 bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white rounded-2xl shadow-md space-y-4">
+      {/* Carte Récapitulative Officielle : Prime & Subvention Estimée */}
+      <div className="p-6 bg-slate-900 text-white rounded-lg border border-slate-800 space-y-4 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
-              {t("stepper.step5.heroBadge", "Charte de l'Investissement TPME (Volet 2)")}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-xs font-semibold mb-1 border border-slate-700">
+              <ShieldCheck className="w-3.5 h-3.5 text-slate-300" />
+              {t("stepper.step5.heroBadge", "Charte de l'Investissement TPME (Loi-cadre n° 03-22)")}
             </div>
-            <h4 className="text-xl sm:text-2xl font-black">
+            <h4 className="text-lg sm:text-xl font-bold text-white">
               {t("stepper.step5.heroTitle", "Montant Estimé de la Subvention d'Investissement")}
             </h4>
           </div>
           <div className="text-left sm:text-right rtl:sm:text-left">
-            <span className="text-xs text-blue-200 block font-semibold">
+            <span className="text-xs text-slate-400 block font-medium">
               {t("stepper.step5.heroRate", "Taux Global de Prime")}
             </span>
-            <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
+            <span className="text-2xl sm:text-3xl font-bold font-mono text-emerald-400">
               {formatPercent(math.tauxGlobal)}
             </span>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-baseline justify-between gap-2 pt-1">
-          <div className="text-3xl sm:text-4xl font-black font-mono text-white tracking-tight">
+          <div className="text-3xl sm:text-4xl font-bold font-mono text-white tracking-tight">
             {formatMAD(math.montantSubventionEstimee)}
           </div>
-          <span className="text-xs text-blue-200">
+          <span className="text-xs text-slate-400">
             {t("stepper.step5.heroBasis", "Calculé sur une assiette CAPEX HT éligible de")}{" "}
-            <strong>{formatMAD(math.totalCapex)}</strong>
+            <strong className="text-white font-mono">{formatMAD(math.totalCapex)}</strong>
           </span>
         </div>
 
         {/* Détail des composantes de la prime */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-white/10 text-xs">
-          <div className="bg-white/10 backdrop-blur-xs p-2.5 rounded-lg">
-            <span className="text-blue-200 block text-[11px]">
+          <div className="bg-slate-800/80 border border-slate-700/60 p-2.5 rounded">
+            <span className="text-slate-400 block text-[11px]">
               {t("stepper.step5.primeTerritoriale", { zone: zoneInfo.zone, defaultValue: `Prime Territoriale (${zoneInfo.zone})` })}
             </span>
             <span className="font-bold text-white font-mono text-sm">
               {formatPercent(math.tauxTerritoriale)}
             </span>
           </div>
-          <div className="bg-white/10 backdrop-blur-xs p-2.5 rounded-lg">
-            <span className="text-blue-200 block text-[11px]">
+          <div className="bg-slate-800/80 border border-slate-700/60 p-2.5 rounded">
+            <span className="text-slate-400 block text-[11px]">
               {t("stepper.step5.primeEmploi", "Prime Emploi")}
             </span>
             <span className="font-bold text-white font-mono text-sm">
               {formatPercent(math.tauxEmploi)}
             </span>
           </div>
-          <div className="bg-white/10 backdrop-blur-xs p-2.5 rounded-lg">
-            <span className="text-blue-200 block text-[11px]">
+          <div className="bg-slate-800/80 border border-slate-700/60 p-2.5 rounded">
+            <span className="text-slate-400 block text-[11px]">
               {t("stepper.step5.primePrioritaire", "Activité Prioritaire")}
             </span>
             <span className="font-bold text-white font-mono text-sm">

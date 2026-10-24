@@ -143,4 +143,73 @@ export const adminDossierService = {
     );
     return response.data;
   },
+
+  // 9. Expédition rapide 1-clic pour Plan 1
+  fastTrackDeliver: async (dossierId: number): Promise<any> => {
+    const response = await api.post(
+      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/fast-track-deliver`
+    );
+    return response.data;
+  },
+
+  // 10. Édition ou complétion des paramètres Stepper par le consultant (Plan 2 & 3)
+  consultantSaveStepper: async (
+    dossierId: number,
+    payload: {
+      stepperData: Record<string, any>;
+      autoAdvance?: boolean;
+      triggerMlops?: boolean;
+      referencedFiles?: Record<string, any>;
+      files?: {
+        file_fiscale?: File | null;
+        file_rc?: File | null;
+        file_cnss?: File | null;
+      };
+    } | FormData
+  ): Promise<any> => {
+    let body: any = payload;
+    let headers: Record<string, string> = {};
+
+    if (!(payload instanceof FormData)) {
+      const formData = new FormData();
+      formData.append("stepperData", JSON.stringify(payload.stepperData || {}));
+      formData.append("autoAdvance", String(payload.autoAdvance || false));
+      formData.append("triggerMlops", String(payload.triggerMlops || false));
+      if (payload.referencedFiles) {
+        formData.append("referencedFiles", JSON.stringify(payload.referencedFiles));
+      }
+      if (payload.files?.file_fiscale) {
+        formData.append("file_fiscale", payload.files.file_fiscale);
+      }
+      if (payload.files?.file_rc) {
+        formData.append("file_rc", payload.files.file_rc);
+      }
+      if (payload.files?.file_cnss) {
+        formData.append("file_cnss", payload.files.file_cnss);
+      }
+      body = formData;
+      headers = { "Content-Type": "multipart/form-data" };
+    } else {
+      headers = { "Content-Type": "multipart/form-data" };
+    }
+
+    const response = await api.put(
+      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/stepper-update`,
+      body,
+      { headers }
+    );
+    return response.data;
+  },
+
+  // 11. Mise à jour de la timeline de postulation (Plan 3)
+  updatePostulationTimeline: async (
+    dossierId: number,
+    payload: { step: number; notes?: string; reference?: string; status?: string }
+  ): Promise<any> => {
+    const response = await api.put(
+      `${ADMIN_API_PREFIX}/dossiers/${dossierId}/postulation-step`,
+      payload
+    );
+    return response.data;
+  },
 };

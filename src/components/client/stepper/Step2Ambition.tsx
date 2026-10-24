@@ -9,8 +9,8 @@ import {
 } from "./tpmeReferentiels";
 import type { StepperFormValues } from "./useStepperMath";
 import {
-  Rocket,
-  Sparkles,
+  Building2,
+  TrendingUp,
   Users,
   Star,
   Landmark,
@@ -42,7 +42,7 @@ export const Step2Ambition: React.FC<Step2AmbitionProps> = ({
     <div className="space-y-6">
       <div className="border-b border-gray-200 pb-4">
         <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-          <Rocket className="w-5 h-5 text-blue-600" />
+          <Building2 className="w-5 h-5 text-blue-600" />
           <span>{t("stepper.step2.title", "Étape 2 : Ambition & Secteur d'Activité")}</span>
         </h3>
         <p className="text-sm text-gray-500 mt-1">
@@ -68,7 +68,7 @@ export const Step2Ambition: React.FC<Step2AmbitionProps> = ({
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            <Sparkles className="w-4 h-4" />
+            <Building2 className="w-4 h-4" />
             <span>{t("stepper.step2.creationTitle", "Création d'entreprise")}</span>
           </button>
           <button
@@ -80,7 +80,7 @@ export const Step2Ambition: React.FC<Step2AmbitionProps> = ({
                 : "text-gray-600 hover:text-gray-900"
             }`}
           >
-            <Rocket className="w-4 h-4" />
+            <TrendingUp className="w-4 h-4" />
             <span>{t("stepper.step2.extensionTitle", "Extension d'activité")}</span>
           </button>
         </div>

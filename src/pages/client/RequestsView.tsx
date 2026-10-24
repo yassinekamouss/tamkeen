@@ -98,38 +98,58 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
     },
   });
 
-  // Plan 1 Lock Screen
-  if (planType !== "PLAN_2") {
+  // Plan 1 Lock Screen (Seuls Plan 2 et Plan 3 ont accès au registre d'échanges)
+  if (planType === "PLAN_1") {
     return (
       <div className={`p-6 md:p-10 text-center space-y-6 ${font.body}`} dir={isRTL ? "rtl" : "ltr"}>
-        <div className="max-w-xl mx-auto bg-[#F8F9FA] p-1.5 rounded-lg border border-[#DADCE0]">
-          <div className="bg-white rounded border border-[#DADCE0] p-8 space-y-6 text-center">
-            <div className="w-14 h-14 mx-auto rounded-full bg-[#E8F0FE] text-[#1A73E8] flex items-center justify-center border border-[#C1C6D6]">
-              <Lock className="w-6 h-6 text-[#1A73E8]" />
+        <div className="max-w-xl mx-auto bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+          <div className="bg-white rounded border border-slate-300 p-8 space-y-6 text-center">
+            <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200">
+              <Lock className="w-6 h-6 text-slate-700" />
             </div>
 
             <div className="space-y-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8F0FE] text-[#005BBF] text-[11px] font-bold uppercase tracking-wider border border-[#C1C6D6]">
-                {t("requests.lockBadge", "Exclusivité Plan 2 (Accompagnement Expert)")}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-slate-100 text-slate-800 text-xs font-semibold border border-slate-200">
+                {t("requests.lockBadge", "Exclusivité Formules Accompagnées (Formules 2 & 3)")}
               </span>
-              <h2 className={`${font.display} text-xl md:text-2xl font-bold text-[#191C1D]`}>
-                {t("requests.lockTitle", "Portail des Échanges Administratifs")}
+              <h2 className={`${font.display} text-xl md:text-2xl font-bold text-slate-900`}>
+                {t("requests.lockTitle", "Bordereau & Correspondance Dédiée")}
               </h2>
-              <p className="text-[#5F6368] text-xs md:text-sm max-w-md mx-auto leading-relaxed">
-                {t("requests.lockDesc", "Le registre de correspondance directe et le suivi d'instructions personnalisées avec un consultant expert sont réservés aux dossiers souscrits au Plan 2.")}
+              <p className="text-slate-600 text-xs md:text-sm max-w-md mx-auto leading-relaxed">
+                {t("requests.lockDesc", "Le registre des transmissions directes et l'accompagnement personnalisé par un conseiller sont réservés aux dossiers souscrits à la Formule 2 (Accompagnement) ou Formule 3 (Mandat Clé en Main).")}
               </p>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={async () => {
-                  await dossierService.selectPlan(dossierId, "PLAN_2");
-                  queryClient.invalidateQueries({ queryKey: ["clientDossiers"] });
-                  window.location.reload();
+                  try {
+                    await dossierService.upgradePlan(dossierId, "PLAN_2");
+                    queryClient.invalidateQueries({ queryKey: ["clientDossiers"] });
+                    window.location.reload();
+                  } catch (e: any) {
+                    alert(e.response?.data?.message || e.message || "Erreur lors de l'upgrade");
+                  }
                 }}
-                className="px-6 py-3 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold rounded shadow-[0_4px_14px_rgba(26,115,232,0.12)] transition-all flex items-center justify-center gap-2 mx-auto"
+                className="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shadow-2xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>{t("requests.activatePlan2", "Activer l'Accompagnement Consultant (Plan 2)")}</span>
+                <span>{t("requests.activatePlan2", "Choisir la Formule 2 (Accompagnement)")}</span>
+                <ChevronRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
+              </button>
+
+              <button
+                onClick={async () => {
+                  try {
+                    await dossierService.upgradePlan(dossierId, "PLAN_3");
+                    queryClient.invalidateQueries({ queryKey: ["clientDossiers"] });
+                    window.location.reload();
+                  } catch (e: any) {
+                    alert(e.response?.data?.message || e.message || "Erreur lors de l'upgrade");
+                  }
+                }}
+                className="w-full sm:w-auto px-5 py-2.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded shadow-2xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>{t("requests.activatePlan3", "Choisir la Formule 3 (Mandat Clé en Main)")}</span>
                 <ChevronRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
               </button>
             </div>
@@ -171,24 +191,24 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
       <div className="flex items-center gap-2 px-6 py-3 border-b border-[#DADCE0] bg-white shrink-0">
         <button
           onClick={() => setActiveSubTab("conversation")}
-          className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${activeSubTab === "conversation"
-            ? "bg-[#1A73E8] text-white"
-            : "text-[#5F6368] hover:bg-[#F3F4F5]"
+          className={`px-4 py-2 text-xs font-semibold rounded transition-colors ${activeSubTab === "conversation"
+            ? "bg-slate-900 text-white"
+            : "text-slate-600 hover:bg-slate-100"
             }`}
         >
-          {t("requests.tabConversation", "Conversation Libre")}
+          {t("requests.tabConversation", "Correspondance & Échanges")}
         </button>
         <button
           onClick={() => setActiveSubTab("documents")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-colors ${activeSubTab === "documents"
-            ? "bg-[#1A73E8] text-white"
-            : "text-[#5F6368] hover:bg-[#F3F4F5]"
+          className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded transition-colors ${activeSubTab === "documents"
+            ? "bg-slate-900 text-white"
+            : "text-slate-600 hover:bg-slate-100"
             }`}
         >
           <FolderOpen className="w-4 h-4" />
-          {t("requests.tabDocuments", "Fichiers Demandés")}
+          {t("requests.tabDocuments", "Pièces Justificatives Requises")}
           {requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length > 0 && (
-            <span className="flex items-center justify-center w-5 h-5 ml-1 text-[10px] font-bold text-white bg-orange-500 rounded-full animate-bounce">
+            <span className="flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold text-white bg-slate-900 rounded-full">
               {requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length}
             </span>
           )}

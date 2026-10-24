@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { StepperFormValues } from "./useStepperMath";
-import { useStepperMath, formatMAD, formatPercent } from "./useStepperMath";
-import { Sparkles, ChevronUp, ChevronDown } from "lucide-react";
+import { useStepperMath, formatMAD, formatPercent, type StepperFormValues } from "./useStepperMath";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 interface StepperFloatingSummaryProps {
   values: StepperFormValues;
@@ -17,17 +16,14 @@ export const StepperFloatingSummary: React.FC<StepperFloatingSummaryProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="sticky bottom-4 z-30 max-w-4xl mx-auto px-4" dir={isRTL ? "rtl" : "ltr"}>
-      <div className="bg-white/95 backdrop-blur-md border border-blue-200 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl overflow-hidden transition-all duration-300">
+    <div className="sticky bottom-4 z-30 max-w-7xl mx-auto px-4" dir={isRTL ? "rtl" : "ltr"}>
+      <div className="bg-white/95 border rounded-md overflow-hidden transition-all duration-300">
         {/* En-tête dépliable */}
         <div
           onClick={() => setIsOpen(!isOpen)}
           className="p-3.5 sm:p-4 flex items-center justify-between cursor-pointer hover:bg-blue-50/50 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm shrink-0">
-              <Sparkles className="w-5 h-5" />
-            </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
@@ -58,7 +54,7 @@ export const StepperFloatingSummary: React.FC<StepperFloatingSummaryProps> = ({
               className="p-1 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
               aria-label="Toggle details"
             >
-              {isOpen ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              {isOpen ?<ChevronUp className="w-5 h-5" />: <ChevronDown className="w-5 h-5" /> }
             </button>
           </div>
         </div>
