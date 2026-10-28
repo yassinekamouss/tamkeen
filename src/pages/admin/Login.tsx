@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios, { ADMIN_API_PREFIX, ADMIN_FRONT_PREFIX } from "../../api/axios";
+import { parseApiError } from "../../utils/apiError";
 import logo from "../../assets/logo.webp";
 
 interface LoginData {
@@ -41,8 +42,9 @@ const Login: React.FC = () => {
 
       // Rediriger
       navigate(`${ADMIN_FRONT_PREFIX}/dashboard`);
-    } catch {
-      setError("Échec de la connexion. Vérifiez vos identifiants.");
+    } catch (err: any) {
+      const parsed = parseApiError(err, "Échec de la connexion. Vérifiez vos identifiants.");
+      setError(parsed.message);
     }
   };
 

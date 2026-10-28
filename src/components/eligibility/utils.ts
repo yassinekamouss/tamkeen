@@ -1,6 +1,7 @@
 import type { FormData, EligibilityResult, AgentApiResponse } from "./types";
-
 import api from "../../api/axios";
+import { parseApiError } from "../../utils/apiError";
+
 /**
  * Fonction pour déterminer les années de CA à demander selon l'année de création
  */
@@ -40,17 +41,18 @@ export const checkEligibility = async (data: FormData, isAuth: boolean = false):
     const endpoint = isAuth ? "/test/eligibilite/me" : "/test/eligibilite";
     const response = await api.post(endpoint, data);
 
-    if (response.data.programs.length > 0) {
+    if (response.data.programs && response.data.programs.length > 0) {
       return { isEligible: true, programs: response.data.programs, testId: response.data.testId };
     } else {
       return { isEligible: false, testId: response.data.testId };
     }
   } catch (error: any) {
-    const statusCode: number | undefined = error.response?.status;
-    const message =
-      error.response?.data?.message || "Erreur lors de la vérification d'éligibilité";
-
-    return { isEligible: false, errorMessage: message, statusCode };
+    const parsed = parseApiError(error, "Erreur lors de la vérification d'éligibilité");
+    return {
+      isEligible: false,
+      errorMessage: parsed.message,
+      statusCode: parsed.status,
+    };
   }
 };
 

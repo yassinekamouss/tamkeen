@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Step1Location } from "./Step1Location";
 import { Step2Ambition } from "./Step2Ambition";
@@ -12,14 +13,18 @@ import {
 } from "./useStepperMath";
 import { dossierService } from "../../../services/dossierService";
 import { useClientAuth } from "../../../contexts/ClientAuthContext";
+import { parseApiError } from "../../../utils/apiError";
 import {
   ChevronLeft,
   ChevronRight,
   Send,
   Loader2,
   AlertTriangle,
+  ShieldCheck,
   RotateCcw,
 } from "lucide-react";
+
+
 import { StepperHeader } from "../../common/StepperHeader";
 
 interface TpmeStepperProps {
@@ -120,7 +125,28 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitGlobalError, setSubmitGlobalError] = useState<string | null>(null);
+  const [submitGlobalError, setSubmitGlobalError] = useState<{
+    message: string;
+    code?: string;
+    details?: string[];
+  } | null>(null);
+
+  const setGlobalError = (err: unknown, fallback?: string) => {
+    if (!err) {
+      setSubmitGlobalError(null);
+      return;
+    }
+    if (typeof err === "string") {
+      setSubmitGlobalError({ message: err });
+      return;
+    }
+    const parsed = parseApiError(err, fallback);
+    setSubmitGlobalError({
+      message: parsed.message,
+      code: parsed.code,
+      details: parsed.detailMessages,
+    });
+  };
 
   // Fichiers obligatoires pour l'étape 5
   const [fileFiscale, setFileFiscale] = useState<File | null>(null);
@@ -173,9 +199,7 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
       await onSubmitted();
     } catch (err: any) {
       console.error("Erreur lors de la délégation:", err);
-      setSubmitGlobalError(
-        err.response?.data?.message || err.message || "Erreur lors de la délégation."
-      );
+      setGlobalError(err, "Erreur lors de la délégation.");
       setShowDelegateModal(false);
     } finally {
       setIsDelegating(false);
@@ -230,21 +254,21 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setSubmitGlobalError(null);
+      setGlobalError(null);
       setCurrentStep((prev) => Math.min(5, prev + 1));
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handlePrev = () => {
-    setSubmitGlobalError(null);
+    setGlobalError(null);
     setCurrentStep((prev) => Math.max(1, prev - 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmit = async () => {
     if (!validateStep(5)) {
-      setSubmitGlobalError(
+      setGlobalError(
         isPlan1
           ? t("stepper.validation.missingBasic", "Veuillez renseigner les informations de base requises.")
           : t("stepper.validation.missingFiles", "Veuillez joindre les 3 documents obligatoires avant de soumettre.")
@@ -253,7 +277,7 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
     }
 
     setIsSubmitting(true);
-    setSubmitGlobalError(null);
+    setGlobalError(null);
 
     try {
       const formData = new FormData();
@@ -283,11 +307,10 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
       await onSubmitted();
     } catch (err: any) {
       console.error("Erreur lors de la soumission du Stepper:", err);
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        t("stepper.validation.submitError", "Une erreur est survenue lors de la soumission de votre dossier.");
-      setSubmitGlobalError(message);
+      setGlobalError(
+        err,
+        t("stepper.validation.submitError", "Une erreur est survenue lors de la soumission de votre dossier.")
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -354,9 +377,16 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
       {submitGlobalError && (
         <div className="p-4 bg-red-50 border-l-4 rtl:border-l-0 rtl:border-r-4 border-red-600 rounded-lg flex items-start gap-3 animate-fadeIn">
           <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-          <div className="text-sm text-red-800 font-medium">
+          <div className="text-sm text-red-800 font-medium space-y-1 w-full">
             <span className="font-bold block">{t("stepper.common.attention", "Attention :")}</span>
-            {submitGlobalError}
+            <p>{submitGlobalError.message}</p>
+            {submitGlobalError.details && submitGlobalError.details.length > 0 && (
+              <ul className="list-disc list-inside mt-2 text-xs space-y-1 text-red-700 bg-red-100/60 p-2.5 rounded">
+                {submitGlobalError.details.map((detail, idx) => (
+                  <li key={idx}>{detail}</li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       )}
@@ -449,49 +479,79 @@ export const TpmeStepper: React.FC<TpmeStepperProps> = ({
       </div>
 
       {/* Modal de confirmation de délégation */}
-      {showDelegateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4 text-center">
-            <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center text-xl">
-              🤝
-            </div>
-            <h3 className="text-lg font-bold text-gray-900">
-              {t("stepper.delegateModal.title", "Déléguer le montage à votre consultant ?")}
-            </h3>
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-              {t(
-                "stepper.delegateModal.desc",
-                "Vous n'aurez plus à saisir ce formulaire. Votre consultant senior prendra directement la main pour structurer vos données financières et administratives. Vous pourrez échanger avec lui et lui transmettre vos pièces via la messagerie."
-              )}
-            </p>
-            <div className="pt-2 flex gap-3">
-              <button
-                type="button"
-                onClick={() => setShowDelegateModal(false)}
-                disabled={isDelegating}
-                className="flex-1 py-2.5 px-4 rounded-lg border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
-              >
-                {t("stepper.delegateModal.cancel", "Continuer moi-même")}
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmDelegate}
-                disabled={isDelegating}
-                className="flex-1 py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                {isDelegating ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>{t("stepper.delegateModal.delegating", "Délégation...")}</span>
-                  </>
-                ) : (
-                  <span>{t("stepper.delegateModal.confirm", "Confirmer la délégation")}</span>
-                )}
-              </button>
-            </div>
-          </div>
+{showDelegateModal && createPortal(
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 p-4"
+    onMouseDown={(e) => {
+      if (e.target === e.currentTarget && !isDelegating) setShowDelegateModal(false);
+    }}
+  >
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="w-full max-w-md overflow-hidden rounded-md border border-slate-200 bg-white shadow-2xl"
+    >
+      {/* En-tête */}
+      <div className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-6 py-4">
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded border border-blue-100 bg-blue-50 text-blue-700">
+            <ShieldCheck className="h-5 w-5" />
+          </span>
+          <h3 className="text-base font-semibold leading-snug text-slate-900">
+            {t("stepper.delegateModal.title", "Déléguer le montage à votre consultant ?")}
+          </h3>
         </div>
-      )}
+        <button
+          type="button"
+          onClick={() => setShowDelegateModal(false)}
+          disabled={isDelegating}
+          aria-label="Fermer"
+          className="rounded p-1.5 text-base leading-none text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700 disabled:opacity-50 cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Corps */}
+      <div className="px-6 py-5">
+        <p className="text-sm leading-relaxed text-slate-600">
+          {t(
+            "stepper.delegateModal.desc",
+            "Vous n'aurez plus à saisir ce formulaire. Votre consultant senior prendra directement la main pour structurer vos données financières et administratives. Vous pourrez échanger avec lui et lui transmettre vos pièces via la messagerie."
+          )}
+        </p>
+      </div>
+
+      {/* Pied */}
+      <div className="flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-3">
+        <button
+          type="button"
+          onClick={() => setShowDelegateModal(false)}
+          disabled={isDelegating}
+          className="rounded border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+        >
+          {t("stepper.delegateModal.cancel", "Continuer moi-même")}
+        </button>
+        <button
+          type="button"
+          onClick={handleConfirmDelegate}
+          disabled={isDelegating}
+          className="inline-flex items-center justify-center gap-2 rounded bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+        >
+          {isDelegating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>{t("stepper.delegateModal.delegating", "Délégation...")}</span>
+            </>
+          ) : (
+            <span>{t("stepper.delegateModal.confirm", "Confirmer la délégation")}</span>
+          )}
+        </button>
+      </div>
+    </div>
+  </div>,
+  document.body
+)}
 
       {/* Encart flottant récapitulatif en temps réel */}
       <StepperFloatingSummary values={formValues} />

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { authService } from "../../services/authService";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
+import { parseApiError } from "../../utils/apiError";
 import logo from "../../assets/logo.webp";
 
 const font = {
@@ -43,13 +44,12 @@ const Login: React.FC = () => {
       login(response);
       navigate("/client/dashboard");
     } catch (err: any) {
-      const message =
-        err?.response?.data?.message ||
-        t(
-          "clientAuth.login.errorDefault",
-          "Échec de la connexion. Vérifiez vos identifiants."
-        );
-      setError(message);
+      const parsed = parseApiError(
+        err,
+        t("clientAuth.login.errorDefault", "Échec de la connexion. Vérifiez vos identifiants."),
+        i18n.language === "ar" ? "ar" : "fr"
+      );
+      setError(parsed.message);
     } finally {
       setLoading(false);
     }

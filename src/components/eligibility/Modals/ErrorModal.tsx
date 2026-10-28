@@ -8,6 +8,8 @@ interface ErrorModalProps {
   onClose: () => void;
   title?: string;
   message: string;
+  code?: string;
+  details?: string[];
   showRetryButton?: boolean;
   onRetry?: () => void;
   retryText?: string;
@@ -19,6 +21,8 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
   onClose,
   title,
   message,
+  code,
+  details,
   showRetryButton = false,
   onRetry,
   retryText,
@@ -47,10 +51,22 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
         </h3>
         
         {/* Message d'erreur */}
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-slate-700 leading-relaxed text-left">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left space-y-2">
+          <p className="text-slate-700 leading-relaxed text-sm font-medium">
             {message}
           </p>
+          {code && (
+            <div className="inline-block px-2 py-0.5 bg-red-100 text-red-700 text-xs font-mono rounded">
+              Code: {code}
+            </div>
+          )}
+          {details && details.length > 0 && (
+            <ul className="list-disc list-inside mt-2 text-xs text-red-700 space-y-1 bg-white/60 p-2 rounded border border-red-100">
+              {details.map((detail, idx) => (
+                <li key={idx}>{detail}</li>
+              ))}
+            </ul>
+          )}
         </div>
         
         {/* Boutons d'action */}

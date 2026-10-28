@@ -53,17 +53,19 @@ export const ClientAuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     checkAuth();
 
-    // Directive 1 : Écouteur pour la réinitialisation sur erreur 401 déclenchée par l'intercepteur Axios
-    const handleUnauthorized = () => {
+    // Directive 1 : Écouteur pour la réinitialisation sur erreur 401 ou 403 déclenchée par l'intercepteur Axios
+    const handleAuthRevoked = () => {
       setUser(null);
       setDossiers([]);
       setTests([]);
       setLoading(false);
     };
 
-    window.addEventListener("auth:unauthorized", handleUnauthorized);
+    window.addEventListener("auth:unauthorized", handleAuthRevoked);
+    window.addEventListener("auth:forbidden", handleAuthRevoked);
     return () => {
-      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+      window.removeEventListener("auth:unauthorized", handleAuthRevoked);
+      window.removeEventListener("auth:forbidden", handleAuthRevoked);
     };
   }, []);
 
