@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useClientAuth } from "../../contexts/ClientAuthContext";
@@ -8,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import PlanSelection from "./PlanSelection";
 import RequestsView from "./RequestsView";
 import { ClientStepper } from "../../components/client/stepper";
+import { parseApiError } from "../../utils/apiError";
 import {
   FileText,
   Plus,
@@ -22,6 +24,7 @@ import {
   RotateCcw,
   ArrowUpRight,
   Landmark,
+  X,
 } from "lucide-react";
 
 const font = {
@@ -42,16 +45,19 @@ const ClientDashboard: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
 
   const handleUpgradePlan = async (newPlan: "PLAN_2" | "PLAN_3") => {
     if (!activeDossier) return;
     setIsUpgrading(true);
+    setDashboardError(null);
     try {
       await dossierService.upgradePlan(activeDossier.id, newPlan);
       setShowUpgradeModal(false);
       await checkAuth();
     } catch (err: any) {
-      alert(err.response?.data?.message || err.message || "Erreur lors de la mise à niveau");
+      const parsed = parseApiError(err, "Erreur lors de la mise à niveau");
+      setDashboardError(parsed.message);
     } finally {
       setIsUpgrading(false);
     }
@@ -259,6 +265,24 @@ const ClientDashboard: React.FC = () => {
             {t("clientDashboard.newTestBtn", "Nouveau Test")}
           </button>
         </div>
+
+        {/* Bannière d'erreur API globale */}
+        {dashboardError && (
+          <div className="p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-center justify-between gap-3 animate-fadeIn">
+            <div className="flex items-center gap-2.5">
+              <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+              <p className="text-sm font-medium">{dashboardError}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDashboardError(null)}
+              className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-100 transition-colors"
+              aria-label="Fermer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Dossiers Section */}
         <div>
@@ -759,66 +783,109 @@ const ClientDashboard: React.FC = () => {
         </div>
 
         {/* Modal de changement de formule */}
-        {showUpgradeModal && activeDossier && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs animate-fadeIn">
-            <div className="bg-white rounded-lg max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-1.5 rounded bg-slate-100 text-slate-800 border border-slate-200">
-                    <ShieldCheck className="w-5 h-5" />
-                  </span>
-                  <h3 className="text-sm font-bold text-slate-900">
-                    {t("clientDashboard.upgradeModalTitle", "Faire évoluer votre formule d'accompagnement")}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowUpgradeModal(false)}
-                  className="text-slate-400 hover:text-slate-700 text-base font-bold cursor-pointer p-1"
-                >
-                  ✕
-                </button>
-              </div>
+{showUpgradeModal && activeDossier && createPortal(
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 p-4"
+    onMouseDown={(e) => {
+      if (e.target === e.currentTarget && !isUpgrading) setShowUpgradeModal(false);
+    }}
+  >
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="w-full max-w-xl overflow-hidden rounded-md border border-slate-200 bg-white shadow-2xl"
+    >
+      {/* En-tête */}
+      <div className="flex items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-6 py-4">
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded border border-blue-100 bg-blue-50 text-blue-700">
+            <ShieldCheck className="h-5 w-5" />
+          </span>
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">
+              {t("clientDashboard.upgradeModalTitle", "Faire évoluer votre formule d'accompagnement")}
+            </h3>
+            <p className="mt-1 text-sm leading-relaxed text-slate-600">
+              {t("clientDashboard.upgradeModalSubtitle", "Sélectionnez une formule supérieure pour bénéficier d'un conseiller dédié, déléguer la constitution de vos pièces ou mandater le cabinet pour la postulation officielle.")}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowUpgradeModal(false)}
+          disabled={isUpgrading}
+          aria-label="Fermer"
+          className="rounded p-1.5 text-base leading-none text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700 disabled:opacity-50 cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
 
-              <p className="text-xs text-slate-600 leading-relaxed">
-                {t("clientDashboard.upgradeModalSubtitle", "Sélectionnez une formule supérieure pour bénéficier d'un conseiller dédié, déléguer la constitution de vos pièces ou mandater le cabinet pour la postulation officielle.")}
-              </p>
-
-              <div className="space-y-3 pt-1">
-                {activeDossier.plan_type === "PLAN_1" && (
-                  <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">Formule 2 · Accompagnement</span>
-                      <h4 className="text-xs font-bold text-slate-900">Montage & Conseil Expert</h4>
-                      <p className="text-[11px] text-slate-500">Messagerie directe, délégation intégrale de saisie, modèle CPC certifié.</p>
-                    </div>
-                    <button
-                      onClick={() => handleUpgradePlan("PLAN_2")}
-                      disabled={isUpgrading}
-                      className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shrink-0 transition-colors cursor-pointer disabled:opacity-50"
-                    >
-                      {isUpgrading ? "..." : t("clientDashboard.choosePlan2", "Choisir la Formule 2")}
-                    </button>
-                  </div>
-                )}
-
-                <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">Formule 3 · Mandat Intégral</span>
-                    <h4 className="text-xs font-bold text-slate-900">Postulation Clé en Main Cabinet</h4>
-                    <p className="text-[11px] text-slate-500">Le cabinet postule officiellement pour vous auprès de la CRI et pilote l'instruction.</p>
-                  </div>
-                  <button
-                    onClick={() => handleUpgradePlan("PLAN_3")}
-                    disabled={isUpgrading}
-                    className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shrink-0 transition-colors cursor-pointer disabled:opacity-50"
-                  >
-                    {isUpgrading ? "..." : t("clientDashboard.choosePlan3", "Choisir la Formule 3")}
-                  </button>
-                </div>
-              </div>
+      {/* Corps */}
+      <div className="space-y-4 px-6 py-5">
+        {activeDossier.plan_type === "PLAN_1" && (
+          <div className="rounded-md border border-slate-200 bg-white p-5 transition-colors hover:border-blue-300">
+            <span className="block text-[11px] font-semibold uppercase tracking-wider text-blue-700">
+              Formule 2 · Accompagnement
+            </span>
+            <h4 className="mt-1 text-sm font-semibold text-slate-900">Montage & Conseil Expert</h4>
+            <ul className="mt-3 space-y-1.5 text-[13px] text-slate-600">
+              <li className="flex items-start gap-2"><span className="text-emerald-600">✓</span>Messagerie directe avec un conseiller</li>
+              <li className="flex items-start gap-2"><span className="text-emerald-600">✓</span>Délégation intégrale de la saisie</li>
+              <li className="flex items-start gap-2"><span className="text-emerald-600">✓</span>Modèle CPC certifié</li>
+            </ul>
+            <div className="mt-4 flex justify-end border-t border-slate-100 pt-4">
+              <button
+                onClick={() => handleUpgradePlan("PLAN_2")}
+                disabled={isUpgrading}
+                className="inline-flex items-center gap-2 rounded bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+              >
+                {isUpgrading ? "Traitement en cours..." : t("clientDashboard.choosePlan2", "Choisir la Formule 2")}
+              </button>
             </div>
           </div>
         )}
+
+        <div className="rounded-md border border-slate-200 bg-white p-5 transition-colors hover:border-blue-300">
+          <span className="block text-[11px] font-semibold uppercase tracking-wider text-blue-700">
+            Formule 3 · Mandat Intégral
+          </span>
+          <h4 className="mt-1 text-sm font-semibold text-slate-900">Postulation Clé en Main Cabinet</h4>
+          <ul className="mt-3 space-y-1.5 text-[13px] text-slate-600">
+            <li className="flex items-start gap-2"><span className="text-emerald-600">✓</span>Postulation officielle auprès de la CRI</li>
+            <li className="flex items-start gap-2"><span className="text-emerald-600">✓</span>Pilotage complet de l'instruction du dossier</li>
+            <li className="flex items-start gap-2"><span className="text-emerald-600">✓</span>Conseiller dédié jusqu'à la décision</li>
+          </ul>
+          <div className="mt-4 flex justify-end border-t border-slate-100 pt-4">
+            <button
+              onClick={() => handleUpgradePlan("PLAN_3")}
+              disabled={isUpgrading}
+              className="inline-flex items-center gap-2 rounded bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+            >
+              {isUpgrading ? "Traitement en cours..." : t("clientDashboard.choosePlan3", "Choisir la Formule 3")}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Pied */}
+      <div className="flex items-center justify-between gap-4 border-t border-slate-200 bg-slate-50 px-6 py-3">
+        <p className="text-xs text-slate-500">
+          Le changement de formule est confirmé par le cabinet après validation.
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowUpgradeModal(false)}
+          disabled={isUpgrading}
+          className="shrink-0 rounded border border-slate-300 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:opacity-50 cursor-pointer"
+        >
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>,
+  document.body
+)}
       </main>
     </div>
   );

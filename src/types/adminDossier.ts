@@ -92,4 +92,5 @@ export interface CreateConsultantRequestPayload {
   input_type: "FILE" | "TEXT";
   importance?: "OBLIGATOIRE" | "FACULTATIF";
   document_type_id?: number;
+  clarification?: string;
 }

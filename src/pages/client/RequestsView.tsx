@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { dossierService } from "../../services/dossierService";
+import { parseApiError } from "../../utils/apiError";
 import { useTranslation } from "react-i18next";
 import {
-  FileText,
   MessageSquare,
   Paperclip,
   Send,
   Lock,
   CheckCircle2,
   PlusCircle,
-  FileCheck,
   Download,
   ChevronRight,
   ShieldCheck,
-  FolderOpen
+  FolderOpen,
+  AlertTriangle,
 } from "lucide-react";
 import ConsultantRequestedFilesList from "../../components/client/ConsultantRequestedFilesList";
 
@@ -62,7 +62,9 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
   const [newMessage, setNewMessage] = useState("");
   const [replyMessage, setReplyMessage] = useState("");
   const [replyFile, setReplyFile] = useState<File | null>(null);
-  const [activeSubTab, setActiveSubTab] = useState<"conversation" | "documents">("conversation");
+  const [activeSubTab, setActiveSubTab] = useState<"conversation" | "documents">("documents");
+  const [upgradeError, setUpgradeError] = useState<string | null>(null);
+  const [isUpgradingPlan, setIsUpgradingPlan] = useState(false);
 
 
 
@@ -120,34 +122,53 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
               </p>
             </div>
 
+            {upgradeError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded text-red-700 text-xs font-medium flex items-center justify-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{upgradeError}</span>
+              </div>
+            )}
+
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
+                disabled={isUpgradingPlan}
                 onClick={async () => {
+                  setIsUpgradingPlan(true);
+                  setUpgradeError(null);
                   try {
                     await dossierService.upgradePlan(dossierId, "PLAN_2");
                     queryClient.invalidateQueries({ queryKey: ["clientDossiers"] });
                     window.location.reload();
                   } catch (e: any) {
-                    alert(e.response?.data?.message || e.message || "Erreur lors de l'upgrade");
+                    const parsed = parseApiError(e, "Erreur lors de l'upgrade");
+                    setUpgradeError(parsed.message);
+                  } finally {
+                    setIsUpgradingPlan(false);
                   }
                 }}
-                className="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shadow-2xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white text-xs font-semibold rounded shadow-2xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>{t("requests.activatePlan2", "Choisir la Formule 2 (Accompagnement)")}</span>
                 <ChevronRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
               </button>
 
               <button
+                disabled={isUpgradingPlan}
                 onClick={async () => {
+                  setIsUpgradingPlan(true);
+                  setUpgradeError(null);
                   try {
                     await dossierService.upgradePlan(dossierId, "PLAN_3");
                     queryClient.invalidateQueries({ queryKey: ["clientDossiers"] });
                     window.location.reload();
                   } catch (e: any) {
-                    alert(e.response?.data?.message || e.message || "Erreur lors de l'upgrade");
+                    const parsed = parseApiError(e, "Erreur lors de l'upgrade");
+                    setUpgradeError(parsed.message);
+                  } finally {
+                    setIsUpgradingPlan(false);
                   }
                 }}
-                className="w-full sm:w-auto px-5 py-2.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded shadow-2xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 text-slate-800 text-xs font-semibold rounded shadow-2xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>{t("requests.activatePlan3", "Choisir la Formule 3 (Mandat Clé en Main)")}</span>
                 <ChevronRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
@@ -168,7 +189,11 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
     );
   }
 
-  const selectedRequest = requests.find((r) => r.id === selectedRequestId);
+  const pendingFilesCount = requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length;
+  const pendingMessagesCount = requests.filter(r => (r.input_type === "TEXT" || r.creator_type === "CLIENT") && r.status === "PENDING").length;
+  const conversationRequests = requests.filter(r => r.input_type === "TEXT" || r.creator_type === "CLIENT");
+
+  const selectedRequest = conversationRequests.find((r) => r.id === selectedRequestId);
 
   const handleCreateRequest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -190,26 +215,33 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
       {/* SUB-NAVBAR */}
       <div className="flex items-center gap-2 px-6 py-3 border-b border-[#DADCE0] bg-white shrink-0">
         <button
-          onClick={() => setActiveSubTab("conversation")}
-          className={`px-4 py-2 text-xs font-semibold rounded transition-colors ${activeSubTab === "conversation"
-            ? "bg-slate-900 text-white"
-            : "text-slate-600 hover:bg-slate-100"
-            }`}
-        >
-          {t("requests.tabConversation", "Correspondance & Échanges")}
-        </button>
-        <button
           onClick={() => setActiveSubTab("documents")}
-          className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded transition-colors ${activeSubTab === "documents"
+          className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded transition-colors cursor-pointer ${activeSubTab === "documents"
             ? "bg-slate-900 text-white"
             : "text-slate-600 hover:bg-slate-100"
             }`}
         >
           <FolderOpen className="w-4 h-4" />
-          {t("requests.tabDocuments", "Pièces Justificatives Requises")}
-          {requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length > 0 && (
-            <span className="flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold text-white bg-slate-900 rounded-full">
-              {requests.filter(r => r.input_type === "FILE" && r.status === "PENDING").length}
+          {t("requests.tabDocuments", "Pièces Justificatives Demandées")}
+          {pendingFilesCount > 0 && (
+            <span className={`flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold rounded-full ${activeSubTab === "documents" ? "bg-white text-slate-900" : "bg-red-600 text-white"}`}>
+              {pendingFilesCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab("conversation")}
+          className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded transition-colors cursor-pointer ${activeSubTab === "conversation"
+            ? "bg-slate-900 text-white"
+            : "text-slate-600 hover:bg-slate-100"
+            }`}
+        >
+          <MessageSquare className="w-4 h-4" />
+          {t("requests.tabConversation", "Messagerie & Échanges")}
+          {pendingMessagesCount > 0 && (
+            <span className={`flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold rounded-full ${activeSubTab === "conversation" ? "bg-white text-slate-900" : "bg-blue-600 text-white"}`}>
+              {pendingMessagesCount}
             </span>
           )}
         </button>
@@ -221,15 +253,15 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
           <ConsultantRequestedFilesList dossierId={dossierId} requests={requests.filter(r => r.input_type === "FILE")} />
         ) : (
           <>
-            {/* LEFT SIDEBAR: REGISTRE DES TRANSMISSIONS */}
+            {/* LEFT SIDEBAR: FILS DE DISCUSSION */}
             <div className="w-full md:w-80 border-r rtl:border-r-0 rtl:border-l border-[#DADCE0] flex flex-col bg-white shrink-0">
 
               {/* Header Registre */}
               <div className="p-4 border-b border-[#DADCE0] bg-[#F8F9FA] flex items-center justify-between">
                 <div>
                   <h3 className={`${font.display} font-bold text-[#191C1D] text-xs uppercase tracking-wider flex items-center gap-2`}>
-                    <FileCheck className="w-4 h-4 text-[#1A73E8]" />
-                    {t("requests.exchangeSchedule", "Bordereau d'échanges")}
+                    <MessageSquare className="w-4 h-4 text-[#1A73E8]" />
+                    {t("requests.conversationTitle", "Fils de discussion")}
                   </h3>
                   <p className="text-[11px] text-[#5F6368] mt-0.5">
                     {t("requests.officialDossier", { id: dossierId, defaultValue: `Dossier Officiel #${dossierId}` })}
@@ -240,7 +272,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                     setSelectedRequestId(null);
                     setIsCreatingNew(true);
                   }}
-                  className="p-1.5 bg-[#E8F0FE] hover:bg-[#D2E3FC] text-[#1A73E8] rounded border border-[#C1C6D6] transition-colors flex items-center gap-1 text-[11px] font-semibold"
+                  className="p-1.5 bg-[#E8F0FE] hover:bg-[#D2E3FC] text-[#1A73E8] rounded border border-[#C1C6D6] transition-colors flex items-center gap-1 text-[11px] font-semibold cursor-pointer"
                   title={t("requests.newRequestBtn", "Nouvelle")}
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
@@ -250,14 +282,14 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
 
               {/* List of Requests */}
               <div className="flex-1 overflow-y-auto p-2 space-y-1.5 bg-white">
-                {requests.length === 0 ? (
+                {conversationRequests.length === 0 ? (
                   <div className="p-6 text-center text-[#727785] text-xs leading-relaxed space-y-2">
-                    <ShieldCheck className="w-8 h-8 text-[#C1C6D6] mx-auto" />
-                    <p className="font-semibold text-[#191C1D]">{t("requests.noTransmissions", "Aucune transmission en cours")}</p>
-                    <p className="text-[11px]">{t("requests.noTransmissionsDesc", "Utilisez le bouton 'Nouvelle' pour adresser une demande officielle à votre consultant référent.")}</p>
+                    <MessageSquare className="w-8 h-8 text-[#C1C6D6] mx-auto" />
+                    <p className="font-semibold text-[#191C1D]">{t("requests.noTransmissions", "Aucun échange écrit")}</p>
+                    <p className="text-[11px]">{t("requests.noTransmissionsDesc", "Utilisez le bouton 'Nouvelle' pour adresser une question à votre consultant référent.")}</p>
                   </div>
                 ) : (
-                  requests.map((req) => {
+                  conversationRequests.map((req) => {
                     const isSelected = selectedRequestId === req.id && !isCreatingNew;
                     return (
                       <button
@@ -266,18 +298,14 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           setSelectedRequestId(req.id);
                           setIsCreatingNew(false);
                         }}
-                        className={`w-full text-left rtl:text-right p-3 rounded border transition-all duration-150 ${isSelected
+                        className={`w-full text-left rtl:text-right p-3 rounded border transition-all duration-150 cursor-pointer ${isSelected
                           ? "bg-[#E8F0FE] border-[#1A73E8] shadow-xs"
                           : "bg-[#F8F9FA] border-[#DADCE0] hover:bg-[#F3F4F5] hover:border-[#C1C6D6]"
                           }`}
                       >
                         <div className="flex items-center justify-between mb-1.5 gap-2">
                           <span className="text-[11px] font-bold text-[#191C1D] flex items-center gap-1.5">
-                            {req.input_type === "FILE" ? (
-                              <Paperclip className="w-3 h-3 text-[#1A73E8]" />
-                            ) : (
-                              <MessageSquare className="w-3 h-3 text-[#5F6368]" />
-                            )}
+                            <MessageSquare className="w-3 h-3 text-[#5F6368]" />
                             <span>Ref #{req.id}</span>
                           </span>
                           <span className={`${font.mono} text-[10px] text-[#727785]`}>
@@ -286,7 +314,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                         </div>
 
                         <p className="text-xs text-[#414754] font-medium truncate mb-2">
-                          {req.input_type === "FILE" && req.documentType?.name ? req.documentType.name : req.message}
+                          {req.message}
                         </p>
 
                         <div className="flex items-center justify-between gap-2 border-t border-[#DADCE0]/50 pt-1.5">
@@ -299,14 +327,14 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                               }`}
                           >
                             {req.status === "PENDING"
-                              ? t("requests.pending", "En cours d'instruction")
+                              ? t("requests.pending", "En attente")
                               : req.status === "RESOLVED"
-                                ? t("requests.resolved", "Transmis & Traité")
-                                : t("requests.provided", "Réponse enregistrée")}
+                                ? t("requests.resolved", "Clôturé")
+                                : t("requests.provided", "Répondu")}
                           </span>
 
                           <span className="text-[10px] text-[#5F6368] font-medium">
-                            {req.creator_type === "CONSULTANT" ? t("requests.consultant", "Consultant") : t("requests.you", "Client")}
+                            {req.creator_type === "CONSULTANT" ? t("requests.consultant", "Consultant") : t("requests.you", "Vous")}
                           </span>
                         </div>
                       </button>
@@ -319,26 +347,26 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
               <div className="p-3 border-t border-[#DADCE0] bg-[#F8F9FA] text-[10px] text-[#727785] flex items-center justify-between">
                 <span className="flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#1E8E3E]" />
-                  {t("requests.secureTransmission", "Transmission sécurisée")}
+                  {t("requests.secureTransmission", "Canal confidentiel")}
                 </span>
                 <span className={`${font.mono} font-semibold`}>
-                  {t("requests.recordCount", { count: requests.length, defaultValue: `${requests.length} enregistrement(s)` })}
+                  {conversationRequests.length} échange(s)
                 </span>
               </div>
             </div>
 
-            {/* RIGHT MAIN PANEL: FICHE D'INSTRUCTION ET JOURNAL D'ÉCHANGE */}
+            {/* RIGHT MAIN PANEL: FICHE D'ÉCHANGE */}
             <div className="w-full md:flex-1 flex flex-col bg-[#F8F9FA] overflow-hidden">
 
               {isCreatingNew ? (
-                /* FORMULAIRE NOUVELLE TRANSMISSION */
+                /* FORMULAIRE NOUVEL ÉCHANGE */
                 <div className="flex-1 flex flex-col p-6 space-y-6 overflow-y-auto">
                   <div className="bg-white p-6 rounded border border-[#DADCE0] space-y-4">
                     <div className="border-b border-[#DADCE0] pb-4 flex items-center justify-between">
                       <div>
                         <h4 className={`${font.display} text-base font-bold text-[#191C1D] flex items-center gap-2`}>
                           <PlusCircle className="w-4 h-4 text-[#1A73E8]" />
-                          {t("requests.newTransmissionTitle", "Transmettre une sollicitation au Consultant Référent")}
+                          {t("requests.newTransmissionTitle", "Poser une question au Consultant Référent")}
                         </h4>
                         <p className="text-xs text-[#5F6368] mt-1">
                           {t("requests.newTransmissionDesc", "Formulez une question technique, administrative ou financière concernant l'élaboration de votre dossier.")}
@@ -346,7 +374,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                       </div>
                       <button
                         onClick={() => setIsCreatingNew(false)}
-                        className="text-xs text-[#5F6368] hover:text-[#191C1D] underline"
+                        className="text-xs text-[#5F6368] hover:text-[#191C1D] underline cursor-pointer"
                       >
                         {t("requests.cancel", "Annuler")}
                       </button>
@@ -355,12 +383,12 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                     <form onSubmit={handleCreateRequest} className="space-y-4">
                       <div>
                         <label className="block text-xs font-semibold text-[#191C1D] mb-1.5">
-                          {t("requests.subjectLabel", "Objet & Explication détaillée de votre demande")}
+                          {t("requests.subjectLabel", "Objet & Explication détaillée de votre question")}
                         </label>
                         <textarea
                           className="w-full p-3.5 bg-white border border-[#DADCE0] rounded text-xs text-[#191C1D] placeholder-[#727785] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] leading-relaxed resize-none"
                           rows={6}
-                          placeholder={t("requests.placeholder", "Précisez l'élément ou le document sur lequel vous désirez l'avis de l'expert...")}
+                          placeholder={t("requests.placeholder", "Précisez votre demande ou question à l'attention du consultant...")}
                           value={newMessage}
                           onChange={(e) => setNewMessage(e.target.value)}
                         />
@@ -370,21 +398,21 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                         <button
                           type="button"
                           onClick={() => setIsCreatingNew(false)}
-                          className="px-4 py-2 bg-white border border-[#DADCE0] hover:bg-[#F3F4F5] text-[#414754] text-xs font-medium rounded transition-colors"
+                          className="px-4 py-2 bg-white border border-[#DADCE0] hover:bg-[#F3F4F5] text-[#414754] text-xs font-medium rounded transition-colors cursor-pointer"
                         >
                           {t("requests.cancel", "Annuler")}
                         </button>
                         <button
                           type="submit"
                           disabled={!newMessage.trim() || createRequestMutation.isPending}
-                          className="px-6 py-2 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold rounded transition-colors disabled:opacity-40 flex items-center gap-2 shadow-xs"
+                          className="px-6 py-2 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold rounded transition-colors disabled:opacity-40 flex items-center gap-2 shadow-xs cursor-pointer"
                         >
                           {createRequestMutation.isPending ? (
-                            <span>{t("requests.sending", "Transmission...")}</span>
+                            <span>{t("requests.sending", "Envoi...")}</span>
                           ) : (
                             <>
                               <Send className="w-3.5 h-3.5" />
-                              <span>{t("requests.submitBtn", "Consigner et Transmettre")}</span>
+                              <span>{t("requests.submitBtn", "Envoyer le message")}</span>
                             </>
                           )}
                         </button>
@@ -393,15 +421,15 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                   </div>
                 </div>
               ) : selectedRequest ? (
-                /* CONSULTATION DU PROCÈS-VERBAL / JOURNAL D'ÉCHANGE */
+                /* CONSULTATION DU FIL D'ÉCHANGE */
                 <div className="flex-1 flex flex-col h-full overflow-hidden">
 
-                  {/* Header de la fiche */}
+                  {/* Header de la discussion */}
                   <div className="p-4 md:p-5 border-b border-[#DADCE0] bg-white flex flex-wrap items-center justify-between gap-4 shrink-0">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 rtl:space-x-reverse">
                         <span className={`${font.mono} text-xs font-bold text-[#1A73E8] uppercase tracking-wider`}>
-                          {t("requests.recordNum", { id: selectedRequest.id, defaultValue: `Fiche d'Échange #00${selectedRequest.id}` })}
+                          {t("requests.recordNum", { id: selectedRequest.id, defaultValue: `Discussion #${selectedRequest.id}` })}
                         </span>
                         <span className="text-[#C1C6D6]">•</span>
                         <span className="text-xs text-[#5F6368]">
@@ -409,7 +437,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                         </span>
                       </div>
                       <h4 className={`${font.display} font-bold text-[#191C1D] text-sm md:text-base`}>
-                        {selectedRequest.input_type === "FILE" && selectedRequest.documentType?.name ? selectedRequest.documentType.name : selectedRequest.message}
+                        {selectedRequest.message}
                       </h4>
                     </div>
 
@@ -423,169 +451,141 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           }`}
                       >
                         {selectedRequest.status === "PENDING"
-                          ? t("requests.pending", "En traitement")
+                          ? t("requests.pending", "En cours")
                           : selectedRequest.status === "RESOLVED"
-                            ? t("requests.resolved", "Statut : Clôturé")
-                            : t("requests.provided", "En attente de retour")}
+                            ? t("requests.resolved", "Clôturé")
+                            : t("requests.provided", "Répondu")}
                       </span>
                     </div>
                   </div>
 
-                  {/* Journal des transmissions (Chronologique) */}
+                  {/* Fil des messages (Chronologique) */}
                   <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-[#F8F9FA]">
-
-                    {selectedRequest.input_type === "FILE" ? (
-                      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#727785] space-y-4 h-full">
-                        <div className="w-16 h-16 rounded-full bg-[#E8F0FE] flex items-center justify-center text-[#1A73E8]">
-                          <FolderOpen className="w-8 h-8" />
+                    {/* Message Initial */}
+                    <div className="bg-white rounded border border-[#DADCE0] p-4 space-y-3">
+                      <div className="flex items-center justify-between border-b border-[#DADCE0]/60 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded bg-[#E8F0FE] text-[#1A73E8] flex items-center justify-center text-xs font-bold">
+                            {selectedRequest.creator_type === "CONSULTANT" ? "E" : "C"}
+                          </div>
+                          <span className="text-xs font-bold text-[#191C1D]">
+                            {selectedRequest.creator_type === "CONSULTANT"
+                              ? t("requests.consultant", "Message de l'Expert Consultant")
+                              : t("requests.you", "Votre message initial")}
+                          </span>
                         </div>
-                        <div>
-                          <h3 className={`${font.display} text-lg font-bold text-[#191C1D] mb-2`}>{t("requests.tabDocuments", "Demande de Document")}</h3>
-                          <p className="text-sm max-w-md mx-auto text-[#5F6368] leading-relaxed">
-                            {selectedRequest.documentType?.name || selectedRequest.message}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => setActiveSubTab("documents")}
-                          className="mt-4 px-6 py-2.5 bg-[#1A73E8] hover:bg-[#174EA6] text-white rounded font-bold shadow-sm transition-colors text-sm flex items-center gap-2"
-                        >
-                          <FolderOpen className="w-4 h-4" />
-                          {t("requests.tabDocuments", "Aller aux Fichiers Demandés")}
-                        </button>
+                        <span className={`${font.mono} text-[11px] text-[#727785]`}>
+                          {new Date(selectedRequest.createdAt).toLocaleTimeString(isRTL ? "ar-MA" : "fr-FR", { hour: '2-digit', minute: '2-digit' })}
+                        </span>
                       </div>
-                    ) : (
-                      <>
-                        {/* Message Initial de la requête */}
-                        <div className="bg-white rounded border border-[#DADCE0] p-4 space-y-3">
-                          <div className="flex items-center justify-between border-b border-[#DADCE0]/60 pb-2.5">
+
+                      <div className="text-xs md:text-sm text-[#191C1D] leading-relaxed whitespace-pre-wrap">
+                        {selectedRequest.message}
+                      </div>
+                    </div>
+
+                    {/* Thread de réponses */}
+                    {selectedRequest.messages?.map((msg, index) => {
+                      const isClient = msg.sender_type === "CLIENT";
+                      return (
+                        <div
+                          key={msg.id}
+                          className={`bg-white rounded border ${isClient ? "border-[#C1C6D6]" : "border-[#1A73E8]/30 shadow-2xs"
+                            } p-4 space-y-3`}
+                        >
+                          <div className="flex items-center justify-between border-b border-[#DADCE0]/60 pb-2">
                             <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded bg-[#E8F0FE] text-[#1A73E8] flex items-center justify-center text-xs font-bold">
-                                {selectedRequest.creator_type === "CONSULTANT" ? "E" : "C"}
-                              </div>
-                              <span className="text-xs font-bold text-[#191C1D]">
-                                {selectedRequest.creator_type === "CONSULTANT"
-                                  ? t("requests.consultant", "Demande officielle de l'Expert Consultant")
-                                  : t("requests.you", "Demande formulée par vous-même")}
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${isClient
+                                  ? "bg-[#EDEEEF] text-[#414754]"
+                                  : "bg-[#E8F0FE] text-[#005BBF]"
+                                  }`}
+                              >
+                                {isClient ? t("requests.you", "Vous") : t("requests.consultant", "Expert Consultant")}
+                              </span>
+                              <span className="text-[#727785]">•</span>
+                              <span className={`${font.mono} text-[11px] text-[#727785]`}>
+                                #{index + 1}
                               </span>
                             </div>
+
                             <span className={`${font.mono} text-[11px] text-[#727785]`}>
-                              {new Date(selectedRequest.createdAt).toLocaleTimeString(isRTL ? "ar-MA" : "fr-FR", { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(msg.createdAt).toLocaleString(isRTL ? "ar-MA" : "fr-FR", {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
                             </span>
                           </div>
 
-                          <div className="text-xs md:text-sm text-[#191C1D] leading-relaxed whitespace-pre-wrap">
-                            {selectedRequest.message}
-                          </div>
-                        </div>
+                          {msg.message && (
+                            <p className="text-xs md:text-sm text-[#191C1D] leading-relaxed whitespace-pre-wrap">
+                              {msg.message}
+                            </p>
+                          )}
 
-                        {/* Thread de messages sous forme de Procès-Verbal */}
-                        {selectedRequest.messages.map((msg, index) => {
-                          const isClient = msg.sender_type === "CLIENT";
-                          return (
-                            <div
-                              key={msg.id}
-                              className={`bg-white rounded border ${isClient ? "border-[#C1C6D6]" : "border-[#1A73E8]/30 shadow-2xs"
-                                } p-4 space-y-3`}
-                            >
-                              <div className="flex items-center justify-between border-b border-[#DADCE0]/60 pb-2">
-                                <div className="flex items-center gap-2">
-                                  <span
-                                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${isClient
-                                      ? "bg-[#EDEEEF] text-[#414754]"
-                                      : "bg-[#E8F0FE] text-[#005BBF]"
-                                      }`}
-                                  >
-                                    {isClient ? t("requests.you", "Société Client") : t("requests.consultant", "Expert Consultant Masubvention")}
-                                  </span>
-                                  <span className="text-[#727785]">•</span>
-                                  <span className={`${font.mono} text-[11px] text-[#727785]`}>
-                                    #{index + 1}
-                                  </span>
-                                </div>
-
-                                <span className={`${font.mono} text-[11px] text-[#727785]`}>
-                                  {new Date(msg.createdAt).toLocaleString(isRTL ? "ar-MA" : "fr-FR", {
-                                    year: "numeric",
-                                    month: "2-digit",
-                                    day: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                </span>
-                              </div>
-
-                              {msg.message && (
-                                <p className="text-xs md:text-sm text-[#191C1D] leading-relaxed whitespace-pre-wrap">
-                                  {msg.message}
-                                </p>
-                              )}
-
-                              {msg.attachment_url && (
-                                <div className="pt-2">
-                                  <a
-                                    href={`${import.meta.env.VITE_PREFIX_URL || "http://localhost:5000/uploads"}/dossiers/${dossierId}/${msg.attachment_url}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="inline-flex items-center gap-2 p-2.5 bg-[#F8F9FA] hover:bg-[#F3F4F5] border border-[#DADCE0] rounded text-xs font-semibold text-[#1A73E8] transition-colors"
-                                  >
-                                    <Paperclip className="w-4 h-4 text-[#1A73E8]" />
-                                    <span>{t("requests.viewAttachment", { file: msg.attachment_url.split("/").pop(), defaultValue: `Consulter la pièce transmise (${msg.attachment_url.split("/").pop()})` })}</span>
-                                    <Download className="w-3.5 h-3.5 text-[#5F6368] ml-2 rtl:mr-2 rtl:ml-0" />
-                                  </a>
-                                </div>
-                              )}
+                          {msg.attachment_url && (
+                            <div className="pt-2">
+                              <a
+                                href={`${import.meta.env.VITE_PREFIX_URL || "http://localhost:5000/uploads"}/dossiers/${dossierId}/${msg.attachment_url}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 p-2.5 bg-[#F8F9FA] hover:bg-[#F3F4F5] border border-[#DADCE0] rounded text-xs font-semibold text-[#1A73E8] transition-colors"
+                              >
+                                <Paperclip className="w-4 h-4 text-[#1A73E8]" />
+                                <span>{t("requests.viewAttachment", { file: msg.attachment_url.split("/").pop(), defaultValue: `Consulter la pièce transmise (${msg.attachment_url.split("/").pop()})` })}</span>
+                                <Download className="w-3.5 h-3.5 text-[#5F6368] ml-2 rtl:mr-2 rtl:ml-0" />
+                              </a>
                             </div>
-                          );
-                        })}
-                      </>
-                    )}
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
 
-                  {/* Zone d'envoi et dépôt institutionnel */}
+                  {/* Formulaire de réponse textuelle */}
                   {selectedRequest.status !== "RESOLVED" ? (
                     <div className="p-4 bg-white border-t border-[#DADCE0] shrink-0">
                       <form onSubmit={handleReply} className="space-y-3">
                         <div className="flex items-center justify-between">
                           <label className="text-xs font-bold text-[#191C1D] uppercase tracking-wider flex items-center gap-1.5">
                             <Send className="w-3.5 h-3.5 text-[#1A73E8]" />
-                            {t("requests.replyOrAttach", "Formuler une réponse ou joindre une pièce")}
+                            {t("requests.replyLabel", "Formuler une réponse")}
                           </label>
                         </div>
 
                         <textarea
                           className="w-full p-3 bg-white border border-[#DADCE0] rounded text-xs sm:text-sm text-[#191C1D] placeholder-[#727785] focus:outline-none focus:border-[#1A73E8] focus:ring-1 focus:ring-[#1A73E8] resize-none leading-relaxed"
-                          rows={2}
-                          placeholder={t("requests.replyPlaceholder", "Saisissez votre note explicative ou votre réponse officielle...")}
+                          rows={3}
+                          placeholder={t("requests.replyPlaceholder", "Saisissez votre réponse ou précision...")}
                           value={replyMessage}
                           onChange={(e) => setReplyMessage(e.target.value)}
                         />
 
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
-                          {selectedRequest.input_type === "FILE" || selectedRequest.creator_type === "CONSULTANT" ? (
-                            <div className="flex items-center gap-2">
-                              <label className="text-xs font-semibold text-[#414754] whitespace-nowrap">
-                                {t("requests.attachFile", "Joindre un fichier :")}
-                              </label>
-                              <input
-                                type="file"
-                                onChange={(e) => setReplyFile(e.target.files?.[0] || null)}
-                                className="text-xs text-[#5F6368] file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-[#DADCE0] file:text-xs file:font-semibold file:bg-[#F8F9FA] file:text-[#191C1D] hover:file:bg-[#EDEEEF] cursor-pointer"
-                              />
-                            </div>
-                          ) : (
-                            <div />
-                          )}
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-semibold text-[#414754] whitespace-nowrap">
+                              {t("requests.attachFileOptional", "Joindre une pièce justificative (optionnel) :")}
+                            </label>
+                            <input
+                              type="file"
+                              onChange={(e) => setReplyFile(e.target.files?.[0] || null)}
+                              className="text-xs text-[#5F6368] file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-[#DADCE0] file:text-xs file:font-semibold file:bg-[#F8F9FA] file:text-[#191C1D] hover:file:bg-[#EDEEEF] cursor-pointer"
+                            />
+                          </div>
 
                           <button
                             type="submit"
                             disabled={replyMutation.isPending || (!replyMessage.trim() && !replyFile)}
-                            className="px-6 py-2.5 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold rounded transition-colors disabled:opacity-40 flex items-center justify-center gap-2 shadow-xs"
+                            className="px-6 py-2.5 bg-[#1A73E8] hover:bg-[#174EA6] text-white text-xs font-bold rounded transition-colors disabled:opacity-40 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
                           >
                             {replyMutation.isPending ? (
-                              <span>{t("requests.sending", "Transmission...")}</span>
+                              <span>{t("requests.sending", "Envoi...")}</span>
                             ) : (
                               <>
-                                <span>{t("requests.send", "Transmettre au dossier")}</span>
+                                <span>{t("requests.send", "Envoyer la réponse")}</span>
                                 <Send className="w-3.5 h-3.5" />
                               </>
                             )}
@@ -593,28 +593,24 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                         </div>
                       </form>
                     </div>
-                  ) : selectedRequest.input_type === "FILE" ? (
-                    <div className="p-4 bg-white border-t border-[#DADCE0] shrink-0 text-center text-[#5F6368] text-xs">
-                      {t("requests.tabDocuments", "Veuillez utiliser l'onglet 'Fichiers Demandés' pour gérer ce document.")}
-                    </div>
                   ) : (
                     <div className="p-4 bg-[#E6F4EA] border-t border-[#DADCE0] text-center text-xs font-bold text-[#1E8E3E] flex items-center justify-center gap-2 shrink-0">
                       <CheckCircle2 className="w-4 h-4 text-[#1E8E3E]" />
-                      {t("requests.closedNotice", "Cette fiche d'échange a été clôturée et validée par le consultant expert.")}
+                      {t("requests.closedNotice", "Cet échange a été clôturé.")}
                     </div>
                   )}
                 </div>
               ) : (
-                /* SÉLECTION VIDE */
+                /* AUCUN ÉCHANGE SÉLECTIONNÉ */
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#727785] space-y-3">
                   <div className="w-12 h-12 rounded-full bg-[#EDEEEF] flex items-center justify-center text-[#5F6368]">
-                    <FileText className="w-6 h-6" />
+                    <MessageSquare className="w-6 h-6" />
                   </div>
                   <h4 className={`${font.display} text-base font-bold text-[#191C1D]`}>
-                    {t("requests.exchangeSchedule", "Registre Officiel des Transmissions")}
+                    {t("requests.selectConversation", "Sélectionnez un échange")}
                   </h4>
                   <p className="text-xs max-w-sm text-[#5F6368]">
-                    {t("requests.subtitle", "Sélectionnez une fiche d'échange dans le bordereau à gauche pour consulter les instructions ou ouvrir un nouveau point d'échange.")}
+                    {t("requests.selectConversationDesc", "Choisissez un fil de discussion dans la liste de gauche ou cliquez sur 'Nouvelle' pour initier un échange avec votre consultant référent.")}
                   </p>
                 </div>
               )}
