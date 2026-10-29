@@ -226,7 +226,7 @@ const ConsultantRequestedFilesList: React.FC<ConsultantRequestedFilesListProps> 
                     <div className="flex flex-wrap items-center gap-2">
                       {attachmentMsg && (
                         <a
-                          href={`${import.meta.env.VITE_PREFIX_URL || "http://localhost:5000/uploads"}/dossiers/${dossierId}/${attachmentMsg.attachment_url}`}
+                          href={`${import.meta.env.VITE_PREFIX_URL || "/uploads"}/dossiers/${dossierId}/${attachmentMsg.attachment_url}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[#1A73E8] bg-[#E8F0FE] hover:bg-[#D2E3FC] border border-[#C1C6D6] rounded-md transition-colors"

@@ -93,11 +93,10 @@ const ClientDashboard: React.FC = () => {
     const uploadsIndex = normalized.indexOf("uploads/");
     const relativePath = uploadsIndex !== -1 ? normalized.substring(uploadsIndex) : normalized.replace(/^\/+/, "");
 
-    const baseUrl = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "")
-      : "http://localhost:5000";
-
-    return `${baseUrl}/${relativePath}`;
+    const rawApiUrl = import.meta.env.VITE_BACKEND_API_URL || import.meta.env.VITE_API_URL || "";
+    const baseUrl = rawApiUrl.replace(/\/api\/?$/, "");
+    const cleanPath = relativePath.startsWith("/") ? relativePath : `/${relativePath}`;
+    return baseUrl ? `${baseUrl}${cleanPath}` : cleanPath;
   };
 
   const { data: requests = [] } = useQuery({

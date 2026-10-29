@@ -4,10 +4,11 @@ let socket: Socket | null = null;
 
 export function getAdminSocket() {
   if (socket) return socket;
-  const url = import.meta.env.VITE_SOCKET_URL;
+  const rawUrl = import.meta.env.VITE_SOCKET_URL;
+  // If VITE_SOCKET_URL is empty or undefined, Socket.IO connects to current window origin on path /socket.io
+  const url = rawUrl && rawUrl.trim() !== "" ? rawUrl : undefined;
   socket = io(url, {
-    // transports: ["websocket", "polling"],
-    transports: ["polling"],
+    transports: ["websocket", "polling"],
     withCredentials: true,
     autoConnect: true,
     reconnection: true,

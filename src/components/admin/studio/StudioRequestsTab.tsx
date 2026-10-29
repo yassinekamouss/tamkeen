@@ -239,7 +239,7 @@ export const StudioRequestsTab: React.FC<StudioRequestsTabProps> = ({
                                                                 {msg.message && <p className="whitespace-pre-wrap leading-relaxed">{msg.message}</p>}
                                                                 {msg.attachment_url && (
                                                                     <a
-                                                                        href={`${import.meta.env.VITE_PREFIX_URL || "http://localhost:5000/uploads"}/dossiers/${dossierId}/${msg.attachment_url}`}
+                                                                        href={`${import.meta.env.VITE_PREFIX_URL || "/uploads"}/dossiers/${dossierId}/${msg.attachment_url}`}
                                                                         target="_blank"
                                                                         rel="noopener noreferrer"
                                                                         className={`flex items-center gap-1.5 mt-2 p-1.5 rounded text-[10px] font-medium transition-colors ${

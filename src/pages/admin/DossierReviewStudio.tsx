@@ -260,7 +260,7 @@ export const DossierReviewStudio: React.FC = () => {
                 fileSize = Number(reqDoc.file_size) || 0;
                 uploadedDate = reqDoc.createdAt;
             } else if (requestAttachment) {
-                fileUrl = `${import.meta.env.VITE_PREFIX_URL || "http://localhost:5000/uploads"}/dossiers/${dossierId}/${requestAttachment.attachment_url}`;
+                fileUrl = `${import.meta.env.VITE_PREFIX_URL || "/uploads"}/dossiers/${dossierId}/${requestAttachment.attachment_url}`;
                 fileName = requestAttachment.attachment_url;
                 uploadedDate = requestAttachment.createdAt;
             }

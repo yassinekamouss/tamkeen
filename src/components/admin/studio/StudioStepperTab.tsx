@@ -119,7 +119,7 @@ export const StudioStepperTab: React.FC<StudioStepperTabProps> = ({
                         name: msg.attachment_url,
                         source: `Demande #${req.id} : ${req.documentType?.name || req.message}`,
                         filename: msg.attachment_url,
-                        url: `${import.meta.env.VITE_PREFIX_URL || "http://localhost:5000/uploads"}/dossiers/${dossierId}/${msg.attachment_url}`,
+                        url: `${import.meta.env.VITE_PREFIX_URL || "/uploads"}/dossiers/${dossierId}/${msg.attachment_url}`,
                         date: msg.createdAt,
                         type: "attachment",
                     });

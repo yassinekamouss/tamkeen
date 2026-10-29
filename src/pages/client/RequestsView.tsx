@@ -529,7 +529,7 @@ const RequestsView: React.FC<RequestsViewProps> = ({ dossierId, planType }) => {
                           {msg.attachment_url && (
                             <div className="pt-2">
                               <a
-                                href={`${import.meta.env.VITE_PREFIX_URL || "http://localhost:5000/uploads"}/dossiers/${dossierId}/${msg.attachment_url}`}
+                                href={`${import.meta.env.VITE_PREFIX_URL || "/uploads"}/dossiers/${dossierId}/${msg.attachment_url}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="inline-flex items-center gap-2 p-2.5 bg-[#F8F9FA] hover:bg-[#F3F4F5] border border-[#DADCE0] rounded text-xs font-semibold text-[#1A73E8] transition-colors"
